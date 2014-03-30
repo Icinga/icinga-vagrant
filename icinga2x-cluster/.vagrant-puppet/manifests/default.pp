@@ -255,6 +255,14 @@ file { '/var/www/html/icingaweb/css':
   require   => [ File['/var/www/html/icingaweb'], Package['apache'] ]
 }
 
+file { '/var/www/html/icingaweb/svg':
+  ensure    => 'link',
+  target    => '/vagrant/icingaweb2/public/svg',
+  owner     => 'apache',
+  group     => 'apache',
+  require   => [ File['/var/www/html/icingaweb'], Package['apache'] ]
+}
+
 file { '/var/www/html/icingaweb/img':
   ensure    => 'link',
   target    => '/vagrant/icingaweb2/public/img',
@@ -279,17 +287,11 @@ file { '/var/www/html/icingaweb/index.php':
 }
 
 file { '/var/www/html/icingaweb/js.php':
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/var/www/html/icingaweb/js.php',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => File['/var/www/html/icingaweb']
+  ensure    => absent,
 }
 
 file { '/var/www/html/icingaweb/css.php':
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/var/www/html/icingaweb/css.php',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => File['/var/www/html/icingaweb']
+  ensure    => absent,
 }
 
 file { '/var/www/html/icingaweb/.htaccess':
