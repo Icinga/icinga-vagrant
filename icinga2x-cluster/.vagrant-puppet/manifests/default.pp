@@ -141,14 +141,6 @@ file { '/etc/icinga2/conf.d':
   require => Package['icinga2']
 }
 
-file { '/etc/icinga2/conf.d/cluster_health.conf':
-  owner  => icinga,
-  group  => icinga,
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/conf.d/cluster_health.conf',
-  require   => File['/etc/icinga2/conf.d'],
-  notify    => Service['icinga2']
-}
-
 file { '/etc/icinga2/conf.d/demo.conf':
   owner  => icinga,
   group  => icinga,
