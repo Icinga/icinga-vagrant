@@ -1,0 +1,589 @@
+From ab211893475cf2623c2a002dc48d7aacfca0b978 Mon Sep 17 00:00:00 2001
+From: Michael Friedrich <Michael.Friedrich@netways.de>
+Date: Sat, 4 Jan 2014 20:42:52 +0100
+Subject: [PATCH] Import Jasperserver and Icinga Reporting puppet modules.
+
+Refs #2282
+---
+ .vagrant-puppet/manifests/default.pp               |   5 +
+ .../modules/icinga-reports/manifests/init.pp       |  99 +++++++++++++++
+ .../modules/jasperserver/manifests/init.pp         | 134 +++++++++++++++++++++
+ .../templates/default_master.properties.erb        | 104 ++++++++++++++++
+ .vagrant-puppet/modules/mysql/manifests/init.pp    |  13 ++
+ .../modules/mysql/templates/.my.cnf.erb            |   3 +
+ .vagrant-puppet/modules/tomcat6/manifests/init.pp  |  53 ++++++++
+ .../modules/tomcat6/manifests/params.pp            |  12 ++
+ .../modules/tomcat6/templates/tomcat6.erb          |  47 ++++++++
+ Vagrantfile                                        |   3 +
+ 10 files changed, 473 insertions(+)
+ create mode 100644 .vagrant-puppet/modules/icinga-reports/manifests/init.pp
+ create mode 100644 .vagrant-puppet/modules/jasperserver/manifests/init.pp
+ create mode 100755 .vagrant-puppet/modules/jasperserver/templates/default_master.properties.erb
+ create mode 100644 .vagrant-puppet/modules/mysql/templates/.my.cnf.erb
+ create mode 100644 .vagrant-puppet/modules/tomcat6/manifests/init.pp
+ create mode 100644 .vagrant-puppet/modules/tomcat6/manifests/params.pp
+ create mode 100644 .vagrant-puppet/modules/tomcat6/templates/tomcat6.erb
+
+diff --git a/.vagrant-puppet/manifests/default.pp b/.vagrant-puppet/manifests/default.pp
+index 95d6030..74a4c22 100644
+--- a/.vagrant-puppet/manifests/default.pp
++++ b/.vagrant-puppet/manifests/default.pp
+@@ -3,8 +3,13 @@ include icinga
+ include icinga-classicui
+ include icinga-idoutils-libdbi-mysql
+ include icinga-web
++include icinga-reports
+ include nagios-plugins
+ 
++package { 'vim-enhanced':
++  ensure => 'installed'
++}
++
+ # icinga demo docs at /icinga-demo
+ file { '/etc/httpd/conf.d/icinga-demo.conf':
+   source => 'puppet:////vagrant/.vagrant-puppet/files/etc/httpd/conf.d/icinga-demo.conf',
+diff --git a/.vagrant-puppet/modules/icinga-reports/manifests/init.pp b/.vagrant-puppet/modules/icinga-reports/manifests/init.pp
+new file mode 100644
+index 0000000..d4c26f5
+--- /dev/null
++++ b/.vagrant-puppet/modules/icinga-reports/manifests/init.pp
+@@ -0,0 +1,99 @@
++# Class: icinga-reports
++#
++#   Downloads & installs Icinga Reports into Jasperserver/Tomcat
++#   
++#   Copyright (C) 2014-present Icinga Development Team (http://www.icinga.org/)
++#
++# Parameters:
++#
++# Actions:
++#
++# Requires: mysql, tomcat6, jasperserver, php
++#
++# Sample Usage:
++#
++#   include jasperserver
++#
++
++class icinga-reports {
++  include mysql
++  include tomcat6
++  include jasperserver
++  include php
++
++  package {"unzip": ensure => "installed"}
++
++  $icingaReportsVersion = '1.10.0'
++  $icingaReportsHome = '/home/vagrant'
++  $icingaAvailabilityFunctionName = 'icinga_availability'
++  $IdoDbName = 'icinga'
++  $IdoDbUsername = 'icinga'
++  $IdoDbPassword = 'icinga'
++  $jasperHome = $jasperserver::jasperHome
++  $tomcatHome = $jasperserver::tomcatHome
++  $tomcatName = $tomcat6::params::tomcat_name
++
++  # required for icinga-web connector
++  php::extension { ['php-soap']:
++  }
++
++  Exec['get-icinga-reports'] -> Exec['unzip-icinga-reports'] -> Exec['install-tomcat-mysql-connector']
++    -> Exec['install-tomcat-mysql-connector-restart-tomcat'] -> Exec['js-import-icinga']
++    -> File["${tomcatHome}/webapps/jasperserver/WEB-INF/lib"] -> Exec['install-jar-files']
++    -> Exec['install-ido-icinga-availability-sql-function']
++
++  exec { 'get-icinga-reports':
++    path => '/bin:/usr/bin:/sbin:/usr/sbin',
++    command => "/usr/bin/wget -O /tmp/icinga-reports-${icingaReportsVersion}.zip https://github.com/Icinga/icinga-reports/archive/v${icingaReportsVersion}.zip",
++    timeout => 0,
++    provider => 'shell',
++    user => root,
++    onlyif => "test ! -f /tmp/icinga-reports-${icingaReportsVersion}.zip"
++  }
++
++  exec { 'unzip-icinga-reports':
++    path => '/bin:/usr/bin:/sbin:/usr/sbin',
++    command => "unzip -o -q /tmp/icinga-reports-${icingaReportsVersion}.zip -d ${icingaReportsHome}",
++    require => [ Package['unzip'], Exec['get-icinga-reports'] ]
++  }
++
++  # use connector provided via package repos, already installed via jasperserver
++  exec { 'install-tomcat-mysql-connector':
++    path => '/bin:/usr/bin:/sbin:/usr/sbin',
++    command => "cp /usr/share/java/mysql-connector-java.jar ${tomcatHome}/lib/",
++    require => [ Package['mysql-connector-java'], Package['tomcat6'] ],
++  }
++
++  exec { 'install-tomcat-mysql-connector-restart-tomcat': 
++    path => "/bin:/usr/bin:/sbin:/usr/sbin",
++    command => "/etc/init.d/${tomcatName} restart",
++    require => Exec['install-tomcat-mysql-connector']  
++  }
++
++  exec { 'js-import-icinga':
++    command => "${jasperHome}/buildomatic/js-import.sh --input-zip ${icingaReportsHome}/icinga-reports-${icingaReportsVersion}/reports/icinga/package/js-icinga-reports.zip",
++    require => [ Exec['install-tomcat-mysql-connector'], Package['tomcat6'], Anchor['jasperserver::end'] ],
++    cwd => "${icingaReportsHome}/icinga-reports-${icingaReportsVersion}",
++    notify => Service['tomcat6']
++  }
++
++  file { "${tomcatHome}/webapps/jasperserver/WEB-INF/lib":
++    ensure => 'directory',
++    require => [ Anchor['jasperserver::end'], Exec['js-import-icinga'] ]
++  }
++
++  exec { 'install-jar-files':
++    path => '/bin:/usr/bin:/sbin:/usr/sbin',
++    command => "cp ${icingaReportsHome}/icinga-reports-${icingaReportsVersion}/jsp-server/classes/icinga/icinga-reporting.jar ${tomcatHome}/webapps/jasperserver/WEB-INF/lib/",
++    require => File["${tomcatHome}/webapps/jasperserver/WEB-INF/lib"],
++    cwd => "${icingaReportsHome}/icinga-reports-${icingaReportsVersion}",
++    notify => Service['tomcat6']
++  }
++
++  exec { 'install-ido-icinga-availability-sql-function':
++    path => "/bin:/usr/bin:/sbin:/usr/sbin",
++    unless => "mysql -u${IdoDbUsername} -p${IdoDbPassword} ${IdoDbName} -e 'select name from mysql.proc where name='${icingaAvailabilityFunctionName}';'",
++    command => "mysql -u${IdoDbUsername} -p${IdoDbPassword} ${IdoDbName} < ${icingaReportsHome}/icinga-reports-${icingaReportsVersion}/db/icinga/mysql/availability.sql",
++    require => [ Service['mysqld'], Exec['install-jar-files'] ]
++  }
++}
+diff --git a/.vagrant-puppet/modules/jasperserver/manifests/init.pp b/.vagrant-puppet/modules/jasperserver/manifests/init.pp
+new file mode 100644
+index 0000000..5779b70
+--- /dev/null
++++ b/.vagrant-puppet/modules/jasperserver/manifests/init.pp
+@@ -0,0 +1,134 @@
++# Class: jasperserver
++#
++#   Downloads & installs Jasperserver with Tomcat & MySQL
++#   
++#   Copyright (C) 2014-present Icinga Development Team (http://www.icinga.org/)
++#
++# Parameters:
++#
++# Actions:
++#
++# Requires: mysql, tomcat6
++#
++# Sample Usage:
++#
++#   include jasperserver
++#
++
++class jasperserver {
++  include mysql
++  include tomcat6
++
++  $jasperVersion = "5.5.0"
++  $jasperHome = "/opt/jasperreports-server-cp-${jasperVersion}-bin"
++  $jasperBuildomaticDefaultMasterProperties = "${jasperHome}/buildomatic/default_master.properties"
++
++  $jasperDbType = "mysql"
++  $jasperDbHost = "localhost"
++  $jasperDbUsername = "jasperserver"
++  $jasperDbPassword = "jasperserver"
++  $jasperDbName = "jasperserver"
++
++  $tomcatHome = "/usr/share/tomcat6"
++
++  $mysqlJavaConnectorVersion = "5.1.17"
++  $javaPackageName = "java-1.7.0-openjdk"
++
++  anchor { 'jasperserver::end': } 
++
++  Package["${javaPackageName}"] -> Exec['create-mysql-jasperserver-user'] -> Exec['get-jasperserver-binary']
++    -> File["${jasperHome}"] -> Exec['unzip-jasperserver-binary'] -> Package['mysql-connector-java']
++    -> Exec['install-mysql-connector-java'] -> File["${jasperBuildomaticDefaultMasterProperties}"]
++    -> Exec['import-jasperserver-schema-js-create'] -> Exec['import-jasperserver-schema-quartz']
++    -> Exec['install-jasperserver-catalog-minimal'] -> Exec['install-jasperserver-wepapp']
++
++  package { "${javaPackageName}":
++    ensure => 'installed',
++    before => Exec['get-jasperserver-binary']
++  }
++
++  exec { 'create-mysql-jasperserver-user':
++    path => '/bin:/usr/bin:/sbin:/usr/sbin',
++    unless => "mysql -u${jasperDbUsername} -p${jasperDbPassword} ${jasperDbName}",
++    command => "mysql -uroot -p${mysql::mysqlRootPassword} -e \"CREATE DATABASE ${jasperDbName}; GRANT ALL ON ${jasperDbName}.* TO ${jasperDbUsername}@${jasperDbHost} IDENTIFIED BY \'${jasperDbPassword}\';\"",
++    require => Service['mysqld']
++  }
++
++  exec { 'get-jasperserver-binary':
++    command => "/usr/bin/wget -O /tmp/jasperreports-server-cp-${jasperVersion}-bin.zip http://sourceforge.net/projects/jasperserver/files/JasperServer/JasperReports%20Server%20Community%20Edition%20${jasperVersion}/jasperreports-server-cp-${jasperVersion}-bin.zip",
++    timeout => 0,
++    provider => 'shell',
++    user => root, 
++    require => Exec['create-mysql-jasperserver-user'],
++    onlyif => "test ! -f /tmp/jasperreports-server-cp-${jasperVersion}-bin.zip"
++  }
++
++  file { "${jasperHome}":
++    ensure => 'directory',
++    purge => true,
++    owner => root,
++    group => root
++  }
++
++  exec { 'unzip-jasperserver-binary':
++    path => '/bin:/usr/bin:/sbin:/usr/sbin',
++    command => "unzip -o -q /tmp/jasperreports-server-cp-${jasperVersion}-bin.zip -d ${jasperHome}/..",
++    provider => 'shell',
++    require => [ Package['unzip'], Exec['get-jasperserver-binary'], File["${jasperHome}"] ]
++  }
++
++  # required on centos http://community.jaspersoft.com/questions/815738/resolvedjasperreports-server-centos-6-build-failed-validationxml
++  package { 'mysql-connector-java':
++    ensure => installed,
++    require => Class['epel'],
++    alias => 'mysql-connector-java'
++  }
++
++  exec { 'install-mysql-connector-java':
++    path => "/bin:/usr/bin:/sbin:/usr/sbin",
++    command => "cp /usr/share/java/mysql-connector-java-${mysqlJavaConnectorVersion}.jar ${jasperHome}/buildomatic/conf_source/db/mysql/jdbc",
++    require => [ Package['mysql-connector-java'], Exec['unzip-jasperserver-binary'] ],
++  }
++
++  file { "${jasperBuildomaticDefaultMasterProperties}":
++    content => template("jasperserver/default_master.properties.erb"),
++    require => Exec['install-mysql-connector-java'],
++    owner => root,
++    group => root
++  }
++
++  exec { 'import-jasperserver-schema-js-create':
++    path => "/bin:/usr/bin:/sbin:/usr/sbin",
++    unless => "mysql -u${jasperDbUsername} -p${jasperDbPassword} ${jasperDbName} -e 'SELECT * FROM JIUser LIMIT 1'",
++    command => "mysql -u${jasperDbUsername} -p${jasperDbPassword} ${jasperDbName} < install_resources/sql/mysql/js-create.ddl",
++    require => File["${jasperHome}/buildomatic/default_master.properties"],
++    cwd => "${jasperHome}/buildomatic",
++  }
++    
++  exec { 'import-jasperserver-schema-quartz':
++    path => "/bin:/usr/bin:/sbin:/usr/sbin",
++    unless => "mysql -u${jasperDbUsername} -p${jasperDbPassword} ${jasperDbName} -e 'SELECT * FROM QRTZ_CALENDARS LIMIT 1'",
++    command => "mysql -u${jasperDbUsername} -p${jasperDbPassword} ${jasperDbName} < install_resources/sql/mysql/quartz.ddl",
++    require => Exec['import-jasperserver-schema-js-create'],
++    cwd => "${jasperHome}/buildomatic",
++  }
++    
++  exec { 'install-jasperserver-catalog-minimal':
++    path => "/bin:/usr/bin:/sbin:/usr/sbin",
++    command => "${jasperHome}/buildomatic/js-ant import-minimal-ce",
++    require => Exec['import-jasperserver-schema-quartz'],
++    cwd => "${jasperHome}/buildomatic",
++    user => root,
++    before => Anchor['jasperserver::end']
++  }
++
++  exec { 'install-jasperserver-wepapp':
++    path => "/bin:/usr/bin:/sbin:/usr/sbin",
++    command => "${jasperHome}/buildomatic/js-ant deploy-webapp-ce",
++    require => Exec['install-jasperserver-catalog-minimal'],
++    cwd => "${jasperHome}/buildomatic",
++    user => root,
++    before => Anchor['jasperserver::end'],
++    notify => Service['tomcat6']
++  }
++}
+diff --git a/.vagrant-puppet/modules/jasperserver/templates/default_master.properties.erb b/.vagrant-puppet/modules/jasperserver/templates/default_master.properties.erb
+new file mode 100755
+index 0000000..7e6ade4
+--- /dev/null
++++ b/.vagrant-puppet/modules/jasperserver/templates/default_master.properties.erb
+@@ -0,0 +1,104 @@
++################################################################################
++#                                                                              #
++# Master Properties File                                                       #
++#                                                                              #
++# Standard usage is to rename this file to default_master.properties.          #
++# It should be placed in the root of the buildomatic directory, like:          #
++#                                                                              #
++#     <js-install>/buildomatic/default_master.properties                       #
++#                                                                              #
++# There is one sample property file for each database type. Sample property    #
++# files are found in:                                                          #
++#                                                                              #
++#     <js-install>/buildomatic/sample_conf                                     #
++#                                                                              #
++################################################################################
++
++################################################################################
++#                                                                              #
++# Installation Settings                                                        #
++#                                                                              #
++# Set values for:                                                              #
++#                                                                              #
++#   1) Application server type                                                 #
++#                                                                              #
++#   2) Path to application server home directory                               #
++#                                                                              #
++#   3) Database location and connection settings                               #
++#                                                                              #
++################################################################################
++
++# application server type (default is tomcat7)
++
++# appServerType = tomcat7
++appServerType = tomcat6
++# appServerType = tomcat5
++# appServerType = jboss
++# appServerType = jboss7
++# appServerType = glassfish2
++# appServerType = glassfish3
++# (beta) appServerType = weblogic
++# (beta) appServerType = websphere
++# appServerType = skipAppServerCheck
++
++# Tomcat app server root dir
++appServerDir=<%=@tomcatHome%>
++
++#appServerDir = c:\\apache-tomcat-6.0.26
++# appServerDir = /home/devuser/apache-tomcat-6.0.26
++# appServerDir = /var/lib/tomcat6
++
++# JBoss app server root dir
++# appServerDir = c:\\jboss-5.1.0
++# appServerDir = /home/devuser/jboss-5.1.0
++# appServerDir = /usr/bin/jboss
++
++# Glassfish app server root dir
++# appServerDir = c:\\glassfish-2.1
++# appServerDir = /home/devuser/glassfish-2.1
++# appServerDir = /usr/bin/glassfish
++
++# database type
++dbType=<%=@jasperDbType%>
++
++# database location and connection settings
++dbHost=<%=@jasperDbHost%>
++# provide admin password
++dbUsername=<%=@jasperDbUsername%>
++dbPassword=<%=@jasperDbPassword%>
++#dbUsername=root
++#dbPassword=password
++
++# additional database parameters
++# (uncomment these if you want non-default settings)
++
++# dbPort=3306
++
++# JasperServer db name, sample db names
++# js.dbName=jasperserver
++# js.dbName=<%=@jasperDbName%>
++# sugarcrm.dbName=sugarcrm
++# foodmart.dbName=foodmart
++
++# web app name
++# (set one of these to deploy to a non-default war file name)
++# webAppNameCE = jasperserver
++# webAppNamePro = jasperserver-pro
++
++#
++# JDBC driver version
++# (uncomment to change to a non-default setting)
++#
++# maven.jdbc.artifactId=postgresql
++# maven.jdbc.version=9.0-801.jdbc3
++maven.jdbc.groupId=mysql
++maven.jdbc.artifactId=mysql-connector-java
++maven.jdbc.version=<%=@mysqlJavaConnectorVersion%>
++# override mariadb driver shipped with 5.5.x+
++jdbcDriverClass=com.mysql.jdbc.Driver
++
++
++# Flag used to skip JDBC driver deploying during deployment process
++# (uncomment to change to a non-default setting)
++# deployJDBCDriver=false
++
+diff --git a/.vagrant-puppet/modules/mysql/manifests/init.pp b/.vagrant-puppet/modules/mysql/manifests/init.pp
+index 07a665d..962806f 100644
+--- a/.vagrant-puppet/modules/mysql/manifests/init.pp
++++ b/.vagrant-puppet/modules/mysql/manifests/init.pp
+@@ -14,6 +14,8 @@
+ #
+ class mysql {
+ 
++  $mysqlRootPassword = 'password'
++
+   Exec { path => '/usr/bin' }
+ 
+   package {
+@@ -29,9 +31,20 @@ class mysql {
+     require => Package['mysql-server']
+   }
+ 
++  exec {"setmysqlpassword":
++    command => "mysqladmin -u root PASSWORD ${mysqlRootPassword}; /bin/true",
++    require => [Package["mysql-server"], Package["mysql"] , Service["mysqld"]],
++  }
++
+   file { '/etc/my.cnf':
+     content => template('mysql/my.cnf.erb'),
+     require => Package['mysql-server'],
+     notify => Service['mysqld']
+   }
++
++  file { [ '/root/.my.cnf', '/home/vagrant/.my.cnf']:
++    content => template('mysql/.my.cnf.erb'),
++    require => Package['mysql-server'],
++    notify => Service['mysqld']
++  }
+ }
+diff --git a/.vagrant-puppet/modules/mysql/templates/.my.cnf.erb b/.vagrant-puppet/modules/mysql/templates/.my.cnf.erb
+new file mode 100644
+index 0000000..4d5bedc
+--- /dev/null
++++ b/.vagrant-puppet/modules/mysql/templates/.my.cnf.erb
+@@ -0,0 +1,3 @@
++[client]
++user = root
++password = <%=@mysqlRootPassword%>
+diff --git a/.vagrant-puppet/modules/tomcat6/manifests/init.pp b/.vagrant-puppet/modules/tomcat6/manifests/init.pp
+new file mode 100644
+index 0000000..28817ea
+--- /dev/null
++++ b/.vagrant-puppet/modules/tomcat6/manifests/init.pp
+@@ -0,0 +1,53 @@
++# Class: tomcat6
++#
++#   Install tomcat6
++#
++#   Copyright (C) 2014-present Icinga Development Team (http://www.icinga.org/)
++#
++# Parameters:
++#
++# Actions:
++#
++# Requires:
++#
++# Sample Usage:
++#
++#   include tomcat6
++#
++
++class tomcat6 (
++  $tomcat_user = '',
++  $java_opts = '-Djava.awt.headless=true -Xmx128m -XX:+UseConcMarkSweepGC',
++  $lang = 'en_US') {
++  include tomcat6::params
++
++  if $tomcat_user == '' {
++    $tomcat_user_internal = $tomcat6::params::tomcat_user
++  } else {
++    $tomcat_user_internal = $tomcat_user
++  }
++
++  Package['tomcat6'] -> File[$tomcat6::params::tomcat_settings] -> Service['tomcat6']
++
++  package { 'tomcat6':
++    ensure => installed
++  }
++
++  file { $tomcat6::params::tomcat_settings:
++    ensure => present,
++    content => template('tomcat6/tomcat6.erb')
++  }
++
++  exec { 'iptables-allow-http-8080':
++    path => '/bin:/usr/bin:/sbin:/usr/sbin',
++    unless => 'grep -Fxqe "-A INPUT -m state --state NEW -m tcp -p tcp --dport 8080 -j ACCEPT" /etc/sysconfig/iptables',
++    command => 'lokkit --enabled --port=8080:tcp'
++  }
++
++  service { 'tomcat6':
++    ensure => running,
++    enable => true,
++    hasrestart => true,
++    hasstatus => true
++  }
++}
+diff --git a/.vagrant-puppet/modules/tomcat6/manifests/params.pp b/.vagrant-puppet/modules/tomcat6/manifests/params.pp
+new file mode 100644
+index 0000000..b942305
+--- /dev/null
++++ b/.vagrant-puppet/modules/tomcat6/manifests/params.pp
+@@ -0,0 +1,12 @@
++class tomcat6::params {
++  case $::osfamily {
++    'RedHat': {
++      $tomcat_name = 'tomcat6'
++      $tomcat_user = 'tomcat'
++      $tomcat_settings = '/etc/sysconfig/tomcat6'
++    }
++    default : {
++      fail("Unsupported osfamily: ${::osfamily}")
++    }
++  }
++}
+diff --git a/.vagrant-puppet/modules/tomcat6/templates/tomcat6.erb b/.vagrant-puppet/modules/tomcat6/templates/tomcat6.erb
+new file mode 100644
+index 0000000..37eb91c
+--- /dev/null
++++ b/.vagrant-puppet/modules/tomcat6/templates/tomcat6.erb
+@@ -0,0 +1,47 @@
++# Run Tomcat as this user ID. Not setting this or leaving it blank will use the
++# default of tomcat6.
++TOMCAT6_USER=<%=@tomcat_user_internal%>
++
++# Run Tomcat as this group ID. Not setting this or leaving it blank will use
++# the default of tomcat6.
++TOMCAT6_GROUP=tomcat6
++
++# The home directory of the Java development kit (JDK). You need at least
++# JDK version 1.5. If JAVA_HOME is not set, some common directories for
++# OpenJDK, the Sun JDK, and various J2SE 1.5 versions are tried.
++#JAVA_HOME=/usr/lib/jvm/openjdk-6-jdk
++
++# You may pass JVM startup parameters to Java here. If unset, the default
++# options will be: -Djava.awt.headless=true -Xmx128m -XX:+UseConcMarkSweepGC
++
++# Use "-XX:+UseConcMarkSweepGC" to enable the CMS garbage collector (improved
++# response time). If you use that option and you run Tomcat on a machine with
++# exactly one CPU chip that contains one or two cores, you should also add
++# the "-XX:+CMSIncrementalMode" option.
++JAVA_OPTS="<%=@java_opts%>"
++
++# To enable remote debugging uncomment the following line.
++# You will then be able to use a java debugger on port 8000.
++#JAVA_OPTS="${JAVA_OPTS} -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
++
++# Java compiler to use for translating JavaServer Pages (JSPs). You can use all
++# compilers that are accepted by Ant's build.compiler property.
++#JSP_COMPILER=javac
++
++# Use the Java security manager? (yes/no, default: no)
++#TOMCAT6_SECURITY=no
++
++# Number of days to keep logfiles in /var/log/tomcat6. Default is 14 days.
++#LOGFILE_DAYS=14
++
++# Location of the JVM temporary directory
++# WARNING: This directory will be destroyed and recreated at every startup !
++#JVM_TMP=/tmp/tomcat6-temp
++
++# If you run Tomcat on port numbers that are all higher than 1023, then you
++# do not need authbind.  It is used for binding Tomcat to lower port numbers.
++# NOTE: authbind works only with IPv4.  Do not enable it when using IPv6.
++# (yes/no, default: no)
++#AUTHBIND=no
++
++LANG="<%=@lang%>"
+diff --git a/Vagrantfile b/Vagrantfile
+index 57cd039..48fdf51 100644
+--- a/Vagrantfile
++++ b/Vagrantfile
+@@ -30,6 +30,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+     # so you can take notice and act accordingly.
+     auto_correct: true
+ 
++  # foward port for jasperserver tomcat. See note above regarding auto_correct
++  config.vm.network :forwarded_port, guest: 8080, host: 8081, auto_correct: true
++
+   # forward port for nsca-ng. See note above regarding auto_correct
+   config.vm.network :forwarded_port, guest: 5668, host: 5668, auto_correct: true
+ 
+-- 
+1.8.5.2
+

@@ -1,0 +1,35 @@
+Icinga 1.x Demo Vagrant Box
+===========================
+
+Requirements
+~~~~~~~~~~~~
+
+* Vagrant >= 1.2.x from http://www.vagrantup.com
+* Virtualbox >= 4.2.16 from http://www.virtualbox.org
+
+Windows users require additionally
+
+* SSH provided by the Git package from http://msysgit.github.io
+* Ruby for Windows from http://rubyinstaller.org (add Ruby executables to PATH)
+
+Features
+~~~~~~~~
+
+* Icinga 1.x Core with IDOUtils MySQL
+* Icinga Classic UI
+* Icinga Web with Reporting Cronk
+* Icinga Reporting with Jasperserver
+
+Setup
+~~~~~
+
+$ vagrant up
+
+will start the vm in virtualbox and install the required software & configuration.
+Once finished, navigate to http://localhost:8080 in your local browser.
+
+Support
+~~~~~~~
+
+In case of questions, bugs or feature requests for Icinga please checkout <a href="https://support.icinga.org">https://support.icinga.org</a>
+

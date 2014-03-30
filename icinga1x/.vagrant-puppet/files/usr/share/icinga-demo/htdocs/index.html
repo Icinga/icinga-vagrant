@@ -1,0 +1,122 @@
+<html>
+<head>
+<title>
+	Icinga 1.x Demo Vagrant Box
+</title>
+
+<style type="text/css">
+body {
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    position: fixed;
+    background: #fff;
+    box-shadow: inset -5px 0 5px 0px #000;
+    width: 1024px;
+    padding-top: 20px;
+    overflow:scroll;
+    font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Helvetica, Arial, sans-serif;
+    font-size: 0.72em;
+    color: #262625;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+li {
+    padding: 5px 10px;
+}
+
+table {
+    border:1px solid;
+}
+
+th { 
+    border:1px solid;
+}
+
+td { 
+    border:1px solid;
+}
+
+a:link, a:visited, a:active {
+    color: #0489B1;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #01A9DB;
+    text-decoration: underline;
+}
+
+h1 {
+    font-size: 1.5em;
+}
+
+h2 {
+    font-size: 1.2em;
+    padding-left: 10px;
+}
+
+h3 {
+    padding-left: 20px;
+}
+
+h4 {
+    padding-left: 30px;
+}
+
+.active {
+    background: #336699;
+    box-shadow: inset -5px 0px 10px -5px #000;
+}
+
+</style>
+</head>
+
+<img src="icinga_wall.png">
+<h1>Welcome to the Icinga 1.x Demo Vagrant Box!</h1>
+<p>
+This demo vm is installed with the help of <a href="http://www.vagrantup.com">Vagrant</a>, <a href="http://www.puppetlabs.com">Puppet</a> and Icinga packages from the snapshot repository located at <a href="http://packages.icinga.org">http://packages.icinga.org</a>. Base system is a CentOS 6.x i386 virtualbox image.
+</p>
+
+<p>
+<b>If you're looking for the Icinga 2 Vagrant Box, please checkout <a href="https://www.icinga.org/icinga2/download/">https://www.icinga.org/icinga2/download/</a></b>
+</p>
+
+<h2>GUI</h2>
+<p>
+Available user interfaces. Note: Port '8080' and '8081' may be different on your system.
+</p>
+<table>
+	<tr><th>GUI</th><th>Url</th><th>Credentials</th></tr>
+	<tr><td>Icinga Classic UI</td><td><a href="http://localhost:8080/icinga">http://localhost:8080/icinga</a></td><td>icingaadmin/icingaadmin</td></tr>
+	<tr><td>Icinga Web</td><td><a href="http://localhost:8080/icinga-web">http://localhost:8080/icinga-web</a></td><td>root/password</td></tr>
+	<tr><td>Jasperserver</td><td><a href="http://localhost:8081/jasperserver">http://localhost:8081/jasperserver</a></td><td>jasperadmin/jasperadmin</td></tr>
+</table>
+<p>
+Note: The Icinga Web Reporting Cronk fetches its data directly from Jasperserver via PHP SOAP api.
+</p>
+
+<h2>SSH</h2>
+SSH is available through 'vagrant ssh' with passwordless sudo ('sudo -i').
+
+<h2>Databases</h2>
+<p>
+The puppet modules will take care of installing the required databases. The packages themselves do not install/upgrade any database schema.
+Please consult the package provided README.RHEL* files for local upgrades (e.g. /usr/share/doc/icinga-idoutils-libdbi-mysql-$version/README.RHEL.idoutils).
+</p>
+<table>
+        <tr><th>Database</th><th>Application</th><th>User</th></tr>
+        <tr><td>icinga</td><td>Icinga IDOutils</td><td>icinga</td></tr>
+        <tr><td>icinga_web</td><td>Icinga Web</td><td>icinga_web</td></tr>
+</table>
+
+
+<h2>Support</h2>
+In case of questions, bugs or feature requests for Icinga please checkout <a href="https://support.icinga.org">https://support.icinga.org</a>
+
+</html>
