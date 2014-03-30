@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Because graphite has now way to configure the logrotation,
+# we do that with a cronjab and this script.
+
+CARBON_LOGS=/opt/graphite/storage/log/carbon-cache/
+
+# gzip log files older than 3 days
+find $CARBON_LOGS -type f -mtime +3 -exec gzip -q "{}" \;
+# removes log files older than 30 days
+find $CARBON_LOGS -type f -ctime +30 -exec rm "{}" \;

@@ -1,0 +1,10 @@
+CONFIG = {
+    'mode': 'django',
+    'working_dir': '/opt/graphite/webapp',
+    'user': 'www-data',
+    'group': 'www-data',
+    'args': (
+        '--bind=unix:/var/run/graphite.sock',
+        '--workers=2',
+    ),
+}

@@ -1,0 +1,71 @@
+# Module graphite
+
+This module installs and makes basic configs for graphite, with carbon and whisper.
+
+# Tested on
+RHEL/CentOS/Scientific 6+
+Debian 6+
+Ubunutu 10.04 and newer
+
+# Requirements:
+
+Configure conf files as you need:
+
+templates/opt/graphite/conf/storage-schemas.conf.erb
+templates/opt/graphite/webapp/graphite/local_settings.py.erb
+
+### Modules needed:
+
+stdlib by puppetlabs
+
+### Software versions needed:
+facter > 1.6.2
+puppet > 2.6.2
+
+On Redhat distributions you need the EPEL or RPMforge repository, because Graphite needs packages, which are not part of the default repos.
+
+# Sample usage:
+
+### Out of the box graphite installation
+
+node "graphite.my.domain" {
+        include graphite
+}
+
+### Tuned graphite installation
+
+  # This carbon cache will accept TCP and UDP datas and
+  # the cachesize is limited to 256mb
+node "graphite.my.domain" {
+	class {'graphite':
+		gr_max_cache_size => 256,
+		gr_enable_udp_listener => True
+	}
+}
+
+## Optional
+
+### Move Apache to alternative ports:
+
+The default puppet set up won't work if you have an existing web server in
+place. In my case this was Nginx. For me moving apache off to another port was
+good enough. To allow this you do
+
+  # Move apache to alternate HTTP/HTTPS ports:
+node "graphite.my.domain" {
+    class {'graphite':
+        gr_apache_port => 2080,
+        gr_apache_port_https => 2443,
+    }
+}
+
+
+# Author
+
+written by Daniel Werdermann dwerdermann@web.de
+
+
+# Contributers
+
+ * Oisin Mulvihill, oisin dot mulvihill at gmail dot com.
+

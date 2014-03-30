@@ -1,0 +1,81 @@
+<% $allow_icmp      = scope.lookupvar('::iptables::allow_icmp') -%>
+<% $allow_localhost = scope.lookupvar('::iptables::allow_localhost') -%>
+<% $log_failures    = scope.lookupvar('::iptables::log_failures') -%>
+<% $selinux         = scope.lookupvar('::selinux') -%>
+#!/usr/bin/perl
+
+opendir(DIR,'/root/iptables.d');
+my %allow_files = map { $_ => 1 } grep { /^allow_/ } readdir DIR;
+closedir(DIR);
+my %allow;
+foreach (keys %allow_files) {
+  /^allow_(\d+)_(...)/;
+  my ($port, $protocol) = ($1, $2);
+  unless ($protocol and $port) {
+    warn "Bad filename: '$_'\n";
+  }
+  else {
+    $allow{$port}{$protocol}++;
+  }
+}
+
+opendir(DIR,'/root/iptables.d');
+my %drop_files  = map { $_ => 1 } grep { /^drop_/ } readdir DIR;
+closedir(DIR);
+my %drop;
+foreach (keys %drop_files) {
+  /^drop_(\d+)_(...)/;
+  my ($port, $protocol) = ($1, $2);
+  unless ($protocol and $port) {
+    warn "Bad filename: '$_'\n";
+  }
+  else {
+    # Allow wins over drop as we drop lots by default
+    $drop{$port}{$protocol}++ unless exists $allow{$port}{$protocol};
+  }
+}
+
+my $tmpfile = "/root/iptables.d/iptables.new.$$";
+open(OUTPUT, ">$tmpfile") or die "$!\n";
+# header
+print OUTPUT <<'EOT';
+# Firewall configuration managed by puppet
+# Manual customizations will be overwritten
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+<% if $allow_icmp == 'yes' -%>
+-A INPUT -p icmp -j ACCEPT
+<% end -%>
+<% if $allow_localhost == 'yes' -%>
+-A INPUT -i lo -j ACCEPT
+<% end -%>
+EOT
+# allow rules
+foreach my $port (sort keys %allow) {
+  foreach my $protocol (sort keys %{ $allow{$port} }) {
+    print OUTPUT "-A INPUT -m state --state NEW -m ${protocol} -p ${protocol} --dport ${port} -j ACCEPT\n";
+  }
+}
+# drop rules
+foreach my $port (sort keys %drop) {
+  foreach my $protocol (sort keys %{ $drop{$port} }) {
+    print OUTPUT "-A INPUT -p ${protocol} --dport ${port} -j DROP\n";
+  }
+}
+# footer
+print OUTPUT <<'EOT';
+<% if $log_failures == 'yes' -%>
+-A INPUT -j LOG --log-prefix "DROP INPUT: "
+<% end -%>
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+COMMIT
+EOT
+close(OUTPUT);
+system("mv $tmpfile /etc/sysconfig/iptables");
+<% if $selinux == 'true' -%>
+system("/sbin/restorecon /etc/sysconfig/iptables");
+<% end -%>

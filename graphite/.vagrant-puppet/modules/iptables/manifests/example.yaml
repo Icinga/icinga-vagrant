@@ -1,0 +1,16 @@
+iptables:
+  ports:
+    22:    # ssh
+      tcp: 'allow'
+    23:    # telnet
+      tcp: 'drop'
+    135:   # epmap
+      tcp: 'drop'
+    137:   # netbios
+      tcp: 'drop'
+      udp: 'drop'
+    138:   # netbios
+      tcp: 'drop'
+      udp: 'drop'
+    139:   # netbios
+      tcp: 'drop'
