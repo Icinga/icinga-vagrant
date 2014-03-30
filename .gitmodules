@@ -1,0 +1,3 @@
+[submodule "icinga2x-cluster/icingaweb2"]
+	path = icinga2x-cluster/icingaweb2
+	url = git://git.icinga.org/icingaweb2.git
