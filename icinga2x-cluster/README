@@ -1,0 +1,47 @@
+Multi Instance Vagrant Boxes
+
+* Icinga 2 Core im Cluster (icinga2a cfg Master, icinga2b Checker)
+* Icinga Web 2 als Oberfläche mit lokalem LDAP und IDO Backend
+* Legacy Interfaces: Icinga Classic UI, Web 1.x
+
+- icinga2a (host_only 192.168.33.10) - http://localhost:8080
+- icinga2b (host_only 192.168.33.20) - http://localhost:8081
+
+Beide Boxen mounten icingaweb2/ wo unterschiedliche Git Branches ausgecheckt
+werden können.
+
+Als Backend wird dzt. lediglich IDO MySQL unterstützt.
+
+Installation:
+-------------
+
+$ git submodule init && git submodule update
+$ vagrant up
+
+$ vagrant ssh icinga2a
+$ vagrant ssh icinga2b
+
+$ sudo -i
+
+Weboberfläche:
+--------------
+
+http://localhost:8080 bzw http://localhost:8080 liefern eine Übersichtsseite
+mit allen Urls & Credentials.
+
+Vagrant aktualisieren:
+----------------------
+
+$ pwd
+$ git pull
+$ git log
+$ vagrant provision
+
+Icinga Web 2 aktualisieren:
+---------------------------
+
+$ pwd
+$ cd icingaweb2
+$ git checkout master
+$ git pull origin master
+
