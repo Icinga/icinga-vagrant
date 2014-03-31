@@ -15,7 +15,9 @@ Backend is IDO MySQL only.
 Installation:
 -------------
 
-$ git submodule init && git submodule update
+$ git submodule init && git submodule update && cd icingaweb2 && git pull origin master && cd ..
+(or shorter: $ sh init.sh )
+
 $ vagrant up
 
 $ vagrant ssh icinga2a
