@@ -1,1 +1,26 @@
 Various Icinga Vagrant boxes used for development, tests and demo cases.
+
+icinga1x
+===========================
+
+1 box
+Icinga 1.x Core, IDOUtils MySQL, Classic UI, Web
+
+icinga2x
+===========================
+
+1 box
+Icinga 2 Core, DB IDO MySQL, Icinga 1.x Classic UI/Web
+
+icinga2x-cluster
+===========================
+
+2 boxes as Icinga 2 Cluster
+Icinga 2 Core, DB IDO MySQL, Icinga 1.x Classic UI/Web, Icinga Web 2
+
+graphite
+===========================
+
+1 box
+Graphite with whisper, carbon cache, web
+
