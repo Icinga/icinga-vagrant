@@ -93,7 +93,7 @@ Available user interfaces.
 	<tr><th>GUI</th><th>Url</th><th>Credentials</th></tr>
 	<tr><td>Icinga Classic UI</td><td><a href="/icinga" target="_blank">/icinga</a></td><td>icingaadmin/icingaadmin</td></tr>
 	<tr><td>Icinga Web</td><td><a href="/icinga-web" target="_blank">/icinga-web</a></td><td>root/password</td></tr>
-	<tr><td>Icinga Web 2</td><td><a href="/icingaweb" target="_blank">/icingaweb</a></td><td>jdoe/password</td></tr>
+	<tr><td>Icinga Web 2</td><td><a href="/icingaweb" target="_blank">/icingaweb</a></td><td>icingaadmin/icinga</td></tr>
 </table>
 
 <h2>SSH</h2>
@@ -103,7 +103,7 @@ SSH is available through 'vagrant ssh $hostname' with passwordless sudo ('sudo -
 
 <h2>Icinga 2</h2>
 
-Icinga 2 neue Konfiguration in demo.conf @ icinga2a einpflegen:
+Add new Icinga 2 config in demo.conf @ icinga2a:
 <pre>
 # cd /etc/icinga2/conf.d
 # vim demo.conf
@@ -114,19 +114,19 @@ Icinga 2 neue Konfiguration in demo.conf @ icinga2a einpflegen:
 </pre>
 
 
-Checker auf icinga2a disablen == icinga2b übernimmt
+disable checker on icinga2a == icinga2b checks everything
 <pre>
 # icinga2-disable-feature checker ; service icinga2 restart
 </pre>
 
-IDO disablen == Icinga Web Daten alt.
+disable IDO == Icinga Web data outdated.
 <pre>
 # icinga2-enable-feature ido-mysql ; service icinga2 restart
 </pre>
 
 <h2>Icinga Web 2</h2>
 
-Webserver stoppen, Browser betrachten.
+stop webserver, look at the browser.
 <pre>
 # service httpd stop
 </pre>
@@ -142,8 +142,8 @@ Webserver stoppen, Browser betrachten.
 
 <h1>Restore</h1>
 
-Konfiguration (zB demo.conf) neu provisionieren
-(Achtung: neu angelegte Dateien in conf.d werden nicht gelöscht!)
+Provision new configuration (for example demo.conf)
+(Attention: newly created files in conf.d/ won't be deleted!)
 
 <pre>
 # vagrant provision
