@@ -113,7 +113,7 @@ class graphite (
       name       => 'icinga',
       priority   => '200',
       pattern    => '^icinga\.',
-      retentions => '1:34560000'
+      retentions => '1s:12h'
     },
     {
       name       => 'default',
