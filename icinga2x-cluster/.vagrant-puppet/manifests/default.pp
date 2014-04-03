@@ -329,7 +329,7 @@ file { '/etc/icingaweb/config.ini':
 }
 
 file { '/etc/icingaweb/menu.ini':
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb/menu.ini',
+  source    => 'puppet:////vagrant/icingaweb2/config/menu.ini',
   owner     => 'apache',
   group     => 'apache',
   replace   => true,
@@ -379,7 +379,7 @@ file { '/etc/icingaweb/modules/monitoring/instances.ini':
 }
 
 file { '/etc/icingaweb/modules/monitoring/menu.ini':
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb/modules/monitoring/menu.ini',
+  source    => 'puppet:////vagrant/icingaweb2/config/modules/monitoring/menu.ini',
   owner     => 'apache',
   group     => 'apache',
   require   => [ File['/etc/icingaweb/modules/monitoring'], Package['apache'] ]
@@ -393,7 +393,7 @@ file { '/etc/icingaweb/dashboard':
 }
 
 file { '/etc/icingaweb/dashboard/dashboard.ini':
-   source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb/dashboard/dashboard.ini',
+   source    => 'puppet:////vagrant/icingaweb2/config/dashboard/dashboard.ini',
    owner     => 'apache',
    group     => 'apache',
   require   => [ File['/etc/icingaweb/dashboard'], Package['apache'] ]
