@@ -7,6 +7,18 @@ class icinga2 {
     alias => 'icinga2'
   }
 
+  package { 'icinga2-bin':
+    ensure => latest,
+    require => Class['icinga-rpm-snapshot'],
+    alias => 'icinga2-bin'
+  }
+
+  package { 'icinga2-common':
+    ensure => latest,
+    require => Class['icinga-rpm-snapshot'],
+    alias => 'icinga2-common'
+  }
+
   package { 'icinga2-doc':
     ensure => latest,
     require => Class['icinga-rpm-snapshot'],
