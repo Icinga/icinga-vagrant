@@ -6,9 +6,9 @@ class icinga-web {
     require => [ Class['mysql'] ]
   }
 
-  php::extension { ['php-pgsql']:
-    require => [ Class['pgsql'] ]
-  }
+  #php::extension { ['php-pgsql']:
+  #  require => [ Class['pgsql'] ]
+  #}
 
   package { 'icinga-web':
     ensure => installed,
