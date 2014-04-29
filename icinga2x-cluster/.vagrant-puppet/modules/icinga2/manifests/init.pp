@@ -25,6 +25,12 @@ class icinga2 {
     alias => 'icinga2-doc'
   }
 
+  package { 'icinga2-debuginfo':
+    ensure => latest,
+    require => Class['icinga-rpm-snapshot'],
+    alias => 'icinga2-debuginfo'
+  }
+
   service { 'icinga2':
     enable => true,
     ensure => running,
