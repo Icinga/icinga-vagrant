@@ -74,8 +74,8 @@ user { 'vagrant':
 
 exec { 'iptables-allow-icinga2-cluster':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  #unless => 'grep -Fxqe "-A INPUT -m state --state NEW -m tcp -p tcp --dport 8888 -j ACCEPT" /etc/sysconfig/iptables',
-  command => 'lokkit -p 8888:tcp',
+  #unless => 'grep -Fxqe "-A INPUT -m state --state NEW -m tcp -p tcp --dport 5665 -j ACCEPT" /etc/sysconfig/iptables',
+  command => 'lokkit -p 5665:tcp',
   #notify => Service['icinga2']
 }
 
@@ -130,22 +130,104 @@ file { "/etc/icinga2/cluster/$hostname.conf":
   owner  => icinga,
   group  => icinga,
   source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/cluster/$hostname.conf",
-  require   => File['/etc/icinga2/cluster'],
+  require   => [ File['/etc/icinga2/cluster'], Exec['icinga2-enable-feature-api'] ],
   notify    => Service['icinga2']
 }
 
-file { '/etc/icinga2/conf.d':
+file { "/etc/icinga2/cluster/cluster.conf":
   owner  => icinga,
   group  => icinga,
-  ensure    => 'directory',
-  require => Package['icinga2']
+  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/cluster/cluster.conf",
+  require   => [ File['/etc/icinga2/cluster'], Exec['icinga2-enable-feature-api'] ],
+  notify    => Service['icinga2']
 }
 
-file { '/etc/icinga2/conf.d/demo.conf':
+
+exec { 'icinga2-enable-feature-api':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => 'icinga2-enable-feature api',
+  require => File['/etc/icinga2/features-available/api.conf'],
+  notify => Service['icinga2']
+}
+
+# override constants conf and set NodeName elsewhere
+file { "/etc/icinga2/constants.conf":
   owner  => icinga,
   group  => icinga,
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/conf.d/demo.conf',
-  require   => File['/etc/icinga2/conf.d'],
+  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/constants.conf",
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
+
+# required for icinga2-enable-feature-api
+file { "/etc/icinga2/features-available/api.conf":
+  owner  => icinga,
+  group  => icinga,
+  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/features-available/api.conf",
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
+
+# cluster zones
+file { '/etc/icinga2/zones.d':
+  owner  => icinga,
+  group  => icinga,
+  ensure => present,
+  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d',
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
+
+file { '/etc/icinga2/zones.d/master':
+  owner  => icinga,
+  group  => icinga,
+  ensure => present,
+  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/master',
+  require   => File['/etc/icinga2/zones.d'],
+  notify    => Service['icinga2']
+}
+
+file { '/etc/icinga2/zones.d/checker':
+  owner  => icinga,
+  group  => icinga,
+  ensure => present,
+  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker',
+  require   => File['/etc/icinga2/zones.d'],
+  notify    => Service['icinga2']
+}
+
+file { '/etc/icinga2/zones.d/master/health.conf':
+  owner  => icinga,
+  group  => icinga,
+  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/master/health.conf',
+  require   => File['/etc/icinga2/zones.d/master'],
+  notify    => Service['icinga2']
+}
+
+file { '/etc/icinga2/zones.d/checker/health.conf':
+  owner  => icinga,
+  group  => icinga,
+  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/health.conf',
+  require   => File['/etc/icinga2/zones.d/checker'],
+  notify    => Service['icinga2']
+}
+
+
+
+# demo config
+file { '/etc/icinga2/zones.d/checker/demo.conf':
+  owner  => icinga,
+  group  => icinga,
+  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/demo.conf',
+  require   => File['/etc/icinga2/zones.d/checker'],
+  notify    => Service['icinga2']
+}
+
+file { '/etc/icinga2/zones.d/checker/templates.conf':
+  owner  => icinga,
+  group  => icinga,
+  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/templates.conf',
+  require   => File['/etc/icinga2/zones.d/checker'],
   notify    => Service['icinga2']
 }
 
