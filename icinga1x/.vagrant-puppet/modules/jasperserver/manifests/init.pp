@@ -19,7 +19,7 @@ class jasperserver {
   include mysql
   include tomcat6
 
-  $jasperVersion = "5.5.0"
+  $jasperVersion = "5.5.0a"
   $jasperHome = "/opt/jasperreports-server-cp-${jasperVersion}-bin"
   $jasperBuildomaticDefaultMasterProperties = "${jasperHome}/buildomatic/default_master.properties"
 
