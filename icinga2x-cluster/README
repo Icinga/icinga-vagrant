@@ -14,22 +14,39 @@ Backend is IDO MySQL only.
 
 Installation:
 -------------
+Tip: Shortcut:
 
-$ git submodule init .. && git submodule update .. && cd icingaweb2 && git pull origin master && cd ..
-(or shorter: $ sh init.sh )
+  $ ./init.sh
 
-$ vagrant up
+The main directory requires the git submodules to be initialized.
 
-$ vagrant ssh icinga2a
-$ vagrant ssh icinga2b
+  $ cd ..
+  $ git submodule init && git submodule update
 
-$ sudo -i
+Then fetch the latest Icinga Web 2 git master.
+
+  $ cd icinga2x-cluster/icingaweb2 && git pull origin master && cd ..
+
+And proceed with the Vagrant startup:
+
+  $ vagrant up
+
+  $ vagrant ssh icinga2a
+  $ vagrant ssh icinga2b
+
+  $ sudo -i
+
 
 User Interfaces:
 ----------------
 
 http://localhost:8080 and http://localhost:8081 show an entry page including all
 urls and credentials.
+
+Documentation:
+--------------
+
+The Icinga 2 documentation is located at http://docs.icinga.org
 
 Vagrant update:
 ---------------
