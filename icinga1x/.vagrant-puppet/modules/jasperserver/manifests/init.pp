@@ -19,7 +19,8 @@ class jasperserver {
   include mysql
   include tomcat6
 
-  $jasperVersion = "5.5.0a"
+  $jasperVersion = "5.5.0"
+  $jasperminorVersion = "a"
   $jasperHome = "/opt/jasperreports-server-cp-${jasperVersion}-bin"
   $jasperBuildomaticDefaultMasterProperties = "${jasperHome}/buildomatic/default_master.properties"
 
@@ -55,7 +56,7 @@ class jasperserver {
   }
 
   exec { 'get-jasperserver-binary':
-    command => "/usr/bin/wget -O /tmp/jasperreports-server-cp-${jasperVersion}-bin.zip http://sourceforge.net/projects/jasperserver/files/JasperServer/JasperReports%20Server%20Community%20Edition%20${jasperVersion}/jasperreports-server-cp-${jasperVersion}-bin.zip",
+      command => "/usr/bin/wget -O /tmp/jasperreports-server-cp-${jasperVersion}-bin.zip http://kent.dl.sourceforge.net/project/jasperserver/JasperServer/JasperReports%20Server%20Community%20Edition%20${jasperVersion}/jasperreports-server-cp-${jasperVersion}${jasperminorVersion}-bin.zip",
     timeout => 0,
     provider => 'shell',
     user => root, 
