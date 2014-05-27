@@ -21,7 +21,7 @@ class jasperserver {
 
   $jasperVersion = "5.5.0"
   $jasperminorVersion = "a"
-  $jasperHome = "/opt/jasperreports-server-cp-${jasperVersion}-bin"
+  $jasperHome = "/opt/jasperreports-server-cp-${jasperVersion}${jasperminorVersion}-bin"
   $jasperBuildomaticDefaultMasterProperties = "${jasperHome}/buildomatic/default_master.properties"
 
   $jasperDbType = "mysql"
