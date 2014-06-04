@@ -1,20 +1,3 @@
-# Class: icinga-web
-#
-#   Install Icinga Web from snapshot rpms
-#
-#   Copyright (C) 2013-present Icinga Development Team (http://www.icinga.org/)
-#
-# Parameters:
-#
-# Actions:
-#
-# Requires: icinga-rpm-snapshot, php, mysql, pgsql
-#
-# Sample Usage:
-#
-#   include icinga-web
-#
-
 class icinga-web {
   include icinga-rpm-snapshot
   include php
@@ -30,13 +13,13 @@ class icinga-web {
   }
 
   package { 'icinga-web':
-    ensure => installed,
+    ensure => latest,
     require => Class['icinga-rpm-snapshot'],
     notify => Service['apache']
   }
 
   package { 'icinga-web-mysql':
-    ensure => installed,
+    ensure => latest,
     require => Class['icinga-rpm-snapshot'],
     notify => Service['apache']
   }
