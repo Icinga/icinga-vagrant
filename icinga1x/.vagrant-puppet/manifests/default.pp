@@ -3,8 +3,7 @@ include icinga
 include icinga-classicui
 include icinga-idoutils-libdbi-mysql
 include icinga-web
-# takes too long
-#include icinga-reports
+include icinga-reports
 include nagios-plugins
 
 package { 'vim-enhanced':
