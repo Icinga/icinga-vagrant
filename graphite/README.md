@@ -2,8 +2,9 @@
 
 * Graphite: Carbon Cache, Whisper, Web
 
-- graphite-web - http://localhost:8080
-
+  Instance                              | Url
+  --------------------------------------|--------------------------------------
+  graphite-web                          | http://localhost:8080
 
 ## Requirements
 
@@ -18,16 +19,20 @@ Windows users require additionally
 
 ## Installation
 
-  $ vagrant up
+    $ vagrant up
 
-  $ vagrant ssh
+    $ vagrant ssh
 
-  $ sudo -i
+    $ sudo -i
 
 
 ## User Interfaces
 
 http://localhost:8080 shows Graphite web.
+
+  GUI               | Url               | Credentials
+  ------------------|-------------------|----------------
+  Graphite Web      | /                 | none required
 
 
 ## SSH Access
@@ -52,7 +57,7 @@ The Graphite documentation is located at http://graphite.readthedocs.org/en/late
 
 On local config change (git pull for this repository).
 
-$ pwd
-$ git pull
-$ git log
-$ vagrant provision
+    $ pwd
+    $ git pull
+    $ git log
+    $ vagrant provision

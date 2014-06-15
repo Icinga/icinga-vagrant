@@ -3,7 +3,10 @@
 * Icinga 2 Core
 * Legacy interfaces: Icinga Classic UI, Web 1.x
 
-- icinga2 - http://localhost:8080
+  Instance                              | Url
+  --------------------------------------|--------------------------------------
+  icinga2                               | http://localhost:8080
+
 
 Backend is IDO MySQL only.
 
@@ -20,17 +23,22 @@ Windows users require additionally
 
 ## Installation
 
-  $ vagrant up
+    $ vagrant up
 
-  $ vagrant ssh
+    $ vagrant ssh
 
-  $ sudo -i
+    $ sudo -i
 
 
 ## User Interfaces
 
 http://localhost:8080 shows an entry page including all urls and
 credentials.
+
+  GUI               | Url               | Credentials
+  ------------------|-------------------|----------------
+  Icinga Classic UI | /icinga           | icingaadmin/icingaadmin
+  Icinga Web 1.x    | /icinga-web       | root/password
 
 
 ## SSH Access
@@ -55,7 +63,7 @@ The Icinga 2 documentation is located at http://docs.icinga.org
 
 On local config change (git pull for this repository).
 
-$ pwd
-$ git pull
-$ git log
-$ vagrant provision
+    $ pwd
+    $ git pull
+    $ git log
+    $ vagrant provision
