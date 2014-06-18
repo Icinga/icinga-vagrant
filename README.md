@@ -4,6 +4,11 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 
 ## Requirements
 
+Each VM requires at least 1 Core and 1 GB RAM.
+
+The icinga2x-cluster demo with 2 VMs only makes sense on a Quad-Core with at
+least 4 GB RAM.
+
 * Vagrant >= 1.2.x from http://www.vagrantup.com
 * Virtualbox >= 4.2.16 from http://www.virtualbox.org
 

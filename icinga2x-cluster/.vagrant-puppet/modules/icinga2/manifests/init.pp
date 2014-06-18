@@ -56,12 +56,6 @@ class icinga2-ido-mysql {
     alias => 'icinga2-ido-mysql'
   }
 
-  file { '/etc/icinga2/features-available/ido-mysql.conf':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/features-available/ido-mysql.conf',
-    require => Package['icinga2'],
-    notify => Service['icinga2']
-  }
-
   exec { 'create-mysql-icinga2-ido-db':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless => 'mysql -uicinga -picinga icinga',
