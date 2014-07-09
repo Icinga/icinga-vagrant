@@ -58,6 +58,8 @@ class icinga2-ido-mysql {
 
   file { '/etc/icinga2/features-available/ido-mysql.conf':
     source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/features-available/ido-mysql.conf',
+    owner => icinga,
+    group => icinga,
     require => Package['icinga2'],
     notify => Service['icinga2']
   }

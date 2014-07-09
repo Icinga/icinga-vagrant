@@ -74,6 +74,8 @@ class nsca-ng-client {
 
   file { '/etc/icinga2/conf.d/passive.conf':
     source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/conf.d/passive.conf',
+    owner => icinga,
+    group => icinga,
     require => Package['nsca-ng-client'],
     notify => Service['icinga2']
   }
