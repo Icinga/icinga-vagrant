@@ -87,7 +87,7 @@ file { '/etc/icinga2':
 file { '/etc/icinga2/icinga2.conf':
   owner  => icinga,
   group  => icinga,
-  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/$hostname.conf",
+  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/icinga2.conf",
   require   => File['/etc/icinga2']
 }
 
