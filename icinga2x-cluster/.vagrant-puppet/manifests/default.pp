@@ -323,64 +323,7 @@ exec { 'populate-openldap':
 # Development environment (Feature #5554)
 #
 file { '/var/www/html/icingaweb':
-  ensure    => 'directory',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => Package['apache']
-}
-
-file { '/var/www/html/icingaweb/css':
-  ensure    => 'link',
-  target    => '/vagrant/icingaweb2/public/css',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => [ File['/var/www/html/icingaweb'], Package['apache'] ]
-}
-
-file { '/var/www/html/icingaweb/svg':
-  ensure    => 'link',
-  target    => '/vagrant/icingaweb2/public/svg',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => [ File['/var/www/html/icingaweb'], Package['apache'] ]
-}
-
-file { '/var/www/html/icingaweb/img':
-  ensure    => 'link',
-  target    => '/vagrant/icingaweb2/public/img',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => [ File['/var/www/html/icingaweb'], Package['apache'] ]
-}
-
-file { '/var/www/html/icingaweb/js':
-  ensure    => 'link',
-  target    => '/vagrant/icingaweb2/public/js',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => [ File['/var/www/html/icingaweb'], Package['apache'] ]
-}
-
-file { '/var/www/html/icingaweb/index.php':
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/var/www/html/icingaweb/index.php',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => [ File['/var/www/html/icingaweb'], Package['apache'] ]
-}
-
-file { '/var/www/html/icingaweb/js.php':
   ensure    => absent,
-}
-
-file { '/var/www/html/icingaweb/css.php':
-  ensure    => absent,
-}
-
-file { '/var/www/html/icingaweb/.htaccess':
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/var/www/html/icingaweb/.htaccess',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => [ File['/var/www/html/icingaweb'], Package['apache'] ]
 }
 
 file { '/etc/httpd/conf.d/icingaweb.conf':
@@ -411,7 +354,7 @@ file { '/etc/icingaweb/config.ini':
 }
 
 file { '/etc/icingaweb/menu.ini':
-  source    => 'puppet:////vagrant/icingaweb2/config/menu.ini',
+  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb/menu.ini',
   owner     => 'apache',
   group     => 'apache',
   replace   => true,
@@ -425,25 +368,11 @@ file { '/etc/icingaweb/resources.ini':
   require   => [ File['/etc/icingaweb'], Package['apache'] ]
 }
 
-file { '/etc/icingaweb/enabledModules':
+file { [ '/etc/icingaweb/enabledModules', '/etc/icingaweb/modules', '/etc/icingaweb/modules/monitoring' ]:
   ensure    => 'directory',
   owner     => 'apache',
   group     => 'apache',
   require   => [ File['/etc/icingaweb'], Package['apache'] ]
-}
-
-file { '/etc/icingaweb/modules':
-  ensure    => 'directory',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => [ File['/etc/icingaweb'], Package['apache'] ]
-}
-
-file { '/etc/icingaweb/modules/monitoring':
-  ensure    => 'directory',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => [ File['/etc/icingaweb/modules'], Package['apache'] ]
 }
 
 file { '/etc/icingaweb/modules/monitoring/backends.ini':
@@ -500,3 +429,17 @@ file { '/usr/local/bin/icingacli':
    mode      => 755
 }
 
+exec { 'install bash-completion':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => 'yum -d 0 -e 0 -y --enablerepo=epel install bash-completion',
+  unless  => 'rpm -qa | grep bash-completion',
+  require => Class['epel']
+}
+
+file { '/etc/bash_completion.d/icingacli':
+   source    => 'puppet:////vagrant/icingaweb2/etc/bash_completion.d/icingacli',
+   owner     => 'root',
+   group     => 'root',
+   mode      => 755,
+   require   => Exec['install bash-completion']
+}
