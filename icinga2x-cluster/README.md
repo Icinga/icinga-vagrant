@@ -1,16 +1,12 @@
 # Icinga 2 Multi Instance Vagrant Boxes
 
 * Icinga 2 Core as cluster (icinga2a cfg master, icinga2b checker)
-* Icinga Web 2 as user interface with local LDAP (auth) and IDO backend
-* Legacy interfaces: Icinga Classic UI, Web 1.x
+* Icinga Web 2 as user interface with internal auth db and IDO backend
 
   Instance                              | Url
   --------------------------------------|--------------------------------------
-  icinga2a (host_only 192.168.33.10)    | http://localhost:8080
-  icinga2b (host_only 192.168.33.20)    | http://localhost:8081
-
-Both boxes mount icingaweb2/ for vagrant/virtualbox allowing to pull the
-latest git master.
+  icinga2a (host_only 192.168.33.10)    | http://localhost:8085
+  icinga2b (host_only 192.168.33.20)    | http://localhost:8086
 
 Backend is IDO MySQL only.
 
@@ -27,21 +23,6 @@ Windows users require additionally
 
 ## Installation
 
-Tip: Shortcut:
-
-    $ ./init.sh
-
-The main directory requires the git submodules to be initialized.
-
-    $ cd ..
-    $ git submodule init && git submodule update
-
-Then fetch the latest Icinga Web 2 git master.
-
-    $ cd icinga2x-cluster/icingaweb2 && git pull origin master && cd ..
-
-And proceed with the Vagrant startup:
-
     $ vagrant up
 
     $ vagrant ssh icinga2a
@@ -52,24 +33,23 @@ And proceed with the Vagrant startup:
 
 ## User Interfaces
 
-http://localhost:8080 and http://localhost:8081 show an entry page including all
+http://localhost:8085 and http://localhost:8086 show an entry page including all
 urls and credentials.
 
   GUI               | Url               | Credentials
   ------------------|-------------------|----------------
-  Icinga Classic UI | /icinga           | icingaadmin/icingaadmin
-  Icinga Web 1.x    | /icinga-web       | root/password
   Icinga Web 2      | /icingaweb        | icingaadmin/icinga
 
 
 ## SSH Access
 
-Either `vagrant ssh <hostname>` or manually.
+Either `vagrant ssh <hostname>` or manually (open the VirtualBox gui and check the
+network port forwarding).
 
   Name            | Value
   ----------------|----------------
   Host            | 127.0.0.1
-  Port            | 2222 (2022)
+  Port            | 2222 (22022)
   Username        | vagrant
   Password        | vagrant
 
@@ -88,11 +68,4 @@ On local config change (git pull for this repository).
     $ git pull
     $ git log
     $ vagrant provision
-
-## Icinga Web 2 update
-
-    $ pwd
-    $ cd icingaweb2
-    $ git checkout master
-    $ git pull origin master
 

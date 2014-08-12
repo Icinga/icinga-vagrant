@@ -20,8 +20,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   servers = { 'icinga2a' => '192.168.33.10',
 	      'icinga2b' => '192.168.33.20'
             }
-  http_port = { 'icinga2a' => 8080,
-	        'icinga2b' => 8081
+  http_port = { 'icinga2a' => 8085,
+	        'icinga2b' => 8086
               }
 
   servers.each do |server_name, server_ip|
@@ -31,8 +31,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       app_config.vm.hostname = "#{server_name.to_s}"
       app_config.vm.network :forwarded_port, guest: 80, host: http_port[server_name], auto_correct: true
       app_config.vm.network :private_network, ip: "#{server_ip}"
-      app_config.vm.synced_folder "./icingaweb2", "/vagrant/icingaweb2"
-      app_config.vm.synced_folder "./icingaweb2/var/log", "/vagrant/icingaweb2/var/log"
       app_config.vm.provider "virtualbox" do |vb|
         vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate//vagrant/config", "1"]
 	vb.customize ["modifyvm", :id, "--memory", "1024"]

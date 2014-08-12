@@ -38,7 +38,7 @@ Windows users require additionally
 ## Icinga 2 Cluster
 
 * 2 boxes as Icinga 2 Master/Checker Cluster
-* Icinga 2 Core, DB IDO MySQL, Icinga 1.x Classic UI/Web, Icinga Web 2
+* Icinga 2 Core, DB IDO MySQL, Icinga Web 2
 
     $ cd icinga2x-cluster && less README.md
 
