@@ -93,6 +93,7 @@ Available user interfaces.
 	<tr><th>GUI</th><th>Url</th><th>Credentials</th></tr>
 	<tr><td>Icinga Classic UI</td><td><a href="/icinga" target="_blank">/icinga</a></td><td>icingaadmin/icingaadmin</td></tr>
 	<tr><td>Icinga Web</td><td><a href="/icinga-web" target="_blank">/icinga-web</a></td><td>root/password</td></tr>
+	<tr><td>Icinga Web 2</td><td><a href="/icingaweb" target="_blank">/icingaweb</a></td><td>icingaadmin/icinga</td></tr>
 </table>
 
 <h2>SSH</h2>
@@ -100,5 +101,47 @@ SSH is available through 'vagrant ssh' with passwordless sudo ('sudo -i').
 
 <h1>Documentation</h1>
 The official Icinga 2 documentation is available at <a href="https://docs.icinga.org">docs.icinga.org</a>.
+
+
+<h1>Demo Cases</h1>
+
+<h2>Icinga 2</h2>
+
+Add new Icinga 2 config in conf.d
+<pre>
+# cd /etc/icinga2/conf.d
+# vim ...
+
+# service icinga2 restart
+
+# tail -f /var/log/icinga2/icinga2.log
+</pre>
+
+
+<h2>Icinga Web 2</h2>
+
+stop webserver, look at the browser.
+<pre>
+# service httpd stop
+</pre>
+
+<h2>Icinga CLI</h2>
+
+<pre>
+# icingacli
+
+# icingacli monitoring list
+# icingacli monitoring list --unhandled --watch 1
+</pre>
+
+<h1>Restore</h1>
+
+Provision new configuration
+(Attention: newly created files in conf.d/ won't be deleted!)
+
+<pre>
+# vagrant provision
+</pre>
+
 
 </html>

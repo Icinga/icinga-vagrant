@@ -1,7 +1,5 @@
 class icinga2-icinga-web {
   include icinga-web
-  include icinga2-ido-mysql
-  include icinga2-ido-pgsql
 
   exec { 'set-icinga2-cmd-pipe-path':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',

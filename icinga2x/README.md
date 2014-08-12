@@ -2,6 +2,7 @@
 
 * Icinga 2 Core
 * Legacy interfaces: Icinga Classic UI, Web 1.x
+* Icinga Web 2 as user interface with internal auth db and DB IDO MySQL backend
 
   Instance                              | Url
   --------------------------------------|--------------------------------------
@@ -39,6 +40,7 @@ credentials.
   ------------------|-------------------|----------------
   Icinga Classic UI | /icinga           | icingaadmin/icingaadmin
   Icinga Web 1.x    | /icinga-web       | root/password
+  Icinga Web 2      | /icingaweb        | icingaadmin/icinga
 
 
 ## SSH Access

@@ -1,10 +1,14 @@
+include icinga-rpm-snapshot
+include epel
 include apache
+include mysql
 include icinga2
+include icinga2-ido-mysql
 include icinga2-classicui
 include icinga2-icinga-web
-include nagios-plugins
-include nsca-ng
-
+include icingaweb2
+include icingaweb2-internal-db-mysql
+include monitoring-plugins
 
 ####################################
 # Start page at http://localhost/
