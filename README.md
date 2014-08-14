@@ -17,10 +17,6 @@ Windows users require additionally
 * SSH provided by the Git package from http://msysgit.github.io
 * Ruby for Windows from http://rubyinstaller.org (add Ruby executables to PATH)
 
-## Preparations
-
-    $ git submodule init && git submodule update
-
 ## Icinga 1.x
 
 * 1 box
