@@ -1,18 +1,26 @@
+# Class: icinga-classicui
+#
+#   Install Icinga Classic UI with Icinga 1.x configuration
+#
+#   Copyright (C) 2014-present Icinga Development Team (http://www.icinga.org/)
+#
+# Parameters:
+#
+# Actions:
+#
+# Requires: icinga-rpm-snapshot, icinga
+#
+# Sample Usage:
+#
+#   include icinga-classicui
+#
+
 class icinga-classicui {
   include icinga-rpm-snapshot
-  include icinga2
-
-  # workaround for package conflicts
-  # icinga-gui pulls icinga-gui-config automatically
-  package { 'icinga2-classicui-config':
-    ensure => latest,
-    before => Package["icinga-gui"],
-    require => Class['icinga-rpm-snapshot'],
-    notify => Service['apache']
-  }
+  include icinga
 
   package { 'icinga-gui':
-    ensure => latest,
+    ensure => installed,
     alias => 'icinga-gui'
   }
 
@@ -31,10 +39,4 @@ class icinga-classicui {
     groups => ['icingacmd', 'vagrant'],
     require => [ Class['apache'], Group['icingacmd'] ]
   }
-
-  icinga2::feature { 'statusdata': }
-
-  icinga2::feature { 'command': }
-
-  icinga2::feature { 'compatlog': }
 }
