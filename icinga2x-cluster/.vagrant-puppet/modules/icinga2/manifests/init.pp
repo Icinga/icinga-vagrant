@@ -66,7 +66,7 @@ class icinga2-ido-mysql {
   exec { 'populate-icinga2-ido-mysql-db':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless => 'mysql -uicinga -picinga icinga -e "SELECT * FROM icinga_dbversion;" &> /dev/null',
-    command => 'mysql -uicinga -picinga icinga < /usr/share/doc/icinga2-ido-mysql-$(rpm -q icinga2-ido-mysql | cut -d\'-\' -f4)/schema/mysql.sql',
+    command => 'mysql -uicinga -picinga icinga < /usr/share/icinga2-ido-mysql/schema/mysql.sql',
     require => [ Package['icinga2-ido-mysql'], Exec['create-mysql-icinga2-ido-db'] ]
   }
 
@@ -98,7 +98,7 @@ class icinga2-ido-pgsql {
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     environment => ['PGPASSWORD=icinga'],
     unless => 'psql -U icinga -d icinga -c "SELECT * FROM icinga_dbversion;" &> /dev/null',
-    command => 'psql -U icinga -d icinga < /usr/share/doc/icinga2-ido-pgsql-$(rpm -q icinga2-ido-pgsql | cut -d\'-\' -f4)/schema/pgsql.sql',
+    command => 'psql -U icinga -d icinga < /usr/share/icinga2-ido-pgsql/schema/pgsql.sql',
     require => [ Package['icinga2-ido-pgsql'], Exec['create-pgsql-icinga2-ido-db'] ]
   }
 
