@@ -14,8 +14,6 @@
 #
 class icinga-rpm-snapshot {
   yumrepo { 'icinga-rpm-snapshot':
-    mirrorlist => "http://packages.icinga.org/epel/ICINGA-snapshot.repo",
-    # baseurl is required, otherwise mirrorlist errors by yum
     baseurl => "http://packages.icinga.org/epel/6/snapshot/",
     enabled => '1',
     gpgcheck => '1',
