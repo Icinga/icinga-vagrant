@@ -60,7 +60,7 @@ file { '/usr/lib/nagios/plugins/check_snmp_int.pl':
 }
 
 ####################################
-# Icinga 2
+# Icinga 2 General
 ####################################
 
 user { 'vagrant':
@@ -166,7 +166,11 @@ file { "/etc/icinga2/features-available/api.conf":
   notify    => Service['icinga2']
 }
 
-# cluster zones
+####################################
+# Icinga 2 Cluster Zones
+####################################
+
+# zones
 file { '/etc/icinga2/zones.d':
   owner  => icinga,
   group  => icinga,
@@ -176,55 +180,76 @@ file { '/etc/icinga2/zones.d':
   notify    => Service['icinga2']
 }
 
-file { '/etc/icinga2/zones.d/master':
-  owner  => icinga,
-  group  => icinga,
-  ensure => present,
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/master',
-  require   => File['/etc/icinga2/zones.d'],
-  notify    => Service['icinga2']
-}
+case $hostname {
+  'icinga2a': {
+    file { '/etc/icinga2/zones.d/master':
+      owner  => icinga,
+      group  => icinga,
+      ensure => present,
+      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/master',
+      require   => File['/etc/icinga2/zones.d'],
+      notify    => Service['icinga2']
+    }
 
-file { '/etc/icinga2/zones.d/checker':
-  owner  => icinga,
-  group  => icinga,
-  ensure => present,
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker',
-  require   => File['/etc/icinga2/zones.d'],
-  notify    => Service['icinga2']
-}
+    file { '/etc/icinga2/zones.d/checker':
+      owner  => icinga,
+      group  => icinga,
+      ensure => present,
+      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker',
+      require   => File['/etc/icinga2/zones.d'],
+      notify    => Service['icinga2']
+    }
 
-file { '/etc/icinga2/zones.d/master/health.conf':
-  owner  => icinga,
-  group  => icinga,
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/master/health.conf',
-  require   => File['/etc/icinga2/zones.d/master'],
-  notify    => Service['icinga2']
-}
+    file { '/etc/icinga2/zones.d/master/health.conf':
+      owner  => icinga,
+      group  => icinga,
+      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/master/health.conf',
+      require   => File['/etc/icinga2/zones.d/master'],
+      notify    => Service['icinga2']
+    }
 
-file { '/etc/icinga2/zones.d/checker/health.conf':
-  owner  => icinga,
-  group  => icinga,
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/health.conf',
-  require   => File['/etc/icinga2/zones.d/checker'],
-  notify    => Service['icinga2']
-}
+    file { '/etc/icinga2/zones.d/checker/health.conf':
+      owner  => icinga,
+      group  => icinga,
+      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/health.conf',
+      require   => File['/etc/icinga2/zones.d/checker'],
+      notify    => Service['icinga2']
+    }
 
+    # demo config
+    file { '/etc/icinga2/zones.d/checker/demo.conf':
+      owner  => icinga,
+      group  => icinga,
+      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/demo.conf',
+      require   => File['/etc/icinga2/zones.d/checker'],
+      notify    => Service['icinga2']
+    }
 
+    file { '/etc/icinga2/zones.d/checker/templates.conf':
+      owner  => icinga,
+      group  => icinga,
+      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/templates.conf',
+      require   => File['/etc/icinga2/zones.d/checker'],
+      notify    => Service['icinga2']
+    }
+  }
+  default: { # icinga2b and more other instances not being the config master
+    file { '/etc/icinga2/zones.d/master':
+      ensure => absent,
+      require   => File['/etc/icinga2/zones.d'],
+      notify    => Service['icinga2']
+    }
 
-# demo config
-file { '/etc/icinga2/zones.d/checker/demo.conf':
-  owner  => icinga,
-  group  => icinga,
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/demo.conf',
-  require   => File['/etc/icinga2/zones.d/checker'],
-  notify    => Service['icinga2']
-}
+    file { '/etc/icinga2/zones.d/checker':
+      ensure => absent,
+      require   => File['/etc/icinga2/zones.d'],
+      notify    => Service['icinga2']
+    }
 
-file { '/etc/icinga2/zones.d/checker/templates.conf':
-  owner  => icinga,
-  group  => icinga,
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/templates.conf',
-  require   => File['/etc/icinga2/zones.d/checker'],
-  notify    => Service['icinga2']
+    file { '/etc/icinga2/zones.d/global-templates':
+      ensure => absent,
+      require   => File['/etc/icinga2/zones.d'],
+      notify    => Service['icinga2']
+    }
+  }
 }
