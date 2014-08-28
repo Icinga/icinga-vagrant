@@ -41,6 +41,16 @@ urls and credentials.
   Icinga Web 2      | /icingaweb        | icingaadmin/icinga
 
 
+## Ports
+
+  VM Name   | Host Port | Guest Port
+  ----------|-----------|-----------
+  icinga2a  | 2085      | 22
+  icinga2a  | 8085      | 80
+  icinga2b  | 2086      | 22
+  icinga2b  | 8086      | 80
+
+
 ## SSH Access
 
 Either `vagrant ssh <hostname>` or manually (open the VirtualBox gui and check the
@@ -49,7 +59,7 @@ network port forwarding).
   Name            | Value
   ----------------|----------------
   Host            | 127.0.0.1
-  Port            | 2222 (22022)
+  Port            | Check [port list](#ports)
   Username        | vagrant
   Password        | vagrant
 
@@ -68,4 +78,3 @@ On local config change (git pull for this repository).
     $ git pull
     $ git log
     $ vagrant provision
-

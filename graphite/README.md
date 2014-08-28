@@ -4,7 +4,7 @@
 
   Instance                              | Url
   --------------------------------------|--------------------------------------
-  graphite-web                          | http://localhost:8080
+  graphite-web                          | http://localhost:8090
 
 ## Requirements
 
@@ -35,14 +35,23 @@ http://localhost:8080 shows Graphite web.
   Graphite Web      | /                 | none required
 
 
+## Ports
+
+  VM Name   | Host Port | Guest Port
+  ----------|-----------|-----------
+  graphite  | 2090      | 22
+  graphite  | 8090      | 80
+
+
 ## SSH Access
 
-Either `vagrant ssh` or manually.
+Either `vagrant ssh <hostname>` or manually (open the VirtualBox gui and check the
+network port forwarding).
 
   Name            | Value
   ----------------|----------------
   Host            | 127.0.0.1
-  Port            | 2222
+  Port            | Check [port list](#ports)
   Username        | vagrant
   Password        | vagrant
 

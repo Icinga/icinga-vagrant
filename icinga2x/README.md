@@ -43,14 +43,23 @@ credentials.
   Icinga Web 2      | /icingaweb        | icingaadmin/icinga
 
 
+## Ports
+
+  VM Name   | Host Port | Guest Port
+  ----------|-----------|-----------
+  icinga2   | 2080      | 22
+  icinga2   | 8080      | 80
+
+
 ## SSH Access
 
-Either `vagrant ssh` or manually.
+Either `vagrant ssh <hostname>` or manually (open the VirtualBox gui and check the
+network port forwarding).
 
   Name            | Value
   ----------------|----------------
   Host            | 127.0.0.1
-  Port            | 2222
+  Port            | Check [port list](#ports)
   Username        | vagrant
   Password        | vagrant
 
