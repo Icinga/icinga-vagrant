@@ -46,3 +46,10 @@ user { 'vagrant':
   groups  => ['icinga', 'icingacmd'],
   require => [User['icinga'], Group['icingacmd']]
 }
+
+####################################
+# Icinga 2 General
+####################################
+
+# enable the command pipe
+icinga2::feature { 'command': }

@@ -68,6 +68,9 @@ user { 'vagrant':
   require => Package['icinga2']
 }
 
+# enable the command pipe
+icinga2::feature { 'command': }
+
 # Icinga 2 Cluster
 
 exec { 'iptables-allow-icinga2-cluster':
