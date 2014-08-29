@@ -34,7 +34,5 @@ class icinga2-classicui {
 
   icinga2::feature { 'statusdata': }
 
-  icinga2::feature { 'command': }
-
   icinga2::feature { 'compatlog': }
 }
