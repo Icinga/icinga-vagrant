@@ -15,7 +15,7 @@ include monitoring-plugins
 # Basic stuff
 ####################################
 
-package { [ 'vim-enhanced', 'mailx' ]:
+package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb' ]:
   ensure => 'installed'
 }
 
@@ -190,32 +190,28 @@ file { '/etc/icinga2/zones.d':
   notify    => Service['icinga2']
 }
 
+# remove leftovers from previous runs
+file { [ '/var/lib/icinga2/api/zones/master', '/var/lib/icinga2/api/zones/checker', '/var/lib/icinga2/api/zones/global-templates' ]:
+  force  => true,
+  ensure => absent
+}
+
 case $hostname {
   'icinga2a': {
-    file { '/etc/icinga2/zones.d/master':
+    file { [ '/etc/icinga2/zones.d/master', '/etc/icinga2/zones.d/checker', '/etc/icinga2/zones.d/global-templates' ]:
       owner  => icinga,
       group  => icinga,
-      ensure => present,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/master',
-      require   => File['/etc/icinga2/zones.d'],
-      notify    => Service['icinga2']
-    }
-
-    file { '/etc/icinga2/zones.d/checker':
-      owner  => icinga,
-      group  => icinga,
-      ensure => present,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker',
+      ensure => directory,
       require   => File['/etc/icinga2/zones.d'],
       notify    => Service['icinga2']
     }
 
     # move health checks to local cluster/ dir #7240
-    file { [ '/etc/icinga2/zones.d/master/health.conf', '/etc/icinga2/zones.d/checker/health.conf' ]:
+    file { [ '/etc/icinga2/zones.d/master/health.conf', '/etc/icinga2/zones.d/checker/health.conf', '/etc/icinga2/zones.d/checker/templates.conf' ]:
       ensure => absent
     }
 
-    # demo config
+    # checker zone demo config
     file { '/etc/icinga2/zones.d/checker/demo.conf':
       owner  => icinga,
       group  => icinga,
@@ -224,14 +220,16 @@ case $hostname {
       notify    => Service['icinga2']
     }
 
-    file { '/etc/icinga2/zones.d/checker/templates.conf':
+    # global template zone
+    file { '/etc/icinga2/zones.d/global-templates/templates.conf':
       owner  => icinga,
       group  => icinga,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/templates.conf',
-      require   => File['/etc/icinga2/zones.d/checker'],
+      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/global-templates/templates.conf',
+      require   => File['/etc/icinga2/zones.d/global-templates'],
       notify    => Service['icinga2']
     }
   }
+
   default: { # icinga2b and more other instances not being the config master
     file { '/etc/icinga2/zones.d/master':
       ensure => absent,
