@@ -146,6 +146,7 @@ file { "/etc/icinga2/features-available/api.conf":
   notify    => Service['icinga2']
 }
 
+# local cluster health checks
 file { '/etc/icinga2/cluster':
   owner  => icinga,
   group  => icinga,
@@ -153,13 +154,13 @@ file { '/etc/icinga2/cluster':
   require => Package['icinga2']
 }
 
-#file { "/etc/icinga2/cluster/$hostname.conf":
-#  owner  => icinga,
-#  group  => icinga,
-#  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/cluster/$hostname.conf",
-#  require   => [ File['/etc/icinga2/cluster'], Exec['icinga2-enable-feature-api'] ],
-#  notify    => Service['icinga2']
-#}
+file { "/etc/icinga2/cluster/$hostname.conf":
+  owner  => icinga,
+  group  => icinga,
+  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/cluster/$hostname.conf",
+  require   => [ File['/etc/icinga2/cluster'], Exec['icinga2-enable-feature-api'] ],
+  notify    => Service['icinga2']
+}
 
 # keep it removed from previous installations (replaced by zones.conf #7184)
 file { "/etc/icinga2/cluster/cluster.conf":
@@ -209,20 +210,9 @@ case $hostname {
       notify    => Service['icinga2']
     }
 
-    file { '/etc/icinga2/zones.d/master/health.conf':
-      owner  => icinga,
-      group  => icinga,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/master/health.conf',
-      require   => File['/etc/icinga2/zones.d/master'],
-      notify    => Service['icinga2']
-    }
-
-    file { '/etc/icinga2/zones.d/checker/health.conf':
-      owner  => icinga,
-      group  => icinga,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/health.conf',
-      require   => File['/etc/icinga2/zones.d/checker'],
-      notify    => Service['icinga2']
+    # move health checks to local cluster/ dir #7240
+    file { [ '/etc/icinga2/zones.d/master/health.conf', '/etc/icinga2/zones.d/checker/health.conf' ]:
+      ensure => absent
     }
 
     # demo config
