@@ -71,6 +71,15 @@ user { 'vagrant':
 # enable the command pipe
 icinga2::feature { 'command': }
 
+# override constants conf and set NodeName
+file { "/etc/icinga2/constants.conf":
+  owner  => icinga,
+  group  => icinga,
+  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/constants.conf",
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
+
 # Icinga 2 Cluster
 
 exec { 'iptables-allow-icinga2-cluster':
@@ -120,44 +129,12 @@ file { "/etc/icinga2/pki/$hostname.key":
   require   => File['/etc/icinga2/pki']
 }
 
-file { '/etc/icinga2/cluster':
-  owner  => icinga,
-  group  => icinga,
-  ensure    => 'directory',
-  require => Package['icinga2']
-}
-
-file { "/etc/icinga2/cluster/$hostname.conf":
-  owner  => icinga,
-  group  => icinga,
-  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/cluster/$hostname.conf",
-  require   => [ File['/etc/icinga2/cluster'], Exec['icinga2-enable-feature-api'] ],
-  notify    => Service['icinga2']
-}
-
-file { "/etc/icinga2/cluster/cluster.conf":
-  owner  => icinga,
-  group  => icinga,
-  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/cluster/cluster.conf",
-  require   => [ File['/etc/icinga2/cluster'], Exec['icinga2-enable-feature-api'] ],
-  notify    => Service['icinga2']
-}
-
 
 exec { 'icinga2-enable-feature-api':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => 'icinga2-enable-feature api',
   require => File['/etc/icinga2/features-available/api.conf'],
   notify => Service['icinga2']
-}
-
-# override constants conf and set NodeName elsewhere
-file { "/etc/icinga2/constants.conf":
-  owner  => icinga,
-  group  => icinga,
-  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/constants.conf",
-  require   => Package['icinga2'],
-  notify    => Service['icinga2']
 }
 
 # required for icinga2-enable-feature-api
@@ -169,9 +146,38 @@ file { "/etc/icinga2/features-available/api.conf":
   notify    => Service['icinga2']
 }
 
+file { '/etc/icinga2/cluster':
+  owner  => icinga,
+  group  => icinga,
+  ensure    => 'directory',
+  require => Package['icinga2']
+}
+
+#file { "/etc/icinga2/cluster/$hostname.conf":
+#  owner  => icinga,
+#  group  => icinga,
+#  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/cluster/$hostname.conf",
+#  require   => [ File['/etc/icinga2/cluster'], Exec['icinga2-enable-feature-api'] ],
+#  notify    => Service['icinga2']
+#}
+
+# keep it removed from previous installations (replaced by zones.conf #7184)
+file { "/etc/icinga2/cluster/cluster.conf":
+  ensure    => absent,
+}
+
+
 ####################################
 # Icinga 2 Cluster Zones
 ####################################
+
+file { "/etc/icinga2/zones.conf":
+  owner  => icinga,
+  group  => icinga,
+  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.conf",
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
 
 # zones
 file { '/etc/icinga2/zones.d':
