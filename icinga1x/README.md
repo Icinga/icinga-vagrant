@@ -5,9 +5,10 @@
 * Icinga Web with Reporting Cronk
 * Icinga Reporting with Jasperserver
 
-  Instance                              | Url
-  --------------------------------------|--------------------------------------
-  icinga                                | http://localhost:8081
+
+  Instance  | Network                   | HTTP
+  ----------|---------------------------|--------------------------------------
+  icinga    |                           | http://localhost:8081
 
 ## Requirements
 
@@ -22,11 +23,28 @@ Windows users require additionally
 
 ## Installation
 
-    $ vagrant up
+You can only do `vagrant up` in a box directory. Verify that
+by checking for the existance of the `Vagrantfile` file in the current
+directory.
 
-    $ vagrant ssh
+    $ ls -la Vagrantfile
+    -rw-------. 1 michi michi 1,4K 28. Aug 12:11 Vagrantfile
 
-    $ sudo -i
+### Vagrant Commands
+
+* `vagrant up` starts all vms for this box setup
+* `vagrant halt` stops all vms for this box setup
+* `vagrant provision` updates packages/resets configuration for all vms
+* `vagrant ssh` puts you into an ssh shell with login `vagrant` (**Tip**: Use `sudo -i` to become `root`)
+
+> **Note**
+>
+> Multi-VM boxes require the hostname for `vagrant ssh` like so: `vagrant ssh icinga2b`.
+> That works in a similar fashion for other sub commands.
+
+If your box is broken, you can destroy it using `vagrant destroy`. Next `vagrant up`
+run will use the already imported base box, re-running the provisioner to install
+the packages and configuration.
 
 
 ## User Interfaces
