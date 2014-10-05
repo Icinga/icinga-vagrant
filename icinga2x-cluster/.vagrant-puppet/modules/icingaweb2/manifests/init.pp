@@ -27,9 +27,7 @@ class icingaweb2-internal-db-mysql {
   exec { 'create-mysql-icingaweb-db':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless  => 'mysql -uicingaweb -picingaweb icingaweb',
-    command => 'mysql -uroot -e "CREATE DATABASE icingaweb; \
-              GRANT ALL ON icingaweb.* TO icingaweb@localhost \
-              IDENTIFIED BY \'icingaweb\';"',
+    command => 'mysql -uroot -e "CREATE DATABASE icingaweb; GRANT ALL ON icingaweb.* TO icingaweb@localhost IDENTIFIED BY \'icingaweb\';"',
     require => Service['mysqld']
   }
 
