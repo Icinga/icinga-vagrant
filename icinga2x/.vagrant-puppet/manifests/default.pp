@@ -32,7 +32,7 @@ file { '/var/www/html/icinga_wall.png':
 # Misc
 ####################################
 
-package { 'vim-enhanced':
+package { [ 'vim-enhanced', 'bash-completion', 'mailx', 'tree', 'gdb' ]:
   ensure => 'installed'
 }
 

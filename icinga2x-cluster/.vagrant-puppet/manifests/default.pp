@@ -15,7 +15,7 @@ include monitoring-plugins
 # Basic stuff
 ####################################
 
-package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb' ]:
+package { [ 'vim-enhanced', 'bash-completion', 'mailx', 'tree', 'gdb' ]:
   ensure => 'installed'
 }
 
