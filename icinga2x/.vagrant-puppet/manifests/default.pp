@@ -32,8 +32,13 @@ file { '/var/www/html/icinga_wall.png':
 # Misc
 ####################################
 
-package { [ 'vim-enhanced', 'bash-completion', 'mailx', 'tree', 'gdb' ]:
+package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb' ]:
   ensure => 'installed'
+}
+
+package { 'bash-completion':
+  ensure => 'installed',
+  require => Class['epel']
 }
 
 file { '/etc/motd':
