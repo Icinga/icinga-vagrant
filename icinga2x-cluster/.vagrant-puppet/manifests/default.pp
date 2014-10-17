@@ -137,7 +137,7 @@ file { "/etc/icinga2/pki/$hostname.key":
 
 exec { 'icinga2-enable-feature-api':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => 'icinga2-enable-feature api',
+  command => 'icinga2 feature enable api',
   require => File['/etc/icinga2/features-available/api.conf'],
   notify => Service['icinga2']
 }
