@@ -1,0 +1,24 @@
+[submodule "icinga2x-graylog2/modules/graylog2"]
+	path = icinga2x-graylog2/modules/graylog2
+	url = https://github.com/Graylog2/graylog2-puppet.git
+[submodule "icinga2x-graylog2/modules/elasticsearch"]
+	path = icinga2x-graylog2/modules/elasticsearch
+	url = https://github.com/elasticsearch/puppet-elasticsearch.git
+[submodule "icinga2x-graylog2/modules/apache"]
+	path = icinga2x-graylog2/modules/apache
+	url = https://github.com/puppetlabs/puppetlabs-apache.git
+[submodule "icinga2x-graylog2/modules/concat"]
+	path = icinga2x-graylog2/modules/concat
+	url = https://github.com/puppetlabs/puppetlabs-concat.git
+[submodule "icinga2x-graylog2/modules/mongodb"]
+	path = icinga2x-graylog2/modules/mongodb
+	url = https://github.com/puppetlabs/puppetlabs-mongodb.git
+[submodule "icinga2x-graylog2/modules/stdlib"]
+	path = icinga2x-graylog2/modules/stdlib
+	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
+[submodule "icinga2x-graylog2/modules/epel"]
+	path = icinga2x-graylog2/modules/epel
+	url = https://github.com/stahnma/puppet-module-epel.git
+[submodule "icinga2x-graylog2/modules/firewall"]
+	path = icinga2x-graylog2/modules/firewall
+	url = https://github.com/puppetlabs/puppetlabs-firewall.git

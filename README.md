@@ -16,6 +16,19 @@ Windows users require additionally
 * SSH provided by the Git package from http://msysgit.github.io
 * Ruby for Windows from http://rubyinstaller.org (add Ruby executables to PATH)
 
+## Setup
+
+These boxes import required puppet modules for provisioning as git submodules.
+Therefore you'll need to clone this repository recursively.
+
+    $ git clone --recursive https://github.com/icinga/icinga-vagrant.git
+    $ cd icinga-vagrant
+
+Or, initialize and update the git submodules using:
+
+    $ git submodule init
+    $ git submodule update
+
 ## Before you start
 
 Change the directory to the box you want to start.
