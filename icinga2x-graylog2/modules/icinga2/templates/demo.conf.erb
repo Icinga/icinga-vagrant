@@ -14,7 +14,9 @@ template Service "graylog2-service" {
   enable_notifications = true
 }
 
+const GraylogApiUrl = "http://<%= @ipaddress %>:9000/streams/"
 const GraylogStreamApiUrl = "http://127.0.0.1:9000/streams/"
+const GraylogPluginDir = "/usr/lib/nagios/plugins"
 
 /*
  * 1.) Query graylog2 alert streams
@@ -24,7 +26,7 @@ const GraylogStreamApiUrl = "http://127.0.0.1:9000/streams/"
 object CheckCommand "graylog2-stream" {
   import "plugin-check-command"
 
-  command = [ PluginDir + "/check-graylog2-stream" ]
+  command = [ GraylogPluginDir + "/check-graylog2-stream" ]
 
   arguments = {
     "-stream" = "$graylog2_stream_id$"
@@ -34,9 +36,9 @@ object CheckCommand "graylog2-stream" {
   }
 
   // default values
-  vars.graylog2_api_url = "http://localhost:12900"
+  vars.graylog2_api_url = GraylogApiUrl
   vars.graylog2_api_username = "admin"
-  vars.graylog2_api_password = "yourpassword"
+  vars.graylog2_api_password = "admin"
 }
 
 
@@ -125,13 +127,6 @@ object NotificationCommand "extended-graylog2-notification" {
   import "plugin-notification-command"
 
   command = "/bin/echo \"Here comes our fancy graylog2 notification with stream url '$service.notes_url$'\""
-  /*command = [ PluginDir + "./extended-graylog2-notification" ]
-
-  arguments = {}
-
-  env = {
-  }
-  */
 }
 
 

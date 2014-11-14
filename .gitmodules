@@ -22,3 +22,6 @@
 [submodule "icinga2x-graylog2/modules/firewall"]
 	path = icinga2x-graylog2/modules/firewall
 	url = https://github.com/puppetlabs/puppetlabs-firewall.git
+[submodule "icinga2x-graylog2/modules/selinux"]
+	path = icinga2x-graylog2/modules/selinux
+	url = https://github.com/jfryman/puppet-selinux

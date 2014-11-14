@@ -6,6 +6,7 @@
 
   Instance  | Network                   | HTTP
   ----------|---------------------------|--------------------------------------
+  i2g2      |                           | http://localhost:8110
   i2g2      |                           | http://localhost:9000
 
 
@@ -56,12 +57,10 @@ the packages and configuration.
 
 ## User Interfaces
 
-http://localhost:8080 shows an entry page including all urls and
-credentials.
-
   GUI               | Url               | Credentials
   ------------------|-------------------|----------------
-  Graylog2          | :9000/		| admin/osmcgraylog2icinga2r0xx
+  Graylog2          | :8110/icinga 	| icingaadmin/icingaadmin
+  Graylog2          | :9000/		| admin/admin
 
 
 ## Ports
