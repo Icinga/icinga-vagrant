@@ -40,6 +40,7 @@ class icingaweb2-internal-db-mysql {
 
   exec { 'populate-icingaweb-mysql-db-create-default-account':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
+    unless => 'mysql -uicingaweb -picingaweb icingaweb -e "select * from icingaweb_user where name=\'icingaadmin\';"',
     command => 'mysql -uicingaweb -picingaweb icingaweb -e "INSERT INTO icingaweb_user (name, active, password_hash) VALUES (\'icingaadmin\', 1, \'\$1\$iQSrnmO9\$T3NVTu0zBkfuim4lWNRmH.\');"',
     require => [ Exec['populate-icingaweb-mysql-db'], Package['icingaweb2'] ]
   }
