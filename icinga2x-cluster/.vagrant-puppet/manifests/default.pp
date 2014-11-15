@@ -172,6 +172,15 @@ file { "/etc/icinga2/cluster/cluster.conf":
   ensure    => absent,
 }
 
+# remote client
+file { '/etc/icinga2/remote':
+  owner  => icinga,
+  group  => icinga,
+  ensure => present,
+  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/remote',
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
 
 ####################################
 # Icinga 2 Cluster Zones
@@ -203,6 +212,16 @@ file { [ '/var/lib/icinga2/api/zones/master', '/var/lib/icinga2/api/zones/checke
 
 case $hostname {
   'icinga2a': {
+    # remote client
+    file { '/etc/icinga2/remote/demo.conf':
+      owner  => icinga,
+      group  => icinga,
+      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/remote/demo.conf',
+      require   => File['/etc/icinga2/remote'],
+      notify    => Service['icinga2']
+    }
+
+    # cluster
     file { [ '/etc/icinga2/zones.d/master', '/etc/icinga2/zones.d/checker', '/etc/icinga2/zones.d/global-templates' ]:
       owner  => icinga,
       group  => icinga,
