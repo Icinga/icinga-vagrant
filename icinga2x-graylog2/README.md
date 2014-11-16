@@ -15,7 +15,7 @@
 This box requires puppet modules for provisioning as git submodules.
 Therefore you'll need to clone this repository recursively.
 
-    $ git clone --revursive https://github.com/icinga/icinga-vagrant.git
+    $ git clone --recursive https://github.com/icinga/icinga-vagrant.git
     $ cd icinga-vagrant/icinga2x-graylog2
 
 ## Requirements
@@ -32,7 +32,7 @@ Windows users require additionally
 ## Installation
 
 You can only do `vagrant up` in a box directory. Verify that
-by checking for the existance of the `Vagrantfile` file in the current
+by checking for the existence of the `Vagrantfile` file in the current
 directory.
 
     $ ls -la Vagrantfile
