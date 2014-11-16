@@ -76,9 +76,9 @@ case $operatingsystem {
 
 # Elasticsearch
 class { 'elasticsearch':
-#  version      => '1.3.4',
+  version      => '1.3.4-1',
   manage_repo  => true,
-  repo_version => '1.0',
+  repo_version => '1.3',
   java_install => true,
 } ->
 elasticsearch::instance { 'graylog2-es':
