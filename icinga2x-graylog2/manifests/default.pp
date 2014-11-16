@@ -84,6 +84,7 @@ class { 'elasticsearch':
 elasticsearch::instance { 'graylog2-es':
   config => {
     'cluster.name' => 'graylog2',
+    'network.host' => '127.0.0.1'
   },
 }
 
@@ -108,6 +109,7 @@ class { 'graylog2::server':
   rest_transport_uri         => "http://${::ipaddress}:12900/",
   elasticsearch_discovery_zen_ping_multicast_enabled => false,
   elasticsearch_discovery_zen_ping_unicast_hosts     => '127.0.0.1:9300',
+  elasticsearch_network_host => '127.0.0.1',
   password_secret            => '3eb06615884fec5ae541b8661b430e8da89ed5fddf81c4bdc6a2a714abb9b51d',
   root_password_sha2         => '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
   elasticsearch_cluster_name => 'graylog2',
