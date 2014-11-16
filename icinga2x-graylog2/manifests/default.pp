@@ -75,6 +75,13 @@ case $operatingsystem {
 
 
 # Elasticsearch
+file { '/etc/security/limits.d/99-elasticsearch.conf':
+  ensure  => present,
+  owner   => 'root',
+  group   => 'root',
+  mode    => '0644',
+  content => "elasticsearch soft nofile 64000\nelasticsearch hard nofile 64000\n",
+} ->
 class { 'elasticsearch':
   version      => '1.3.4-1',
   manage_repo  => true,
