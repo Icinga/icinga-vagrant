@@ -7,6 +7,7 @@ require 'json'
 require 'uri'
 require 'net/http'
 
+$stdout.sync = true
 
 class HTTPClient < Struct.new(:url)
   class Response < Struct.new(:response)
@@ -92,13 +93,17 @@ class Graylog2Server < Struct.new(:client)
     response.data['streams'].find {|i| i['title'][title] }
   end
 
-  def wait_until_alive(interval, additional_interval)
+  def wait_until_alive(interval, additional_interval, limit = 600)
     waited = 0
 
     until client.host_alive?
       yield(waited) if block_given?
       sleep(interval)
       waited += interval
+
+      if waited >= limit
+        raise "Waited for #{limit}s - something seems to be wrong with the server."
+      end
     end
 
     # Sleeping some extra seconds to wait until all inputs have been started...
