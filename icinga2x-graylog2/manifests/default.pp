@@ -165,9 +165,11 @@ file { '/usr/lib/nagios/plugins/check-graylog-stream':
 
 package { 'httpd':
   ensure => installed
-} ->
+}
 service { 'httpd':
-  ensure => running
+  enable => true,
+  ensure => running,
+  require => Package['httpd']
 }
 
 package { 'icinga2-classicui-config':
