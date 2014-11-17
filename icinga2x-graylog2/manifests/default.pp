@@ -112,8 +112,8 @@ class { 'graylog2::server':
   service_enable	     => true,
   service_ensure	     => true,
   rest_enable_cors           => true,
-  rest_listen_uri            => "http://${::ipaddress}:12900/",
-  rest_transport_uri         => "http://${::ipaddress}:12900/",
+  rest_listen_uri            => "http://0.0.0.0:12900/",
+  rest_transport_uri         => "http://0.0.0.0:12900/",
   elasticsearch_discovery_zen_ping_multicast_enabled => false,
   elasticsearch_discovery_zen_ping_unicast_hosts     => '127.0.0.1:9300',
   elasticsearch_network_host => '127.0.0.1',
@@ -128,7 +128,7 @@ class { 'graylog2::server':
 } ->
 class { 'graylog2::web':
   application_secret => '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
-  graylog2_server_uris => [ "http://${::ipaddress}:12900/" ],
+  graylog2_server_uris => [ "http://127.0.0.1:12900/" ],
   require            => Class['graylog2::server'],
 } ->
 # check-graylog2-stream
