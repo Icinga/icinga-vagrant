@@ -43,6 +43,10 @@ class icinga2 {
     notify => Service['icinga2']
   }
 
+  file { "/etc/icinga2/conf.d/*":
+    notify => Service['icinga2']
+  }
+
   icinga2::feature { 'livestatus': }
 }
 
