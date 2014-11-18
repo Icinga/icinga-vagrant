@@ -25,6 +25,16 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
   }
 }
 
+define rh_firewall_add_port($zone, $port) {
+  exec { $title :
+    path    => '/bin:/usr/bin:/sbin:/usr/sbin',
+    command => "firewall-cmd --permanent --zone=${zone} --add-port=${port}",
+    unless  => "firewall-cmd --zone ${zone} --list-ports | fgrep -q ${port}",
+    require => Package['firewalld'],
+    notify  => Service['firewalld'],
+  }
+}
+
 
 # firewall: TODO add support for other OS unlike CentOS7
 case $operatingsystem {
@@ -42,32 +52,29 @@ case $operatingsystem {
         require => Package['firewalld']
       }
 
-      exec { 'iptables-graylog2-001':
-        path => '/bin:/usr/bin:/sbin:/usr/sbin',
-        command => 'firewall-cmd --permanent --zone=public --add-port=80/tcp',
-        require   => Package['firewalld']
+      rh_firewall_add_port { 'iptables-graylog2-001':
+        zone => 'public',
+        port => '80/tcp',
       } ->
-      exec { 'iptables-graylog2-002':
-        path => '/bin:/usr/bin:/sbin:/usr/sbin',
-        command => 'firewall-cmd --permanent --zone=public --add-port=9000/tcp'
+      rh_firewall_add_port { 'iptables-graylog2-002':
+        zone => 'public',
+        port => '9000/tcp',
       } ->
-      exec { 'iptables-graylog2-003':
-        path => '/bin:/usr/bin:/sbin:/usr/sbin',
-        command => 'firewall-cmd --permanent --zone=public --add-port=9300/tcp'
+      rh_firewall_add_port { 'iptables-graylog2-003':
+        zone => 'public',
+        port => '9300/tcp',
       } ->
-      exec { 'iptables-graylog2-004':
-        path => '/bin:/usr/bin:/sbin:/usr/sbin',
-        command => 'firewall-cmd --permanent --zone=public --add-port=12201/tcp'
+      rh_firewall_add_port { 'iptables-graylog2-004':
+        zone => 'public',
+        port => '12201/tcp',
       } ->
-      exec { 'iptables-graylog2-005':
-        path => '/bin:/usr/bin:/sbin:/usr/sbin',
-        command => 'firewall-cmd --permanent --zone=public --add-port=12201/udp'
+      rh_firewall_add_port { 'iptables-graylog2-005':
+        zone => 'public',
+        port => '12201/udp',
       } ->
-      exec { 'iptables-graylog2-006':
-        path => '/bin:/usr/bin:/sbin:/usr/sbin',
-        command => 'firewall-cmd --permanent --zone=public --add-port=12900/tcp',
-        notify    => Service['firewalld']
-
+      rh_firewall_add_port { 'iptables-graylog2-006':
+        zone => 'public',
+        port => '12900/tcp',
       }
     }
   }
