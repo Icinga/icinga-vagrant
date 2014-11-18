@@ -147,7 +147,7 @@ class { 'graylog2::web':
 } ->
 # check-graylog2-stream
 package { 'check-graylog2-stream':
-  ensure => latest,
+  ensure => '1.2-1',
   require => Class['graylog2::server']
 }
 
