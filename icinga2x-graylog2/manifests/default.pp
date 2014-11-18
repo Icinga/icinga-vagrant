@@ -12,6 +12,13 @@ exec { "disable selinux on $hostname":
   user    => "root",
   command => "/usr/sbin/setenforce 0",
   unless  => "/usr/sbin/sestatus | /bin/egrep -q '(Current mode:.*permissive|SELinux.*disabled)'";
+} ->
+file { '/etc/selinux/config':
+  ensure  => present,
+  owner   => 'root',
+  group   => 'root',
+  mode    => '0644',
+  content => "SELINUX=permissive\nSELINUXTYPE=targeted\n",
 }
 
 
