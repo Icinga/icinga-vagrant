@@ -167,7 +167,11 @@ package { 'httpd':
   ensure => installed
 } ->
 service { 'httpd':
-  ensure => running
+  ensure     => running,
+  enable     => true,
+  hasrestart => true,
+  hasstatus  => true,
+  provider   => 'systemd'
 }
 
 package { 'icinga2-classicui-config':
