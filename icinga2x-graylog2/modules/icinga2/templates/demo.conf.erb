@@ -14,8 +14,8 @@ template Service "graylog2-service" {
   enable_notifications = true
 }
 
-const GraylogApiUrl = "http://<%= @ipaddress %>:9000/streams/"
-const GraylogStreamApiUrl = "http://127.0.0.1:9000/streams/"
+const GraylogApiUrl = "http://127.0.0.1:12900"
+const GraylogStreamApiUrl = "http://127.0.0.1:12900/streams/"
 const GraylogPluginDir = "/usr/lib/nagios/plugins"
 
 /*
