@@ -144,6 +144,7 @@ class { 'graylog2::web':
   application_secret => '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
   graylog2_server_uris => [ "http://${::ipaddress}:12900/" ],
   require            => Class['graylog2::server'],
+  timeout            => '60s',
 } ->
 # check-graylog2-stream
 package { 'check-graylog2-stream':
