@@ -39,6 +39,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # add gelf inputs etc
   config.vm.provision :shell, :path => "manifests/seed_graylog2.sh"
   # tell the user where to login
-  config.vm.provision :shell, :path => "manifests/finalize.sh"
+  config.vm.provision :shell, :path => "scripts/finalize.sh"
 end
 
