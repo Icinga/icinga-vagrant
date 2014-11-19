@@ -6,6 +6,7 @@
 require 'json'
 require 'uri'
 require 'net/http'
+require 'facter'
 
 $stdout.sync = true
 
@@ -114,7 +115,8 @@ end
 
 ## MAIN
 
-client = HTTPClient.new('http://admin:admin@127.0.0.1:12900/')
+ipaddress = Facter.fact(:ipaddress).value
+client = HTTPClient.new("http://admin:admin@#{ipaddress}:12900/")
 server = Graylog2Server.new(client)
 
 # Wait until the Graylog2 server is reachable.
