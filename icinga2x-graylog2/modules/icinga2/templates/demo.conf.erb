@@ -26,7 +26,7 @@ const GraylogPluginDir = "/usr/lib/nagios/plugins"
 object CheckCommand "graylog2-stream" {
   import "plugin-check-command"
 
-  command = [ GraylogPluginDir + "/check-graylog2-stream" ]
+  command = [ GraylogPluginDir + "/check-graylog2-stream-wrapper" ]
 
   arguments = {
     "-stream" = "$graylog2_stream_id$"

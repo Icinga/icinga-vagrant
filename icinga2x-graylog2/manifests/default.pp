@@ -150,6 +150,13 @@ class { 'graylog2::web':
 package { 'check-graylog2-stream':
   ensure => '1.2-1',
   require => Class['graylog2::server']
+} ->
+file { '/usr/lib/nagios/plugins/check-graylog2-stream-wrapper':
+  ensure  => present,
+  owner   => 'root',
+  group   => 'root',
+  mode    => '0555',
+  source  => 'file:///vagrant/scripts/check-graylog2-stream-wrapper.sh',
 }
 
 
