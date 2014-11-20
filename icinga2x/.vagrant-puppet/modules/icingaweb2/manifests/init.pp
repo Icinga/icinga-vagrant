@@ -21,6 +21,78 @@ class icingaweb2 {
   package { ['php-ZendFramework', 'php-ZendFramework-Db-Adapter-Pdo-Mysql']:
     ensure => latest
   }
+  
+  file { '/etc/icingaweb2':
+    ensure => directory,
+	owner => 'apache',
+	group => 'apache',
+	mode => 750
+  }
+  
+  file { '/etc/icingaweb2/authentication.ini':
+    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/authentication.ini',
+	require => File['/etc/icingaweb2'],
+  }
+
+  file { '/etc/icingaweb2/config.ini':
+    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/config.ini',
+	require => File['/etc/icingaweb2'],
+  }
+
+  file { '/etc/icingaweb2/permissions.ini':
+    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/permissions.ini',
+	require => File['/etc/icingaweb2'],
+  }
+  
+  file { '/etc/icingaweb2/resources.ini':
+    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/resources.ini',
+	require => File['/etc/icingaweb2'],
+  }
+
+  file { '/etc/icingaweb2/modules':
+    ensure => directory,
+	owner => 'apache',
+	group => 'apache',
+	mode => 750,
+	require => File['/etc/icingaweb2'],
+  }
+  
+  file { '/etc/icingaweb2/enabledModules':
+    ensure => directory,
+	owner => 'apache',
+	group => 'apache',
+	mode => 750,
+	require => File['/etc/icingaweb2'],
+  }
+  
+  file { '/etc/icingaweb2/enabledModules/monitoring':
+    ensure => 'link',
+    target => '/usr/share/icingaweb2/modules/monitoring',
+    require => File['/etc/icingaweb2/enabledModules'],
+  }
+  
+  file { '/etc/icingaweb2/modules/monitoring':
+    ensure => directory,
+	owner => 'apache',
+	group => 'apache',
+	mode => 750,
+	require => File['/etc/icingaweb2/modules'],
+  }
+
+  file { '/etc/icingaweb2/modules/monitoring/backends.ini':
+    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/modules/monitoring/backends.ini',
+	require => File['/etc/icingaweb2/modules/monitoring'],
+  }
+  
+  file { '/etc/icingaweb2/modules/monitoring/config.ini':
+    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/modules/monitoring/config.ini',
+	require => File['/etc/icingaweb2/modules/monitoring'],
+  }
+  
+  file { '/etc/icingaweb2/modules/monitoring/instances.ini':
+    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/modules/monitoring/instances.ini',
+	require => File['/etc/icingaweb2/modules/monitoring'],
+  }
 }
 
 class icingaweb2-internal-db-mysql {
