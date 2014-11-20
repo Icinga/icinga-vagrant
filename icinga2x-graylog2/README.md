@@ -90,7 +90,7 @@ network port forwarding).
 ## Documentation
 
 The Icinga 2 documentation is located at http://docs.icinga.org
-The Graylog2 documentation is located at http://www.icinga.org/resources/documentation
+The Graylog2 documentation is located at http://www.graylog2.org/resources/documentation
 
 # Updates
 
