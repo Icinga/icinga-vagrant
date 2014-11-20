@@ -70,6 +70,12 @@ class icingaweb2 {
     target => '/usr/share/icingaweb2/modules/monitoring',
     require => File['/etc/icingaweb2/enabledModules'],
   }
+
+  file { '/etc/icingaweb2/enabledModules/doc':
+    ensure => 'link',
+    target => '/usr/share/icingaweb2/modules/doc',
+    require => File['/etc/icingaweb2/enabledModules'],
+  }
   
   file { '/etc/icingaweb2/modules/monitoring':
     ensure => directory,
