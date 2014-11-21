@@ -2,6 +2,9 @@
 
 Icinga Vagrant boxes used for development, tests and demo cases.
 
+Additionally there are boxes with special uses cases like Graphite,
+Graylog2, etc.
+
 ## Requirements
 
 Each VM requires at least 1 Core and 1 GB RAM.
@@ -98,6 +101,16 @@ Choose one of the available boxes below.
 
     $ cd icinga2x-cluster && vagrant up
 
+### Icinga 2 and Graylog2
+
+* 1 VM 
+* Icinga 2 Core
+* Graylog2 Server and Web with Elasticsearch, MongoDB
+
+[Documentation](icinga2x-graylog2/README.md):
+
+    $ cd icinga2x-graylog2 && vagrant up
+
 ### Graphite Standalone
 
 * 1 VM
@@ -120,5 +133,10 @@ Choose one of the available boxes below.
   icinga2x-cluster  | icinga2a  | 8085      | 80
   icinga2x-cluster  | icinga2b  | 2086      | 22
   icinga2x-cluster  | icinga2b  | 8086      | 80
+  icinga2x-graylog2 | i2g2	| 2110      | 22
+  icinga2x-graylog2 | i2g2	| 8110      | 80
+  icinga2x-graylog2 | i2g2	| 9000      | 9000
+  icinga2x-graylog2 | i2g2	| 12201     | 12201 (tcp/udp)
+  icinga2x-graylog2 | i2g2	| 12900     | 12900
   graphite          | graphite  | 2090      | 22
   graphite          | graphite  | 8090      | 80
