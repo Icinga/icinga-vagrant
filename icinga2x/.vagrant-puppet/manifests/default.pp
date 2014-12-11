@@ -1,7 +1,7 @@
 include icinga-rpm-snapshot
 include epel
 include apache
-include mysql
+include mariadb
 include icinga2
 include icinga2-ido-mysql
 include icinga2-classicui
@@ -31,6 +31,10 @@ file { '/var/www/html/icinga_wall.png':
 ####################################
 # Misc
 ####################################
+
+Package {
+  allow_virtual => false
+}
 
 package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb' ]:
   ensure => 'installed'

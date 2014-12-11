@@ -27,7 +27,7 @@ class nsca-ng-server {
   exec { 'iptables-allow-nsca-ng':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless => 'grep -Fxqe "-A INPUT -m state --state NEW -m tcp -p tcp --dport 5668 -j ACCEPT" /etc/sysconfig/iptables',
-    command => 'lokkit -p 5668:tcp'
+    command => 'firewall-cmd --permanent --add-port=5668/tcp; firewall-cmd --add-port=5668/tcp'
   }
 
   user { "nsca":

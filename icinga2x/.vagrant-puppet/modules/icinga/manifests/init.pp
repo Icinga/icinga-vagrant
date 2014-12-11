@@ -46,7 +46,7 @@ class icinga {
 
 class icinga-idoutils-libdbi-mysql {
   include icinga-rpm-snapshot
-  include mysql
+  include mariadb
 
   package { 'icinga-idoutils-libdbi-mysql':
     ensure => installed,
@@ -87,7 +87,7 @@ class icinga-idoutils-libdbi-mysql {
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless => 'mysql -uicinga -picinga icinga',
     command => 'mysql -uroot -e "CREATE DATABASE icinga; GRANT ALL ON icinga.* TO icinga@localhost IDENTIFIED BY \'icinga\';"',
-    require => Service['mysqld']
+    require => Service['mariadbd']
   }
 
   exec { 'populate-mysql-icinga-idoutils-db':

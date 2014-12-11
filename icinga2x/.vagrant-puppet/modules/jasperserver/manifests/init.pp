@@ -8,7 +8,7 @@
 #
 # Actions:
 #
-# Requires: mysql, tomcat6
+# Requires: mariadb, tomcat6
 #
 # Sample Usage:
 #
@@ -16,7 +16,7 @@
 #
 
 class jasperserver {
-  include mysql
+  include mariadb
   include tomcat6
 
   $jasperVersion = "5.5.0"
@@ -51,7 +51,7 @@ class jasperserver {
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless => "mysql -u${jasperDbUsername} -p${jasperDbPassword} ${jasperDbName}",
     command => "mysql -uroot -p${mysql::mysqlRootPassword} -e \"CREATE DATABASE ${jasperDbName}; GRANT ALL ON ${jasperDbName}.* TO ${jasperDbUsername}@${jasperDbHost} IDENTIFIED BY \'${jasperDbPassword}\';\"",
-    require => Service['mysqld']
+    require => Service['mariadb']
   }
 
   exec { 'get-jasperserver-binary':

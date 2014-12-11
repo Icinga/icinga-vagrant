@@ -8,7 +8,7 @@
 #
 # Actions:
 #
-# Requires: mysql, tomcat6, jasperserver, php
+# Requires: mariadb, tomcat6, jasperserver, php
 #
 # Sample Usage:
 #
@@ -16,7 +16,7 @@
 #
 
 class icinga-reports {
-  include mysql
+  include mariadb
   include tomcat6
   include jasperserver
   include php
@@ -94,6 +94,6 @@ class icinga-reports {
     path => "/bin:/usr/bin:/sbin:/usr/sbin",
     unless => "mysql -u${IdoDbUsername} -p${IdoDbPassword} ${IdoDbName} -e 'select name from mysql.proc where name='${icingaAvailabilityFunctionName}';'",
     command => "mysql -u${IdoDbUsername} -p${IdoDbPassword} ${IdoDbName} < ${icingaReportsHome}/icinga-reports-${icingaReportsVersion}/db/icinga/mysql/availability.sql",
-    require => [ Service['mysqld'], Exec['install-jar-files'] ]
+    require => [ Service['mariadb'], Exec['install-jar-files'] ]
   }
 }

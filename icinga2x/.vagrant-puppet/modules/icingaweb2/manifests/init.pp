@@ -19,7 +19,8 @@ class icingaweb2 {
   }
 
   package { ['php-ZendFramework', 'php-ZendFramework-Db-Adapter-Pdo-Mysql']:
-    ensure => latest
+    ensure => latest,
+    require => Class['icinga-rpm-snapshot']
   }
   
   file { '/etc/icingaweb2':
@@ -106,7 +107,7 @@ class icingaweb2-internal-db-mysql {
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless  => 'mysql -uicingaweb -picingaweb icingaweb',
     command => 'mysql -uroot -e "CREATE DATABASE icingaweb; GRANT ALL ON icingaweb.* TO icingaweb@localhost IDENTIFIED BY \'icingaweb\';"',
-    require => Service['mysqld']
+    require => Service['mariadb']
   }
 
   exec { 'populate-icingaweb-mysql-db':

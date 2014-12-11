@@ -14,11 +14,11 @@
 #
 class icinga-rpm-snapshot {
   yumrepo { 'icinga-rpm-snapshot':
-    baseurl => "http://packages.icinga.org/epel/6/snapshot/",
+    baseurl => "http://packages.icinga.org/epel/\$releasever/snapshot/",
     enabled => '1',
     gpgcheck => '1',
     gpgkey => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA',
-    descr => "Icinga Snapshot Packages for Enterprise Linux 6 - ${::architecture}"
+    descr => "Icinga Snapshot Packages for Enterprise Linux - ${::architecture}"
   }
 
   file { "/etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA":

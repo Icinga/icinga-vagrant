@@ -1,11 +1,11 @@
 class icinga-web {
   include icinga-rpm-snapshot
   include php
-  include mysql
+  include mariadb
   include pgsql
 
   php::extension { ['php-mysql']:
-    require => [ Class['mysql'] ]
+    require => [ Class['mariadb'] ]
   }
 
   php::extension { ['php-pgsql']:
@@ -28,7 +28,7 @@ class icinga-web {
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless => 'mysql -uicinga_web -picinga_web icinga_web',
     command => 'mysql -uroot -e "CREATE DATABASE icinga_web; GRANT ALL ON icinga_web.* TO icinga_web@localhost IDENTIFIED BY \'icinga_web\';"',
-    require => Service['mysqld']
+    require => Service['mariadb']
   }
 
   exec { 'populate-icinga-web-mysql-db':
