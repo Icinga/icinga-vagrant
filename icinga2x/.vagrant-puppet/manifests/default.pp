@@ -9,6 +9,7 @@ include icinga2-icinga-web
 include icingaweb2
 include icingaweb2-internal-db-mysql
 include monitoring-plugins
+include selinux
 
 ####################################
 # Start page at http://localhost/
