@@ -134,7 +134,6 @@ else
       port: 12201,
       bind_address: '0.0.0.0'
     },
-    creator_user_id: 'admin',
     type: 'org.graylog2.inputs.gelf.tcp.GELFTCPInput'
   })
 
@@ -151,7 +150,6 @@ else
       port: 12201,
       bind_address: '0.0.0.0'
     },
-    creator_user_id: 'admin',
     type: 'org.graylog2.inputs.gelf.udp.GELFUDPInput'
   })
 
@@ -164,7 +162,6 @@ else
   server.add_stream({
     title: 'Catch all',
     description: 'All messages',
-    creator_user_id: 'admin',
     rules: [
       {
         field: 'message',
@@ -177,7 +174,6 @@ else
 
   server.add_stream_alert('Catch all', {
     type: 'message_count',
-    creator_user_id: 'admin',
     parameters: {
       grace: 10,
       time: 5,

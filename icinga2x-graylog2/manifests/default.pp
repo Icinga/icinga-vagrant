@@ -5,7 +5,7 @@
 
 include 'epel'
 
-$graylog2_version = "0.91"
+$graylog2_version = "0.92"
 $elasticsearch_version = ""
 
 exec { "disable selinux on $hostname":
