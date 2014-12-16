@@ -193,7 +193,6 @@ service { 'httpd':
   enable     => true,
   hasrestart => true,
   hasstatus  => true,
-  provider   => 'systemd'
   require => Package['httpd']
 }
 
