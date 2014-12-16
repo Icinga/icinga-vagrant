@@ -2,7 +2,7 @@
 
 # inspired by https://github.com/stahnma/puppet-module-epel/blob/master/manifests/rpm_gpg_key.pp
 
-define icinga-rpm-snapshot::key($path) {
+define icinga-rpm::key($path) {
   exec { "import-key-${name}":
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     command => "rpm --import ${path}",

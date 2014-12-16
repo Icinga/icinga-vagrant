@@ -161,7 +161,7 @@ file { '/usr/lib/nagios/plugins/check-graylog2-stream-wrapper':
 
 
 # Icinga 2
-include 'icinga-rpm-snapshot'
+include 'icinga-rpm'
 include 'icinga2'
 
 file { '/etc/icinga2/conf.d/demo.conf':
@@ -200,7 +200,7 @@ service { 'httpd':
 package { 'icinga2-classicui-config':
   ensure => latest,
   before => Package["icinga-gui"],
-  require => [ Class['icinga-rpm-snapshot'], Package['httpd'] ],
+  require => [ Class['icinga-rpm'], Package['httpd'] ],
   notify => Service['httpd']
 } ->
 package { 'icinga-gui':

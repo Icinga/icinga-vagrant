@@ -1,4 +1,4 @@
-# Class: icinga-rpm-snapshot
+# Class: icinga-rpm
 #
 #   Configure Icinga repositories.
 #
@@ -10,15 +10,15 @@
 #
 # Sample Usage:
 #
-#   include icinga-rpm-snapshot
+#   include icinga-rpm
 #
-class icinga-rpm-snapshot {
-  yumrepo { 'icinga-rpm-snapshot':
-    baseurl => "http://packages.icinga.org/epel/\$releasever/snapshot/",
+class icinga-rpm {
+  yumrepo { 'icinga-rpm':
+    baseurl => "http://packages.icinga.org/epel/\$releasever/release/",
     enabled => '1',
     gpgcheck => '1',
     gpgkey => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA',
-    descr => "Icinga Snapshot Packages for Enterprise Linux - ${::architecture}"
+    descr => "Icinga Packages for Enterprise Linux - ${::architecture}"
   }
 
   file { "/etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA":
@@ -29,9 +29,9 @@ class icinga-rpm-snapshot {
     source => "puppet:////vagrant/files/etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA" #hardcoded paths are ugly TODO
   }
 
-  icinga-rpm-snapshot::key { "RPM-GPG-KEY-ICINGA":
+  icinga-rpm::key { "RPM-GPG-KEY-ICINGA":
     path => "/etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA",
-    before => Yumrepo['icinga-rpm-snapshot']
+    before => Yumrepo['icinga-rpm']
   }
 }
 
