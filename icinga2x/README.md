@@ -58,7 +58,7 @@ credentials.
   ------------------|-------------------|----------------
   Icinga Classic UI | /icinga           | icingaadmin/icingaadmin
   Icinga Web 1.x    | /icinga-web       | root/password
-  Icinga Web 2      | /icingaweb        | icingaadmin/icinga
+  Icinga Web 2      | /icingaweb2       | icingaadmin/icinga
 
 
 ## Ports

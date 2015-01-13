@@ -55,7 +55,7 @@ urls and credentials.
 
   GUI               | Url               | Credentials
   ------------------|-------------------|----------------
-  Icinga Web 2      | /icingaweb        | icingaadmin/icinga
+  Icinga Web 2      | /icingaweb2       | icingaadmin/icinga
 
 
 ## Ports
