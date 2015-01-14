@@ -108,7 +108,7 @@ class icingaweb2-internal-db-mysql {
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless  => 'mysql -uicingaweb2 -picingaweb2 icingaweb2',
     command => 'mysql -uroot -e "CREATE DATABASE icingaweb2; GRANT ALL ON icingaweb2.* TO icingaweb2@localhost IDENTIFIED BY \'icingaweb2\';"',
-    require => Service['mariadb']
+    require => Service['mysqld']
   }
 
   exec { 'populate-icingaweb2-mysql-db':
