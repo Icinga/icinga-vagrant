@@ -25,9 +25,10 @@ class icingaweb2 {
   
   file { '/etc/icingaweb2':
     ensure => directory,
-	owner => 'apache',
-	group => 'apache',
-	mode => 750
+    owner => 'apache',
+    group => 'apache',
+    mode => 750,
+    require => Class['apache']
   }
   
   file { '/etc/icingaweb2/authentication.ini':
