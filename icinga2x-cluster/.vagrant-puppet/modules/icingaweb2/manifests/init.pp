@@ -25,9 +25,10 @@ class icingaweb2 {
   
   file { '/etc/icingaweb2':
     ensure => directory,
-	owner => 'apache',
-	group => 'apache',
-	mode => 750
+    owner => 'apache',
+    group => 'apache',
+    mode => 750,
+    require => Class['apache']
   }
   
   file { '/etc/icingaweb2/authentication.ini':
@@ -107,7 +108,7 @@ class icingaweb2-internal-db-mysql {
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless  => 'mysql -uicingaweb2 -picingaweb2 icingaweb2',
     command => 'mysql -uroot -e "CREATE DATABASE icingaweb2; GRANT ALL ON icingaweb2.* TO icingaweb2@localhost IDENTIFIED BY \'icingaweb2\';"',
-    require => Service['mariadb']
+    require => Service['mysqld']
   }
 
   exec { 'populate-icingaweb2-mysql-db':
