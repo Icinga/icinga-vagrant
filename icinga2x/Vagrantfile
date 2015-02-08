@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 VAGRANTFILE_API_VERSION = "2"
-VAGRANT_REQUIRED_VERSION = "1.2.0"
+VAGRANT_REQUIRED_VERSION = "1.6.5"
 
 # Require 1.6.5 at least
 if ! defined? Vagrant.require_version
@@ -28,6 +28,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :puppet do |puppet|
     puppet.module_path = ".vagrant-puppet/modules"
     puppet.manifests_path = ".vagrant-puppet/manifests"
+    puppet.hiera_config_path = "hiera.yaml"
     #puppet.options = "--verbose --debug"
   end
   config.vm.provision :shell, :path => ".vagrant-puppet/manifests/finalize.sh"

@@ -43,6 +43,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       app_config.vm.provision :puppet do |puppet|
         puppet.module_path = ".vagrant-puppet/modules"
         puppet.manifests_path = ".vagrant-puppet/manifests"
+        puppet.hiera_config_path = "hiera.yaml"
         #puppet.options = "--verbose --debug"
       end
       app_config.vm.provision :shell, :path => ".vagrant-puppet/manifests/finalize.sh"
