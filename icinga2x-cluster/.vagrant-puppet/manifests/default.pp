@@ -39,6 +39,24 @@ file { '/etc/profile.d/env.sh':
   source => 'puppet:////vagrant/.vagrant-puppet/files/etc/profile.d/env.sh'
 }
 
+file { [ '/root/.vim',
+       '/root/.vim/syntax',
+       '/root/.vim/ftdetect' ] :
+  ensure    => 'directory'
+}
+
+exec { 'copy-vim-syntax-file':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => 'cp -f /usr/share/doc/icinga2-common-$(rpm -q icinga2-common | cut -d\'-\' -f3)/syntax/vim/syntax/icinga2.vim /root/.vim/syntax/icinga2.vim',
+  require => [ Package['vim-enhanced'], Package['icinga2-common'], File['/root/.vim/syntax'] ]
+}
+
+exec { 'copy-vim-ftdetect-file':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => 'cp -f /usr/share/doc/icinga2-common-$(rpm -q icinga2-common | cut -d\'-\' -f3)/syntax/vim/ftdetect/icinga2.vim /root/.vim/ftdetect/icinga2.vim',
+  require => [ Package['vim-enhanced'], Package['icinga2-common'], File['/root/.vim/syntax'] ]
+}
+
 ####################################
 # Start page at http://localhost/
 ####################################
