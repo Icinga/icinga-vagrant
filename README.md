@@ -11,7 +11,7 @@ Each VM requires at least 1 Core and 1 GB RAM.
 
 The icinga2x-cluster demo with 2 VMs requires at least a Quad-Core with 4 GB RAM.
 
-* Vagrant >= 1.2.x from http://www.vagrantup.com
+* Vagrant >= 1.6.5 from http://www.vagrantup.com
 * Virtualbox >= 4.2.16 from http://www.virtualbox.org
 
 Windows users require additionally

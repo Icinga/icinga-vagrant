@@ -28,7 +28,7 @@ class icingaweb2 {
     owner => 'apache',
     group => 'apache',
     mode => 750,
-    require => Class['apache']
+    require => Package['apache']
   }
   
   file { '/etc/icingaweb2/authentication.ini':

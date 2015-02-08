@@ -1,7 +1,7 @@
 include icinga-rpm-snapshot
 include epel
 include apache
-include mysql
+include mariadb
 include snmp
 include icinga2
 include icinga2-ido-mysql
@@ -14,6 +14,10 @@ include monitoring-plugins
 ####################################
 # Basic stuff
 ####################################
+
+Package {
+  allow_virtual => false
+}
 
 package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb' ]:
   ensure => 'installed'
@@ -56,8 +60,8 @@ file { '/var/www/html/icinga_wall.png':
 # Plugins
 ####################################
 
-file { '/usr/lib/nagios/plugins/check_snmp_int.pl':
-   source    => 'puppet:////vagrant/.vagrant-puppet/files/usr/lib/nagios/plugins/check_snmp_int.pl',
+file { '/usr/lib64/nagios/plugins/check_snmp_int.pl':
+   source    => 'puppet:////vagrant/.vagrant-puppet/files/usr/lib64/nagios/plugins/check_snmp_int.pl',
    owner     => 'root',
    group     => 'root',
    mode      => 755,
@@ -89,8 +93,8 @@ file { "/etc/icinga2/constants.conf":
 
 exec { 'iptables-allow-icinga2-cluster':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  #unless => 'grep -Fxqe "-A INPUT -m state --state NEW -m tcp -p tcp --dport 5665 -j ACCEPT" /etc/sysconfig/iptables',
-  command => 'lokkit -p 5665:tcp',
+  unless => 'grep -Fxqe "-A INPUT -m state --state NEW -m tcp -p tcp --dport 5665 -j ACCEPT" /etc/sysconfig/iptables',
+  command => 'firewall-cmd --permanent --add-port=5665/tcp; firewall-cmd --add-port=5665/tcp',
   #notify => Service['icinga2']
 }
 

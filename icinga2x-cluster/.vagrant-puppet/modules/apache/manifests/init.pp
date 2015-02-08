@@ -26,7 +26,7 @@ class apache {
   exec { 'iptables-allow-http':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless => 'grep -Fxqe "-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT" /etc/sysconfig/iptables',
-    command => 'lokkit --enabled --service=http'
+    command => 'firewall-cmd --permanent --add-service=http; firewall-cmd --add-service=http'
   }
 
   service { $apache:

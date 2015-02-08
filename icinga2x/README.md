@@ -14,7 +14,7 @@ Backend is IDO MySQL only.
 
 ## Requirements
 
-* Vagrant >= 1.2.x from http://www.vagrantup.com
+* Vagrant >= 1.6.5 from http://www.vagrantup.com
 * Virtualbox >= 4.2.16 from http://www.virtualbox.org
 
 Windows users require additionally
