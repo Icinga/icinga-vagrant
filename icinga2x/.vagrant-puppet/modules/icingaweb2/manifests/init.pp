@@ -25,9 +25,6 @@ class icingaweb2 {
 
   file { '/etc/icingaweb2':
     ensure => directory,
-    owner => 'apache',
-    group => 'apache',
-    mode => 750,
     require => Package['apache']
   }
 
@@ -53,17 +50,11 @@ class icingaweb2 {
 
   file { '/etc/icingaweb2/modules':
     ensure => directory,
-    owner => 'apache',
-    group => 'apache',
-    mode => 750,
     require => File['/etc/icingaweb2'],
   }
 
   file { '/etc/icingaweb2/enabledModules':
     ensure => directory,
-    owner => 'apache',
-    group => 'apache',
-    mode => 750,
     require => File['/etc/icingaweb2'],
   }
 
@@ -81,9 +72,6 @@ class icingaweb2 {
 
   file { '/etc/icingaweb2/modules/monitoring':
     ensure => directory,
-    owner => 'apache',
-    group => 'apache',
-    mode => 750,
     require => File['/etc/icingaweb2/modules'],
   }
 
