@@ -10,6 +10,7 @@ include icinga2-ido-mysql
 include icingaweb2
 include icingaweb2-internal-db-mysql
 include monitoring-plugins
+include selinux
 
 ####################################
 # Basic stuff
