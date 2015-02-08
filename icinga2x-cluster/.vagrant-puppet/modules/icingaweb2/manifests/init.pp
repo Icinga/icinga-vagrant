@@ -3,7 +3,7 @@ class icingaweb2 {
     ensure => latest,
     require => [ Class['icinga-rpm-snapshot'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
     alias => 'icinga2web',
-    notify    => Service['apache']
+    notify => Service['apache']
   }
 
   package { 'php-Icinga':
@@ -22,7 +22,7 @@ class icingaweb2 {
     ensure => latest,
     require => Class['icinga-rpm-snapshot']
   }
-  
+
   file { '/etc/icingaweb2':
     ensure => directory,
     owner => 'apache',
@@ -30,43 +30,43 @@ class icingaweb2 {
     mode => 750,
     require => Package['apache']
   }
-  
+
   file { '/etc/icingaweb2/authentication.ini':
     source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/authentication.ini',
-	require => File['/etc/icingaweb2'],
+    require => File['/etc/icingaweb2'],
   }
 
   file { '/etc/icingaweb2/config.ini':
     source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/config.ini',
-	require => File['/etc/icingaweb2'],
+    require => File['/etc/icingaweb2'],
   }
 
-  file { '/etc/icingaweb2/permissions.ini':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/permissions.ini',
-	require => File['/etc/icingaweb2'],
+  file { '/etc/icingaweb2/roles.ini':
+    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/roles.ini',
+    require => File['/etc/icingaweb2'],
   }
-  
+
   file { '/etc/icingaweb2/resources.ini':
     source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/resources.ini',
-	require => File['/etc/icingaweb2'],
+    require => File['/etc/icingaweb2'],
   }
 
   file { '/etc/icingaweb2/modules':
     ensure => directory,
-	owner => 'apache',
-	group => 'apache',
-	mode => 750,
-	require => File['/etc/icingaweb2'],
+    owner => 'apache',
+    group => 'apache',
+    mode => 750,
+    require => File['/etc/icingaweb2'],
   }
-  
+
   file { '/etc/icingaweb2/enabledModules':
     ensure => directory,
-	owner => 'apache',
-	group => 'apache',
-	mode => 750,
-	require => File['/etc/icingaweb2'],
+    owner => 'apache',
+    group => 'apache',
+    mode => 750,
+    require => File['/etc/icingaweb2'],
   }
-  
+
   file { '/etc/icingaweb2/enabledModules/monitoring':
     ensure => 'link',
     target => '/usr/share/icingaweb2/modules/monitoring',
@@ -78,28 +78,28 @@ class icingaweb2 {
     target => '/usr/share/icingaweb2/modules/doc',
     require => File['/etc/icingaweb2/enabledModules'],
   }
-  
+
   file { '/etc/icingaweb2/modules/monitoring':
     ensure => directory,
-	owner => 'apache',
-	group => 'apache',
-	mode => 750,
-	require => File['/etc/icingaweb2/modules'],
+    owner => 'apache',
+    group => 'apache',
+    mode => 750,
+    require => File['/etc/icingaweb2/modules'],
   }
 
   file { '/etc/icingaweb2/modules/monitoring/backends.ini':
     source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/modules/monitoring/backends.ini',
-	require => File['/etc/icingaweb2/modules/monitoring'],
+    require => File['/etc/icingaweb2/modules/monitoring'],
   }
-  
+
   file { '/etc/icingaweb2/modules/monitoring/config.ini':
     source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/modules/monitoring/config.ini',
-	require => File['/etc/icingaweb2/modules/monitoring'],
+    require => File['/etc/icingaweb2/modules/monitoring'],
   }
-  
+
   file { '/etc/icingaweb2/modules/monitoring/instances.ini':
     source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/modules/monitoring/instances.ini',
-	require => File['/etc/icingaweb2/modules/monitoring'],
+    require => File['/etc/icingaweb2/modules/monitoring'],
   }
 }
 
