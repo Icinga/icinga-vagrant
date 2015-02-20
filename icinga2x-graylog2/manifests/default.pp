@@ -1,11 +1,11 @@
-# Demo box for graylog2 & icinga2
+# Demo box for Graylog & icinga2
 # Includes: GelfWriter, check-graylog2-stream
 # OSMC demo config
 # admin pw: admin
 
 include 'epel'
 
-$graylog2_version = "0.92"
+$graylog_version = "1.0"
 $elasticsearch_version = ""
 
 exec { "disable selinux on $hostname":
@@ -59,27 +59,27 @@ case $operatingsystem {
         require => Package['firewalld']
       }
 
-      rh_firewall_add_port { 'iptables-graylog2-001':
+      rh_firewall_add_port { 'iptables-graylog-001':
         zone => 'public',
         port => '80/tcp',
       } ->
-      rh_firewall_add_port { 'iptables-graylog2-002':
+      rh_firewall_add_port { 'iptables-graylog-002':
         zone => 'public',
         port => '9000/tcp',
       } ->
-      rh_firewall_add_port { 'iptables-graylog2-003':
+      rh_firewall_add_port { 'iptables-graylog-003':
         zone => 'public',
         port => '9300/tcp',
       } ->
-      rh_firewall_add_port { 'iptables-graylog2-004':
+      rh_firewall_add_port { 'iptables-graylog-004':
         zone => 'public',
         port => '12201/tcp',
       } ->
-      rh_firewall_add_port { 'iptables-graylog2-005':
+      rh_firewall_add_port { 'iptables-graylog-005':
         zone => 'public',
         port => '12201/udp',
       } ->
-      rh_firewall_add_port { 'iptables-graylog2-006':
+      rh_firewall_add_port { 'iptables-graylog-006':
         zone => 'public',
         port => '12900/tcp',
       }
@@ -102,9 +102,9 @@ class { 'elasticsearch':
   repo_version => '1.3',
   java_install => true,
 } ->
-elasticsearch::instance { 'graylog2-es':
+elasticsearch::instance { 'graylog-es':
   config => {
-    'cluster.name' => 'graylog2',
+    'cluster.name' => 'graylog',
     'network.host' => '127.0.0.1'
   },
 }
@@ -116,11 +116,11 @@ class { '::mongodb::globals':
 class { '::mongodb::server': }
 
 
-# Graylog2
+# Graylog
 class { 'graylog2::repo':
-  version => $graylog2_version,
+  version => $graylog_version,
   # hardcode centos6, as they don't have el7 yet
-  baseurl => "https://packages.graylog2.org/repo/el/6/${graylog2_version}/x86_64/"
+  baseurl => "https://packages.graylog2.org/repo/el/6/${graylog_version}/x86_64/"
 } ->
 class { 'graylog2::server':
   service_enable	     => true,
@@ -133,9 +133,9 @@ class { 'graylog2::server':
   elasticsearch_network_host => '127.0.0.1',
   password_secret            => '3eb06615884fec5ae541b8661b430e8da89ed5fddf81c4bdc6a2a714abb9b51d',
   root_password_sha2         => '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
-  elasticsearch_cluster_name => 'graylog2',
+  elasticsearch_cluster_name => 'graylog',
   require                    => [
-    Elasticsearch::Instance['graylog2-es'],
+    Elasticsearch::Instance['graylog-es'],
     Class['mongodb::server'],
     Class['graylog2::repo'],
   ],

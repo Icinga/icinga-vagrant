@@ -1,7 +1,7 @@
-# Icinga 2 & GRaylog 2 Vagrant Box
+# Icinga 2 & Graylog Vagrant Box
 
 * Icinga 2 Core
-* Graylog2 Server & Web
+* Graylog Server & Web
 * MongoDB, Elasticsearch as Requirements
 
   Instance  | Network                   | HTTP
@@ -57,10 +57,10 @@ the packages and configuration.
 
 ## User Interfaces
 
-  GUI               | Url               | Credentials
-  ------------------|-------------------|----------------
-  Graylog2          | :8110/icinga 	| icingaadmin/icingaadmin
-  Graylog2          | :9000/		| admin/admin
+  GUI              | Url               | Credentials
+  -----------------|-------------------|------------------------
+  Graylog          | :8110/icinga      | icingaadmin/icingaadmin
+  Graylog          | :9000/            | admin/admin
 
 
 ## Ports
@@ -90,7 +90,7 @@ network port forwarding).
 ## Documentation
 
 The Icinga 2 documentation is located at http://docs.icinga.org
-The Graylog2 documentation is located at http://www.graylog2.org/resources/documentation
+The Graylog documentation is located at http://docs.graylog.org
 
 # Updates
 
