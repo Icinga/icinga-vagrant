@@ -297,6 +297,14 @@ case $hostname {
       notify    => Service['icinga2']
     }
 
+    file { '/etc/icinga2/zones.d/checker/2.3.conf':
+      owner  => icinga,
+      group  => icinga,
+      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/2.3.conf',
+      require   => File['/etc/icinga2/zones.d/checker'],
+      notify    => Service['icinga2']
+    }
+
     # global template zone
     file { '/etc/icinga2/zones.d/global-templates/templates.conf':
       owner  => icinga,
