@@ -30,7 +30,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   servers.each do |server_name, server_ip|
     config.vm.define server_name do |app_config|
       app_config.vm.box = "centos-70-x64-vbox"
-      app_config.vm.box_url = "http://boxes.icinga.org/centos-70-x64-vbox"
+      app_config.vm.box_url = "http://boxes.icinga.org/centos-70-x64-vbox.box"
       app_config.vm.hostname = "#{server_name.to_s}"
       app_config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
       app_config.vm.network :forwarded_port, guest: 22, host: ssh_port[server_name], auto_correct: true
