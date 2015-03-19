@@ -81,15 +81,10 @@ apply Service "alert-" for (stream => config in host.vars.streams) {
  * we can filter on.
  */
 
-object CheckCommand "graylog2-random-check" {
-  methods = { execute = "RandomCheck" }
-}
-
-
 apply Service "random-00" for (check in host.vars.random) {
   import "graylog2-service"
 
-  check_command = "graylog2-random-check"
+  check_command = "random"
 
   assign where host.vars.random
 }
