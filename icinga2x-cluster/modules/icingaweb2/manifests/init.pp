@@ -2,8 +2,8 @@ class icingaweb2 {
   package { 'icingaweb2':
     ensure => latest,
     require => [ Class['icinga-rpm-snapshot'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
-    alias => 'icinga2web',
-    notify => Service['apache']
+    alias => 'icingaweb2',
+    #notify => Service['apache']
   }
 
   package { 'php-Icinga':
@@ -25,7 +25,7 @@ class icingaweb2 {
 
   file { '/etc/icingaweb2':
     ensure => directory,
-    require => Package['apache']
+    require => Class['apache']
   }
 
   file { '/etc/icingaweb2/authentication.ini':

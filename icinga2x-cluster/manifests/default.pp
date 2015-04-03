@@ -69,14 +69,14 @@ file { '/var/www/html/index.html':
   source    => 'puppet:////vagrant/files/var/www/html/index.html',
   owner     => 'apache',
   group     => 'apache',
-  require   => Package['apache']
+  require   => Class['apache']
 }
 
 file { '/var/www/html/icinga_wall.png':
   source    => 'puppet:////vagrant/files/var/www/html/icinga_wall.png',
   owner     => 'apache',
   group     => 'apache',
-  require   => Package['apache']
+  require   => Class['apache']
 }
 
 ####################################
