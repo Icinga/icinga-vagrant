@@ -25,3 +25,6 @@
 [submodule "icinga2x-graylog2/modules/selinux"]
 	path = icinga2x-graylog2/modules/selinux
 	url = https://github.com/jfryman/puppet-selinux
+[submodule "icinga2x-cluster/modules/vcsrepo"]
+	path = icinga2x-cluster/modules/vcsrepo
+	url = https://github.com/puppetlabs/puppetlabs-vcsrepo
