@@ -37,7 +37,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       app_config.vm.network :forwarded_port, guest: 80, host: http_port[server_name], auto_correct: true
       app_config.vm.network :private_network, ip: "#{server_ip}"
       app_config.vm.provider "virtualbox" do |vb|
-        vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate//vagrant/config", "1"]
 	vb.customize ["modifyvm", :id, "--memory", "1024"]
       end
       app_config.vm.provision :puppet do |puppet|

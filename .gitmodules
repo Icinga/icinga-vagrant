@@ -31,9 +31,12 @@
 [submodule "icinga2x-cluster/modules/stdlib"]
 	path = icinga2x-cluster/modules/stdlib
 	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
-[submodule "icinga2x-cluster/modules/epel"]
-	path = icinga2x-cluster/modules/epel
-	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
 [submodule "icinga2x-cluster/modules/apache"]
 	path = icinga2x-cluster/modules/apache
 	url = https://github.com/puppetlabs/puppetlabs-apache.git
+[submodule "icinga2x-cluster/modules/concat"]
+	path = icinga2x-cluster/modules/concat
+	url = https://github.com/puppetlabs/puppetlabs-concat.git
+[submodule "icinga2x-cluster/modules/epel"]
+	path = icinga2x-cluster/modules/epel
+	url = https://github.com/stahnma/puppet-module-epel.git
