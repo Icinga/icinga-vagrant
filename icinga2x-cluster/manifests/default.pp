@@ -34,13 +34,13 @@ package { 'bash-completion':
 }
 
 file { '/etc/motd':
-  source => 'puppet:////vagrant/.vagrant-puppet/files/etc/motd',
+  source => 'puppet:////vagrant/files/etc/motd',
   owner => root,
   group => root
 }
 
 file { '/etc/profile.d/env.sh':
-  source => 'puppet:////vagrant/.vagrant-puppet/files/etc/profile.d/env.sh'
+  source => 'puppet:////vagrant/files/etc/profile.d/env.sh'
 }
 
 file { [ '/root/.vim',
@@ -66,14 +66,14 @@ exec { 'copy-vim-ftdetect-file':
 ####################################
 
 file { '/var/www/html/index.html':
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/var/www/html/index.html',
+  source    => 'puppet:////vagrant/files/var/www/html/index.html',
   owner     => 'apache',
   group     => 'apache',
   require   => Package['apache']
 }
 
 file { '/var/www/html/icinga_wall.png':
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/var/www/html/icinga_wall.png',
+  source    => 'puppet:////vagrant/files/var/www/html/icinga_wall.png',
   owner     => 'apache',
   group     => 'apache',
   require   => Package['apache']
@@ -84,7 +84,7 @@ file { '/var/www/html/icinga_wall.png':
 ####################################
 
 file { '/usr/lib64/nagios/plugins/check_snmp_int.pl':
-   source    => 'puppet:////vagrant/.vagrant-puppet/files/usr/lib64/nagios/plugins/check_snmp_int.pl',
+   source    => 'puppet:////vagrant/files/usr/lib64/nagios/plugins/check_snmp_int.pl',
    owner     => 'root',
    group     => 'root',
    mode      => 755,
@@ -125,7 +125,7 @@ icinga2::feature { 'command': }
 file { "/etc/icinga2/constants.conf":
   owner  => icinga,
   group  => icinga,
-  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/constants.conf",
+  source    => "puppet:////vagrant/files/etc/icinga2/constants.conf",
   require   => Package['icinga2'],
   notify    => Service['icinga2']
 }
@@ -147,7 +147,7 @@ file { '/etc/icinga2':
 file { '/etc/icinga2/icinga2.conf':
   owner  => icinga,
   group  => icinga,
-  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/icinga2.conf",
+  source    => "puppet:////vagrant/files/etc/icinga2/icinga2.conf",
   require   => File['/etc/icinga2']
 }
 
@@ -161,21 +161,21 @@ file { '/etc/icinga2/pki':
 file { '/etc/icinga2/pki/ca.crt':
   owner  => icinga,
   group  => icinga,
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/pki/ca.crt',
+  source    => 'puppet:////vagrant/files/etc/icinga2/pki/ca.crt',
   require   => File['/etc/icinga2/pki']
 }
 
 file { "/etc/icinga2/pki/$hostname.crt":
   owner  => icinga,
   group  => icinga,
-  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/pki/$hostname.crt",
+  source    => "puppet:////vagrant/files/etc/icinga2/pki/$hostname.crt",
   require   => File['/etc/icinga2/pki']
 }
 
 file { "/etc/icinga2/pki/$hostname.key":
   owner  => icinga,
   group  => icinga,
-  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/pki/$hostname.key",
+  source    => "puppet:////vagrant/files/etc/icinga2/pki/$hostname.key",
   require   => File['/etc/icinga2/pki']
 }
 
@@ -191,7 +191,7 @@ exec { 'icinga2-enable-feature-api':
 file { "/etc/icinga2/features-available/api.conf":
   owner  => icinga,
   group  => icinga,
-  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/features-available/api.conf",
+  source    => "puppet:////vagrant/files/etc/icinga2/features-available/api.conf",
   require   => Package['icinga2'],
   notify    => Service['icinga2']
 }
@@ -207,7 +207,7 @@ file { '/etc/icinga2/cluster':
 file { "/etc/icinga2/cluster/$hostname.conf":
   owner  => icinga,
   group  => icinga,
-  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/cluster/$hostname.conf",
+  source    => "puppet:////vagrant/files/etc/icinga2/cluster/$hostname.conf",
   require   => [ File['/etc/icinga2/cluster'], Exec['icinga2-enable-feature-api'] ],
   notify    => Service['icinga2']
 }
@@ -222,7 +222,7 @@ file { '/etc/icinga2/remote':
   owner  => icinga,
   group  => icinga,
   ensure => present,
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/remote',
+  source    => 'puppet:////vagrant/files/etc/icinga2/remote',
   require   => Package['icinga2'],
   notify    => Service['icinga2']
 }
@@ -234,7 +234,7 @@ file { '/etc/icinga2/remote':
 file { "/etc/icinga2/zones.conf":
   owner  => icinga,
   group  => icinga,
-  source    => "puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.conf",
+  source    => "puppet:////vagrant/files/etc/icinga2/zones.conf",
   require   => Package['icinga2'],
   notify    => Service['icinga2']
 }
@@ -244,7 +244,7 @@ file { '/etc/icinga2/zones.d':
   owner  => icinga,
   group  => icinga,
   ensure => present,
-  source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d',
+  source    => 'puppet:////vagrant/files/etc/icinga2/zones.d',
   require   => Package['icinga2'],
   notify    => Service['icinga2']
 }
@@ -261,7 +261,7 @@ case $hostname {
     file { '/etc/icinga2/remote/demo.conf':
       owner  => icinga,
       group  => icinga,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/remote/demo.conf',
+      source    => 'puppet:////vagrant/files/etc/icinga2/remote/demo.conf',
       require   => File['/etc/icinga2/remote'],
       notify    => Service['icinga2']
     }
@@ -284,7 +284,7 @@ case $hostname {
     file { '/etc/icinga2/zones.d/checker/demo.conf':
       owner  => icinga,
       group  => icinga,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/demo.conf',
+      source    => 'puppet:////vagrant/files/etc/icinga2/zones.d/checker/demo.conf',
       require   => File['/etc/icinga2/zones.d/checker'],
       notify    => Service['icinga2']
     }
@@ -292,7 +292,7 @@ case $hostname {
     file { '/etc/icinga2/zones.d/checker/camp.conf':
       owner  => icinga,
       group  => icinga,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/camp.conf',
+      source    => 'puppet:////vagrant/files/etc/icinga2/zones.d/checker/camp.conf',
       require   => File['/etc/icinga2/zones.d/checker'],
       notify    => Service['icinga2']
     }
@@ -300,7 +300,7 @@ case $hostname {
     file { '/etc/icinga2/zones.d/checker/2.3.conf':
       owner  => icinga,
       group  => icinga,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/checker/2.3.conf',
+      source    => 'puppet:////vagrant/files/etc/icinga2/zones.d/checker/2.3.conf',
       require   => File['/etc/icinga2/zones.d/checker'],
       notify    => Service['icinga2']
     }
@@ -309,28 +309,28 @@ case $hostname {
     file { '/etc/icinga2/zones.d/global-templates/templates.conf':
       owner  => icinga,
       group  => icinga,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/global-templates/templates.conf',
+      source    => 'puppet:////vagrant/files/etc/icinga2/zones.d/global-templates/templates.conf',
       require   => File['/etc/icinga2/zones.d/global-templates'],
       notify    => Service['icinga2']
     } ->
     file { '/etc/icinga2/zones.d/global-templates/groups.conf':
       owner  => icinga,
       group  => icinga,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/global-templates/groups.conf',
+      source    => 'puppet:////vagrant/files/etc/icinga2/zones.d/global-templates/groups.conf',
       require   => File['/etc/icinga2/zones.d/global-templates'],
       notify    => Service['icinga2']
     } ->
     file { '/etc/icinga2/zones.d/global-templates/users.conf':
       owner  => icinga,
       group  => icinga,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/global-templates/users.conf',
+      source    => 'puppet:////vagrant/files/etc/icinga2/zones.d/global-templates/users.conf',
       require   => File['/etc/icinga2/zones.d/global-templates'],
       notify    => Service['icinga2']
     } ->
     file { '/etc/icinga2/zones.d/global-templates/commands.conf':
       owner  => icinga,
       group  => icinga,
-      source    => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/zones.d/global-templates/commands.conf',
+      source    => 'puppet:////vagrant/files/etc/icinga2/zones.d/global-templates/commands.conf',
       require   => File['/etc/icinga2/zones.d/global-templates'],
       notify    => Service['icinga2']
     }

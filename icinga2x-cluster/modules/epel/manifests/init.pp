@@ -26,7 +26,7 @@ class epel {
     owner => 'root',
     group => 'root',
     mode => '0644',
-    source => "puppet:////vagrant/.vagrant-puppet/files/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL"
+    source => "puppet:////vagrant/files/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL"
   }
 
   epel::key { "RPM-GPG-KEY-EPEL":

@@ -26,7 +26,7 @@ class icinga-rpm-snapshot {
     owner => 'root',
     group => 'root',
     mode => '0644',
-    source => "puppet:////vagrant/.vagrant-puppet/files/etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA"
+    source => "puppet:////vagrant/files/etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA"
   }
 
   icinga-rpm-snapshot::key { "RPM-GPG-KEY-ICINGA":

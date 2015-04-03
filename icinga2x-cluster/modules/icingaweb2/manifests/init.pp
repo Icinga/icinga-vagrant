@@ -29,22 +29,22 @@ class icingaweb2 {
   }
 
   file { '/etc/icingaweb2/authentication.ini':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/authentication.ini',
+    source => 'puppet:////vagrant/files/etc/icingaweb2/authentication.ini',
     require => File['/etc/icingaweb2'],
   }
 
   file { '/etc/icingaweb2/config.ini':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/config.ini',
+    source => 'puppet:////vagrant/files/etc/icingaweb2/config.ini',
     require => File['/etc/icingaweb2'],
   }
 
   file { '/etc/icingaweb2/roles.ini':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/roles.ini',
+    source => 'puppet:////vagrant/files/etc/icingaweb2/roles.ini',
     require => File['/etc/icingaweb2'],
   }
 
   file { '/etc/icingaweb2/resources.ini':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/resources.ini',
+    source => 'puppet:////vagrant/files/etc/icingaweb2/resources.ini',
     require => File['/etc/icingaweb2'],
   }
 
@@ -76,17 +76,17 @@ class icingaweb2 {
   }
 
   file { '/etc/icingaweb2/modules/monitoring/backends.ini':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/modules/monitoring/backends.ini',
+    source => 'puppet:////vagrant/files/etc/icingaweb2/modules/monitoring/backends.ini',
     require => File['/etc/icingaweb2/modules/monitoring'],
   }
 
   file { '/etc/icingaweb2/modules/monitoring/config.ini':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/modules/monitoring/config.ini',
+    source => 'puppet:////vagrant/files/etc/icingaweb2/modules/monitoring/config.ini',
     require => File['/etc/icingaweb2/modules/monitoring'],
   }
 
   file { '/etc/icingaweb2/modules/monitoring/instances.ini':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icingaweb2/modules/monitoring/instances.ini',
+    source => 'puppet:////vagrant/files/etc/icingaweb2/modules/monitoring/instances.ini',
     require => File['/etc/icingaweb2/modules/monitoring'],
   }
 }
