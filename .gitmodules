@@ -28,3 +28,6 @@
 [submodule "icinga2x-cluster/modules/vcsrepo"]
 	path = icinga2x-cluster/modules/vcsrepo
 	url = https://github.com/puppetlabs/puppetlabs-vcsrepo
+[submodule "icinga2x-cluster/modules/stdlib"]
+	path = icinga2x-cluster/modules/stdlib
+	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
