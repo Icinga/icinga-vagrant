@@ -31,3 +31,6 @@
 [submodule "icinga2x-cluster/modules/stdlib"]
 	path = icinga2x-cluster/modules/stdlib
 	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
+[submodule "icinga2x-cluster/modules/epel"]
+	path = icinga2x-cluster/modules/epel
+	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
