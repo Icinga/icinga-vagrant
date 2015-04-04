@@ -8,28 +8,12 @@ class icinga2-classicui {
     ensure => latest,
     before => Package["icinga-gui"],
     require => Class['icinga-rpm-snapshot'],
-    notify => Service['apache']
+    notify => Class['Apache::Service']
   }
 
   package { 'icinga-gui':
     ensure => latest,
     alias => 'icinga-gui'
-  }
-
-  # runtime users
-  group { 'icingacmd':
-    ensure => present
-  }
-
-  user { 'icinga':
-    ensure => present,
-    groups => 'icingacmd',
-    managehome => false
-  }
-
-  user { 'apache':
-    groups => ['icingacmd', 'vagrant'],
-    require => [ Class['apache'], Group['icingacmd'] ]
   }
 
   icinga2::feature { 'statusdata': }

@@ -1,7 +1,10 @@
 include icinga-rpm-snapshot
 include epel
 include apache
-include mariadb
+include php
+include apache::mod::php
+include '::mysql::server'
+include '::postgresql::server'
 include icinga2
 include icinga2-ido-mysql
 include icinga2-classicui
@@ -19,14 +22,14 @@ file { '/var/www/html/index.html':
   source    => 'puppet:////vagrant/files/var/www/html/index.html',
   owner     => 'apache',
   group     => 'apache',
-  require   => Package['apache']
+  require   => Class['Apache']
 }
 
 file { '/var/www/html/icinga_wall.png':
   source    => 'puppet:////vagrant/files/var/www/html/icinga_wall.png',
   owner     => 'apache',
   group     => 'apache',
-  require   => Package['apache']
+  require   => Class['Apache']
 }
 
 ####################################
@@ -50,15 +53,16 @@ package { 'bash-completion':
   require => Class['epel']
 }
 
+@user { vagrant: ensure => present }
+User<| title == vagrant |>{
+  groups +> ['icinga', 'icingacmd'],
+  require => Package['icinga2']
+}
+
 file { '/etc/motd':
   source => 'puppet:////vagrant/files/etc/motd',
   owner => root,
   group => root
-}
-
-user { 'vagrant':
-  groups  => ['icinga', 'icingacmd'],
-  require => [User['icinga'], Group['icingacmd']]
 }
 
 file { [ '/root/.vim',
@@ -77,6 +81,44 @@ exec { 'copy-vim-ftdetect-file':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => 'cp -f /usr/share/doc/icinga2-common-$(rpm -q icinga2-common | cut -d\'-\' -f3)/syntax/vim/ftdetect/icinga2.vim /root/.vim/ftdetect/icinga2.vim',
   require => [ Package['vim-enhanced'], Package['icinga2-common'], File['/root/.vim/syntax'] ]
+}
+
+####################################
+# Firewall
+####################################
+
+define rh_firewall_add_port($zone, $port) {
+  exec { $title :
+    path    => '/bin:/usr/bin:/sbin:/usr/sbin',
+    command => "firewall-cmd --permanent --zone=${zone} --add-port=${port}",
+    unless  => "firewall-cmd --zone ${zone} --list-ports | fgrep -q ${port}",
+    require => Package['firewalld'],
+    notify  => Service['firewalld'],
+  }
+}
+
+# firewall: TODO add support for other OS unlike CentOS7
+case $operatingsystem {
+  centos, redhat: {
+    if $operatingsystemrelease =~ /^7.*/ {
+
+      package { 'firewalld':
+        ensure => installed
+      }
+      service { 'firewalld':
+        ensure => running,
+        enable => true,
+        hasstatus => true,
+        hasrestart => true,
+        require => Package['firewalld']
+      }
+
+      rh_firewall_add_port { 'iptables-http-80':
+        zone => 'public',
+        port => '80/tcp',
+      }
+    }
+  }
 }
 
 ####################################

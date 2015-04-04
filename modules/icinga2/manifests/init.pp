@@ -48,7 +48,6 @@ class icinga2 {
 
 class icinga2-ido-mysql {
   include icinga-rpm-snapshot
-  include mariadb
 
   package { 'icinga2-ido-mysql':
     ensure => latest,
@@ -60,7 +59,7 @@ class icinga2-ido-mysql {
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless => 'mysql -uicinga -picinga icinga',
     command => 'mysql -uroot -e "CREATE DATABASE icinga; GRANT ALL ON icinga.* TO icinga@localhost IDENTIFIED BY \'icinga\';"',
-    require => Service['mariadb']
+    require => Class['mysql::server']
   }
 
   exec { 'populate-icinga2-ido-mysql-db':

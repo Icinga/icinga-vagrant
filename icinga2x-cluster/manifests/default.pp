@@ -1,7 +1,7 @@
 include icinga-rpm-snapshot
 include epel
-include apache
-include mariadb
+include php
+include '::mysql::server'
 include snmp
 include icinga2
 include icinga2-ido-mysql
@@ -11,6 +11,13 @@ include icingaweb2
 include icingaweb2-internal-db-mysql
 include monitoring-plugins
 include selinux
+
+# don't purge php, icingaweb2, etc configs
+class {'apache':
+  purge_configs => false,
+}
+
+class {'::apache::mod::php': }
 
 ####################################
 # Basic stuff
@@ -31,6 +38,12 @@ package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap' ]:
 package { 'bash-completion':
   ensure => 'installed',
   require => Class['epel']
+}
+
+@user { vagrant: ensure => present }
+User<| title == vagrant |>{
+  groups +> ['icinga', 'icingacmd'],
+  require => Package['icinga2']
 }
 
 file { '/etc/motd':
@@ -59,6 +72,48 @@ exec { 'copy-vim-ftdetect-file':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => 'cp -f /usr/share/doc/icinga2-common-$(rpm -q icinga2-common | cut -d\'-\' -f3)/syntax/vim/ftdetect/icinga2.vim /root/.vim/ftdetect/icinga2.vim',
   require => [ Package['vim-enhanced'], Package['icinga2-common'], File['/root/.vim/syntax'] ]
+}
+
+####################################
+# Firewall
+####################################
+
+define rh_firewall_add_port($zone, $port) {
+  exec { $title :
+    path    => '/bin:/usr/bin:/sbin:/usr/sbin',
+    command => "firewall-cmd --permanent --zone=${zone} --add-port=${port}",
+    unless  => "firewall-cmd --zone ${zone} --list-ports | fgrep -q ${port}",
+    require => Package['firewalld'],
+    notify  => Service['firewalld'],
+  }
+}
+
+# firewall: TODO add support for other OS unlike CentOS7
+case $operatingsystem {
+  centos, redhat: {
+    if $operatingsystemrelease =~ /^7.*/ {
+
+      package { 'firewalld':
+        ensure => installed
+      }
+      service { 'firewalld':
+        ensure => running,
+        enable => true,
+        hasstatus => true,
+        hasrestart => true,
+        require => Package['firewalld']
+      }
+
+      rh_firewall_add_port { 'iptables-http-80':
+        zone => 'public',
+        port => '80/tcp',
+      } ->
+      rh_firewall_add_port { 'iptables-icinga2-5665':
+        zone => 'public',
+        port => '5665/tcp',
+      }
+    }
+  }
 }
 
 ####################################
@@ -113,11 +168,6 @@ file { '/etc/icingaweb2/enabledModules/icinga2':
   require => File['/etc/icingaweb2/enabledModules'],
 }
 
-user { 'vagrant':
-  groups  => 'icingacmd',
-  require => Package['icinga2']
-}
-
 # enable the command pipe
 icinga2::feature { 'command': }
 
@@ -131,13 +181,6 @@ file { "/etc/icinga2/constants.conf":
 }
 
 # Icinga 2 Cluster
-
-exec { 'iptables-allow-icinga2-cluster':
-  path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  unless => 'grep -Fxqe "-A INPUT -m state --state NEW -m tcp -p tcp --dport 5665 -j ACCEPT" /etc/sysconfig/iptables',
-  command => 'firewall-cmd --permanent --add-port=5665/tcp; firewall-cmd --add-port=5665/tcp',
-  #notify => Service['icinga2']
-}
 
 file { '/etc/icinga2':
   ensure    => 'directory',

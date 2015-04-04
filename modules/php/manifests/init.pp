@@ -15,24 +15,21 @@
 #   include php
 #
 class php {
-
-  include apache
-
   package { 'php':
     ensure => installed,
-    require => Package['apache'],
-    notify => Service['apache']
+    require => Class['apache'],
+    notify => Class['Apache::Service']
   }
 
   file { '/etc/php.d/error_reporting.ini':
     content => template('php/error_reporting.ini.erb'),
     require => Package['php'],
-    notify => Service['apache']
+    notify => Class['Apache::Service']
   }
 
   file { '/etc/php.d/xdebug_settings.ini':
     content => template('php/xdebug_settings.ini.erb'),
     require => Package['php'],
-    notify => Service['apache']
+    notify => Class['Apache::Service']
   }
 }
