@@ -1,12 +1,12 @@
 class icinga-web {
   include icinga-rpm-snapshot
 
-  php::extension { ['php-mysql']:
-    require => [ Class['php'], Class['mysql::server'] ]
+  php::module { ['php-mysql']:
+    require => [ Class['mysql::server'] ]
   }
 
-  php::extension { ['php-pgsql']:
-    require => [ Class['php'], Class['postgresql::server'] ]
+  php::module { ['php-pgsql']:
+    require => [ Class['postgresql::server'] ]
   }
 
   package { 'icinga-web':

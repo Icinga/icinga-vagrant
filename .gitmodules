@@ -46,3 +46,6 @@
 [submodule "modules/postgresql"]
 	path = modules/postgresql
 	url = https://github.com/puppetlabs/puppetlabs-postgresql
+[submodule "modules/php"]
+	path = modules/php
+	url = https://github.com/thias/puppet-php

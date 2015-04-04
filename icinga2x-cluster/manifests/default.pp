@@ -1,6 +1,5 @@
 include icinga-rpm-snapshot
 include epel
-include php
 include '::mysql::server'
 include snmp
 include icinga2
@@ -12,12 +11,27 @@ include icingaweb2-internal-db-mysql
 include monitoring-plugins
 include selinux
 
-# don't purge php, icingaweb2, etc configs
+####################################
+# Webserver
+####################################
+
 class {'apache':
+  # don't purge php, icingaweb2, etc configs
   purge_configs => false,
 }
 
 class {'::apache::mod::php': }
+
+include '::php::cli'
+include '::php::mod_php5'
+
+php::ini { '/etc/php.ini':
+  display_errors => 'On',
+  memory_limit => '256M',
+  date_timezone => 'Europe/Berlin',
+  session_save_path => '/var/lib/php/session'
+}
+
 
 ####################################
 # Basic stuff
