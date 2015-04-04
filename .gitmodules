@@ -52,3 +52,15 @@
 [submodule "modules/selinux"]
 	path = modules/selinux
 	url = https://github.com/jfryman/puppet-selinux
+[submodule "modules/graylog2"]
+	path = modules/graylog2
+	url = https://github.com/Graylog2/graylog2-puppet.git
+[submodule "modules/elasticsearch"]
+	path = modules/elasticsearch
+	url = https://github.com/elasticsearch/puppet-elasticsearch.git
+[submodule "modules/mongodb"]
+	path = modules/mongodb
+	url = https://github.com/puppetlabs/puppetlabs-mongodb.git
+[submodule "modules/java"]
+	path = modules/java
+	url = https://github.com/puppetlabs/puppetlabs-java
