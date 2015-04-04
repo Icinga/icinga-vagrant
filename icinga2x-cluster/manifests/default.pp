@@ -11,6 +11,10 @@ include icingaweb2-internal-db-mysql
 include monitoring-plugins
 include selinux
 
+icingaweb2::module { [ 'businessprocess', 'pnp4nagios', 'generictts' ]:
+  builtin => false
+}
+
 ####################################
 # Webserver
 ####################################
@@ -45,7 +49,7 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
   }
 }
 
-package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap' ]:
+package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git' ]:
   ensure => 'installed'
 }
 

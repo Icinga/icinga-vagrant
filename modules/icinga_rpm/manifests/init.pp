@@ -21,7 +21,10 @@ class icinga_rpm (
   $repo = "http://packages.icinga.org/epel/\$releasever/"
 
   if $use_snapshot_repo {
-    warning('Using the snapshot package repository')
+    notify { 'icinga rpm packages':
+      name => 'Using the snapshot package repository',
+      withpath => true,
+    }
     $baseurl = "$repo/snapshot/"
   } else {
     $baseurl = "$repo/release/"

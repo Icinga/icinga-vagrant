@@ -32,6 +32,10 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
   }
 }
 
+package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git' ]:
+  ensure => 'installed'
+}
+
 define rh_firewall_add_port($zone, $port) {
   exec { $title :
     path    => '/bin:/usr/bin:/sbin:/usr/sbin',
