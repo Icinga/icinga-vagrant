@@ -3,7 +3,7 @@ include epel
 include '::mysql::server'
 include '::postgresql::server'
 include icinga2
-include icinga2-ido-mysql
+include icinga2_ido_mysql
 include icinga2-classicui
 include icinga2-icinga-web
 include icingaweb2

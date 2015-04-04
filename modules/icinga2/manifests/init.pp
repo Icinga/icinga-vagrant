@@ -1,4 +1,5 @@
-class icinga2 {
+class icinga2 (
+) inherits icinga2::params {
   package { 'icinga2':
     ensure => latest,
     require => Class['icinga_rpm'],
@@ -44,8 +45,17 @@ class icinga2 {
   icinga2::feature { 'livestatus': }
 }
 
-class icinga2-ido-mysql {
-  include icinga_rpm
+class icinga2_ido_mysql (
+  $ido_db_user = $::icinga2_ido_mysql::ido_db_user,
+  $ido_db_pass = $::icinga2_ido_mysql::ido_db_pass,
+  $ido_db_name = $::icinga2_ido_mysql::ido_db_name,
+  $ido_db_schema = $::icinga2_ido_mysql::ido_db_schema,
+) inherits icinga2_ido_mysql::params {
+
+  validate_string($ido_db_user)
+  validate_string($ido_db_pass)
+  validate_string($ido_db_name)
+  validate_string($ido_db_schema)
 
   package { 'icinga2-ido-mysql':
     ensure => latest,
@@ -55,15 +65,15 @@ class icinga2-ido-mysql {
 
   exec { 'create-mysql-icinga2-ido-db':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
-    unless => 'mysql -uicinga -picinga icinga',
-    command => 'mysql -uroot -e "CREATE DATABASE icinga; GRANT ALL ON icinga.* TO icinga@localhost IDENTIFIED BY \'icinga\';"',
+    unless => "mysql -u$ido_db_user -p$ido_db_pass $ido_db_name",
+    command => "mysql -uroot -e \"CREATE DATABASE $ido_db_name ; GRANT ALL ON $ido_db_name.* TO $ido_db_user@localhost IDENTIFIED BY \'$ido_db_pass\';\"",
     require => Class['mysql::server']
   }
 
   exec { 'populate-icinga2-ido-mysql-db':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
-    unless => 'mysql -uicinga -picinga icinga -e "SELECT * FROM icinga_dbversion;" &> /dev/null',
-    command => 'mysql -uicinga -picinga icinga < /usr/share/icinga2-ido-mysql/schema/mysql.sql',
+    unless => "mysql -u$ido_db_user -p$ido_db_pass $ido_db_name -e \"SELECT * FROM icinga_dbversion;\" &> /dev/null",
+    command => "mysql -u$ido_db_user -p$ido_db_pass $ido_db_name < $ido_db_schema",
     require => [ Package['icinga2-ido-mysql'], Exec['create-mysql-icinga2-ido-db'] ]
   }
 
@@ -72,9 +82,17 @@ class icinga2-ido-mysql {
   }
 }
 
-class icinga2-ido-pgsql {
-  include icinga_rpm
-  include pgsql
+class icinga2_ido_pgsql (
+  $ido_db_user = $::icinga2_ido_pgsql::ido_db_user,
+  $ido_db_pass = $::icinga2_ido_pgsql::ido_db_pass,
+  $ido_db_name = $::icinga2_ido_pgsql::ido_db_name,
+  $ido_db_schema = $::icinga2_ido_pgsql::ido_db_schema,
+) inherits icinga2_ido_pgsql::params {
+
+  validate_string($ido_db_user)
+  validate_string($ido_db_pass)
+  validate_string($ido_db_name)
+  validate_string($ido_db_schema)
 
   package { 'icinga2-ido-pgsql':
     ensure => latest,
@@ -84,18 +102,18 @@ class icinga2-ido-pgsql {
 
   exec { 'create-pgsql-icinga2-ido-db':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
-    unless => 'sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname=\'icinga\'" | grep -q 1',
-    command => 'sudo -u postgres psql -c "CREATE ROLE icinga WITH LOGIN PASSWORD \'icinga\';" && \
-                sudo -u postgres createdb -O icinga -E UTF8 icinga && \
-                sudo -u postgres createlang plpgsql icinga',
+    unless => "sudo -u postgres psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname=\'icinga\'\" | grep -q 1",
+    command => "sudo -u postgres psql -c \"CREATE ROLE $ido_db_user WITH LOGIN PASSWORD \'$ido_db_pass\';\" && \
+                sudo -u postgres createdb -O $ido_db_name -E UTF8 $ido_db_name && \
+                sudo -u postgres createlang plpgsql $ido_db_name",
     require => Service['postgresql']
   }
 
   exec { 'populate-icinga2-ido-pgsql-db':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
-    environment => ['PGPASSWORD=icinga'],
-    unless => 'psql -U icinga -d icinga -c "SELECT * FROM icinga_dbversion;" &> /dev/null',
-    command => 'psql -U icinga -d icinga < /usr/share/icinga2-ido-pgsql/schema/pgsql.sql',
+    environment => ["PGPASSWORD=$ido_db_pass"],
+    unless => "psql -U $ido_db_user -d $ido_db_name -c \"SELECT * FROM icinga_dbversion;\" &> /dev/null",
+    command => "psql -U $ido_db_user -d $ido_db_name < $ido_db_schema",
     require => [ Package['icinga2-ido-pgsql'], Exec['create-pgsql-icinga2-ido-db'] ]
   }
 
