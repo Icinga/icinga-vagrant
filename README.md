@@ -32,6 +32,26 @@ Or, initialize and update the git submodules using:
     $ git submodule init
     $ git submodule update
 
+We are using the following puppet modules:
+
+  Name     		| Path				| Url
+  ----------------------|-------------------------------|-------------------------------
+  puppetlabs-stdlib	| modules/stdlib		| https://github.com/puppetlabs/puppetlabs-stdlib.git
+  puppetlabs-concat	| modules/concat		| https://github.com/puppetlabs/puppetlabs-concat.git
+  puppetlabs-apache	| modules/apache		| https://github.com/puppetlabs/puppetlabs-apache.git
+  puppetlabs-mysql	| modules/mysql			| https://github.com/puppetlabs/puppetlabs-mysql.git
+  puppetlabs-postgresql	| modules/postgresql		| https://github.com/puppetlabs/puppetlabs-postgresql.git
+  puppetlabs-vcsrepo	| modules/vcsrepo		| https://github.com/puppetlabs/puppetlabs-vcsrepo.git
+  puppet-module-epel	| modules/epel			| https://github.com/stahnma/puppet-module-epel.git
+  puppet-php		| modules/php			| https://github.com/thias/puppet-php.git
+  puppet-selinux	| modules/selinux		| https://github.com/jfryman/puppet-selinux.git
+  graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
+  puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
+  puppetlabs-mongodb	| modules/mongodb		| https://github.com/puppetlabs/puppetlabs-mongodb.git
+  puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
+
+
+
 ## Before you start
 
 Change the directory to the box you want to start.
@@ -103,7 +123,7 @@ Choose one of the available boxes below.
 
 ### Icinga 2 and Graylog2
 
-* 1 VM 
+* 1 VM
 * Icinga 2 Core
 * Graylog2 Server and Web with Elasticsearch, MongoDB
 
