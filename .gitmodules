@@ -40,3 +40,9 @@
 [submodule "modules/stdlib"]
 	path = modules/stdlib
 	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
+[submodule "modules/mysql"]
+	path = modules/mysql
+	url = https://github.com/puppetlabs/puppetlabs-mysql
+[submodule "modules/postgresql"]
+	path = modules/postgresql
+	url = https://github.com/puppetlabs/puppetlabs-postgresql
