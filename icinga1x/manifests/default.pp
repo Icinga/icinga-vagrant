@@ -12,7 +12,7 @@ package { 'vim-enhanced':
 
 # icinga demo docs at /icinga-demo
 file { '/etc/httpd/conf.d/icinga-demo.conf':
-  source => 'puppet:////vagrant/.vagrant-puppet/files/etc/httpd/conf.d/icinga-demo.conf',
+  source => 'puppet:////vagrant/files/etc/httpd/conf.d/icinga-demo.conf',
   require => [ Package['apache'], File['/usr/share/icinga-demo/htdocs/index.html'], Package['icinga-gui'], Package['icinga-web'] ],
   notify => Service['apache']
 }
@@ -25,14 +25,14 @@ file { [ '/usr/share/icinga-demo', '/usr/share/icinga-demo/htdocs' ]:
 }
 
 file { '/usr/share/icinga-demo/htdocs/index.html':
-  source => 'puppet:////vagrant/.vagrant-puppet/files/usr/share/icinga-demo/htdocs/index.html',
+  source => 'puppet:////vagrant/files/usr/share/icinga-demo/htdocs/index.html',
   owner => root,
   group => root,
   mode => 644
 }
 
 file { '/usr/share/icinga-demo/htdocs/icinga_wall.png':
-  source => 'puppet:////vagrant/.vagrant-puppet/files/usr/share/icinga-demo/htdocs/icinga_wall.png',
+  source => 'puppet:////vagrant/files/usr/share/icinga-demo/htdocs/icinga_wall.png',
   owner => root,
   group => root,
   mode => 644
@@ -40,7 +40,7 @@ file { '/usr/share/icinga-demo/htdocs/icinga_wall.png':
 
 
 file { '/etc/motd':
-  source => 'puppet:////vagrant/.vagrant-puppet/files/etc/motd',
+  source => 'puppet:////vagrant/files/etc/motd',
   owner => root,
   group => root
 }

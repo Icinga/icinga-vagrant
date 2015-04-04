@@ -44,7 +44,7 @@ class nsca-ng-server {
   }
 
   file { '/etc/nsca-ng.cfg':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/nsca-ng.cfg',
+    source => 'puppet:////vagrant/files/etc/nsca-ng.cfg',
     require => Package['nsca-ng-server'],
     notify => Service['nsca-ng']
   }
@@ -73,13 +73,13 @@ class nsca-ng-client {
   }
 
   file { '/etc/icinga2/conf.d/passive.conf':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga2/conf.d/passive.conf',
+    source => 'puppet:////vagrant/files/etc/icinga2/conf.d/passive.conf',
     require => Package['nsca-ng-client'],
     notify => Service['icinga2']
   }
 
   file { '/etc/send_nsca.cfg':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/send_nsca.cfg',
+    source => 'puppet:////vagrant/files/etc/send_nsca.cfg',
     owner => 'root',
     group => 'root',
     mode => '0600',
@@ -87,7 +87,7 @@ class nsca-ng-client {
   }
 
   file { '/home/vagrant/passive_result':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/home/vagrant/passive_result',
+    source => 'puppet:////vagrant/files/home/vagrant/passive_result',
     require => Package['nsca-ng-client'],
   }
 }
