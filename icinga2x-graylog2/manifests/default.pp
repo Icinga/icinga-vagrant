@@ -96,11 +96,13 @@ file { '/etc/security/limits.d/99-elasticsearch.conf':
   mode    => '0644',
   content => "elasticsearch soft nofile 64000\nelasticsearch hard nofile 64000\n",
 } ->
+class { 'java':
+} ->
 class { 'elasticsearch':
   version      => '1.3.4-1',
   manage_repo  => true,
   repo_version => '1.3',
-  java_install => true,
+  java_install => false,
 } ->
 elasticsearch::instance { 'graylog-es':
   config => {
@@ -161,13 +163,16 @@ file { '/usr/lib/nagios/plugins/check-graylog2-stream-wrapper':
 
 
 # Icinga 2
-include 'icinga-rpm'
+class { 'icinga_rpm':
+  use_snapshot_repo => false
+}
+
 include 'icinga2'
 
 file { '/etc/icinga2/conf.d/demo.conf':
   owner  => icinga,
   group  => icinga,
-  content   => template("icinga2/demo.conf.erb"),
+  content   => template("icinga2/graylog2-demo.conf.erb"),
   require   => Package['icinga2'],
   notify    => Service['icinga2']
 } ->
@@ -199,7 +204,7 @@ service { 'httpd':
 package { 'icinga2-classicui-config':
   ensure => latest,
   before => Package["icinga-gui"],
-  require => [ Class['icinga-rpm'], Package['httpd'] ],
+  require => [ Class['icinga_rpm'], Package['httpd'] ],
   notify => Service['httpd']
 } ->
 package { 'icinga-gui':

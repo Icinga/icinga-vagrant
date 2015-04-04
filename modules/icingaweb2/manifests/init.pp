@@ -1,26 +1,26 @@
 class icingaweb2 {
   package { 'icingaweb2':
     ensure => latest,
-    require => [ Package['httpd'], Class['icinga-rpm-snapshot'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
+    require => [ Package['httpd'], Class['icinga_rpm'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
     alias => 'icingaweb2',
     notify => Class['Apache::Service']
   }
 
   package { 'php-Icinga':
     ensure => latest,
-    require => [ Class['icinga-rpm-snapshot'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
+    require => [ Class['icinga_rpm'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
     alias => 'php-Icinga'
   }
 
   package { 'icingacli':
     ensure => latest,
-    require => [ Class['icinga-rpm-snapshot'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
+    require => [ Class['icinga_rpm'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
     alias => 'icingacli'
   }
 
   package { ['php-ZendFramework', 'php-ZendFramework-Db-Adapter-Pdo-Mysql']:
     ensure => latest,
-    require => Class['icinga-rpm-snapshot']
+    require => Class['icinga_rpm']
   }
 
   file { '/etc/icingaweb2':

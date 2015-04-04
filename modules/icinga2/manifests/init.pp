@@ -1,33 +1,31 @@
 class icinga2 {
-  include icinga-rpm-snapshot
-
   package { 'icinga2':
     ensure => latest,
-    require => Class['icinga-rpm-snapshot'],
+    require => Class['icinga_rpm'],
     alias => 'icinga2'
   }
 
   package { 'icinga2-bin':
     ensure => latest,
-    require => Class['icinga-rpm-snapshot'],
+    require => Class['icinga_rpm'],
     alias => 'icinga2-bin'
   }
 
   package { 'icinga2-common':
     ensure => latest,
-    require => Class['icinga-rpm-snapshot'],
+    require => Class['icinga_rpm'],
     alias => 'icinga2-common'
   }
 
   package { 'icinga2-doc':
     ensure => latest,
-    require => Class['icinga-rpm-snapshot'],
+    require => Class['icinga_rpm'],
     alias => 'icinga2-doc'
   }
 
   package { 'icinga2-debuginfo':
     ensure => latest,
-    require => Class['icinga-rpm-snapshot'],
+    require => Class['icinga_rpm'],
     alias => 'icinga2-debuginfo'
   }
 
@@ -47,11 +45,11 @@ class icinga2 {
 }
 
 class icinga2-ido-mysql {
-  include icinga-rpm-snapshot
+  include icinga_rpm
 
   package { 'icinga2-ido-mysql':
     ensure => latest,
-    require => Class['icinga-rpm-snapshot'],
+    require => Class['icinga_rpm'],
     alias => 'icinga2-ido-mysql'
   }
 
@@ -75,12 +73,12 @@ class icinga2-ido-mysql {
 }
 
 class icinga2-ido-pgsql {
-  include icinga-rpm-snapshot
+  include icinga_rpm
   include pgsql
 
   package { 'icinga2-ido-pgsql':
     ensure => latest,
-    require => Class['icinga-rpm-snapshot'],
+    require => Class['icinga_rpm'],
     alias => 'icinga2-ido-pgsql'
   }
 

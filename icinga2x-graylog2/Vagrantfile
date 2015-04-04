@@ -27,14 +27,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 12201, host: 12201, protocol: 'tcp', auto_correct: true
   config.vm.network :forwarded_port, guest: 12900, host: 12900
   config.vm.provider "virtualbox" do |vb|
-    vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate//vagrant/config", "1"]
     vb.customize ["modifyvm", :id, "--memory", "1024"]
   end
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "manifests"
-    puppet.module_path = "modules"
+    puppet.module_path = "../modules"
     puppet.hiera_config_path = "hiera.yaml"
-    #puppet.options = "--verbose --debug"
+    puppet.options = "--verbose --debug"
   end
   # add gelf inputs etc
   config.vm.provision :shell, :path => "scripts/graylog2-seed.rb"

@@ -1,6 +1,4 @@
 class icinga-web {
-  include icinga-rpm-snapshot
-
   php::module { ['php-mysql']:
     require => [ Class['mysql::server'] ]
   }
@@ -11,13 +9,13 @@ class icinga-web {
 
   package { 'icinga-web':
     ensure => latest,
-    require => Class['icinga-rpm-snapshot'],
+    require => Class['icinga_rpm'],
     notify => Class['Apache::Service']
   }
 
   package { 'icinga-web-mysql':
     ensure => latest,
-    require => Class['icinga-rpm-snapshot'],
+    require => Class['icinga_rpm'],
     notify => Class['Apache::Service']
   }
 

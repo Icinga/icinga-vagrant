@@ -1,5 +1,5 @@
 class icinga2-classicui {
-  include icinga-rpm-snapshot
+  include icinga_rpm
   include icinga2
 
   # workaround for package conflicts
@@ -7,7 +7,7 @@ class icinga2-classicui {
   package { 'icinga2-classicui-config':
     ensure => latest,
     before => Package["icinga-gui"],
-    require => Class['icinga-rpm-snapshot'],
+    require => Class['icinga_rpm'],
     notify => Class['Apache::Service']
   }
 

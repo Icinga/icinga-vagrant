@@ -1,4 +1,4 @@
-include icinga-rpm-snapshot
+include icinga_rpm
 include epel
 include '::mysql::server'
 include '::postgresql::server'
