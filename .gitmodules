@@ -49,3 +49,6 @@
 [submodule "modules/php"]
 	path = modules/php
 	url = https://github.com/thias/puppet-php
+[submodule "modules/selinux"]
+	path = modules/selinux
+	url = https://github.com/jfryman/puppet-selinux
