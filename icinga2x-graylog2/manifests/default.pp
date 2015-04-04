@@ -168,7 +168,7 @@ file { '/usr/lib/nagios/plugins/check-graylog2-stream-wrapper':
 
 # Icinga 2
 class { 'icinga_rpm':
-  use_snapshot_repo => false
+  pkg_repo_version => 'release'
 }
 
 include 'icinga2'

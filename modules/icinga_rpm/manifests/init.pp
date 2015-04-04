@@ -13,42 +13,60 @@
 #   include icinga_rpm
 #
 class icinga_rpm (
-  $use_snapshot_repo = $::icinga_rpm::params::use_snapshot_repo
+  $pkg_repo_version = $::icinga_rpm::params::pkg_repo_version,
+  $pkg_repo_release_key = $::icinga_rpm::params::pkg_repo_release_key,
+  $pkg_repo_release_metadata_expire = $::icinga_rpm::params::pkg_repo_release_metadata_expire,
+  $pkg_repo_release_url = $::icinga_rpm::params::pkg_repo_release_url,
+  $pkg_repo_snapshot_key = $::icinga_rpm::params::pkg_repo_snapshot_key,
+  $pkg_repo_snapshot_metadata_expire = $::icinga_rpm::params::pkg_repo_snapshot_metadata_expire,
+  $pkg_repo_snapshot_url = $::icinga_rpm::params::pkg_repo_snapshot_url,
 ) inherits icinga_rpm::params {
 
-  validate_bool($use_snapshot_repo)
+  if $pkg_repo_release_metadata_expire {
+    validate_string($pkg_repo_release_metadata_expire)
+  }
 
-  $repo = "http://packages.icinga.org/epel/\$releasever/"
+  if $pkg_repo_snapshot_metadata_expire {
+    validate_string($pkg_repo_snapshot_metadata_expire)
+  }
 
-  if $use_snapshot_repo {
-    notify { 'icinga rpm packages':
-      name => 'Using the snapshot package repository',
-      withpath => true,
+  validate_re($pkg_repo_version,
+    [
+      'release',
+      'snapshot',
+    ]
+  )
+
+  case $::operatingsystem {
+    'RedHat', 'CentOS', 'Scientific': {
+      case $pkg_repo_version {
+        'release': {
+          yumrepo { "ICINGA-${::icinga_rpm::pkg_repo_version}":
+            baseurl         => $::icinga_rpm::pkg_repo_release_url,
+            descr           => "ICINGA (${pkg_repo_version} builds for epel)",
+            enabled         => 1,
+            gpgcheck        => 1,
+            gpgkey          => $::icinga_rpm::pkg_repo_release_key,
+            metadata_expire => $::icinga_rpm::pkg_repo_release_metadata_expire,
+          }
+        }
+
+        'snapshot': {
+          yumrepo { "ICINGA-${::icinga_rpm::pkg_repo_version}":
+            baseurl         => $::icinga_rpm::pkg_repo_snapshot_url,
+            descr           => "ICINGA (${pkg_repo_version} builds for epel)",
+            enabled         => 1,
+            gpgcheck        => 1,
+            gpgkey          => $::icinga_rpm::pkg_repo_snapshot_key,
+            metadata_expire => $::icinga_rpm::pkg_repo_snapshot_metadata_expire,
+          }
+        }
+
+        default: {}
+      }
     }
-    $baseurl = "$repo/snapshot/"
-  } else {
-    $baseurl = "$repo/release/"
-  }
 
-  yumrepo { 'icinga_rpm':
-    baseurl => $baseurl,
-    enabled => '1',
-    gpgcheck => '1',
-    gpgkey => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA',
-    descr => "Icinga Packages for Enterprise Linux - ${::architecture}"
-  }
-
-  file { "/etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA":
-    ensure => present,
-    owner => 'root',
-    group => 'root',
-    mode => '0644',
-    source => "puppet:////vagrant/files/etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA" #hardcoded paths are ugly TODO
-  }
-
-  icinga_rpm::key { "RPM-GPG-KEY-ICINGA":
-    path => "/etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA",
-    before => Yumrepo['icinga_rpm']
+    default: {}
   }
 }
 
