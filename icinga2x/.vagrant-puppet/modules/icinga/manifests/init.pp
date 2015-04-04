@@ -55,18 +55,18 @@ class icinga-idoutils-libdbi-mysql {
   }
 
   file { '/etc/sysconfig/ido2db':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/sysconfig/ido2db',
+    source => 'puppet:////vagrant/files/etc/sysconfig/ido2db',
     require => Package['icinga-idoutils-libdbi-mysql']
   }
 
   file { '/etc/icinga/modules/idoutils.cfg':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga/modules/idoutils.cfg',
+    source => 'puppet:////vagrant/files/etc/icinga/modules/idoutils.cfg',
     require => Package['icinga'],
     notify => Service['icinga']
   }
 
   file { '/etc/icinga/idomod-mysql.cfg':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga/idomod-mysql.cfg',
+    source => 'puppet:////vagrant/files/etc/icinga/idomod-mysql.cfg',
     require => [ Package['icinga-idoutils-libdbi-mysql'],
 		 Package['icinga'],
 		 Exec['populate-mysql-icinga-idoutils-db']
@@ -75,7 +75,7 @@ class icinga-idoutils-libdbi-mysql {
   }
 
   file { '/etc/icinga/ido2db-mysql.cfg':
-    source => 'puppet:////vagrant/.vagrant-puppet/files/etc/icinga/ido2db-mysql.cfg',
+    source => 'puppet:////vagrant/files/etc/icinga/ido2db-mysql.cfg',
     require => [ Package['icinga-idoutils-libdbi-mysql'],
 		 File['/etc/sysconfig/ido2db'],
 		 Exec['populate-mysql-icinga-idoutils-db']

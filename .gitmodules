@@ -25,18 +25,18 @@
 [submodule "icinga2x-graylog2/modules/selinux"]
 	path = icinga2x-graylog2/modules/selinux
 	url = https://github.com/jfryman/puppet-selinux
-[submodule "modules/modules/epel"]
-	path = modules/modules/epel
+[submodule "modules/epel"]
+	path = modules/epel
 	url = https://github.com/stahnma/puppet-module-epel.git
-[submodule "modules/modules/concat"]
-	path = modules/modules/concat
+[submodule "modules/concat"]
+	path = modules/concat
 	url = https://github.com/puppetlabs/puppetlabs-concat.git
-[submodule "modules/modules/apache"]
-	path = modules/modules/apache
+[submodule "modules/apache"]
+	path = modules/apache
 	url = https://github.com/puppetlabs/puppetlabs-apache.git
-[submodule "modules/modules/vcsrepo"]
-	path = modules/modules/vcsrepo
+[submodule "modules/vcsrepo"]
+	path = modules/vcsrepo
 	url = https://github.com/puppetlabs/puppetlabs-vcsrepo.git
-[submodule "modules/modules/stdlib"]
-	path = modules/modules/stdlib
+[submodule "modules/stdlib"]
+	path = modules/stdlib
 	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
