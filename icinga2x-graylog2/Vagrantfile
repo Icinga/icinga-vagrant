@@ -15,7 +15,7 @@ else
 end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "centos-70-x64-vbox.box"
+  config.vm.box = "centos-70-x64-vbox"
   config.vm.box_url = "http://boxes.icinga.org/centos-70-x64-vbox.box"
   config.vm.hostname = "g2i2.demo.icinga.org"
   config.vm.network :forwarded_port, guest: 22, host: 2232, id: "ssh", disabled: true
