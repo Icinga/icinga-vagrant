@@ -11,7 +11,7 @@ include icingaweb2-internal-db-mysql
 include monitoring-plugins
 include selinux
 
-icingaweb2::module { [ 'businessprocess', 'pnp4nagios', 'generictts' ]:
+icingaweb2::module { [ 'businessprocess', 'pnp4nagios' ]:
   builtin => false
 }
 
