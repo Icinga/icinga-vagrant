@@ -1,6 +1,6 @@
 # Icinga 2 & Graylog Vagrant Box
 
-* Icinga 2 Core
+* Icinga 2 Core & Icinga Web 2
 * Graylog Server & Web
 * MongoDB, Elasticsearch as Requirements
 
@@ -59,7 +59,7 @@ the packages and configuration.
 
   GUI              | Url               | Credentials
   -----------------|-------------------|------------------------
-  Graylog          | :8110/icinga      | icingaadmin/icingaadmin
+  Graylog          | :8110/icingaweb2  | icingaadmin/icinga
   Graylog          | :9000/            | admin/admin
 
 

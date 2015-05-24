@@ -3,7 +3,7 @@
 # OSMC demo config
 # admin pw: admin
 
-include 'epel'
+include epel
 
 $graylog_version = "1.0"
 $elasticsearch_version = ""
@@ -91,6 +91,24 @@ case $operatingsystem {
   }
 }
 
+# Webserver
+
+class {'apache':
+  # don't purge php, icingaweb2, etc configs
+  purge_configs => false,
+}
+
+class {'::apache::mod::php': }
+
+include '::php::cli'
+include '::php::mod_php5'
+
+php::ini { '/etc/php.ini':
+  display_errors => 'On',
+  memory_limit => '256M',
+  date_timezone => 'Europe/Berlin',
+  session_save_path => '/var/lib/php/session'
+}
 
 # Elasticsearch
 file { '/etc/security/limits.d/99-elasticsearch.conf':
@@ -171,7 +189,12 @@ class { 'icinga_rpm':
   pkg_repo_version => 'release'
 }
 
-include 'icinga2'
+include '::mysql::server'
+include icinga2
+include icinga2_ido_mysql
+include icingaweb2
+include icingaweb2-internal-db-mysql
+include monitoring-plugins
 
 file { '/etc/icinga2/conf.d/demo.conf':
   owner  => icinga,
@@ -182,49 +205,10 @@ file { '/etc/icinga2/conf.d/demo.conf':
 } ->
 icinga2::feature { 'gelf':
 } ->
-package { 'nagios-plugins-all':
-  ensure => latest,
-  require => Package['icinga2']
-} ->
 file { '/usr/lib/nagios/plugins/check-graylog-stream':
   ensure => symlink,
   target => '/usr/lib64/nagios/plugins/check-graylog2-stream',
   force => true,
   replace => true,
-  require => Package['check-graylog2-stream']
+  require => [ Package['check-graylog2-stream'], Class['monitoring-plugins'] ]
 }
-
-package { 'httpd':
-  ensure => installed
-}
-service { 'httpd':
-  ensure     => running,
-  enable     => true,
-  hasrestart => true,
-  hasstatus  => true,
-  require => Package['httpd']
-}
-
-package { 'icinga2-classicui-config':
-  ensure => latest,
-  before => Package["icinga-gui"],
-  require => [ Class['icinga_rpm'], Package['httpd'] ],
-  notify => Service['httpd']
-} ->
-package { 'icinga-gui':
-  ensure => latest,
-  alias => 'icinga-gui'
-} ->
-group { 'icingacmd':
-  ensure => present
-} ->
-user { 'icinga':
-  ensure => present,
-  groups => 'icingacmd',
-  managehome => false
-} ->
-User<| title == apache |>{ groups +> ['icingacmd', 'vagrant'] } ->
-icinga2::feature { 'statusdata': } ->
-icinga2::feature { 'compatlog': } ->
-icinga2::feature { 'command': }
-
