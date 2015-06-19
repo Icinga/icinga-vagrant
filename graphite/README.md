@@ -1,5 +1,10 @@
 # Graphite Standalone Vagrant Box
 
+> **DEPRECATED**
+> use https://github.com/pkkummermo/grafana-vagrant-puppet-box
+> or a different box instead.
+
+
 * Graphite: Carbon Cache, Whisper, Web
 
 

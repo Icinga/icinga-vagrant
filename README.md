@@ -133,6 +133,10 @@ Choose one of the available boxes below.
 
 ### Graphite Standalone
 
+> **DEPRECATED**
+> use https://github.com/pkkummermo/grafana-vagrant-puppet-box
+> or a different box instead.
+
 * 1 VM
 * Graphite with whisper, carbon cache, web
 
