@@ -143,6 +143,7 @@ These boxes use these imported puppet modules for provisioning:
   puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
   puppetlabs-mongodb	| modules/mongodb		| https://github.com/puppetlabs/puppetlabs-mongodb.git
   puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
+  puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
 
 
 
