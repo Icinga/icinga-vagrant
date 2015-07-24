@@ -1,0 +1,41 @@
+{
+  "name": "thias-php",
+  "version": "1.1.1",
+  "author": "Matthias Saou",
+  "license": "Apache-2.0",
+  "summary": "PHP module",
+  "source": "https://github.com/thias/puppet-php",
+  "project_page": "https://forge.puppetlabs.com/thias/php",
+  "issues_url": "https://github.com/thias/puppet-php/issues",
+  "tags": ["php", "fastcgi", "fpm", "httpd", "apache"],
+  "operatingsystem_support": [
+    {
+    "operatingsystem": "RedHat",
+    "operatingsystemrelease": [ "5", "6", "7" ]
+    },
+    {
+    "operatingsystem": "CentOS",
+    "operatingsystemrelease": [ "5", "6", "7" ]
+    },
+    {
+    "operatingsystem":"Debian",
+    "operatingsystemrelease":[ "6", "7" ]
+    },
+    {
+    "operatingsystem":"Ubuntu",
+    "operatingsystemrelease":[ "12", "14" ]
+    }
+  ],
+  "requirements": [
+    {
+    "name": "pe",
+    "version_requirement": "3.x"
+    },
+    {
+    "name": "puppet",
+    "version_requirement": ">=2.7.20 <4.0.0"
+    }
+  ],
+  "description": "Install and configure PHP for any of CLI, Apache httpd module and FastCGI.",
+  "dependencies": []
+}
