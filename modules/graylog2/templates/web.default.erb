@@ -1,0 +1,15 @@
+# WARNING: Maintained by Puppet. Manual changes will be lost!
+
+# HTTP server settings.
+GRAYLOG_WEB_HTTP_ADDRESS="<%= @http_address %>"
+GRAYLOG_WEB_HTTP_PORT="<%= @http_port %>"
+
+# Might be used to adjust the Java heap size. (i.e. "-Xms1024m -Xmx2048m")
+GRAYLOG_WEB_JAVA_OPTS=""
+
+# Pass some extra args to graylog-web. (i.e. "-d" to enable debug mode)
+GRAYLOG_WEB_ARGS=""
+
+# Program that will be used to wrap the graylog-web command. Useful to
+# support programs like authbind.
+GRAYLOG_COMMAND_WRAPPER="<%= @command_wrapper %>"
