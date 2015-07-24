@@ -8,20 +8,6 @@ include epel
 $graylog_version = "1.0"
 $elasticsearch_version = ""
 
-exec { "disable selinux on $hostname":
-  user    => "root",
-  command => "/usr/sbin/setenforce 0",
-  unless  => "/usr/sbin/sestatus | /bin/egrep -q '(Current mode:.*permissive|SELinux.*disabled)'";
-} ->
-file { '/etc/selinux/config':
-  ensure  => present,
-  owner   => 'root',
-  group   => 'root',
-  mode    => '0644',
-  content => "SELINUX=permissive\nSELINUXTYPE=targeted\n",
-}
-
-
 # basic stuff
 # fix puppet warning.
 # https://ask.puppetlabs.com/question/6640/warning-the-package-types-allow_virtual-parameter-will-be-changing-its-default-value-from-false-to-true-in-a-future-release/
@@ -34,61 +20,6 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
 
 package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git' ]:
   ensure => 'installed'
-}
-
-define rh_firewall_add_port($zone, $port) {
-  exec { $title :
-    path    => '/bin:/usr/bin:/sbin:/usr/sbin',
-    command => "firewall-cmd --permanent --zone=${zone} --add-port=${port}",
-    unless  => "firewall-cmd --zone ${zone} --list-ports | fgrep -q ${port}",
-    require => Package['firewalld'],
-    notify  => Service['firewalld'],
-  }
-}
-
-
-# firewall: TODO add support for other OS unlike CentOS7
-case $operatingsystem {
-  centos, redhat: {
-    if $operatingsystemrelease =~ /^7.*/ {
-
-      package { 'firewalld':
-        ensure => installed
-      }
-      service { 'firewalld':
-        ensure => running,
-        enable => true,
-        hasstatus => true,
-        hasrestart => true,
-        require => Package['firewalld']
-      }
-
-      rh_firewall_add_port { 'iptables-graylog-001':
-        zone => 'public',
-        port => '80/tcp',
-      } ->
-      rh_firewall_add_port { 'iptables-graylog-002':
-        zone => 'public',
-        port => '9000/tcp',
-      } ->
-      rh_firewall_add_port { 'iptables-graylog-003':
-        zone => 'public',
-        port => '9300/tcp',
-      } ->
-      rh_firewall_add_port { 'iptables-graylog-004':
-        zone => 'public',
-        port => '12201/tcp',
-      } ->
-      rh_firewall_add_port { 'iptables-graylog-005':
-        zone => 'public',
-        port => '12201/udp',
-      } ->
-      rh_firewall_add_port { 'iptables-graylog-006':
-        zone => 'public',
-        port => '12900/tcp',
-      }
-    }
-  }
 }
 
 # Webserver
