@@ -2,8 +2,7 @@
 
 Icinga Vagrant boxes used for development, tests and demo cases.
 
-Additionally there are boxes with special uses cases like Graphite,
-Graylog2, etc.
+Additionally there are boxes with special uses cases like Graylog2, etc.
 
 ## Requirements
 
