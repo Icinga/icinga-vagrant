@@ -1,0 +1,47 @@
+{
+  "name": "ceritsc-yum",
+  "version": "0.9.6",
+  "author": "ceritsc",
+  "summary": "YUM utilities",
+  "license": "MIT",
+  "source": "https://github.com/CERIT-SC/puppet-yum.git",
+  "project_page": "https://github.com/CERIT-SC/puppet-yum",
+  "issues_url": "https://github.com/CERIT-SC/puppet-yum/issues",
+  "tags": [
+    "yum",
+    "package"
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat"
+    },
+    {
+      "operatingsystem": "CentOS"
+    },
+    {
+      "operatingsystem": "OracleLinux"
+    },
+    {
+      "operatingsystem": "Scientific"
+    },
+    {
+      "operatingsystem": "SLES"
+    },
+    {
+      "operatingsystem": "SLED"
+    }
+  ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": "3.3.x"
+    },
+    {
+      "name": "puppet",
+      "version_requirement": "3.3"
+    }
+  ],
+  "dependencies": [
+    {"name":"puppetlabs/stdlib","version_requirement":">= 4.0.0"}
+  ]
+}
