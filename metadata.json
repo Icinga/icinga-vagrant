@@ -1,0 +1,39 @@
+{
+  "name": "graylog2-graylog2",
+  "version": "1.1.1",
+  "author": "Johannes Graf",
+  "license": "MIT License",
+  "summary": "Install and manage a graylog2 server and the web-interface",
+  "source": "https://github.com/Graylog2/graylog2-puppet.git",
+  "project_page": "https://github.com/Graylog2/graylog2-puppet",
+  "issues_url": "https://github.com/Graylog2/graylog2-puppet/issues",
+  "tags": [
+    "graylog2",
+    "graylog",
+    "logging"
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem":"CentOS",
+      "operatingsystemrelease": ["6.0"]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": ["14.04"]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": ["7"]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">=3.0.0 <5.0.0"
+    },
+    {
+      "name": "puppetlabs/apt",
+      "version_requirement": ">= 1.0.0 < 2.0.0"
+    }
+  ]
+}

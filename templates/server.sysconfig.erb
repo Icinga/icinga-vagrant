@@ -1,0 +1,14 @@
+# WARNING: Maintained by Puppet. Manual changes will be lost!
+
+# Path to the java executable.
+JAVA=/usr/bin/java
+
+# Might be used to adjust the Java heap size. (i.e. "-Xms1024m -Xmx2048m")
+GRAYLOG_SERVER_JAVA_OPTS="<%= @java_opts %>"
+
+# Pass some extra args to graylog-server. (i.e. "-d" to enable debug mode)
+GRAYLOG_SERVER_ARGS="<%= @extra_args %>"
+
+# Program that will be used to wrap the graylog-server command. Useful to
+# support programs like authbind.
+GRAYLOG_COMMAND_WRAPPER="<%= @command_wrapper %>"
