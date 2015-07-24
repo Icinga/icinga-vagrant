@@ -1,0 +1,41 @@
+#
+# PHP is an HTML-embedded scripting language which attempts to make it
+# easy for developers to write dynamically generated webpages.
+#
+<IfModule prefork.c>
+  LoadModule php5_module modules/libphp5.so
+</IfModule>
+<IfModule worker.c>
+  LoadModule php5_module modules/libphp5-zts.so
+</IfModule>
+
+#
+# Cause the PHP interpreter to handle files with a .php extension.
+#
+<IfModule mod_mime.c>
+AddHandler php5-script .php
+AddType text/html .php
+</IfModule>
+
+#
+# Add index.php to the list of files that will be served as directory
+# indexes.
+#
+<IfModule mod_dir.c>
+DirectoryIndex index.php
+</IfModule>
+
+#
+# Uncomment the following line to allow PHP to pretty-print .phps
+# files as PHP source code:
+#
+#AddType application/x-httpd-php-source .phps
+<% if File.dirname(@inifile) != '/etc' -%>
+
+#
+# Use a non-default php.ini file location.
+#
+<IfModule mod_env.c>
+PHPINIDir <%= File.dirname(@inifile) %>
+</IfModule>
+<% end -%>
