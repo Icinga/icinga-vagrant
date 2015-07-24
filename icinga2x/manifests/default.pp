@@ -9,7 +9,6 @@ include icinga2-icinga-web
 include icingaweb2
 include icingaweb2-internal-db-mysql
 include monitoring-plugins
-include selinux
 
 icingaweb2::module { [ 'businessprocess', 'pnp4nagios' ]:
   builtin => false
@@ -103,44 +102,6 @@ exec { 'copy-vim-ftdetect-file':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => 'cp -f /usr/share/doc/icinga2-common-$(rpm -q icinga2-common | cut -d\'-\' -f3)/syntax/vim/ftdetect/icinga2.vim /root/.vim/ftdetect/icinga2.vim',
   require => [ Package['vim-enhanced'], Package['icinga2-common'], File['/root/.vim/syntax'] ]
-}
-
-####################################
-# Firewall
-####################################
-
-define rh_firewall_add_port($zone, $port) {
-  exec { $title :
-    path    => '/bin:/usr/bin:/sbin:/usr/sbin',
-    command => "firewall-cmd --permanent --zone=${zone} --add-port=${port}",
-    unless  => "firewall-cmd --zone ${zone} --list-ports | fgrep -q ${port}",
-    require => Package['firewalld'],
-    notify  => Service['firewalld'],
-  }
-}
-
-# firewall: TODO add support for other OS unlike CentOS7
-case $operatingsystem {
-  centos, redhat: {
-    if $operatingsystemrelease =~ /^7.*/ {
-
-      package { 'firewalld':
-        ensure => installed
-      }
-      service { 'firewalld':
-        ensure => running,
-        enable => true,
-        hasstatus => true,
-        hasrestart => true,
-        require => Package['firewalld']
-      }
-
-      rh_firewall_add_port { 'iptables-http-80':
-        zone => 'public',
-        port => '80/tcp',
-      }
-    }
-  }
 }
 
 ####################################
