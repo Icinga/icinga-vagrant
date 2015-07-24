@@ -1,0 +1,34 @@
+{
+"name": "jfryman/selinux",
+"version": "0.2.4",
+"author": "jfryman",
+"summary": "This class manages SELinux on RHEL based systems",
+"license": "Apache-2.0",
+"source": "https://github.com/jfryman/puppet-selinux",
+"project_page": "https://github.com/jfryman/puppet-selinux",
+"issues_url": "https://github.com/jfryman/puppet-selinux/issues",
+"operatingsystem_support": [
+  {
+    "operatingsystem": "RedHat",
+    "operatingsystemrelease": [
+      "5",
+      "6",
+      "7"
+    ]
+  },
+  {
+    "operatingsystem": "Fedora",
+    "operatingsystemrelease": [
+      "19",
+      "20",
+      "21"
+    ]
+  }
+],
+"dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_range": ">= 3.0.0"
+    }
+  ]
+}
