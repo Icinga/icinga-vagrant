@@ -133,16 +133,8 @@ Choose one of the available boxes below.
 
 ### Graphite Standalone
 
-> **DEPRECATED**
 > use https://github.com/pkkummermo/grafana-vagrant-puppet-box
 > or a different box instead.
-
-* 1 VM
-* Graphite with whisper, carbon cache, web
-
-[Documentation](graphite/README.md):
-
-    $ cd graphite && vagrant up
 
 ### Port Forwarding Overview
 
@@ -162,5 +154,3 @@ Choose one of the available boxes below.
   icinga2x-graylog2 | i2g2	| 9000      | 9000
   icinga2x-graylog2 | i2g2	| 12201     | 12201 (tcp/udp)
   icinga2x-graylog2 | i2g2	| 12900     | 12900
-  graphite          | graphite  | 2090      | 22
-  graphite          | graphite  | 8090      | 80
