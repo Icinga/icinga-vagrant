@@ -24,7 +24,4 @@ if %ssh_found%==0 (
   EXIT /B 1
 )
 
-echo Initializing required git submodules
-git submodule init
-git submodule update
 echo Done. Now navigate into the available Vagrant boxes.

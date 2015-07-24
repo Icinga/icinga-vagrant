@@ -19,38 +19,7 @@ Windows users require additionally
 * SSH provided by the Git package from http://msysgit.github.io
 * Ruby for Windows from http://rubyinstaller.org (add Ruby executables to PATH)
 
-## Setup
-
-These boxes import required puppet modules for provisioning as git submodules.
-Therefore you'll need to clone this repository recursively.
-
-    $ git clone --recursive https://github.com/icinga/icinga-vagrant.git
-    $ cd icinga-vagrant
-
-Or, initialize and update the git submodules using:
-
-    $ git submodule init
-    $ git submodule update
-
-We are using the following puppet modules:
-
-  Name     		| Path				| Url
-  ----------------------|-------------------------------|-------------------------------
-  puppetlabs-stdlib	| modules/stdlib		| https://github.com/puppetlabs/puppetlabs-stdlib.git
-  puppetlabs-concat	| modules/concat		| https://github.com/puppetlabs/puppetlabs-concat.git
-  puppetlabs-apache	| modules/apache		| https://github.com/puppetlabs/puppetlabs-apache.git
-  puppetlabs-mysql	| modules/mysql			| https://github.com/puppetlabs/puppetlabs-mysql.git
-  puppetlabs-postgresql	| modules/postgresql		| https://github.com/puppetlabs/puppetlabs-postgresql.git
-  puppetlabs-vcsrepo	| modules/vcsrepo		| https://github.com/puppetlabs/puppetlabs-vcsrepo.git
-  puppet-module-epel	| modules/epel			| https://github.com/stahnma/puppet-module-epel.git
-  puppet-php		| modules/php			| https://github.com/thias/puppet-php.git
-  puppet-selinux	| modules/selinux		| https://github.com/jfryman/puppet-selinux.git
-  graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
-  puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
-  puppetlabs-mongodb	| modules/mongodb		| https://github.com/puppetlabs/puppetlabs-mongodb.git
-  puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
-
-
+You can use `init.sh` (Linux) and `init.bat` (Windows) to check the pre-requisites.
 
 ## Before you start
 
@@ -154,3 +123,26 @@ Choose one of the available boxes below.
   icinga2x-graylog2 | i2g2	| 9000      | 9000
   icinga2x-graylog2 | i2g2	| 12201     | 12201 (tcp/udp)
   icinga2x-graylog2 | i2g2	| 12900     | 12900
+
+### Puppet Module Overview
+
+These boxes use these imported puppet modules for provisioning:
+
+  Name     		| Path				| Url
+  ----------------------|-------------------------------|-------------------------------
+  puppetlabs-stdlib	| modules/stdlib		| https://github.com/puppetlabs/puppetlabs-stdlib.git
+  puppetlabs-concat	| modules/concat		| https://github.com/puppetlabs/puppetlabs-concat.git
+  puppetlabs-apache	| modules/apache		| https://github.com/puppetlabs/puppetlabs-apache.git
+  puppetlabs-mysql	| modules/mysql			| https://github.com/puppetlabs/puppetlabs-mysql.git
+  puppetlabs-postgresql	| modules/postgresql		| https://github.com/puppetlabs/puppetlabs-postgresql.git
+  puppetlabs-vcsrepo	| modules/vcsrepo		| https://github.com/puppetlabs/puppetlabs-vcsrepo.git
+  puppet-module-epel	| modules/epel			| https://github.com/stahnma/puppet-module-epel.git
+  puppet-php		| modules/php			| https://github.com/thias/puppet-php.git
+  puppet-selinux	| modules/selinux		| https://github.com/jfryman/puppet-selinux.git
+  graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
+  puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
+  puppetlabs-mongodb	| modules/mongodb		| https://github.com/puppetlabs/puppetlabs-mongodb.git
+  puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
+
+
+

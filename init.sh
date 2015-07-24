@@ -41,10 +41,6 @@ if ! ssh -V 2>/dev/null; then
   exit 1
 fi
 
-# git submodules
-echo "Initializing required git submodules."
-git submodule init
-git submodule update
 echo "Done. Now navigate into the available Vagrant boxes."
 
 
