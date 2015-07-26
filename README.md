@@ -2,7 +2,6 @@
 
 Icinga Vagrant boxes used for development, tests and demo cases.
 
-Additionally there are boxes with special uses cases like Graylog2, etc.
 
 ## Requirements
 
@@ -19,6 +18,14 @@ Windows users require additionally
 * Ruby for Windows from http://rubyinstaller.org (add Ruby executables to PATH)
 
 You can use `init.sh` (Linux) and `init.bat` (Windows) to check the pre-requisites.
+
+## Support
+
+Please note that these boxes are built for development and tests only. Productive
+setups are not supported.
+
+In case you've found a problem or want to submit a patch, please open an issue
+at [dev.icinga.org](https://dev.icinga.org/projects/icinga-tools/issues).
 
 ## Before you start
 
@@ -62,32 +69,34 @@ Choose one of the available boxes below.
 
 ## Available Vagrant Boxes
 
-### Icinga 1.x
-
-* 1 VM
-* Icinga 1.x Core, IDOUtils MySQL, Classic UI, Web
-
-[Documentation](icinga1x/README.md):
-
-    $ cd icinga1x && vagrant up
-
 ### Icinga 2 Standalone
 
 * 1 VM
-* Icinga 2 Core, DB IDO MySQL, Icinga 1.x Classic UI/Web, Icinga Web 2
+* Icinga 2 Core, DB IDO MySQL, Icinga Web 2
 
-[Documentation](icinga2x/README.md):
+More details in the [documentation](icinga2x/README.md).
+Run Vagrant:
 
     $ cd icinga2x && vagrant up
+
+Web interface:
+
+* [http://192.168.33.5/icingaweb2](http://192.168.33.5/icingaweb2) (icingaadmin/icinga)
 
 ### Icinga 2 Cluster
 
 * 2 VMs as Icinga 2 Master/Checker Cluster
 * Icinga 2 Core, DB IDO MySQL, Icinga Web 2
 
-[Documentation](icinga2x-cluster/README.md):
+More details in the [documentation](icinga2x-cluster/README.md).
+Run Vagrant:
 
     $ cd icinga2x-cluster && vagrant up
+
+Web interfaces:
+
+* [http://192.168.33.10/icingaweb2](http://192.168.33.10/icingaweb2) (icingaadmin/icinga)
+* [http://192.168.33.20/icingaweb2](http://192.168.33.20/icingaweb2) (icingaadmin/icinga)
 
 ### Icinga 2 and Graylog2
 
@@ -95,14 +104,27 @@ Choose one of the available boxes below.
 * Icinga 2 Core
 * Graylog2 Server and Web with Elasticsearch, MongoDB
 
-[Documentation](icinga2x-graylog2/README.md):
+More details in the [documentation](icinga2x-graylog2/README.md).
+Run Vagrant:
 
     $ cd icinga2x-graylog2 && vagrant up
 
-### Graphite Standalone
+Web interfaces:
 
-> use https://github.com/pkkummermo/grafana-vagrant-puppet-box
-> or a different box instead.
+* [http://192.168.33.6](http://192.168.33.6) (admin/admin)
+* [http://192.168.33.6/icingaweb2](http://192.168.33.6/icingaweb2) (icingaadmin/icinga)
+
+### Icinga 1.x
+
+* 1 VM
+* Icinga 1.x Core, IDOUtils MySQL, Classic UI, Web
+
+More details in the [documentation](icinga1x/README.md).
+Run Vagrant:
+
+    $ cd icinga1x && vagrant up
+
+Check the documentation for available web interfaces and credentials.
 
 ### Port Forwarding Overview
 
