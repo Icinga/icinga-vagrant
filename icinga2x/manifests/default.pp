@@ -7,8 +7,8 @@ include icinga2_ido_mysql
 include icinga2-classicui
 include icinga2-icinga-web
 include icingaweb2
-include icingaweb2-internal-db-mysql
-include monitoring-plugins
+include icingaweb2_internal_db_mysql
+include monitoring_plugins
 
 icingaweb2::module { [ 'businessprocess', 'pnp4nagios' ]:
   builtin => false

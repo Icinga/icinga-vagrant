@@ -124,8 +124,8 @@ include '::mysql::server'
 include icinga2
 include icinga2_ido_mysql
 include icingaweb2
-include icingaweb2-internal-db-mysql
-include monitoring-plugins
+include icingaweb2_internal_db_mysql
+include monitoring_plugins
 
 file { '/etc/icinga2/conf.d/demo.conf':
   owner  => icinga,
@@ -141,5 +141,5 @@ file { '/usr/lib/nagios/plugins/check-graylog-stream':
   target => '/usr/lib64/nagios/plugins/check-graylog2-stream',
   force => true,
   replace => true,
-  require => [ Package['check-graylog2-stream'], Class['monitoring-plugins'] ]
+  require => [ Package['check-graylog2-stream'], Class['monitoring_plugins'] ]
 }

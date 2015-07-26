@@ -122,7 +122,7 @@ class icingaweb2 (
   }
 }
 
-class icingaweb2-internal-db-mysql {
+class icingaweb2_internal_db_mysql {
   exec { 'create-mysql-icingaweb2-db':
     path 	=> '/bin:/usr/bin:/sbin:/usr/sbin',
     unless  	=> 'mysql -uicingaweb2 -picingaweb2 icingaweb2',
