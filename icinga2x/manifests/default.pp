@@ -111,6 +111,21 @@ exec { 'copy-vim-ftdetect-file':
 # enable the command pipe
 icinga2::feature { 'command': }
 
+file { '/etc/icinga2/conf.d/hosts.conf':
+  owner  => icinga,
+  group  => icinga,
+  source    => 'puppet:////vagrant/files/etc/icinga2/conf.d/hosts.conf',
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
+
+file { '/etc/icinga2/conf.d/additional_services.conf':
+  owner  => icinga,
+  group  => icinga,
+  source    => 'puppet:////vagrant/files/etc/icinga2/conf.d/additional_services.conf',
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
 
 # present icinga2 in icingaweb2's module documentation
 file { '/usr/share/icingaweb2/modules/icinga2':
