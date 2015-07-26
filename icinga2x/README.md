@@ -1,14 +1,14 @@
 # Icinga 2 Standalone Vagrant Box
 
 * Icinga 2 Core
-* Legacy interfaces: Icinga Classic UI, Web 1.x
 * Icinga Web 2 as user interface with internal auth db and DB IDO MySQL backend
+* Legacy interfaces: Icinga Classic UI, Web 1.x
 
+Overview:
 
   Instance  | Network                   | HTTP
   ----------|---------------------------|--------------------------------------
-  icinga2   |                           | http://localhost:8080
-
+  icinga2   | host_only 192.168.33.5    | http://192.168.33.5
 
 Backend is IDO MySQL only.
 

@@ -3,11 +3,12 @@
 * Icinga 2 Core as cluster (icinga2a cfg master, icinga2b checker)
 * Icinga Web 2 as user interface with internal auth db and IDO backend
 
+Overview:
 
   Instance  | Network                   | HTTP
   ----------|---------------------------|--------------------------------------
-  icinga2a  | host_only 192.168.33.10   | http://localhost:8085
-  icinga2b  | host_only 192.168.33.20   | http://localhost:8086
+  icinga2a  | host_only 192.168.33.10   | http://192.168.33.10
+  icinga2b  | host_only 192.168.33.20   | http://192.168.33.20
 
 Backend is IDO MySQL only.
 
