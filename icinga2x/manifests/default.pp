@@ -21,9 +21,21 @@ icingaweb2::module { [ 'businessprocess', 'pnp4nagios' ]:
 class {'apache':
   # don't purge php, icingaweb2, etc configs
   purge_configs => false,
+  default_vhost => false
 }
 
 class {'::apache::mod::php': }
+
+apache::vhost { 'vagrant-demo.icinga.org':
+  priority        => 5,
+  port            => '80',
+  docroot         => '/var/www/html',
+  rewrites => [
+    {
+      rewrite_rule => ['^/$ /icingaweb2 [NE,L,R=301]'],
+    },
+  ],
+}
 
 include '::php::cli'
 include '::php::mod_php5'
@@ -35,22 +47,9 @@ php::ini { '/etc/php.ini':
   session_save_path => '/var/lib/php/session'
 }
 
-####################################
-# Start page at http://localhost/
-####################################
-
-file { '/var/www/html/index.html':
-  source    => 'puppet:////vagrant/files/var/www/html/index.html',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => Class['Apache']
-}
-
-file { '/var/www/html/icinga_wall.png':
-  source    => 'puppet:////vagrant/files/var/www/html/icinga_wall.png',
-  owner     => 'apache',
-  group     => 'apache',
-  require   => Class['Apache']
+# leftover, purge them
+file { [ '/var/www/html/index.html', '/var/www/html/icinga_wall.png' ]:
+  ensure => 'absent'
 }
 
 ####################################
