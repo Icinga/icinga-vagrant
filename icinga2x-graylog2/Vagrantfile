@@ -15,29 +15,42 @@ else
 end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "centos-71-x64-vbox"
-  config.vm.box_url = "http://boxes.icinga.org/centos-71-x64-vbox.box"
-  config.vm.hostname = "g2i2.demo.icinga.org"
-  config.vm.network :forwarded_port, guest: 22, host: 2232, id: "ssh", disabled: true
-  config.vm.network :forwarded_port, guest: 22, host: 2119, auto_correct: true
-  config.vm.network :forwarded_port, guest: 80, host: 8110, auto_correct: true
-  # we need to keep the same ports, since re-configuration requires -server/-web cfg changes
-  config.vm.network :forwarded_port, guest: 9000, host: 9000
-  config.vm.network :forwarded_port, guest: 12201, host: 12201, protocol: 'udp', auto_correct: true
-  config.vm.network :forwarded_port, guest: 12201, host: 12201, protocol: 'tcp', auto_correct: true
-  config.vm.network :forwarded_port, guest: 12900, host: 12900
-  config.vm.provider "virtualbox" do |vb|
-    vb.customize ["modifyvm", :id, "--memory", "1024"]
+  servers = { 'g2i2.demo.icinga.org' => '192.168.33.6'
+            }
+  http_port = { 'g2i2.demo.icinga.org' => 8110
+              }
+  ssh_port = { 'g2i2.demo.icinga.org' => 2119
+             }
+
+  servers.each do |server_name, server_ip|
+    config.vm.define server_name do |app_config|
+      app_config.vm.box = "centos-71-x64-vbox"
+      app_config.vm.box_url = "http://boxes.icinga.org/centos-71-x64-vbox.box"
+      app_config.vm.hostname = "#{server_name.to_s}"
+      app_config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
+      app_config.vm.network :forwarded_port, guest: 22, host: ssh_port[server_name], auto_correct: true
+      app_config.vm.network :forwarded_port, guest: 80, host: http_port[server_name], auto_correct: true
+      # we need to keep the same ports, since re-configuration requires -server/-web cfg changes
+      app_config.vm.network :forwarded_port, guest: 9000, host: 9000
+      app_config.vm.network :forwarded_port, guest: 12201, host: 12201, protocol: 'udp', auto_correct: true
+      app_config.vm.network :forwarded_port, guest: 12201, host: 12201, protocol: 'tcp', auto_correct: true
+      app_config.vm.network :forwarded_port, guest: 12900, host: 12900
+      app_config.vm.network :private_network, ip: "#{server_ip}"
+      app_config.vm.provider "virtualbox" do |vb|
+	vb.customize ["modifyvm", :id, "--memory", "1024"]
+      end
+      app_config.vm.provision :puppet do |puppet|
+        puppet.module_path = "../modules"
+        puppet.manifests_path = "manifests"
+        puppet.hiera_config_path = "hiera.yaml"
+        #puppet.options = "--verbose --debug"
+        puppet.options = "--parser=future"
+      end
+      # add gelf inputs etc
+      app_config.vm.provision :shell, :path => "scripts/graylog2-seed.rb"
+      # tell the user where to login
+      app_config.vm.provision :shell, :path => "scripts/finalize.sh"
+    end
   end
-  config.vm.provision :puppet do |puppet|
-    puppet.manifests_path = "manifests"
-    puppet.module_path = "../modules"
-    puppet.hiera_config_path = "hiera.yaml"
-    puppet.options = "--verbose --debug"
-  end
-  # add gelf inputs etc
-  config.vm.provision :shell, :path => "scripts/graylog2-seed.rb"
-  # tell the user where to login
-  config.vm.provision :shell, :path => "scripts/finalize.sh"
 end
 

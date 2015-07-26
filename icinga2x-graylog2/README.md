@@ -4,10 +4,12 @@
 * Graylog Server & Web
 * MongoDB, Elasticsearch as Requirements
 
+Overview:
+
   Instance  | Network                   | HTTP
   ----------|---------------------------|--------------------------------------
-  i2g2      |                           | http://localhost:8110
-  i2g2      |                           | http://localhost:9000
+  i2g2      | 192.168.33.6              | http://localhost:8110
+  i2g2      | 192.168.33.6:9000         | http://localhost:9000
 
 
 ## Setup
