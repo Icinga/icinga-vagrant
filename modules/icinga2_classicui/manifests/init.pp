@@ -1,4 +1,4 @@
-class icinga2-classicui {
+class icinga2_classicui {
   include icinga_rpm
   include icinga2
 

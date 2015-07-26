@@ -4,8 +4,8 @@ include '::mysql::server'
 include '::postgresql::server'
 include icinga2
 include icinga2_ido_mysql
-include icinga2-classicui
-include icinga2-icinga-web
+include icinga2_classicui
+include icinga2_icinga_web
 include icingaweb2
 include icingaweb2_internal_db_mysql
 include monitoring_plugins

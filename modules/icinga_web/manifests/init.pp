@@ -1,4 +1,4 @@
-class icinga-web {
+class icinga_web {
   php::module { ['php-mysql']:
     require => [ Class['mysql::server'] ]
   }

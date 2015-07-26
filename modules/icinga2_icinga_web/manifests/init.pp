@@ -1,5 +1,5 @@
-class icinga2-icinga-web {
-  include icinga-web
+class icinga2_icinga_web {
+  include icinga_web
 
   exec { 'set-icinga2-cmd-pipe-path':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
