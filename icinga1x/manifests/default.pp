@@ -20,7 +20,7 @@ file { '/etc/httpd/conf.d/icinga-demo.conf':
 file { [ '/usr/share/icinga-demo', '/usr/share/icinga-demo/htdocs' ]:
   owner => root,
   group => root,
-  mode => 755,
+  mode => '755',
   ensure => 'directory'
 }
 
@@ -28,14 +28,14 @@ file { '/usr/share/icinga-demo/htdocs/index.html':
   source => 'puppet:////vagrant/files/usr/share/icinga-demo/htdocs/index.html',
   owner => root,
   group => root,
-  mode => 644
+  mode => '644'
 }
 
 file { '/usr/share/icinga-demo/htdocs/icinga_wall.png':
   source => 'puppet:////vagrant/files/usr/share/icinga-demo/htdocs/icinga_wall.png',
   owner => root,
   group => root,
-  mode => 644
+  mode => '644'
 }
 
 
