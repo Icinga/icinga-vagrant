@@ -12,10 +12,10 @@ define icingaweb2::module (
 
   if !$builtin {
     vcsrepo { $repo_path:
-      ensure   => present,
+      ensure   => 'present',
       path     => $repo_path,
       provider => 'git',
-      revision => HEAD,
+      revision => 'master',
       source   => $repo_url,
       force    => true,
       require  => [ Package['git'], File[$::icingaweb2::web_module_dir] ]
