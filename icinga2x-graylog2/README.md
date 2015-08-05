@@ -61,7 +61,7 @@ the packages and configuration.
 
   GUI              | Url               | Credentials
   -----------------|-------------------|------------------------
-  Graylog          | :8110/icingaweb2  | icingaadmin/icinga
+  Icinga Web 2     | :8110/icingaweb2  | icingaadmin/icinga
   Graylog          | :9000/            | admin/admin
 
 
