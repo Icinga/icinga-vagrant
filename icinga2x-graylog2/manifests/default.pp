@@ -5,7 +5,7 @@
 
 include epel
 
-$graylog_version = "1.0"
+$graylog_version = "1.1"
 $elasticsearch_version = ""
 
 # basic stuff
@@ -77,8 +77,6 @@ class { '::mongodb::server': }
 # Graylog
 class { 'graylog2::repo':
   version => $graylog_version,
-  # hardcode centos6, as they don't have el7 yet
-  baseurl => "https://packages.graylog2.org/repo/el/6/${graylog_version}/x86_64/"
 } ->
 class { 'graylog2::server':
   service_enable	     => true,
