@@ -111,7 +111,7 @@ Run Vagrant:
 
 Web interfaces:
 
-* [http://192.168.33.6](http://192.168.33.6) (admin/admin)
+* [http://192.168.33.6:9000/](http://192.168.33.6:9000/) (admin/admin)
 * [http://192.168.33.6/icingaweb2](http://192.168.33.6/icingaweb2) (icingaadmin/icinga)
 
 ### Icinga 1.x
