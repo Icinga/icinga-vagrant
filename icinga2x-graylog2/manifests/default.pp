@@ -62,6 +62,9 @@ elasticsearch::instance { 'graylog-es':
     'cluster.name' => 'graylog',
     'network.host' => '127.0.0.1'
   },
+  init_defaults => {
+    'ES_HEAP_SIZE' => '256m',
+  },
 }
 
 # MongoDB
@@ -89,6 +92,7 @@ class { 'graylog2::server':
   password_secret            => '3eb06615884fec5ae541b8661b430e8da89ed5fddf81c4bdc6a2a714abb9b51d',
   root_password_sha2         => '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
   elasticsearch_cluster_name => 'graylog',
+  java_opts                  => '-Xms256m -Xmx512m -XX:NewRatio=1 -XX:PermSize=128m -XX:MaxPermSize=256m -server -XX:+ResizeTLAB -XX:+UseConcMarkSweepGC -XX:+CMSConcurrentMTEnabled -XX:+CMSClassUnloadingEnabled -XX:+UseParNewGC -XX:-OmitStackTraceInFastThrow',
   require                    => [
     Elasticsearch::Instance['graylog-es'],
     Class['mongodb::server'],
