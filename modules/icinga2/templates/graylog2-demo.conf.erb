@@ -98,7 +98,7 @@ object User "osmc-graylog2" {
 }
 
 object UserGroup "osmc" {
-  display_name = "OSCM Notification Group"
+  display_name = "OSMC Notification Group"
   assign where match("osmc-*", user.name)
 }
 
