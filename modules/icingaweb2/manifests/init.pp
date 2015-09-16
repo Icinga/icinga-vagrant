@@ -103,11 +103,11 @@ class icingaweb2 (
       content 	=> template("icingaweb2/modules/monitoring/config.ini.erb"),
       require 	=> File["$::icingaweb2::config_dir/modules/monitoring"];
 
-    "$::icingaweb2::config_dir/modules/monitoring/instances.ini":
+    "$::icingaweb2::config_dir/modules/monitoring/commandtransports.ini":
       mode 	=> $::icingaweb2::config_file_mode,
       owner	=> $::icingaweb2::config_user,
       group	=> $::icingaweb2::config_group,
-      content 	=> template("icingaweb2/modules/monitoring/instances.ini.erb"),
+      content 	=> template("icingaweb2/modules/monitoring/commandtransports.ini.erb"),
       require 	=> File["$::icingaweb2::config_dir/modules/monitoring"];
   }
 
