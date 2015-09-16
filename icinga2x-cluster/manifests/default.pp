@@ -1,7 +1,6 @@
 include icinga_rpm
 include epel
 include '::mysql::server'
-include snmp
 include icinga2
 include icinga2_ido_mysql
 #include icinga2_classicui
@@ -65,11 +64,7 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
   }
 }
 
-package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git' ]:
-  ensure => 'installed'
-}
-
-package { 'bash-completion':
+package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion' ]:
   ensure => 'installed',
   require => Class['epel']
 }
@@ -106,18 +101,6 @@ exec { 'copy-vim-ftdetect-file':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => 'cp -f /usr/share/doc/icinga2-common-$(rpm -q icinga2-common | cut -d\'-\' -f3)/syntax/vim/ftdetect/icinga2.vim /root/.vim/ftdetect/icinga2.vim',
   require => [ Package['vim-enhanced'], Package['icinga2-common'], File['/root/.vim/syntax'] ]
-}
-
-####################################
-# Plugins
-####################################
-
-file { '/usr/lib64/nagios/plugins/check_snmp_int.pl':
-   source    => 'puppet:////vagrant/files/usr/lib64/nagios/plugins/check_snmp_int.pl',
-   owner     => 'root',
-   group     => 'root',
-   mode      => 755,
-   require   => Class['monitoring_plugins']
 }
 
 ####################################

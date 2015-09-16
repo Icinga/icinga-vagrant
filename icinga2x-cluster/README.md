@@ -7,21 +7,41 @@ Overview:
 
   Instance  | Network                   | HTTP
   ----------|---------------------------|--------------------------------------
-  icinga2a  | host_only 192.168.33.10   | http://192.168.33.10
-  icinga2b  | host_only 192.168.33.20   | http://192.168.33.20
+  icinga2a  | host only 192.168.33.10   | http://192.168.33.10
+  icinga2b  | host only 192.168.33.20   | http://192.168.33.20
 
 Backend is IDO MySQL only.
 
 ## Requirements
 
-* Vagrant >= 1.6.5 from http://www.vagrantup.com
-* Virtualbox >= 4.2.16 from http://www.virtualbox.org
+Each Vagrant box setup requires at least 2 Cores and 1 GB RAM.
+The required resources are automatically configured during the
+`vagrant up` run.
 
-Windows users require additionally:
+* Vagrant >= 1.6.5 from http://www.vagrantup.com
+
+One of these virtualization providers:
+
+* Virtualbox >= 4.2.16 from http://www.virtualbox.org
+* Parallels Desktop Pro/Business >= 11 from http://www.parallels.com/products/desktop/
+
+Windows users require additionally
 
 * SSH provided by the Git package from http://msysgit.github.io
 * Ruby for Windows from http://rubyinstaller.org (add Ruby executables to PATH)
 
+You can use `init.sh` (Linux) and `init.bat` (Windows) to check the pre-requisites.
+
+### Virtualbox Provider
+
+If Virtualbox is installed, this will be enabled by default.
+
+### Parallels Provider
+
+You'll need to install the [vagrant-paralells](http://parallels.github.io/vagrant-parallels/docs/)
+plugin first:
+
+    $ vagrant plugin install vagrant-parallels
 
 ## Installation
 

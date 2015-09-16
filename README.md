@@ -2,15 +2,18 @@
 
 Icinga Vagrant boxes used for development, tests and demo cases.
 
-
 ## Requirements
 
-Each VM requires at least 1 Core and 1 GB RAM.
-
-The icinga2x-cluster demo with 2 VMs requires at least a Quad-Core with 4 GB RAM.
+Each Vagrant box setup requires at least 2 Cores and 1 GB RAM.
+The required resources are automatically configured during the
+`vagrant up` run.
 
 * Vagrant >= 1.6.5 from http://www.vagrantup.com
+
+One of these virtualization providers:
+
 * Virtualbox >= 4.2.16 from http://www.virtualbox.org
+* Parallels Desktop Pro/Business >= 11 from http://www.parallels.com/products/desktop/
 
 Windows users require additionally
 
@@ -18,6 +21,17 @@ Windows users require additionally
 * Ruby for Windows from http://rubyinstaller.org (add Ruby executables to PATH)
 
 You can use `init.sh` (Linux) and `init.bat` (Windows) to check the pre-requisites.
+
+### Virtualbox Provider
+
+If Virtualbox is installed, this will be enabled by default.
+
+### Parallels Provider
+
+You'll need to install the [vagrant-paralells](http://parallels.github.io/vagrant-parallels/docs/)
+plugin first:
+
+    $ vagrant plugin install vagrant-parallels
 
 ## Support
 

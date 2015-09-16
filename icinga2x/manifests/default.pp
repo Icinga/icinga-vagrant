@@ -64,11 +64,7 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
   }
 }
 
-package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git' ]:
-  ensure => 'installed'
-}
-
-package { 'bash-completion':
+package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion' ]:
   ensure => 'installed',
   require => Class['epel']
 }
