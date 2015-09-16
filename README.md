@@ -112,16 +112,16 @@ Web interfaces:
 * [http://192.168.33.10/icingaweb2](http://192.168.33.10/icingaweb2) (icingaadmin/icinga)
 * [http://192.168.33.20/icingaweb2](http://192.168.33.20/icingaweb2) (icingaadmin/icinga)
 
-### Icinga 2 and Graylog2
+### Icinga 2 and Graylog
 
 * 1 VM
 * Icinga 2 Core
-* Graylog2 Server and Web with Elasticsearch, MongoDB
+* Graylog Server and Web with Elasticsearch, MongoDB
 
-More details in the [documentation](icinga2x-graylog2/README.md).
+More details in the [documentation](icinga2x-graylog/README.md).
 Run Vagrant:
 
-    $ cd icinga2x-graylog2 && vagrant up
+    $ cd icinga2x-graylog && vagrant up
 
 Web interfaces:
 

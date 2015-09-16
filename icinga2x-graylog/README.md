@@ -11,25 +11,36 @@ Overview:
   i2g2      | 192.168.33.6              | http://localhost:8110
   i2g2      | 192.168.33.6:9000         | http://localhost:9000
 
-
-## Setup
-
-This box requires puppet modules for provisioning as git submodules.
-Therefore you'll need to clone this repository recursively.
-
-    $ git clone --recursive https://github.com/icinga/icinga-vagrant.git
-    $ cd icinga-vagrant/icinga2x-graylog2
-
 ## Requirements
 
+Each Vagrant box setup requires at least 2 Cores and 1 GB RAM.
+The required resources are automatically configured during the
+`vagrant up` run.
+
 * Vagrant >= 1.6.5 from http://www.vagrantup.com
+
+One of these virtualization providers:
+
 * Virtualbox >= 4.2.16 from http://www.virtualbox.org
+* Parallels Desktop Pro/Business >= 11 from http://www.parallels.com/products/desktop/
 
 Windows users require additionally
 
 * SSH provided by the Git package from http://msysgit.github.io
 * Ruby for Windows from http://rubyinstaller.org (add Ruby executables to PATH)
 
+You can use `init.sh` (Linux) and `init.bat` (Windows) to check the pre-requisites.
+
+### Virtualbox Provider
+
+If Virtualbox is installed, this will be enabled by default.
+
+### Parallels Provider
+
+You'll need to install the [vagrant-paralells](http://parallels.github.io/vagrant-parallels/docs/)
+plugin first:
+
+    $ vagrant plugin install vagrant-parallels
 
 ## Installation
 

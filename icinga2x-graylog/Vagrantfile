@@ -24,8 +24,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   servers.each do |server_name, server_ip|
     config.vm.define server_name do |app_config|
-      app_config.vm.box = "centos-71-x64-vbox"
-      app_config.vm.box_url = "http://boxes.icinga.org/centos-71-x64-vbox.box"
       app_config.vm.hostname = "#{server_name.to_s}"
       app_config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
       app_config.vm.network :forwarded_port, guest: 22, host: ssh_port[server_name], auto_correct: true
@@ -36,9 +34,35 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       app_config.vm.network :forwarded_port, guest: 12201, host: 12201, protocol: 'tcp', auto_correct: true
       app_config.vm.network :forwarded_port, guest: 12900, host: 12900
       app_config.vm.network :private_network, ip: "#{server_ip}"
-      app_config.vm.provider "virtualbox" do |vb|
-	vb.customize ["modifyvm", :id, "--memory", "1024"]
+
+      app_config.vm.provision :shell, :path => "manifests/puppet.sh"
+
+      # parallels
+      app_config.vm.provider :parallels do |p, override|
+        override.vm.box = "parallels/centos-7.1"
+
+        p.name = "Icinga 2: #{server_name.to_s}"
+
+        # Update Parallels Tools automatically
+        p.update_guest_tools = true
+
+        # Set power consumption mode to "Better Performance"
+        p.optimize_power_consumption = false
+
+        p.memory = 1024
+        p.cpus = 2
       end
+
+      # virtualbox
+      app_config.vm.provider :virtualbox do |v, override|
+        override.vm.box = "centos-71-x64-vbox"
+        override.vm.box_url = "http://boxes.icinga.org/centos-71-x64-vbox.box"
+
+        v.customize ["modifyvm", :id, "--memory", "1024"]
+        v.customize ["modifyvm", :id, "--cpus", "2"]
+      end
+
+      # provisioner
       app_config.vm.provision :puppet do |puppet|
         puppet.module_path = "../modules"
         puppet.manifests_path = "manifests"

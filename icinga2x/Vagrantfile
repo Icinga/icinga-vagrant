@@ -39,7 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       app_config.vm.provider :parallels do |p, override|
         override.vm.box = "parallels/centos-7.1"
 
-        p.name = "Icinga 2 Standalone"
+        p.name = "Icinga 2: #{server_name.to_s}"
 
         # Update Parallels Tools automatically
         p.update_guest_tools = true

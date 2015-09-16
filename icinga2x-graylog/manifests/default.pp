@@ -19,7 +19,8 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
 }
 
 package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git' ]:
-  ensure => 'installed'
+  ensure => 'installed',
+  require => Class['Epel']
 }
 
 # Webserver
