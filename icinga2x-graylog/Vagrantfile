@@ -60,6 +60,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         v.customize ["modifyvm", :id, "--memory", "1024"]
         v.customize ["modifyvm", :id, "--cpus", "2"]
+        # Using the host's resolver as a DNS proxy in NAT mode
+        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
       end
 
       # provisioner
