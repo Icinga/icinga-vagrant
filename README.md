@@ -97,6 +97,10 @@ Web interface:
 
 * [http://192.168.33.5/icingaweb2](http://192.168.33.5/icingaweb2) (icingaadmin/icinga)
 
+Icinga 2 API:
+
+* [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts) (root/icinga)
+
 ### Icinga 2 Cluster
 
 * 2 VMs as Icinga 2 Master/Checker Cluster
@@ -111,6 +115,11 @@ Web interfaces:
 
 * [http://192.168.33.10/icingaweb2](http://192.168.33.10/icingaweb2) (icingaadmin/icinga)
 * [http://192.168.33.20/icingaweb2](http://192.168.33.20/icingaweb2) (icingaadmin/icinga)
+
+Icinga 2 API:
+
+* [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/v1/objects/hosts) (root/icinga)
+* [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts) (root/icinga)
 
 ### Icinga 2 and Graylog
 

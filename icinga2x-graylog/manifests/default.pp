@@ -130,6 +130,14 @@ include icingaweb2
 include icingaweb2_internal_db_mysql
 include monitoring_plugins
 
+file { '/etc/icinga2/conf.d/api-users.conf':
+  owner  => icinga,
+  group  => icinga,
+  content   => template("icinga2/api-users.conf.erb"),
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
+
 file { '/etc/icinga2/conf.d/demo.conf':
   owner  => icinga,
   group  => icinga,

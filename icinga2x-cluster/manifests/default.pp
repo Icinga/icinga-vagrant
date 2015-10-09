@@ -196,6 +196,14 @@ file { "/etc/icinga2/features-available/api.conf":
   notify    => Service['icinga2']
 }
 
+file { '/etc/icinga2/conf.d/api-users.conf':
+  owner  => icinga,
+  group  => icinga,
+  content   => template("icinga2/api-users.conf.erb"),
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
+
 # local cluster health checks
 file { '/etc/icinga2/cluster':
   owner  => icinga,

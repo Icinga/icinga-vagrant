@@ -71,15 +71,17 @@ the packages and configuration.
 
 ## User Interfaces
 
-http://localhost:8080 shows an entry page including all urls and
-credentials.
-
   GUI               | Url               | Credentials
   ------------------|-------------------|----------------
   Icinga Classic UI | /icinga           | icingaadmin/icingaadmin
   Icinga Web 1.x    | /icinga-web       | root/password
   Icinga Web 2      | /icingaweb2       | icingaadmin/icinga
 
+
+## Icinga 2 API
+
+Access [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts)
+using the credentials `root/icinga`.
 
 ## Ports
 

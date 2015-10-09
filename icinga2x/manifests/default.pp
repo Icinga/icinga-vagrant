@@ -122,6 +122,14 @@ file { '/etc/icinga2/conf.d/additional_services.conf':
   notify    => Service['icinga2']
 }
 
+file { '/etc/icinga2/conf.d/api-users.conf':
+  owner  => icinga,
+  group  => icinga,
+  content   => template("icinga2/api-users.conf.erb"),
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
+
 # present icinga2 in icingaweb2's module documentation
 file { '/usr/share/icingaweb2/modules/icinga2':
   ensure => 'directory',
