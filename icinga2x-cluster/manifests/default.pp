@@ -196,7 +196,7 @@ file { "/etc/icinga2/features-available/api.conf":
   notify    => Service['icinga2']
 }
 
-file { '/etc/icinga2/conf.d/api-users.conf':
+file { '/etc/icinga2/cluster/api-users.conf':
   owner  => icinga,
   group  => icinga,
   content   => template("icinga2/api-users.conf.erb"),
