@@ -122,11 +122,18 @@ file { '/etc/icinga2/conf.d/additional_services.conf':
   notify    => Service['icinga2']
 }
 
+# api
+exec { 'enable-icinga2-api':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => 'icinga2 api setup',
+  require => Package['icinga2']
+}
+
 file { '/etc/icinga2/conf.d/api-users.conf':
   owner  => icinga,
   group  => icinga,
   content   => template("icinga2/api-users.conf.erb"),
-  require   => Package['icinga2'],
+  require   => [ Package['icinga2'], Exec['enable-icinga2-api'] ],
   notify    => Service['icinga2']
 }
 
