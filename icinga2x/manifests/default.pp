@@ -149,6 +149,17 @@ file { '/etc/icinga2/conf.d/api-users.conf':
 # Icinga Web 2
 ####################################
 
+# user-defined dashboards for the default 'icingaadmin' user
+file { '/etc/icingaweb2/dashboards/icingaadmin':
+  ensure => directory,
+  recurse => true,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  source    => "puppet:////vagrant/files/etc/icingaweb2/dashboards/icingaadmin",
+  require => Package['icingaweb2']
+}
+
 # present icinga2 in icingaweb2's module documentation
 file { '/usr/share/icingaweb2/modules/icinga2':
   ensure => 'directory',
@@ -223,7 +234,8 @@ file { '/etc/icingaweb2/modules/businessprocess':
   recurse => true,
   owner  => root,
   group  => icingaweb2,
-  mode => '2750',
+  mode => '2770',
   source    => "puppet:////vagrant/files/etc/icingaweb2/modules/businessprocess",
   require => Package['icingaweb2']
 }
+
