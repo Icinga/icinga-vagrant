@@ -103,6 +103,25 @@ exec { 'copy-vim-ftdetect-file':
 # Icinga 2 General
 ####################################
 
+file { '/etc/icinga2':
+  ensure    => 'directory',
+  require => Package['icinga2']
+}
+
+file { '/etc/icinga2/icinga2.conf':
+  owner  => icinga,
+  group  => icinga,
+  source    => "puppet:////vagrant/files/etc/icinga2/icinga2.conf",
+  require   => File['/etc/icinga2']
+}
+
+file { '/etc/icinga2/bp':
+  ensure    => 'directory',
+  owner  => icinga,
+  group  => icinga,
+  require   => File['/etc/icinga2']
+}
+
 # enable the command pipe
 icinga2::feature { 'command': }
 
