@@ -150,6 +150,14 @@ file { '/etc/icinga2/conf.d/api-users.conf':
 ####################################
 
 # user-defined dashboards for the default 'icingaadmin' user
+file { '/etc/icingaweb2/dashboards':
+  ensure => directory,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  require => Package['icingaweb2']
+}
+
 file { '/etc/icingaweb2/dashboards/icingaadmin':
   ensure => directory,
   recurse => true,
@@ -157,7 +165,7 @@ file { '/etc/icingaweb2/dashboards/icingaadmin':
   group  => icingaweb2,
   mode => '2770',
   source    => "puppet:////vagrant/files/etc/icingaweb2/dashboards/icingaadmin",
-  require => Package['icingaweb2']
+  require => [ Package['icingaweb2'], File['/etc/icingaweb2/dashboards'] ]
 }
 
 # present icinga2 in icingaweb2's module documentation
