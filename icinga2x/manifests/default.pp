@@ -10,10 +10,6 @@ include icingaweb2
 include icingaweb2_internal_db_mysql
 include monitoring_plugins
 
-icingaweb2::module { [ 'businessprocess', 'pnp4nagios' ]:
-  builtin => false
-}
-
 ####################################
 # Webserver
 ####################################
@@ -115,13 +111,6 @@ file { '/etc/icinga2/icinga2.conf':
   require   => File['/etc/icinga2']
 }
 
-file { '/etc/icinga2/bp':
-  ensure    => 'directory',
-  owner  => icinga,
-  group  => icinga,
-  require   => File['/etc/icinga2']
-}
-
 # enable the command pipe
 icinga2::feature { 'command': }
 
@@ -186,6 +175,10 @@ include pnp4nagios
 
 icinga2::feature { 'perfdata': }
 
+icingaweb2::module { 'pnp4nagios':
+  builtin => false
+}
+
 # override the default httpd config w/o basic auth
 
 file { 'httpd_config':
@@ -196,4 +189,41 @@ file { 'httpd_config':
   content => template('pnp4nagios/pnp4nagios.conf.erb'),
   require => Class['apache'],
   notify => Class['apache::service'],
+}
+
+####################################
+# BP
+####################################
+
+file { 'check_mysql_health':
+  name => '/usr/lib64/nagios/plugins/check_mysql_health',
+  owner => root,
+  group => root,
+  mode => '0755',
+  source    => 'puppet:////vagrant/files/usr/lib64/nagios/plugins/check_mysql_health',
+  require => Class['monitoring_plugins'],
+}
+
+file { '/etc/icinga2/bp':
+  ensure => directory,
+  recurse => true,
+  owner  => icinga,
+  group  => icinga,
+  source    => "puppet:////vagrant/files/etc/icinga2/bp",
+  require   => File['/etc/icinga2/icinga2.conf'],
+  notify    => Service['icinga2']
+}
+
+icingaweb2::module { 'businessprocess':
+  builtin => false
+}
+
+file { '/etc/icingaweb2/modules/businessprocess':
+  ensure => directory,
+  recurse => true,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2750',
+  source    => "puppet:////vagrant/files/etc/icingaweb2/modules/businessprocess",
+  require => Package['icingaweb2']
 }
