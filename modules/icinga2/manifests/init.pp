@@ -42,6 +42,14 @@ class icinga2 (
     notify => Service['icinga2']
   }
 
+  file { '/var/spool/icinga2/perfdata':
+    ensure => directory,
+    owner => 'icinga',
+    group => 'icinga',
+    mode => '0775',
+    require => Package['icinga2-common']
+  }
+
   icinga2::feature { 'livestatus': }
 }
 

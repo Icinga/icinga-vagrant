@@ -1,0 +1,11 @@
+[Unit]
+Description=Monitoring Performance Data Daemon
+After=network.target
+After=syslog.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/npcd -d -f /etc/pnp4nagios/npcd.cfg
+
+[Install]
+WantedBy=multi-user.target

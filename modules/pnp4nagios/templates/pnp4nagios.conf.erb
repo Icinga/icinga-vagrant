@@ -1,0 +1,41 @@
+# SAMPLE CONFIG SNIPPETS FOR APACHE WEB SERVER
+
+Alias /pnp4nagios "/usr/share/nagios/html/pnp4nagios"
+
+<Directory "/usr/share/nagios/html/pnp4nagios">
+   	AllowOverride None
+
+	# we're inside a vagrant box, disable basic auth
+	SetEnv REMOTE_USER icingaadmin
+	<IfModule mod_authz_core.c>
+		# Apache 2.4
+		<RequireAll>
+			Require all granted
+#			Require valid-user
+		</RequireAll>
+	</IfModule>
+	<IfModule !mod_authz_core.c>
+		# Apache 2.2
+	   	Order allow,deny
+	   	Allow from all
+#		Require valid-user
+	</IfModule>
+#   	AuthName "Nagios Access"
+#   	AuthType Basic
+#   	AuthUserFile /etc/nagios/passwd
+#   	Require valid-user
+	<IfModule mod_rewrite.c>
+		# Turn on URL rewriting
+		RewriteEngine On
+		Options symLinksIfOwnerMatch
+		# Installation directory
+		RewriteBase /pnp4nagios/
+		# Protect application and system files from being viewed
+		RewriteRule "^(?:application|modules|system)/" - [F]
+		# Allow any files or directories that exist to be displayed directly
+		RewriteCond "%{REQUEST_FILENAME}" !-f
+		RewriteCond "%{REQUEST_FILENAME}" !-d
+		# Rewrite all other URLs to index.php/URL
+		RewriteRule "^.*$" "index.php/$0" [PT]
+	</IfModule>
+</Directory>

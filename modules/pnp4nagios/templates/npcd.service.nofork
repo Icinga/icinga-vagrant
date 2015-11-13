@@ -1,0 +1,10 @@
+[Unit]
+Description=Nagios-Perfdata-C-Daemon
+After=syslog.target network.target monitoring_daemon.service
+
+[Service]
+ExecStart=/usr/bin/npcd -f /etc/pnp4nagios/npcd.cfg
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

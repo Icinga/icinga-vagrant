@@ -137,6 +137,10 @@ file { '/etc/icinga2/conf.d/api-users.conf':
   notify    => Service['icinga2']
 }
 
+####################################
+# Icinga Web 2
+####################################
+
 # present icinga2 in icingaweb2's module documentation
 file { '/usr/share/icingaweb2/modules/icinga2':
   ensure => 'directory',
@@ -155,3 +159,22 @@ file { '/etc/icingaweb2/enabledModules/icinga2':
   require => File['/etc/icingaweb2/enabledModules'],
 }
 
+####################################
+# PNP
+####################################
+
+include pnp4nagios
+
+icinga2::feature { 'perfdata': }
+
+# override the default httpd config w/o basic auth
+
+file { 'httpd_config':
+  name => '/etc/httpd/conf.d/pnp4nagios.conf',
+  owner => root,
+  group => root,
+  mode => '0644',
+  content => template('pnp4nagios/pnp4nagios.conf.erb'),
+  require => Class['apache'],
+  notify => Class['apache::service'],
+}
