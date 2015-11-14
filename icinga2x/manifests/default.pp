@@ -340,12 +340,6 @@ file { 'pip-symlink':
   before	=> Class['graphite'],
 }
 
-file { '/etc/systemd/system/carbon-cache.service':
-  owner => 'root',
-  group => 'root',
-  mode => '0755',
-  source => "puppet:////vagrant/files/etc/systemd/system/carbon-cache.service",
-}->
 file { '/opt/graphite':
   ensure => directory
 }->
@@ -390,14 +384,6 @@ class { 'graphite':
   gr_whisper_ver => '0.9.14',
   gr_twisted_ver => '13.2.0', # 0.9.14 carbon-cache requirement
   gr_timezone => 'Europe/Berlin',
-}
-exec { 'systemd-daemon-reload':
-# avoid problem with systemd service error
-# https://github.com/echocat/puppet-graphite/issues/211
-  path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => '/bin/systemctl daemon-reload',
-  before => Service['carbon-cache'],
-  notify => Service['carbon-cache']
 }
 
 # realtime patch for graphite web
