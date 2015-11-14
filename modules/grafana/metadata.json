@@ -1,0 +1,67 @@
+{
+  "name": "bfraser-grafana",
+  "version": "2.5.0",
+  "author": "bfraser",
+  "summary": "This module provides Grafana, a dashboard and graph editor for Graphite and InfluxDB.",
+  "license": "Apache 2.0",
+  "source": "git://github.com/bfraser/puppet-grafana.git",
+  "project_page": "https://github.com/bfraser/puppet-grafana",
+  "issues_url": "https://github.com/bfraser/puppet-grafana/issues",
+  "tags": [
+    "grafana",
+    "graphite",
+    "influxdb",
+    "monitoring"
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [ "6.0" ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [ "6.0" ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [ "14.04" ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [ "7.0" ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": ">= 3.2.0"
+    },
+    {
+      "name": "puppet",
+      "version_requirement": ">= 3.4.0"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "camptocamp/archive",
+      "version_requirement": ">= 0.3.2 <2.0.0"
+    },
+    {
+      "name": "garethr/docker",
+      "version_requirement": ">= 3.5.0 <5.0.0"
+    },
+    {
+      "name": "maestrodev/wget",
+      "version_requirement": ">= 1.6.0 <2.0.0"
+    },
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">=3.2.0 <5.0.0"
+    },
+    {
+      "name": "puppetlabs-apt",
+      "version_requirement": ">=2.0.0 <3.0.0"
+    }
+
+  ]
+}
