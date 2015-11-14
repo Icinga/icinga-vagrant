@@ -1,9 +1,12 @@
 # Icinga 2 Standalone Vagrant Box
 
 * Icinga 2 Core
-* Icinga 2 API
+  * Icinga 2 API
 * Icinga Web 2
-* Graphite & Grafana
+  * Modules: PNP4Nagios, Business Process, Generic TTS
+* PNP4Nagios
+* Graphite
+* Grafana 2
 * Dashing
 
 ## User Interfaces
@@ -11,14 +14,15 @@
   GUI               | Url                               | Credentials
   ------------------|-----------------------------------|----------------
   Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
+  PNP4Nagios        | http://192.168.33.5/pnp4nagios    | -
   Graphite Web	    | http://192.168.33.5:8003          | -
-  Grafana           | http://192.168.33.5:8004          | admin/admin
+  Grafana 2         | http://192.168.33.5:8004          | admin/admin
   Dashing           | http://192.168.33.5:8005          | -
 
 ## Icinga 2 API
 
 Access [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts)
-using the credentials `root/icinga`.
+using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.org/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
 
 ## Requirements
 

@@ -299,10 +299,12 @@ vcsrepo { '/usr/share/dashing-icinga2':
 exec { 'dashing-install':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => "gem install dashing",
+  timeout => 1800
 }->
 exec { 'dashing-bundle-install':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => "cd /usr/share/dashing-icinga2 && bundle install --path binpaths", # use binpaths to prevent 'ruby bundler: command not found: thin'
+  timeout => 1800
 }->
 file { 'restart-dashing':
   name => '/usr/local/bin/restart-dashing',
