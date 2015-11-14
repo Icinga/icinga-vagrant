@@ -22,16 +22,16 @@ class {'apache':
 
 class {'::apache::mod::php': }
 
-#apache::vhost { 'vagrant-demo.icinga.org':
-#  priority        => 5,
-#  port            => '80',
-#  docroot         => '/var/www/html',
-#  rewrites => [
-#    {
-#      rewrite_rule => ['^/$ /icingaweb2 [NE,L,R=301]'],
-#    },
-#  ],
-#}
+apache::vhost { 'vagrant-demo.icinga.org':
+  priority        => 5,
+  port            => '80',
+  docroot         => '/var/www/html',
+  rewrites => [
+    {
+      rewrite_rule => ['^/$ /icingaweb2 [NE,L,R=301]'],
+    },
+  ],
+}
 
 include '::php::cli'
 include '::php::mod_php5'
@@ -342,28 +342,6 @@ class { 'graphite':
   gr_carbon_ver => '0.9.14',
   gr_whisper_ver => '0.9.14',
   gr_twisted_ver => '13.2.0', # 0.9.14 carbon-cache requirement
-}
-
-apache::vhost { 'grafana.localdomain':
-  servername      => 'grafana.localdomain',
-  port            => 80,
-  docroot         => '/opt/grafana',
-  error_log_file  => 'grafana_error.log',
-  access_log_file => 'grafana_access.log',
-  directories     => [
-    {
-      path            => '/opt/grafana',
-      options         => [ 'None' ],
-      allow           => 'from All',
-      allow_override  => [ 'None' ],
-      order           => 'Allow,Deny',
-    }
-  ]
-}->
-class {'grafana':
-  graphite_host      => 'graphite.localdomain',
-  elasticsearch_host => 'elasticsearach.localdomain',
-  elasticsearch_port => 9200,
 }
 
 
