@@ -1,0 +1,89 @@
+# You need to manually edit this file to fit your needs.
+# This configuration assumes the default installation prefix
+# of /opt/graphite/, if you installed graphite somewhere else
+# you will need to change all the occurances of /opt/graphite/
+# in this file to your chosen install location.
+
+<IfModule !wsgi_module.c>
+  <%- if @osfamily == "Debian" -%>
+    LoadModule wsgi_module /usr/lib/apache2/modules/mod_wsgi.so
+  <%- end -%>
+  <%- if @osfamily == "RedHat" -%>
+    LoadModule wsgi_module modules/mod_wsgi.so
+  <%- end -%>
+</IfModule>
+
+# XXX You need to set this up!
+# Read http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGISocketPrefix
+WSGISocketPrefix <%= scope.lookupvar('graphite::params::apache_wsgi_socket_prefix') %>
+
+<VirtualHost *:<%= scope.lookupvar('graphite::gr_apache_port') %>>
+	ServerName <%= scope.lookupvar('graphite::gr_web_servername') %>
+	DocumentRoot "/opt/graphite/webapp"
+<% if ![nil, '', :undef].include?(scope.lookupvar('graphite::gr_apache_noproxy')) %>  NoProxy <%= scope.lookupvar('graphite::gr_apache_noproxy') %><% end %>
+
+	ErrorLog /opt/graphite/storage/error.log
+	CustomLog /opt/graphite/storage/access.log common
+
+	# I've found that an equal number of processes & threads tends
+	# to show the best performance for Graphite (ymmv).
+	WSGIDaemonProcess graphite processes=<%= scope.lookupvar('graphite::wsgi_processes') -%> threads=<%= scope.lookupvar('graphite::wsgi_threads') -%> display-name='%{GROUP}' inactivity-timeout=<%= scope.lookupvar('graphite::wsgi_inactivity_timeout') %>
+	WSGIProcessGroup graphite
+	WSGIApplicationGroup %{GLOBAL}
+	WSGIImportScript /opt/graphite/conf/graphite.wsgi process-group=graphite application-group=%{GLOBAL}
+
+	# XXX You will need to create this file! There is a graphite.wsgi.example
+	# file in this directory that you can safely use, just copy it to graphite.wgsi
+	WSGIScriptAlias / /opt/graphite/conf/graphite.wsgi
+
+	Alias /content/ /opt/graphite/webapp/content/
+	<Location "/content/">
+			SetHandler None
+<% if scope.lookupvar('graphite::gr_apache_24') %>
+			Options All
+			AllowOverride All
+			Require all granted
+<% end %>
+	</Location>
+
+	# XXX In order for the django admin site media to work you
+	# must change @DJANGO_ROOT@ to be the path to your django
+	# installation, which is probably something like:
+	# /usr/lib/python2.6/site-packages/django
+	Alias /media/ "@DJANGO_ROOT@/contrib/admin/media/"
+	<Location "/media/">
+			SetHandler None
+<% if scope.lookupvar('graphite::gr_apache_24') %>
+			Options All
+			AllowOverride All
+			Require all granted
+<% end %>
+	</Location>
+
+	# The graphite.wsgi file has to be accessible by apache. It won't
+	# be visible to clients because of the DocumentRoot though.
+	<Directory /opt/graphite/conf/>
+<% if scope.lookupvar('graphite::gr_apache_24') %>
+			Options All
+			AllowOverride All
+			Require all granted
+<% else %>
+			Order deny,allow
+			Allow from all
+<% end %>
+	</Directory>
+
+<% if scope.lookupvar('graphite::gr_web_cors_allow_from_all') %>
+	Header set Access-Control-Allow-Origin "*"
+	Header set Access-Control-Allow-Methods "GET, OPTIONS, POST"
+	Header set Access-Control-Allow-Headers "origin, authorization, accept"
+<% end %>
+
+<% if scope.lookupvar('graphite::gr_use_ssl') %>
+  SSLEngine on
+  SSLCertificateFile      <%= scope.lookupvar('graphite::gr_ssl_cert') %>
+  SSLCertificateKeyFile   <%= scope.lookupvar('graphite::gr_ssl_key') %>
+  SSLCACertificatePath    <%= scope.lookupvar('graphite::gr_ssl_dir') %>
+<% end %>
+
+</VirtualHost>
