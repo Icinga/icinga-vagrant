@@ -338,6 +338,12 @@ file { 'pip-symlink':
   before	=> Class['graphite'],
 }
 
+file { '/etc/systemd/system/carbon-cache.service':
+  owner => 'root',
+  group => 'root',
+  mode => '0755',
+  source => "puppet:////vagrant/files/etc/systemd/system/carbon-cache.service",
+}->
 file { '/opt/graphite':
   ensure => directory
 }->
