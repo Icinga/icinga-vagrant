@@ -1,0 +1,44 @@
+# Serve static files directly and redirect remaining requests to graphite
+server {
+	listen   <%= scope.lookupvar('graphite::gr_apache_port') %>;
+	server_name <%= scope.lookupvar('graphite::gr_web_servername') %>;
+
+	client_max_body_size 64M;
+	keepalive_timeout 5;
+
+	# static files
+
+	location ^~ /static/ {
+		root /usr/share/pyshared/django/contrib/admin;
+		access_log off;
+	}
+
+	location ^~ /content/ {
+		root /opt/graphite/webapp;
+		access_log off;
+		expires 30d;
+	}
+
+	# proxy remaining requests to graphite
+
+	location / {
+<% unless scope.lookupvar('graphite::nginx_htpasswd') == :undef -%>
+		auth_basic "You shall not pass";
+		auth_basic_user_file /etc/nginx/graphite-htpasswd;
+<% end %>
+		proxy_pass_header Server;
+		proxy_set_header Host $http_host;
+		proxy_redirect off;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_connect_timeout 10;
+		proxy_read_timeout <%= scope.lookupvar('graphite::nginx_proxy_read_timeout') %>;
+
+		proxy_pass http://unix:/var/run/graphite.sock:/;
+
+	<% if scope.lookupvar('graphite::gr_web_cors_allow_from_all') %>
+		add_header Access-Control-Allow-Origin "*";
+		add_header Access-Control-Allow-Methods "GET, OPTIONS, POST";
+		add_header Access-Control-Allow-Headers "origin, authorization, accept";
+	<% end %>
+	}
+}

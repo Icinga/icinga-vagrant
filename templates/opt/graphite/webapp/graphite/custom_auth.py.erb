@@ -1,0 +1,4 @@
+from django.contrib.auth.middleware import RemoteUserMiddleware
+
+class CustomHeaderMiddleware(RemoteUserMiddleware):
+    header = '<%= scope.lookupvar('graphite::gr_remote_user_header_name') %>'
