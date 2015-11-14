@@ -75,7 +75,8 @@ the packages and configuration.
   GUI               | Url                               | Credentials
   ------------------|-----------------------------------|----------------
   Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
-  Graphite Web	    | http://192.168.33.5:8003/         | -
+  Graphite Web	    | http://192.168.33.5:8003          | -
+  Grafana           | http://192.168.33.5:8004          | admin/admin
 
 
 ## Icinga 2 API

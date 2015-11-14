@@ -344,7 +344,6 @@ class { 'graphite':
   gr_twisted_ver => '13.2.0', # 0.9.14 carbon-cache requirement
 }
 
-
 # realtime patch for graphite web
 #file { 'composer_widgets.js':
 #  ensure	=> file,
@@ -355,3 +354,25 @@ class { 'graphite':
 #  source	=> 'puppet:///vagrant/files/opt/graphite/webapp/content/js/composer_widgets.js',
 #  require	=> Class['graphite'],
 #}
+
+####################################
+# Grafana
+####################################
+
+# https://github.com/bfraser/puppet-grafana
+class { 'grafana':
+  cfg => {
+    app_mode => 'production',
+    server   => {
+      http_port     => 8004,
+    },
+    users    => {
+      allow_sign_up => false,
+    },
+    security => {
+      admin_user => 'admin',
+      admin_password => 'admin',
+    },
+  },
+}
+
