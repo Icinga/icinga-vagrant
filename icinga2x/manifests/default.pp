@@ -4,8 +4,8 @@ include '::mysql::server'
 include '::postgresql::server'
 include icinga2
 include icinga2_ido_mysql
-include icinga2_classicui
-include icinga2_icinga_web
+#include icinga2_classicui
+#include icinga2_icinga_web
 include icingaweb2
 include icingaweb2_internal_db_mysql
 include monitoring_plugins
@@ -22,16 +22,16 @@ class {'apache':
 
 class {'::apache::mod::php': }
 
-apache::vhost { 'vagrant-demo.icinga.org':
-  priority        => 5,
-  port            => '80',
-  docroot         => '/var/www/html',
-  rewrites => [
-    {
-      rewrite_rule => ['^/$ /icingaweb2 [NE,L,R=301]'],
-    },
-  ],
-}
+#apache::vhost { 'vagrant-demo.icinga.org':
+#  priority        => 5,
+#  port            => '80',
+#  docroot         => '/var/www/html',
+#  rewrites => [
+#    {
+#      rewrite_rule => ['^/$ /icingaweb2 [NE,L,R=301]'],
+#    },
+#  ],
+#}
 
 include '::php::cli'
 include '::php::mod_php5'
@@ -247,3 +247,128 @@ file { '/etc/icingaweb2/modules/businessprocess':
   require => Package['icingaweb2']
 }
 
+####################################
+# GenericTTS
+####################################
+
+icingaweb2::module { 'generictts':
+  builtin => false
+}
+
+file { '/etc/icingaweb2/modules/generictts':
+  ensure => directory,
+  recurse => true,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  source    => "puppet:////vagrant/files/etc/icingaweb2/modules/generictts",
+  require => Package['icingaweb2']
+}
+
+file { 'feed-tts-comments':
+  name => '/usr/local/bin/feed-tts-comments',
+  owner => root,
+  group => root,
+  mode => '0755',
+  source => "puppet:////vagrant/files/usr/local/bin/feed-tts-comments",
+}
+
+exec { 'feed-tts-comments-host':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => "/usr/local/bin/feed-tts-comments",
+  require => [ File['feed-tts-comments'], Service['icinga2'] ],
+}
+
+####################################
+# Graphite
+####################################
+
+icinga2::feature { 'graphite': }
+
+# avoid a bug in the pip provider
+# https://github.com/echocat/puppet-graphite/issues/180
+file { 'pip-symlink':
+  ensure	=> symlink,
+  path	=> '/usr/bin/pip-python',
+  target	=> '/usr/bin/pip',
+  before	=> Class['graphite'],
+}
+
+# avoid problem with systemd service error
+# https://github.com/echocat/puppet-graphite/issues/211
+exec { 'systemd-daemon-reload':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => '/bin/systemctl daemon-reload',
+  before => Service['carbon-cache']
+}
+
+apache::vhost { 'graphite.localdomain':
+  port    => '80',
+  docroot => '/opt/graphite/webapp',
+  wsgi_application_group      => '%{GLOBAL}',
+  wsgi_daemon_process         => 'graphite',
+  wsgi_daemon_process_options => {
+    processes          => '5',
+    threads            => '5',
+    display-name       => '%{GROUP}',
+    inactivity-timeout => '120',
+  },
+  wsgi_import_script          => '/opt/graphite/conf/graphite.wsgi',
+  wsgi_import_script_options  => {
+    process-group     => 'graphite',
+    application-group => '%{GLOBAL}'
+  },
+  wsgi_process_group          => 'graphite',
+  wsgi_script_aliases         => {
+    '/' => '/opt/graphite/conf/graphite.wsgi'
+  },
+  headers => [
+    'set Access-Control-Allow-Origin "*"',
+    'set Access-Control-Allow-Methods "GET, OPTIONS, POST"',
+    'set Access-Control-Allow-Headers "origin, authorization, accept"',
+  ],
+  directories => [{
+    path => '/media/',
+    order => 'deny,allow',
+    allow => 'from all'}
+  ]
+}->
+class { 'graphite':
+  gr_apache_24            => true,
+  gr_web_server           => 'none',
+  gr_disable_webapp_cache => true,
+}
+
+apache::vhost { 'grafana.localdomain':
+  servername      => 'grafana.localdomain',
+  port            => 80,
+  docroot         => '/opt/grafana',
+  error_log_file  => 'grafana_error.log',
+  access_log_file => 'grafana_access.log',
+  directories     => [
+    {
+      path            => '/opt/grafana',
+      options         => [ 'None' ],
+      allow           => 'from All',
+      allow_override  => [ 'None' ],
+      order           => 'Allow,Deny',
+    }
+  ]
+}->
+class {'grafana':
+  graphite_host      => 'graphite.localdomain',
+  elasticsearch_host => 'elasticsearach.localdomain',
+  elasticsearch_port => 9200,
+}
+
+
+# realtime patch for graphite web
+#file { 'composer_widgets.js':
+#  ensure	=> file,
+#  owner	=> 'root',
+#  group	=> 'root',
+#  mode	=> '0644',
+#  path	=> '/opt/graphite/webapp/content/js/composer_widgets.js',
+#  source	=> 'puppet:///vagrant/files/opt/graphite/webapp/content/js/composer_widgets.js',
+#  require	=> Class['graphite'],
+#}
