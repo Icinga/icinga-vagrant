@@ -303,7 +303,7 @@ exec { 'systemd-daemon-reload':
 }
 
 apache::vhost { 'graphite.localdomain':
-  port    => '80',
+  port    => '8003',
   docroot => '/opt/graphite/webapp',
   wsgi_application_group      => '%{GLOBAL}',
   wsgi_daemon_process         => 'graphite',
@@ -337,6 +337,11 @@ class { 'graphite':
   gr_apache_24            => true,
   gr_web_server           => 'none',
   gr_disable_webapp_cache => true,
+  secret_key => 'ICINGA2ROCKS',
+  gr_graphite_ver => '0.9.14',
+  gr_carbon_ver => '0.9.14',
+  gr_whisper_ver => '0.9.14',
+  gr_twisted_ver => '13.2.0', # 0.9.14 carbon-cache requirement
 }
 
 apache::vhost { 'grafana.localdomain':

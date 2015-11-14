@@ -18,9 +18,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   servers = { 'icinga2' => '192.168.33.5'
             }
-  http_port = { 'icinga2' => 8080
+  http_port = { 'icinga2' => 8082
               }
-  ssh_port = { 'icinga2' => 2080
+  ssh_port = { 'icinga2' => 2082
+             }
+  graphite_web_port = { 'icinga2' => 8083
              }
 
   servers.each do |server_name, server_ip|
@@ -31,6 +33,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       app_config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
       app_config.vm.network :forwarded_port, guest: 22, host: ssh_port[server_name], auto_correct: true
       app_config.vm.network :forwarded_port, guest: 80, host: http_port[server_name], auto_correct: true
+      app_config.vm.network :forwarded_port, guest: 8003, host: graphite_web_port[server_name], auto_correct: true
       app_config.vm.network :private_network, ip: "#{server_ip}"
 
       app_config.vm.provision :shell, :path => "manifests/puppet.sh"

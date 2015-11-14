@@ -1,8 +1,9 @@
 # Icinga 2 Standalone Vagrant Box
 
 * Icinga 2 Core
-* Icinga Web 2 as user interface with internal auth db and DB IDO MySQL backend
-* Legacy interfaces: Icinga Classic UI, Web 1.x
+* Icinga 2 API
+* Icinga Web 2
+* Graphite & Grafana
 
 Overview:
 
@@ -71,11 +72,10 @@ the packages and configuration.
 
 ## User Interfaces
 
-  GUI               | Url               | Credentials
-  ------------------|-------------------|----------------
-  Icinga Classic UI | /icinga           | icingaadmin/icingaadmin
-  Icinga Web 1.x    | /icinga-web       | root/password
-  Icinga Web 2      | /icingaweb2       | icingaadmin/icinga
+  GUI               | Url                               | Credentials
+  ------------------|-----------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
+  Graphite Web	    | http://192.168.33.5:8003/         | -
 
 
 ## Icinga 2 API
@@ -87,8 +87,9 @@ using the credentials `root/icinga`.
 
   VM Name   | Host Port | Guest Port
   ----------|-----------|-----------
-  icinga2   | 2080      | 22
-  icinga2   | 8080      | 80
+  icinga2   | 2082      | 22
+  icinga2   | 8082      | 80
+  icinga2   | 8083      | 8003
 
 
 ## SSH Access

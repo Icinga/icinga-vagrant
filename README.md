@@ -156,8 +156,8 @@ Check the documentation for available web interfaces and credentials.
   icinga1x          | icinga1x  | 2081      | 22
   icinga1x          | icinga1x  | 8081      | 80
   icinga1x          | icinga1x  | 8082      | 8080
-  icinga2x          | icinga2   | 2080      | 22
-  icinga2x          | icinga2   | 8080      | 80
+  icinga2x          | icinga2   | 2082      | 22
+  icinga2x          | icinga2   | 8082      | 80
   icinga2x-cluster  | icinga2a  | 2085      | 22
   icinga2x-cluster  | icinga2a  | 8085      | 80
   icinga2x-cluster  | icinga2b  | 2086      | 22
