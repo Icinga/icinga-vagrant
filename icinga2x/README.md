@@ -4,14 +4,21 @@
 * Icinga 2 API
 * Icinga Web 2
 * Graphite & Grafana
+* Dashing
 
-Overview:
+## User Interfaces
 
-  Instance  | Network                   | HTTP
-  ----------|---------------------------|--------------------------------------
-  icinga2   | host only 192.168.33.5    | http://192.168.33.5
+  GUI               | Url                               | Credentials
+  ------------------|-----------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
+  Graphite Web	    | http://192.168.33.5:8003          | -
+  Grafana           | http://192.168.33.5:8004          | admin/admin
+  Dashing           | http://192.168.33.5:8005          | -
 
-Backend is IDO MySQL only.
+## Icinga 2 API
+
+Access [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts)
+using the credentials `root/icinga`.
 
 ## Requirements
 
@@ -70,19 +77,6 @@ run will use the already imported base box, re-running the provisioner to instal
 the packages and configuration.
 
 
-## User Interfaces
-
-  GUI               | Url                               | Credentials
-  ------------------|-----------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
-  Graphite Web	    | http://192.168.33.5:8003          | -
-  Grafana           | http://192.168.33.5:8004          | admin/admin
-
-
-## Icinga 2 API
-
-Access [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts)
-using the credentials `root/icinga`.
 
 ## Ports
 

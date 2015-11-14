@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cd /usr/share/dashing-icinga2
+kill -9 $(cat tmp/pids/thin.pid)
+rm -f tmp/pids/thin.pid
+/usr/local/bin/dashing start -d -p 8005

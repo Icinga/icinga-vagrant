@@ -283,6 +283,44 @@ exec { 'feed-tts-comments-host':
 # Graphite
 ####################################
 
+package { [ 'rubygems', 'rubygem-bundler', 'ruby-devel', 'openssl', 'gcc-c++', 'make', 'nodejs' ]:
+  ensure => 'installed',
+  require => Class['epel']
+}->
+vcsrepo { '/usr/share/dashing-icinga2':
+  ensure   => 'present',
+  path     => '/usr/share/dashing-icinga2',
+  provider => 'git',
+  revision => 'master',
+  source   => 'https://github.com/Icinga/dashing-icinga2.git',
+  force    => true,
+  require  => Package['git']
+}->
+exec { 'dashing-install':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => "gem install dashing",
+}->
+exec { 'dashing-bundle-install':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => "cd /usr/share/dashing-icinga2 && bundle install --path binpaths", # use binpaths to prevent 'ruby bundler: command not found: thin'
+}->
+file { 'restart-dashing':
+  name => '/usr/local/bin/restart-dashing',
+  owner => root,
+  group => root,
+  mode => '0755',
+  source => "puppet:////vagrant/files/usr/local/bin/restart-dashing",
+}->
+exec { 'dashing-start':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => "/usr/local/bin/restart-dashing",
+  require => Service['icinga2'],
+}
+
+####################################
+# Graphite
+####################################
+
 icinga2::feature { 'graphite': }
 
 # 0.9.14 requires pytz: https://github.com/graphite-project/graphite-web/issues/1019
