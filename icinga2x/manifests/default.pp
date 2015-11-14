@@ -285,6 +285,12 @@ exec { 'feed-tts-comments-host':
 
 icinga2::feature { 'graphite': }
 
+# 0.9.14 requires pytz: https://github.com/graphite-project/graphite-web/issues/1019
+package { 'pytz':
+  ensure => 'installed',
+  require => Class['epel']
+}
+
 # avoid a bug in the pip provider
 # https://github.com/echocat/puppet-graphite/issues/180
 file { 'pip-symlink':
@@ -294,14 +300,9 @@ file { 'pip-symlink':
   before	=> Class['graphite'],
 }
 
-# avoid problem with systemd service error
-# https://github.com/echocat/puppet-graphite/issues/211
-exec { 'systemd-daemon-reload':
-  path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => '/bin/systemctl daemon-reload',
-  before => Service['carbon-cache']
-}
-
+file { '/opt/graphite':
+  ensure => directory
+}->
 apache::vhost { 'graphite.localdomain':
   port    => '8003',
   docroot => '/opt/graphite/webapp',
@@ -342,6 +343,15 @@ class { 'graphite':
   gr_carbon_ver => '0.9.14',
   gr_whisper_ver => '0.9.14',
   gr_twisted_ver => '13.2.0', # 0.9.14 carbon-cache requirement
+  gr_timezone => 'Europe/Berlin',
+}
+exec { 'systemd-daemon-reload':
+# avoid problem with systemd service error
+# https://github.com/echocat/puppet-graphite/issues/211
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => '/bin/systemctl daemon-reload',
+  before => Service['carbon-cache'],
+  notify => Service['carbon-cache']
 }
 
 # realtime patch for graphite web
@@ -376,3 +386,18 @@ class { 'grafana':
   },
 }
 
+# there are no static config files for data sources in grafana2
+# https://github.com/grafana/grafana/issues/1789
+file { 'grafana-setup':
+  name => '/usr/local/bin/grafana-setup',
+  owner => root,
+  group => root,
+  mode => '0755',
+  source => "puppet:////vagrant/files/usr/local/bin/grafana-setup",
+}
+
+exec { 'finish-grafana-setup':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => "/usr/local/bin/grafana-setup",
+  require => [ File['grafana-setup'], Class['graphite'], Class['grafana'] ],
+}

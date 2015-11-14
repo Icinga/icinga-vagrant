@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# configure graphite datasource
+curl 'http://admin:admin@192.168.33.5:8004/api/datasources' -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary '{ "name": "icinga2", "type": "graphite", "url": "http://192.168.33.5:8003", "access": "direkt", "isDefault": true }'
+
+# add default dashboards
+
