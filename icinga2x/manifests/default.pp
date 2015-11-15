@@ -398,8 +398,7 @@ apache::vhost { 'graphite.localdomain':
   ],
   directories => [{
     path => '/media/',
-    order => 'deny,allow',
-    allow => 'from all'}
+  }
   ]
 }->
 class { 'graphite':
