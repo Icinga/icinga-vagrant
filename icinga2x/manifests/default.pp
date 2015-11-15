@@ -442,6 +442,9 @@ class { 'grafana':
       admin_user => 'admin',
       admin_password => 'admin',
     },
+    'auth.basic' => {
+      enabled => false
+    },
   },
 }
 
