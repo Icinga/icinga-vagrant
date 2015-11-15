@@ -5,10 +5,20 @@
 * Icinga Web with Reporting Cronk
 * Icinga Reporting with Jasperserver
 
+## User Interfaces
 
-  Instance  | Network                   | HTTP
-  ----------|---------------------------|--------------------------------------
-  icinga    |                           | http://localhost:8081
+http://localhost:8081 shows an entry page including all urls and
+credentials.
+
+  GUI               | Url                   | Credentials
+  ------------------|-----------------------|----------------
+  Icinga Classic UI | :8081/icinga          | icingaadmin/icingaadmin
+  Icinga Web 1.x    | :8081//icinga-web	    | root/password
+  Jasperserver	    | :8082/jasperserver    | jasperadmin/jasperadmin
+
+> **Note**
+>
+> The Icinga Web Reporting Cronk fetches its data directly from Jasperserver via PHP SOAP api.
 
 ## Requirements
 
@@ -46,21 +56,6 @@ If your box is broken, you can destroy it using `vagrant destroy`. Next `vagrant
 run will use the already imported base box, re-running the provisioner to install
 the packages and configuration.
 
-
-## User Interfaces
-
-http://localhost:8080 shows an entry page including all urls and
-credentials.
-
-  GUI               | Url                   | Credentials
-  ------------------|-----------------------|----------------
-  Icinga Classic UI | :8081/icinga          | icingaadmin/icingaadmin
-  Icinga Web 1.x    | :8081//icinga-web	    | root/password
-  Jasperserver	    | :8082/jasperserver    | jasperadmin/jasperadmin
-
-> **Note**
->
-> The Icinga Web Reporting Cronk fetches its data directly from Jasperserver via PHP SOAP api.
 
 ## Ports
 

@@ -2,6 +2,98 @@
 
 Icinga Vagrant boxes used for development, tests and demo cases.
 
+## Icinga 2 Standalone
+
+* 1 VM
+* Icinga 2 Core
+  * Icinga 2 API
+* Icinga Web 2
+  * Modules: PNP4Nagios, Business Process, Generic TTS
+* PNP4Nagios
+* Graphite
+* Grafana 2
+* Dashing
+
+Run Vagrant:
+
+    $ cd icinga2x && vagrant up
+
+### User Interfaces
+
+  GUI               | Url                               | Credentials
+  ------------------|-----------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
+  PNP4Nagios        | http://192.168.33.5/pnp4nagios    | -
+  Graphite Web	    | http://192.168.33.5:8003          | -
+  Grafana 2         | http://192.168.33.5:8004          | admin/admin
+  Dashing           | http://192.168.33.5:8005          | -
+
+### Icinga 2 API
+
+Access [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts)
+using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.org/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
+
+## Icinga 2 Cluster
+
+* 2 VMs as Icinga 2 Master/Checker Cluster
+* Icinga 2 Core, DB IDO MySQL, Icinga Web 2
+
+Run Vagrant:
+
+    $ cd icinga2x-cluster && vagrant up
+
+
+### User Interfaces
+
+  GUI               | Url                                   | Credentials
+  ------------------|---------------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.10/icingaweb2       | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.20/icingaweb2       | icingaadmin/icinga
+
+### Icinga 2 API
+
+Access [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/v1/objects/hosts)
+and [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts)
+using the credentials `root/icinga`.
+
+
+## Icinga 2 and Graylog
+
+* 1 VM
+* Icinga 2 Core
+* Graylog Server and Web with Elasticsearch, MongoDB
+
+Run Vagrant:
+
+    $ cd icinga2x-graylog && vagrant up
+
+### User Interfaces
+
+  GUI              | Url                             | Credentials
+  -----------------|---------------------------------|------------------------
+  Icinga Web 2     | http://192.168.33.6/icingaweb2  | icingaadmin/icinga
+  Graylog          | http://192.168.33.6:9000        | admin/admin
+
+## Icinga 1.x
+
+* 1 VM
+* Icinga 1.x Core, IDOUtils MySQL, Classic UI, Web
+
+Run Vagrant:
+
+    $ cd icinga1x && vagrant up
+
+### User Interfaces
+
+http://localhost:8081 shows an entry page including all urls and
+credentials.
+
+  GUI               | Url                   | Credentials
+  ------------------|-----------------------|----------------
+  Icinga Classic UI | :8081/icinga          | icingaadmin/icingaadmin
+  Icinga Web 1.x    | :8081/icinga-web	    | root/password
+  Jasperserver	    | :8082/jasperserver    | jasperadmin/jasperadmin
+
 ## Requirements
 
 Each Vagrant box setup requires at least 2 Cores and 1 GB RAM.
@@ -81,73 +173,7 @@ for each box.
 
 Choose one of the available boxes below.
 
-## Available Vagrant Boxes
-
-### Icinga 2 Standalone
-
-* 1 VM
-* Icinga 2 Core, DB IDO MySQL, Icinga Web 2
-
-More details in the [documentation](icinga2x/README.md).
-Run Vagrant:
-
-    $ cd icinga2x && vagrant up
-
-Web interface:
-
-* [http://192.168.33.5/icingaweb2](http://192.168.33.5/icingaweb2) (icingaadmin/icinga)
-
-Icinga 2 API:
-
-* [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts) (root/icinga)
-
-### Icinga 2 Cluster
-
-* 2 VMs as Icinga 2 Master/Checker Cluster
-* Icinga 2 Core, DB IDO MySQL, Icinga Web 2
-
-More details in the [documentation](icinga2x-cluster/README.md).
-Run Vagrant:
-
-    $ cd icinga2x-cluster && vagrant up
-
-Web interfaces:
-
-* [http://192.168.33.10/icingaweb2](http://192.168.33.10/icingaweb2) (icingaadmin/icinga)
-* [http://192.168.33.20/icingaweb2](http://192.168.33.20/icingaweb2) (icingaadmin/icinga)
-
-Icinga 2 API:
-
-* [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/v1/objects/hosts) (root/icinga)
-* [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts) (root/icinga)
-
-### Icinga 2 and Graylog
-
-* 1 VM
-* Icinga 2 Core
-* Graylog Server and Web with Elasticsearch, MongoDB
-
-More details in the [documentation](icinga2x-graylog/README.md).
-Run Vagrant:
-
-    $ cd icinga2x-graylog && vagrant up
-
-Web interfaces:
-
-* [http://192.168.33.6:9000/](http://192.168.33.6:9000/) (admin/admin)
-* [http://192.168.33.6/icingaweb2](http://192.168.33.6/icingaweb2) (icingaadmin/icinga)
-
-### Icinga 1.x
-
-* 1 VM
-* Icinga 1.x Core, IDOUtils MySQL, Classic UI, Web
-
-More details in the [documentation](icinga1x/README.md).
-Run Vagrant:
-
-    $ cd icinga1x && vagrant up
-
-Check the documentation for available web interfaces and credentials.
+## Misc
 
 ### Port Forwarding Overview
 
@@ -162,11 +188,11 @@ Check the documentation for available web interfaces and credentials.
   icinga2x-cluster  | icinga2a  | 8085      | 80
   icinga2x-cluster  | icinga2b  | 2086      | 22
   icinga2x-cluster  | icinga2b  | 8086      | 80
-  icinga2x-graylog2 | i2g2	| 2110      | 22
-  icinga2x-graylog2 | i2g2	| 8110      | 80
-  icinga2x-graylog2 | i2g2	| 9000      | 9000
-  icinga2x-graylog2 | i2g2	| 12201     | 12201 (tcp/udp)
-  icinga2x-graylog2 | i2g2	| 12900     | 12900
+  icinga2x-graylog  | i2g2	| 2110      | 22
+  icinga2x-graylog  | i2g2	| 8110      | 80
+  icinga2x-graylog  | i2g2	| 9000      | 9000
+  icinga2x-graylog  | i2g2	| 12201     | 12201 (tcp/udp)
+  icinga2x-graylog  | i2g2	| 12900     | 12900
 
 ### Puppet Module Overview
 

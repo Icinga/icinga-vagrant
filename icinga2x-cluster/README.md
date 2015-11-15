@@ -10,7 +10,19 @@ Overview:
   icinga2a  | host only 192.168.33.10   | http://192.168.33.10
   icinga2b  | host only 192.168.33.20   | http://192.168.33.20
 
-Backend is IDO MySQL only.
+## User Interfaces
+
+  GUI               | Url                                   | Credentials
+  ------------------|---------------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.10/icingaweb2       | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.20/icingaweb2       | icingaadmin/icinga
+
+## Icinga 2 API
+
+Access [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/v1/objects/hosts)
+and [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts)
+using the credentials `root/icinga`.
+
 
 ## Requirements
 
@@ -68,18 +80,6 @@ If your box is broken, you can destroy it using `vagrant destroy`. Next `vagrant
 run will use the already imported base box, re-running the provisioner to install
 the packages and configuration.
 
-
-## User Interfaces
-
-  GUI               | Url               | Credentials
-  ------------------|-------------------|----------------
-  Icinga Web 2      | /icingaweb2       | icingaadmin/icinga
-
-## Icinga 2 API
-
-Access [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/v1/objects/hosts)
-and [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts)
-using the credentials `root/icinga`.
 
 ## Ports
 
