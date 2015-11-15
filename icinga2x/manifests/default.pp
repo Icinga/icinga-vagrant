@@ -285,6 +285,27 @@ exec { 'feed-tts-comments-host':
 
 include nagvis
 
+icingaweb2::module { 'iframe':
+  builtin => true
+}
+
+file { '/etc/icingaweb2/preferences':
+  ensure => directory,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  require => Package['icingaweb2']
+}
+
+file { '/etc/icingaweb2/preferences/icingaadmin':
+  ensure => directory,
+  recurse => true,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  source    => "puppet:////vagrant/files/etc/icingaweb2/preferences/icingaadmin",
+  require => [ Package['icingaweb2'], File['/etc/icingaweb2/preferences'] ]
+}
 
 ####################################
 # Graphite
