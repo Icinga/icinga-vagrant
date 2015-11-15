@@ -200,7 +200,7 @@ icingaweb2::module { 'pnp4nagios':
 
 # override the default httpd config w/o basic auth
 
-file { 'httpd_config':
+file { 'pnp4nagios_httpd_config':
   name => '/etc/httpd/conf.d/pnp4nagios.conf',
   owner => root,
   group => root,
@@ -278,6 +278,13 @@ exec { 'feed-tts-comments-host':
   command => "/usr/local/bin/feed-tts-comments",
   require => [ File['feed-tts-comments'], Service['icinga2'] ],
 }
+
+####################################
+# NagVis
+####################################
+
+include nagvis
+
 
 ####################################
 # Graphite
