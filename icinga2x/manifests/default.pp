@@ -149,6 +149,29 @@ file { '/etc/icinga2/conf.d/api-users.conf':
 # Icinga Web 2
 ####################################
 
+icingaweb2::module { 'iframe':
+  builtin => true
+}
+
+# user-defined preferences (using the iframe module)
+file { '/etc/icingaweb2/preferences':
+  ensure => directory,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  require => Package['icingaweb2']
+}
+
+file { '/etc/icingaweb2/preferences/icingaadmin':
+  ensure => directory,
+  recurse => true,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  source    => "puppet:////vagrant/files/etc/icingaweb2/preferences/icingaadmin",
+  require => [ Package['icingaweb2'], File['/etc/icingaweb2/preferences'] ]
+}
+
 # user-defined dashboards for the default 'icingaadmin' user
 file { '/etc/icingaweb2/dashboards':
   ensure => directory,
@@ -285,27 +308,6 @@ exec { 'feed-tts-comments-host':
 
 include nagvis
 
-icingaweb2::module { 'iframe':
-  builtin => true
-}
-
-file { '/etc/icingaweb2/preferences':
-  ensure => directory,
-  owner  => root,
-  group  => icingaweb2,
-  mode => '2770',
-  require => Package['icingaweb2']
-}
-
-file { '/etc/icingaweb2/preferences/icingaadmin':
-  ensure => directory,
-  recurse => true,
-  owner  => root,
-  group  => icingaweb2,
-  mode => '2770',
-  source    => "puppet:////vagrant/files/etc/icingaweb2/preferences/icingaadmin",
-  require => [ Package['icingaweb2'], File['/etc/icingaweb2/preferences'] ]
-}
 
 ####################################
 # Graphite
@@ -442,9 +444,6 @@ class { 'grafana':
       admin_user => 'admin',
       admin_password => 'admin',
     },
-    'auth.basic' => {
-      enabled => false
-    },
   },
 }
 
@@ -458,8 +457,15 @@ file { 'grafana-setup':
   source => "puppet:////vagrant/files/usr/local/bin/grafana-setup",
 }
 
+file { 'grafana-dashboard-icinga2':
+  name => '/etc/icinga2/grafana-dashboard-icinga2.json',
+  owner => root,
+  group => root,
+  mode => '0644',
+  source => "puppet:////vagrant/files/etc/icinga2/grafana-dashboard-icinga2.json",
+}
 exec { 'finish-grafana-setup':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => "/usr/local/bin/grafana-setup",
-  require => [ File['grafana-setup'], Class['graphite'], Class['grafana'] ],
+  require => [ File['grafana-setup'], File['grafana-dashboard-icinga2'], Class['graphite'], Class['grafana'] ],
 }
