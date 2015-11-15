@@ -216,6 +216,7 @@ These boxes use these imported puppet modules for provisioning:
   puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
   puppet-graphite	| modules/graphite		| Patched for systemd usage from https://github.com/echocat/puppet-graphite.git
   puppet-grafana	| modules/grafana		| https://github.com/bfraser/puppet-grafana.git
+  puppet-wget           | modules/wget                  | https://github.com/maestrodev/puppet-wget.git
 
 
 
