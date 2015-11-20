@@ -217,7 +217,7 @@ include pnp4nagios
 
 icinga2::feature { 'perfdata': }
 
-icingaweb2::module { 'pnp4nagios':
+icingaweb2::module { 'pnp':
   builtin => false
 }
 
