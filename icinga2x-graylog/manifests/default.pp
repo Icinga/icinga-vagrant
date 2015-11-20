@@ -5,7 +5,7 @@
 
 include epel
 
-$graylog_version = "1.1"
+$graylog_version = "1.2"
 $elasticsearch_version = ""
 
 # basic stuff
@@ -53,9 +53,9 @@ file { '/etc/security/limits.d/99-elasticsearch.conf':
 class { 'java':
 } ->
 class { 'elasticsearch':
-  version      => '1.3.4-1',
+  version      => '1.7.3-1',
   manage_repo  => true,
-  repo_version => '1.3',
+  repo_version => '1.7',
   java_install => false,
 } ->
 elasticsearch::instance { 'graylog-es':
