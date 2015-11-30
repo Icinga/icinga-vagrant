@@ -1,24 +1,24 @@
 [global]
-;authmodule="CoreAuthModIcingaweb2"
-;authorisationmodule="CoreAuthorisationModIcingaweb2"
+authmodule="CoreAuthModIcingaweb2"
+authorisationmodule="CoreAuthorisationModIcingaweb2"
 ;file_group="www-data"
-;logonmodule="LogonIcingaweb2"
-authmodule="CoreAuthModSQLite"
-authorisationmodule="CoreAuthorisationModSQLite"
+logonmodule="LogonIcingaweb2"
+;authmodule="CoreAuthModSQLite"
+;authorisationmodule="CoreAuthorisationModSQLite"
 
 [paths]
 htmlcgi = "/icingaweb2"
 
 [defaults]
 backend="ndomy_1"
-stylesheet="icingaweb-nagvis-integration.css"
-urltarget="_parent"
+urltarget="_top"
 hosturl="[htmlcgi]/monitoring/show/host?host=[host_name]"
 hostgroupurl="[htmlcgi]/monitoring/show/hostgroup?hostgroup=[hostgroup_name]"
 serviceurl="[htmlcgi]/monitoring/show/service?host=[host_name]&service=[service_description]"
 servicegroupurl="[htmlcgi]/monitoring/show/servicegroup?servicegroup=[servicegroup_name]"
 mapurl="[htmlcgi]/nagvis/show/map?map=[map_name]"
 headermenu="0"
+stylesheet="icingaweb-nagvis-integration.css"
 
 [backend_ndomy_1]
 backendtype="ndomy"
