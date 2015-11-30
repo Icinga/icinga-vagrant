@@ -308,6 +308,24 @@ exec { 'feed-tts-comments-host':
 
 include nagvis
 
+icingaweb2::module { 'nagvis':
+  builtin => false
+}
+
+file { 'nagvis-link-css-styles':
+  ensure  => 'link',
+  path    => '/usr/local/nagvis/share/userfiles/styles/icingaweb-nagvis-integration.css',
+  target  => '/usr/share/icingaweb2/modules/nagvis/public/css/icingaweb-nagvis-integration.css',
+  require => [ Class['nagvis'], File["$::icingaweb2::config_dir/enabledModules/nagvis"] ]
+}
+
+file { 'nagvis-core-functions-index.php':
+  ensure  => 'present',
+  path    => '/usr/local/nagvis/share/server/core/functions/index.php',
+  source  => 'puppet:////vagrant/files/usr/local/nagvis/share/server/core/functions/index.php',
+  mode    => '644',
+  require => Class['nagvis']
+}
 
 ####################################
 # Graphite
