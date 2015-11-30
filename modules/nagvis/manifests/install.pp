@@ -18,11 +18,16 @@ class nagvis::install {
     require => Wget::Fetch['nagvis']
   }
 
+  package { 'graphviz':
+    ensure => present
+  }
+
   exec { 'setup-nagvis':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     command => "cd /tmp/nagvis-${nagvis_version} && ./install.sh -q -p ${prefix} -s Icinga -u ${http_user} -g ${http_group} -w ${http_conf_dir} -i ido2db",
+    unless => "test -f ${prefix}",
     cwd => "/tmp/nagvis-${nagvis_version}",
-    require  => [ Exec['extract-nagvis'], Class['apache']],
+    require  => [ Exec['extract-nagvis'], Class['apache'], Package['graphviz'] ],
     notify => Class['apache::service']
   }
 }
