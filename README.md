@@ -8,7 +8,10 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 * Icinga 2 Core
   * Icinga 2 API
 * Icinga Web 2
-  * Modules: PNP4Nagios, Business Process, Generic TTS
+ * [PNP](https://github.com/Icinga/icingaweb2-module-pnp) module
+ * [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess) module
+ * [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts) module
+ * [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) module
 * PNP4Nagios
 * NagVis
 * Graphite
@@ -25,7 +28,6 @@ Run Vagrant:
   ------------------|-----------------------------------|----------------
   Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
   PNP4Nagios        | http://192.168.33.5/pnp4nagios    | -
-  NagVis            | http://192.168.33.5/nagvis        | admin/admin
   Graphite Web	    | http://192.168.33.5:8003          | -
   Grafana 2         | http://192.168.33.5:8004          | admin/admin
   Dashing           | http://192.168.33.5:8005          | -
