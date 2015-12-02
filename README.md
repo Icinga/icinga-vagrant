@@ -114,7 +114,6 @@ One of these virtualization providers:
 Windows users require additionally
 
 * SSH provided by the Git package from http://msysgit.github.io
-* Ruby for Windows from http://rubyinstaller.org (add Ruby executables to PATH)
 
 You can use `init.sh` (Linux) and `init.bat` (Windows) to check the pre-requisites.
 
