@@ -335,6 +335,13 @@ package { [ 'rubygems', 'rubygem-bundler', 'ruby-devel', 'openssl', 'gcc-c++', '
   ensure => 'installed',
   require => Class['epel']
 }->
+file { 'gemrc':
+  name => '/etc/gemrc',
+  owner => root,
+  group => root,
+  mode => '0644',
+  source => "puppet:////vagrant/files/etc/gemrc",
+}->
 vcsrepo { '/usr/share/dashing-icinga2':
   ensure   => 'present',
   path     => '/usr/share/dashing-icinga2',
@@ -346,7 +353,7 @@ vcsrepo { '/usr/share/dashing-icinga2':
 }->
 exec { 'dashing-install':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => "gem install dashing",
+  command => "gem install --no-rdoc --no-ri dashing",
   timeout => 1800
 }->
 exec { 'dashing-bundle-install':
