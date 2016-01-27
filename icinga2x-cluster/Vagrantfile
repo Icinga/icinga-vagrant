@@ -38,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # parallels
       app_config.vm.provider :parallels do |p, override|
-        override.vm.box = "parallels/centos-7.1"
+        override.vm.box = "parallels/centos-7.2"
 
         p.name = "Icinga 2: #{server_name.to_s}"
 
