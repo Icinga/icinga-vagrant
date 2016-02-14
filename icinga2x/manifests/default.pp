@@ -60,7 +60,7 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
   }
 }
 
-package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion' ]:
+package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion', 'screen' ]:
   ensure => 'installed',
   require => Class['epel']
 }
@@ -145,13 +145,17 @@ file { '/etc/icinga2/conf.d/api-users.conf':
   notify    => Service['icinga2']
 }
 
+file { 'icinga2-api-stress':
+  name => '/usr/local/bin/api_stress',
+  owner => root,
+  group => root,
+  mode => '0755',
+  source => "puppet:////vagrant/files/usr/local/bin/api_stress",
+}
+
 ####################################
 # Icinga Web 2
 ####################################
-
-icingaweb2::module { 'iframe':
-  builtin => true
-}
 
 # user-defined preferences (using the iframe module)
 file { '/etc/icingaweb2/preferences':
