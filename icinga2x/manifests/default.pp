@@ -343,6 +343,61 @@ file { 'nagvis-core-functions-index.php':
 }
 
 ####################################
+# Director
+####################################
+
+icinga2::feature { 'api': }
+
+icingaweb2::module { 'director':
+  builtin => false
+}
+->
+# ship box specific director module config
+file {'/etc/icingaweb2/modules/director':
+  ensure => directory,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  require => [ Package['icingaweb2'], File['/etc/icingaweb2/modules'] ]
+} ->
+file { '/etc/icingaweb2/modules/director/config.ini':
+  ensure => file,
+  owner => root,
+  group => icingaweb2,
+  mode => '2770',
+  source => 'puppet:////vagrant/files/etc/icingaweb2/modules/director/config.ini', #TODO use hiera and templates
+  require => File['/etc/icingaweb2/modules/director']
+}->
+exec { 'create-mysql-icingaweb2-director-db':
+  #TODO: move this to a dedicated subclass
+  path        => '/bin:/usr/bin:/sbin:/usr/sbin',
+  unless      => 'mysql -udirector -pdirector director',
+  command     => 'mysql -uroot -e "CREATE DATABASE director; GRANT ALL ON director.* TO director@localhost IDENTIFIED BY \'director\';"',
+  require     => Service['mariadb']
+}->
+exec { 'Icinga Director DB migration':
+  path    => '/usr/local/bin:/usr/bin:/bin',
+  command => 'icingacli director migration run',
+  onlyif  => 'icingacli director migration pending',
+  require => Package['icingacli'],
+}->
+file { '/etc/icingaweb2/modules/director/kickstart.ini':
+  ensure => file,
+  owner => root,
+  group => icingaweb2,
+  mode => '2770',
+  source => 'puppet:////vagrant/files/etc/icingaweb2/modules/director/kickstart.ini', #TODO use hiera and templates
+  require => File['/etc/icingaweb2/modules/director']
+}->
+exec { 'Icinga Director Kickstart':
+  path    => '/usr/local/bin:/usr/bin:/bin',
+  command => 'icingacli director kickstart run',
+  onlyif  => 'icingacli director kickstart required',
+  require => Exec['Icinga Director DB migration'],
+}
+
+
+####################################
 # Dashing
 ####################################
 
