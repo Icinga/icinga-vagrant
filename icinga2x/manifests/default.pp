@@ -33,6 +33,17 @@ apache::vhost { 'vagrant-demo.icinga.org':
   ],
 }
 
+apache::vhost { 'vagrant-demo.icinga.org-ssl':
+  priority        => 5,
+  port            => '443',
+  docroot         => '/var/www/html',
+  ssl		  => true,
+  rewrites => [
+    {
+      rewrite_rule => ['^/$ /icingaweb2 [NE,L,R=301]'],
+    },
+  ],
+}
 include '::php::cli'
 include '::php::mod_php5'
 
