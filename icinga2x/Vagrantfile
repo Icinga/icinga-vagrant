@@ -45,7 +45,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         p.name = "Icinga 2: #{server_name.to_s}"
 
         # Update Parallels Tools automatically
-        p.update_guest_tools = true
+        p.update_guest_tools = false
 
         # Set power consumption mode to "Better Performance"
         p.optimize_power_consumption = false
