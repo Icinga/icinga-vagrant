@@ -122,6 +122,14 @@ file { '/etc/icinga2/icinga2.conf':
   require   => File['/etc/icinga2']
 }
 
+file { "/etc/icinga2/zones.conf":
+  owner  => icinga,
+  group  => icinga,
+  source    => "puppet:////vagrant/files/etc/icinga2/zones.conf",
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
+
 # enable the command pipe
 icinga2::feature { 'command': }
 
