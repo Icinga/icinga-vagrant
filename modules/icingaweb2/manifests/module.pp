@@ -12,7 +12,7 @@ define icingaweb2::module (
 
   if !$builtin {
     vcsrepo { $repo_path:
-      ensure   => 'present',
+      ensure   => 'latest',
       path     => $repo_path,
       provider => 'git',
       revision => 'master',
