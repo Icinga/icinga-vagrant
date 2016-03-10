@@ -360,6 +360,11 @@ icingaweb2::module { 'director':
   builtin => false
 }
 ->
+exec { 'fix-binary-blog-bug-zend-655':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => 'sed -i \'s/$value = addcslashes/\/\/$value = addcslashes/\' /usr/share/php/Zend/Db/Adapter/Pdo/Abstract.php'
+}
+->
 # ship box specific director module config
 file {'/etc/icingaweb2/modules/director':
   ensure => directory,
