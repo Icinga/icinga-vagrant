@@ -401,7 +401,7 @@ exec { 'Icinga Director Kickstart':
   path    => '/usr/local/bin:/usr/bin:/bin',
   command => 'icingacli director kickstart run',
   onlyif  => 'icingacli director kickstart required',
-  require => Exec['Icinga Director DB migration'],
+  require => Service['icinga2']
 }
 
 
