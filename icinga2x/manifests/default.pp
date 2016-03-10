@@ -4,8 +4,6 @@ include '::mysql::server'
 include '::postgresql::server'
 include icinga2
 include icinga2_ido_mysql
-#include icinga2_classicui
-#include icinga2_icinga_web
 include icingaweb2
 include icingaweb2_internal_db_mysql
 include monitoring_plugins
@@ -54,11 +52,6 @@ php::ini { '/etc/php.ini':
   session_save_path => '/var/lib/php/session'
 }
 
-# leftover, purge them
-file { [ '/var/www/html/index.html', '/var/www/html/icinga_wall.png' ]:
-  ensure => 'absent'
-}
-
 ####################################
 # Misc
 ####################################
@@ -96,12 +89,14 @@ file { [ '/root/.vim',
 
 exec { 'copy-vim-syntax-file':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  unless => 'test -f /root/.vim/syntax/icinga2.vim',
   command => 'cp -f /usr/share/doc/icinga2-common-$(rpm -q icinga2-common | cut -d\'-\' -f3)/syntax/vim/syntax/icinga2.vim /root/.vim/syntax/icinga2.vim',
   require => [ Package['vim-enhanced'], Package['icinga2-common'], File['/root/.vim/syntax'] ]
 }
 
 exec { 'copy-vim-ftdetect-file':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  unless => 'test -f /root/.vim/ftdetect/icinga2.vim',
   command => 'cp -f /usr/share/doc/icinga2-common-$(rpm -q icinga2-common | cut -d\'-\' -f3)/syntax/vim/ftdetect/icinga2.vim /root/.vim/ftdetect/icinga2.vim',
   require => [ Package['vim-enhanced'], Package['icinga2-common'], File['/root/.vim/syntax'] ]
 }
@@ -111,7 +106,7 @@ exec { 'copy-vim-ftdetect-file':
 ####################################
 
 file { '/etc/icinga2':
-  ensure    => 'directory',
+  ensure  => 'directory',
   require => Package['icinga2']
 }
 
@@ -119,7 +114,8 @@ file { '/etc/icinga2/icinga2.conf':
   owner  => icinga,
   group  => icinga,
   source    => "puppet:////vagrant/files/etc/icinga2/icinga2.conf",
-  require   => File['/etc/icinga2']
+  require   => File['/etc/icinga2'],
+  notify    => Service['icinga2']
 }
 
 file { "/etc/icinga2/zones.conf":
@@ -153,7 +149,8 @@ file { '/etc/icinga2/conf.d/additional_services.conf':
 exec { 'enable-icinga2-api':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => 'icinga2 api setup',
-  require => Package['icinga2']
+  require => Package['icinga2'],
+  notify  => Service['icinga2']
 }
 
 file { '/etc/icinga2/conf.d/api-users.conf':
@@ -162,14 +159,6 @@ file { '/etc/icinga2/conf.d/api-users.conf':
   content   => template("icinga2/api-users.conf.erb"),
   require   => [ Package['icinga2'], Exec['enable-icinga2-api'] ],
   notify    => Service['icinga2']
-}
-
-file { 'icinga2-api-stress':
-  name => '/usr/local/bin/api_stress',
-  owner => root,
-  group => root,
-  mode => '0755',
-  source => "puppet:////vagrant/files/usr/local/bin/api_stress",
 }
 
 ####################################
@@ -441,6 +430,7 @@ exec { 'dashing-install':
 }->
 exec { 'dashing-bundle-install':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  unless => 'test -d /usr/share/dashing-icinga2/binpaths',
   command => "cd /usr/share/dashing-icinga2 && bundle install --path binpaths", # use binpaths to prevent 'ruby bundler: command not found: thin'
   timeout => 1800
 }->
@@ -523,17 +513,6 @@ class { 'graphite':
   gr_timezone => 'Europe/Berlin',
 }
 
-# realtime patch for graphite web
-#file { 'composer_widgets.js':
-#  ensure	=> file,
-#  owner	=> 'root',
-#  group	=> 'root',
-#  mode	=> '0644',
-#  path	=> '/opt/graphite/webapp/content/js/composer_widgets.js',
-#  source	=> 'puppet:///vagrant/files/opt/graphite/webapp/content/js/composer_widgets.js',
-#  require	=> Class['graphite'],
-#}
-
 # icingaweb2 module
 icingaweb2::module { 'graphite':
   builtin => false
@@ -582,7 +561,7 @@ class { 'grafana':
     },
   },
 }
-
+->
 # there are no static config files for data sources in grafana2
 # https://github.com/grafana/grafana/issues/1789
 file { 'grafana-setup':
@@ -592,7 +571,7 @@ file { 'grafana-setup':
   mode => '0755',
   source => "puppet:////vagrant/files/usr/local/bin/grafana-setup",
 }
-
+->
 file { 'grafana-dashboard-icinga2':
   name => '/etc/icinga2/grafana-dashboard-icinga2.json',
   owner => root,
@@ -600,6 +579,7 @@ file { 'grafana-dashboard-icinga2':
   mode => '0644',
   source => "puppet:////vagrant/files/etc/icinga2/grafana-dashboard-icinga2.json",
 }
+->
 exec { 'finish-grafana-setup':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => "/usr/local/bin/grafana-setup",

@@ -1,3 +1,0 @@
-#!/bin/bash
-
-for i in {1..100000};do curl -k https://root:icinga@localhost:5665/v1/objects/hosts >/dev/null 2>&1; done
