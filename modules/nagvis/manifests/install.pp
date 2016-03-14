@@ -8,7 +8,8 @@ class nagvis::install {
   # works for rhel7 only
   wget::fetch { 'nagvis':
     source      => "http://www.nagvis.org/share/nagvis-${nagvis_version}.tar.gz",
-    destination => "/tmp/nagvis-${nagvis_version}.tar.gz"
+    destination => "/tmp/nagvis-${nagvis_version}.tar.gz",
+    unless => "test -f /tmp/nagvis-${nagvis_version}.tar.gz"
   }
 
   exec { 'extract-nagvis':
