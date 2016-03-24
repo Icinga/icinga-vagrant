@@ -3,7 +3,9 @@
 * Icinga 2 Core
   * Icinga 2 API
 * Icinga Web 2
+ * Icinga [Director](https://github.com/Icinga/icingaweb2-module-director)
  * [PNP](https://github.com/Icinga/icingaweb2-module-pnp) module
+ * [Graphite](https://github.com/Icinga/icingaweb2-module-graphite) module
  * [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess) module
  * [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts) module
  * [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) module
