@@ -126,7 +126,7 @@ If Virtualbox is installed, this will be enabled by default.
 
 ### Parallels Provider
 
-You'll need to install the [vagrant-paralells](http://parallels.github.io/vagrant-parallels/docs/)
+You'll need to install the [vagrant-parallels](http://parallels.github.io/vagrant-parallels/docs/)
 plugin first:
 
     $ vagrant plugin install vagrant-parallels
