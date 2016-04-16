@@ -434,16 +434,9 @@ exec { 'dashing-bundle-install':
   command => "cd /usr/share/dashing-icinga2 && bundle install --path binpaths", # use binpaths to prevent 'ruby bundler: command not found: thin'
   timeout => 1800
 }->
-file { 'restart-dashing':
-  name => '/usr/local/bin/restart-dashing',
-  owner => root,
-  group => root,
-  mode => '0755',
-  source => "puppet:////vagrant/files/usr/local/bin/restart-dashing",
-}->
 exec { 'dashing-start':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => "/usr/local/bin/restart-dashing",
+  command => "/usr/share/dashing-icinga2/restart-dashing -p 8005 -D /usr/share/dashing-icinga2 -b /usr/local/bin/dashing",
   require => Service['icinga2'],
 }
 
