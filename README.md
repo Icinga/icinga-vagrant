@@ -2,107 +2,10 @@
 
 Icinga Vagrant boxes used for development, tests and demo cases.
 
-## Icinga 2 Standalone
-
-* 1 VM
-* Icinga 2 Core
-  * Icinga 2 API
-* Icinga Web 2
- * Icinga [Director](https://github.com/Icinga/icingaweb2-module-director)
- * [PNP](https://github.com/Icinga/icingaweb2-module-pnp) module
- * [Graphite](https://github.com/Icinga/icingaweb2-module-graphite) module
- * [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess) module
- * [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts) module
- * [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) module
-* PNP4Nagios
-* NagVis
-* Graphite
-* Grafana 2
-* Dashing
-
-Run Vagrant:
-
-    $ cd icinga2x && vagrant up
-
-### User Interfaces
-
-  GUI               | Url                               | Credentials
-  ------------------|-----------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
-  PNP4Nagios        | http://192.168.33.5/pnp4nagios    | -
-  Graphite Web	    | http://192.168.33.5:8003          | -
-  Grafana 2         | http://192.168.33.5:8004          | admin/admin
-  Dashing           | http://192.168.33.5:8005          | -
-
-Note: In case Dashing is not running, restart it manually:
-
-    $ vagrant ssh -c "sudo /usr/share/dashing-icinga2/restart-dashing -p 8005 -D /usr/share/dashing-icinga2 -b /usr/local/bin/dashing"
-
-### Icinga 2 API
-
-Access [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts)
-using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.org/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
-
-## Icinga 2 Cluster
-
-* 2 VMs as Icinga 2 Master/Checker Cluster
-* Icinga 2 Core, DB IDO MySQL, Icinga Web 2
-
-Run Vagrant:
-
-    $ cd icinga2x-cluster && vagrant up
-
-
-### User Interfaces
-
-  GUI               | Url                                   | Credentials
-  ------------------|---------------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.10/icingaweb2       | icingaadmin/icinga
-  Icinga Web 2      | http://192.168.33.20/icingaweb2       | icingaadmin/icinga
-
-### Icinga 2 API
-
-Access [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/v1/objects/hosts)
-and [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts)
-using the credentials `root/icinga`.
-
-
-## Icinga 2 and Graylog
-
-* 1 VM
-* Icinga 2 Core
-* Graylog Server and Web with Elasticsearch, MongoDB
-
-Run Vagrant:
-
-    $ cd icinga2x-graylog && vagrant up
-
-### User Interfaces
-
-  GUI              | Url                             | Credentials
-  -----------------|---------------------------------|------------------------
-  Icinga Web 2     | http://192.168.33.6/icingaweb2  | icingaadmin/icinga
-  Graylog          | http://192.168.33.6:9000        | admin/admin
-
-## Icinga 1.x
-
-* 1 VM
-* Icinga 1.x Core, IDOUtils MySQL, Classic UI, Web
-
-Run Vagrant:
-
-    $ cd icinga1x && vagrant up
-
-### User Interfaces
-
-http://localhost:8081 shows an entry page including all urls and
-credentials.
-
-  GUI               | Url                   | Credentials
-  ------------------|-----------------------|----------------
-  Icinga Classic UI | :8081/icinga          | icingaadmin/icingaadmin
-  Icinga Web 1.x    | :8081/icinga-web	    | root/password
-  Jasperserver	    | :8082/jasperserver    | jasperadmin/jasperadmin
+* [Icinga 2 Standalone](README.md#icinga2x)
+* [Icinga 2 Cluster](README.md#icinga2x-cluster)
+* [Icinga 2 and Graylog](README.md#icinga2x-graylog)
+* [Icinga 1.x](README.md#icinga1x)
 
 ## Requirements
 
@@ -117,12 +20,21 @@ One of these virtualization providers:
 * Virtualbox >= 4.2.16 from http://www.virtualbox.org
 * Parallels Desktop Pro/Business >= 11 from http://www.parallels.com/products/desktop/
 
-Windows users require additionally
+### Windows
+
+In addition the listed requirements you'll need:
 
 * SSH provided by the Git package from http://msysgit.github.io
 * Ruby for Windows from http://rubyinstaller.org (add Ruby executables to PATH)
 
-You can use `init.sh` (Linux) and `init.bat` (Windows) to check the pre-requisites.
+Install the Git package and set `autocrlf` to `false` (either in the setup
+dialog or using the cmd shell):
+
+    git config core.autocrlf false
+
+Then clone this repository:
+
+    git clone https://github.com/Icinga/icinga-vagrant
 
 ### Virtualbox Provider
 
@@ -182,6 +94,109 @@ Follow the instructions described in the `README.md` file
 for each box.
 
 Choose one of the available boxes below.
+
+
+## <a id="icinga2x"></a>Icinga 2 Standalone
+
+* 1 VM
+* Icinga 2 Core
+  * Icinga 2 API
+* Icinga Web 2
+ * Icinga [Director](https://github.com/Icinga/icingaweb2-module-director)
+ * [PNP](https://github.com/Icinga/icingaweb2-module-pnp) module
+ * [Graphite](https://github.com/Icinga/icingaweb2-module-graphite) module
+ * [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess) module
+ * [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts) module
+ * [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) module
+* PNP4Nagios
+* NagVis
+* Graphite
+* Grafana 2
+* Dashing
+
+Run Vagrant:
+
+    $ cd icinga2x && vagrant up
+
+### User Interfaces
+
+  GUI               | Url                               | Credentials
+  ------------------|-----------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
+  PNP4Nagios        | http://192.168.33.5/pnp4nagios    | -
+  Graphite Web	    | http://192.168.33.5:8003          | -
+  Grafana 2         | http://192.168.33.5:8004          | admin/admin
+  Dashing           | http://192.168.33.5:8005          | -
+
+Note: In case Dashing is not running, restart it manually:
+
+    $ vagrant ssh -c "sudo /usr/share/dashing-icinga2/restart-dashing -p 8005 -D /usr/share/dashing-icinga2 -b /usr/local/bin/dashing"
+
+### Icinga 2 API
+
+Access [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts)
+using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.org/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
+
+## <a id="icinga2x-cluster"></a>Icinga 2 Cluster
+
+* 2 VMs as Icinga 2 Master/Checker Cluster
+* Icinga 2 Core, DB IDO MySQL, Icinga Web 2
+
+Run Vagrant:
+
+    $ cd icinga2x-cluster && vagrant up
+
+
+### User Interfaces
+
+  GUI               | Url                                   | Credentials
+  ------------------|---------------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.10/icingaweb2       | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.20/icingaweb2       | icingaadmin/icinga
+
+### Icinga 2 API
+
+Access [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/v1/objects/hosts)
+and [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts)
+using the credentials `root/icinga`.
+
+
+## <a id="icinga2x-graylog"></a>Icinga 2 and Graylog
+
+* 1 VM
+* Icinga 2 Core
+* Graylog Server and Web with Elasticsearch, MongoDB
+
+Run Vagrant:
+
+    $ cd icinga2x-graylog && vagrant up
+
+### User Interfaces
+
+  GUI              | Url                             | Credentials
+  -----------------|---------------------------------|------------------------
+  Icinga Web 2     | http://192.168.33.6/icingaweb2  | icingaadmin/icinga
+  Graylog          | http://192.168.33.6:9000        | admin/admin
+
+## <a id="icinga1x"></a>Icinga 1.x
+
+* 1 VM
+* Icinga 1.x Core, IDOUtils MySQL, Classic UI, Web
+
+Run Vagrant:
+
+    $ cd icinga1x && vagrant up
+
+### User Interfaces
+
+http://localhost:8081 shows an entry page including all urls and
+credentials.
+
+  GUI               | Url                   | Credentials
+  ------------------|-----------------------|----------------
+  Icinga Classic UI | :8081/icinga          | icingaadmin/icingaadmin
+  Icinga Web 1.x    | :8081/icinga-web	    | root/password
+  Jasperserver	    | :8082/jasperserver    | jasperadmin/jasperadmin
 
 ## Misc
 
