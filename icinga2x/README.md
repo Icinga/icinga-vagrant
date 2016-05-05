@@ -25,6 +25,10 @@
   Grafana 2         | http://192.168.33.5:8004          | admin/admin
   Dashing           | http://192.168.33.5:8005          | -
 
+Note: In case Dashing is not running, restart it manually:
+
+    $ vagrant ssh -c "sudo /usr/share/dashing-icinga2/restart-dashing -p 8005 -D /usr/share/dashing-icinga2 -b /usr/local/bin/dashing"
+
 ## Icinga 2 API
 
 Access [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts)
