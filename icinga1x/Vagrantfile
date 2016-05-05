@@ -24,6 +24,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 8080, host: 8082, auto_correct: true #tomcat
   config.vm.provider "virtualbox" do |vb|
     vb.customize ["modifyvm", :id, "--memory", "1024"]
+    # Using the host's resolver as a DNS proxy in NAT mode
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   end
   config.vm.provision :shell, :path => "manifests/init.sh"
   config.vm.provision :puppet do |puppet|
