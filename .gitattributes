@@ -1,6 +1,1 @@
 modules/** eol=lf
-icinga1x/** eol=lf
-icinga2x/** eol=lf
-icinga2x-cluster/** eol=lf
-icinga2x-graylog/** eol=lf
-icinga2x-elk/** eol=lf
