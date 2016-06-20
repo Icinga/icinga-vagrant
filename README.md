@@ -38,7 +38,7 @@ To install Grafana with the default parameters:
     class { 'grafana': }
 ```
 
-This assumes that you with to install Grafana using the 'package' method. To establish customized parameters:
+This assumes that you want to install Grafana using the 'package' method. To establish customized parameters:
 
 ```puppet
     class { 'grafana':
@@ -144,16 +144,25 @@ This option by itself is not sufficient to enable LDAP configuration as it must 
 },
 ```
 
+####Integer note
+Puppet may convert integers into strings while parsing the hash and converting into toml. This can be worked around by appending 0 to an integer.
+
+Example:
+```
+port => 636+0,
+```
+
 Manages the Grafana LDAP configuration file. This hash is directly translated into the corresponding TOML file, allowing for full flexibility in generating the configuration.
 
 See the [LDAP documentation](http://docs.grafana.org/v2.1/installation/ldap/) for more information.
 
-Example:
+####Example LDAP config
 
 ```
 ldap_cfg => {
   servers => [
     { host            => 'ldapserver1.domain1.com',
+      port            => 636+0,
       use_ssl         => true,
       search_filter   => '(sAMAccountName=%s)',
       search_base_dns => [ 'dc=domain1,dc=com' ],
@@ -250,6 +259,53 @@ Example:
     Class[::grafana::service]
 
 ```
+
+####Custom Types and Providers
+
+The module includes two custom types: `grafana_dashboard` and `grafana_datasource`
+
+#####`grafana_dashboard`
+
+In order to use the dashboard resource, add the following to your manifest:
+
+```puppet
+grafana_dashboard { 'example_dashboard':
+  grafana_url       => 'http://localhost:3000',
+  grafana_user      => 'admin',
+  grafana_password  => '5ecretPassw0rd',
+  content           => template('path/to/exported/file.json'),
+}
+```
+
+`content` must be valid JSON, and is parsed before imported.
+`grafana_user` and `grafana_password` are optional, and required when authentication is enabled in Grafana.
+
+#####`grafana_datasource`
+
+In order to use the datasource resource, add the following to your manifest:
+
+```puppet
+grafana_datasource { 'influxdb':
+  grafana_url       => 'http://localhost:3000',
+  grafana_user      => 'admin',
+  grafana_password  => '5ecretPassw0rd',
+  type              => 'influxdb',
+  url               => 'http://localhost:8086',
+  user              => 'admin',
+  password          => '1nFlux5ecret',
+  database          => 'graphite',
+  access_mode       => 'proxy',
+  is_default        => true,
+  json_data         => template('path/to/additional/config.json'),
+}
+```
+
+Available types are: influxdb, elasticsearch, graphite, kairosdb, opentsdb, prometheus
+
+Access mode determines how Grafana connects to the datasource, either `direct` from the browser, or `proxy` to send requests via grafana.
+
+Authentication is optional, as is `database`; additional `json_data` can be provided to allow custom configuration options.
+
 
 ##Limitations
 

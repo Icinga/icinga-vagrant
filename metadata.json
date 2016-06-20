@@ -3,8 +3,8 @@
   "version": "2.5.0",
   "author": "bfraser",
   "summary": "This module provides Grafana, a dashboard and graph editor for Graphite and InfluxDB.",
-  "license": "Apache 2.0",
-  "source": "git://github.com/bfraser/puppet-grafana.git",
+  "license": "Apache-2.0",
+  "source": "https://github.com/bfraser/puppet-grafana.git",
   "project_page": "https://github.com/bfraser/puppet-grafana",
   "issues_url": "https://github.com/bfraser/puppet-grafana/issues",
   "tags": [
@@ -43,12 +43,12 @@
   ],
   "dependencies": [
     {
-      "name": "camptocamp/archive",
-      "version_requirement": ">= 0.3.2 <2.0.0"
+      "name": "puppet/archive",
+      "version_requirement": ">= 0.5.1"
     },
     {
       "name": "garethr/docker",
-      "version_requirement": ">= 3.5.0 <5.0.0"
+      "version_requirement": ">= 3.5.0 <6.0.0"
     },
     {
       "name": "maestrodev/wget",
