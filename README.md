@@ -242,6 +242,11 @@ These boxes use these imported puppet modules for provisioning:
   puppet-graphite	| modules/graphite		| Patched for systemd usage from https://github.com/echocat/puppet-graphite.git
   puppet-grafana	| modules/grafana		| https://github.com/bfraser/puppet-grafana.git
   puppet-wget           | modules/wget                  | https://github.com/maestrodev/puppet-wget.git
+  puppet-vim            | modules/vim                   | https://github.com/saz/puppet-vim.git
 
+#### Puppet Module Setup
 
+**Notes for developers only.**
+
+    $ git subtree add --prefix modules/vim https://github.com/saz/puppet-vim master --squash
 
