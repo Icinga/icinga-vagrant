@@ -30,6 +30,12 @@ class icinga2 (
     alias => 'icinga2-debuginfo'
   }
 
+  package { 'vim-icinga2':
+    ensure => 'latest',
+    require => [ Class['icinga_rpm'], Class['vim'] ],
+    alias => 'vim-icinga2'
+  }
+
   service { 'icinga2':
     enable => true,
     ensure => running,

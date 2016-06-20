@@ -64,7 +64,7 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
   }
 }
 
-package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion' ]:
+package { [ 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion' ]:
   ensure => 'installed',
   require => Class['epel']
 }
@@ -85,22 +85,9 @@ file { '/etc/profile.d/env.sh':
   source => 'puppet:////vagrant/files/etc/profile.d/env.sh'
 }
 
-file { [ '/root/.vim',
-       '/root/.vim/syntax',
-       '/root/.vim/ftdetect' ] :
-  ensure    => 'directory'
-}
-
-exec { 'copy-vim-syntax-file':
-  path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => 'cp -f /usr/share/doc/icinga2-common-$(rpm -q icinga2-common | cut -d\'-\' -f3)/syntax/vim/syntax/icinga2.vim /root/.vim/syntax/icinga2.vim',
-  require => [ Package['vim-enhanced'], Package['icinga2-common'], File['/root/.vim/syntax'] ]
-}
-
-exec { 'copy-vim-ftdetect-file':
-  path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => 'cp -f /usr/share/doc/icinga2-common-$(rpm -q icinga2-common | cut -d\'-\' -f3)/syntax/vim/ftdetect/icinga2.vim /root/.vim/ftdetect/icinga2.vim',
-  require => [ Package['vim-enhanced'], Package['icinga2-common'], File['/root/.vim/syntax'] ]
+# Required by vim-icinga2
+class { 'vim':
+  opt_bg_shading => 'light',
 }
 
 ####################################
