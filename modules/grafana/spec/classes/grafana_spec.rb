@@ -9,8 +9,6 @@ describe 'grafana' do
           :osfamily => osfamily,
         }}
 
-        it { should compile.with_all_deps }
-
         it { should contain_class('grafana::params') }
         it { should contain_class('grafana::install').that_comes_before('grafana::config') }
         it { should contain_class('grafana::config') }
@@ -150,12 +148,12 @@ describe 'grafana' do
 
     install_dir    = '/usr/share/grafana'
     service_config = '/usr/share/grafana/conf/custom.ini'
+    archive_source = 'https://grafanarel.s3.amazonaws.com/builds/grafana-2.5.0.linux-x64.tar.gz'
 
     describe 'extract archive to install_dir' do
-      it { should contain_archive('grafana').with_ensure('present') }
-      it { should contain_archive('grafana').with_target(install_dir) }
-      it { should contain_archive('grafana').with_strip_components(1) }
-      it { should contain_archive('grafana').that_comes_before('User[grafana]') }
+      it { should contain_archive('/tmp/grafana.tar.gz').with_ensure('present') }
+      it { should contain_archive('/tmp/grafana.tar.gz').with_source(archive_source) }
+      it { should contain_archive('/tmp/grafana.tar.gz').with_extract_path(install_dir) }
     end
 
     describe 'create grafana user' do
@@ -166,7 +164,6 @@ describe 'grafana' do
     describe 'manage install_dir' do
       it { should contain_file(install_dir).with_ensure('directory') }
       it { should contain_file(install_dir).with_group('grafana').with_owner('grafana') }
-      it { should contain_file(install_dir).with_recurse(true).with_recurselimit(3) }
     end
 
     describe 'configure grafana' do
