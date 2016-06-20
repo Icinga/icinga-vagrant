@@ -47,7 +47,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Update Parallels Tools automatically
         p.update_guest_tools = false
 
-        override.vm.boot_timeout = 300
+        override.vm.boot_timeout = 600
 
         # Set power consumption mode to "Better Performance"
         p.optimize_power_consumption = false
