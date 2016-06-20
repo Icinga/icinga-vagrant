@@ -525,6 +525,8 @@ file { '/etc/icingaweb2/modules/graphite/config.ini':
 
 # https://github.com/bfraser/puppet-grafana
 class { 'grafana':
+  version => '3.0.4',
+  rpm_iteration => '1464167696',
   cfg => {
     app_mode => 'production',
     server   => {
