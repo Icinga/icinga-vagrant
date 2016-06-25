@@ -7,6 +7,19 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 * [Icinga 2 and Graylog](README.md#icinga2x-graylog)
 * [Icinga 1.x](README.md#icinga1x)
 
+## Screenshots
+
+![Icinga Web 2 Dashboard](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_dashboard.png)
+![Icinga Web 2 Detail View with PNP](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_detail_pnp.png)
+![Icinga Web 2 Business Process](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_businessprocess.png)
+![Icinga Web 2 Director](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_director.png)
+![Icinga Web 2 Grafana](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_grafana.png)
+![Icinga 2 Dashing](doc/screenshot/icinga2x/vagrant_icinga2_dashing.png)
+![Icinga 2 Grafana](doc/screenshot/icinga2x/vagrant_icinga2_grafana.png)
+![Icinga 2 Graphite Web](doc/screenshot/icinga2x/vagrant_icinga2_graphite.png)
+![Icinga 2 PNP](doc/screenshot/icinga2x/vagrant_icinga2_pnp.png)
+![Icinga 2 Vim Syntax Highlighting](doc/screenshot/icinga2x/vagrant_icinga2_vim_syntax_highlighting.png)
+
 ## Requirements
 
 Each Vagrant box setup requires at least 2 Cores and 1 GB RAM.
