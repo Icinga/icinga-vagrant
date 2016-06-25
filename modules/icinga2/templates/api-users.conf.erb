@@ -7,7 +7,7 @@ object ApiUser "root" {
 object ApiUser "dashing" {
   password = "icinga2ondashingr0xx"
   client_cn = NodeName
-  permissions = [ "status/query", "objects/query" ]
+  permissions = [ "status/query", "objects/query/*" ]
 }
 
 object ApiUser "aws" {
