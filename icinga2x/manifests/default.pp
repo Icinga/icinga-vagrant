@@ -324,6 +324,13 @@ file { 'nagvis-core-functions-index.php':
   require => Class['nagvis']
 }
 
+file { 'nagvis-map-icinga2':
+  ensure  => 'present',
+  path    => '/usr/local/nagvis/etc/maps/icinga2.cfg',
+  source  => 'puppet:////vagrant/files/usr/local/nagvis/etc/maps/icinga2.cfg',
+  mode    => '644',
+  require => Class['nagvis']
+}
 ####################################
 # Director
 ####################################
