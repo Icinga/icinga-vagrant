@@ -1,0 +1,10 @@
+HOSTS:
+  centos-66-x64-package:
+    roles:
+      - agent
+      - package
+    platform: el-6-x86_64
+    box: puppetlabs/centos-6.6-64-nocm
+    hypervisor: vagrant
+CONFIG:
+  masterless: true

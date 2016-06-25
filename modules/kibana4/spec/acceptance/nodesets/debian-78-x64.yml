@@ -1,0 +1,10 @@
+HOSTS:
+  debian-78-x64-package:
+    roles:
+      - agent
+      - package
+    platform: debian-7-amd64
+    box: puppetlabs/debian-7.8-64-nocm
+    hypervisor: vagrant
+CONFIG:
+  masterless: true

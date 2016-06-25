@@ -1,0 +1,7 @@
+fixtures:
+  repositories:
+     stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
+     archive: "https://github.com/camptocamp/puppet-archive.git"
+     apt: "https://github.com/puppetlabs/puppetlabs-apt.git"
+  symlinks:
+    'kibana4': "#{source_dir}"

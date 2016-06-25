@@ -1,0 +1,10 @@
+HOSTS:
+  ubuntu-1204-x64-package:
+    roles:
+      - agent
+      - package
+    platform: ubuntu-12.04-amd64
+    box: puppetlabs/ubuntu-12.04-64-nocm
+    hypervisor: vagrant
+CONFIG:
+  masterless: true
