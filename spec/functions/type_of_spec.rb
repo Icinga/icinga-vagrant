@@ -2,7 +2,9 @@ require 'spec_helper'
 
 if ENV["FUTURE_PARSER"] == 'yes'
   describe 'type_of' do
-    pending 'teach rspec-puppet to load future-only functions under 3.7.5'
+    pending 'teach rspec-puppet to load future-only functions under 3.7.5' do
+      it { is_expected.not_to eq(nil) }
+    end
   end
 end
 

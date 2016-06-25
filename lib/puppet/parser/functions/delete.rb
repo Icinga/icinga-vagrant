@@ -2,8 +2,6 @@
 # delete.rb
 #
 
-# TODO(Krzysztof Wilczynski): We need to add support for regular expression ...
-
 module Puppet::Parser::Functions
   newfunction(:delete, :type => :rvalue, :doc => <<-EOS
 Deletes all instances of a given element from an array, substring from a
@@ -25,10 +23,8 @@ string, or key from a hash.
   EOS
   ) do |arguments|
 
-    if (arguments.size != 2) then
-      raise(Puppet::ParseError, "delete(): Wrong number of arguments "+
-                                  "given #{arguments.size} for 2.")
-    end
+    raise(Puppet::ParseError, "delete(): Wrong number of arguments "+
+                              "given #{arguments.size} for 2") unless arguments.size == 2
 
     collection = arguments[0].dup
     Array(arguments[1]).each do |item|

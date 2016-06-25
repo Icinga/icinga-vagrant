@@ -4,6 +4,7 @@ describe 'delete' do
   it { is_expected.not_to eq(nil) }
   it { is_expected.to run.with_params().and_raise_error(Puppet::ParseError) }
   it { is_expected.to run.with_params([]).and_raise_error(Puppet::ParseError) }
+  it { is_expected.to run.with_params([], 'two') }
   it { is_expected.to run.with_params([], 'two', 'three').and_raise_error(Puppet::ParseError) }
   it { is_expected.to run.with_params(1, 'two').and_raise_error(TypeError) }
 
@@ -12,7 +13,9 @@ describe 'delete' do
     it { is_expected.to run.with_params([], 'two').and_return([]) }
     it { is_expected.to run.with_params(['two'], 'two').and_return([]) }
     it { is_expected.to run.with_params(['two', 'two'], 'two').and_return([]) }
+    it { is_expected.to run.with_params(['ab', 'b', 'c', 'b'], 'b').and_return(['ab', 'c']) }
     it { is_expected.to run.with_params(['one', 'two', 'three'], 'four').and_return(['one', 'two', 'three']) }
+    it { is_expected.to run.with_params(['one', 'two', 'three'], 'e').and_return(['one', 'two', 'three']) }
     it { is_expected.to run.with_params(['one', 'two', 'three'], 'two').and_return(['one', 'three']) }
     it { is_expected.to run.with_params(['two', 'one', 'two', 'three', 'two'], 'two').and_return(['one', 'three']) }
     it { is_expected.to run.with_params(['one', 'two', 'three', 'two'], ['one', 'two']).and_return(['three']) }
