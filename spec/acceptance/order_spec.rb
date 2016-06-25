@@ -37,7 +37,7 @@ describe 'concat order' do
     end
 
     describe 'alpha' do
-      it_behaves_like 'sortby', 'alpha', /string10string1string2/
+      it_behaves_like 'sortby', 'alpha', /string1string10string2/
     end
 
     describe 'numeric' do
@@ -83,7 +83,7 @@ describe 'concat::fragment order' do
       end
     end
     describe 'alpha' do
-      it_should_behave_like 'order_by', 'alpha', /string2string1string3/
+      it_should_behave_like 'order_by', 'alpha', /string3string2string1/
     end
     describe 'numeric' do
       it_should_behave_like 'order_by', 'numeric', /string3string2string1/
