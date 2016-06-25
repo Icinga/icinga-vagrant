@@ -1,0 +1,15 @@
+HOSTS:
+  centos-6-x64:
+    roles: [agent, database, dashboard, master]
+    platform: el-6-x86_64
+    image: electrical/centos:6.4
+    hypervisor: docker
+    docker_cmd: '["/sbin/init"]'
+    docker_image_commands:
+      - rm /etc/init/tty.conf
+      - yum install -y wget ntpdate rubygems ruby-augeas ruby-devel augeas-devel logrotate
+      - touch /etc/sysconfig/network
+    docker_preserve_image: true
+CONFIG:
+  type: foss
+  :trace_limit: 100  # Get more than 10 lines of trace when something fails.

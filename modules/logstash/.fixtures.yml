@@ -1,0 +1,10 @@
+fixtures:
+  repositories:
+    stdlib:
+      repo: "git://github.com/puppetlabs/puppetlabs-stdlib"
+      ref: "3.2.0"
+    file_concat: git://github.com/electrical/puppet-lib-file_concat.git
+    apt: git://github.com/puppetlabs/puppetlabs-apt.git
+    zypprepo: https://github.com/deadpoint/puppet-zypprepo.git
+  symlinks:
+    logstash: "#{source_dir}"

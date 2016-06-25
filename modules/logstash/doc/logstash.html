@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+  Hostclass: logstash
+  
+    &mdash; Documentation by YARD 0.8.7.6
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!logstash.html";
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (l)</a> &raquo;
+    
+    
+    <span class="title">logstash</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="puppet_manifest_list_link"
+        href="puppet_manifest_list.html">
+      Puppet Manifest List
+    </a>
+  
+    <a class="full_list_link" id="puppet_plugin_list_link"
+        href="puppet_plugin_list.html">
+      Puppet Plugin List
+    </a>
+  
+    <a class="full_list_link" id="puppet_type_list_link"
+        href="puppet_type_list.html">
+      Puppet Type List
+    </a>
+  
+    <a class="full_list_link" id="puppet_provider_list_link"
+        href="puppet_provider_list.html">
+      Puppet Provider List
+    </a>
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><div class='module_header'>
+  <h1>
+    Puppet Class: logstash
+  </h1>
+</div>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName"><span class='object_link'><a href="logstash/params.html" title="logstash::params (hostclass)">logstash::params</a></span></span>
+      <ul class="fullTree">
+        
+          <li class="next"><span class='object_link'><a href="logstash/params.html" title="logstash::params (hostclass)">logstash::params</a></span></li>
+        
+          <li class="next">logstash</li>
+        
+      </ul>
+      <a href="#" class="inheritanceTree">show all</a>
+    </dd>
+    
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">manifests/init.pp</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>
+<h2 id="label-Class%3A+logstash">Class: logstash</h2>
+
+<p>This class is able to install or remove logstash on a node. It manages the
+status of the related service.</p>
+
+<h3 id="label-Parameters">Parameters</h3>
+<dl class="rdoc-list label-list"><dt><strong>ensure</strong>
+<dd>
+<p>String. Controls if the managed resources shall be <code>present</code> or
+<code>absent</code>. If set to <code>absent</code>:</p>
+<ul><li>
+<p>The managed software packages are being uninstalled.</p>
+</li><li>
+<p>Any traces of the packages will be purged as good as possible. This may
+include existing configuration files. The exact behavior is provider
+dependent. Q.v.:</p>
+<ul><li>
+<p>Puppet type reference: <a href="http://j.mp/xbxmNP">package,
+"purgeable"</a></p>
+</li><li>
+<p><a href="http://j.mp/wtVCaL">Puppet's package provider source code</a></p>
+</li></ul>
+</li><li>
+<p>System modifications (if any) will be reverted as good as possible (e.g.
+removal of created users, services, changed log settings, ...).</p>
+</li><li>
+<p>This is thus destructive and should be used with care.</p>
+</li></ul>
+
+<p>Defaults to <code>present</code>.</p>
+</dd><dt><strong>autoupgrade</strong>
+<dd>
+<p>Boolean. If set to <code>true</code>, any managed package gets upgraded on
+each Puppet run when the package provider is able to find a newer version
+than the present one. The exact behavior is provider dependent. Q.v.:</p>
+<ul><li>
+<p>Puppet type reference: <a href="http://j.mp/xbxmNP">package,
+"upgradeable"</a></p>
+</li><li>
+<p><a href="http://j.mp/wtVCaL">Puppet's package provider source code</a></p>
+</li></ul>
+
+<p>Defaults to <code>false</code>.</p>
+</dd><dt><strong>status</strong>
+<dd>
+<p>String to define the status of the service. Possible values:</p>
+<ul><li>
+<p><code>enabled</code>: Service is running and will be started at boot time.</p>
+</li><li>
+<p><code>disabled</code>: Service is stopped and will not be started at boot
+time.</p>
+</li><li>
+<p><code>running</code>: Service is running but will not be started at boot
+time. You can use this to start a service on the first Puppet run instead
+of the system startup.</p>
+</li><li>
+<p><code>unmanaged</code>: Service will not be started at boot time and Puppet
+does not care whether the service is running or not. For example, this may
+be useful if a cluster management software is used to decide when to start
+the service plus assuring it is running on the desired node.</p>
+</li></ul>
+
+<p>Defaults to <code>enabled</code>. The singular form ("service") is used for
+the sake of convenience. Of course, the defined status affects all services
+if more than one is managed (see <code>service.pp</code> to check if this
+is the case).</p>
+</dd><dt><strong>version</strong>
+<dd>
+<p>String to set the specific core package version you want to install.
+Defaults to <code>false</code>.</p>
+</dd><dt><strong>restart_on_change</strong>
+<dd>
+<p>Boolean that determines if the application should be automatically
+restarted whenever the configuration changes. Disabling automatic restarts
+on config changes may be desired in an environment where you need to ensure
+restarts occur in a controlled/rolling manner rather than during a Puppet
+run.</p>
+
+<p>Defaults to <code>true</code>, which will restart the application on any
+config change. Setting to <code>false</code> disables the automatic
+restart.</p>
+</dd></dl>
+
+<p>The default values for the parameters are set in logstash::params. Have a
+look at the corresponding <code>params.pp</code> manifest file if you need
+more technical information about them.</p>
+<dl class="rdoc-list label-list"><dt><strong>package_url</strong>
+<dd>
+<p>Url to the package to download. This can be a http,https or ftp resource
+for remote packages puppet:// resource or file:/ for local packages</p>
+</dd><dt><strong>software_provider</strong>
+<dd>
+<p>Way to install the packages, currently only packages are supported.</p>
+</dd><dt><strong>package_dir</strong>
+<dd>
+<p>Directory where the packages are downloaded to</p>
+</dd><dt><strong>purge_package_dir</strong>
+<dd>
+<p>Purge package directory on removal</p>
+</dd><dt><strong>package_dl_timeout</strong>
+<dd>
+<p>For http,https and ftp downloads you can set howlong the exec resource may
+take. Defaults to: 600 seconds</p>
+</dd><dt><strong>logstash_user</strong>
+<dd>
+<p>The user Logstash should run as. This also sets the file rights.</p>
+</dd><dt><strong>logstash_group</strong>
+<dd>
+<p>The group logstash should run as. This also sets the file rights</p>
+</dd><dt><strong>purge_configdir</strong>
+<dd>
+<p>Purge the config directory for any unmanaged files</p>
+</dd><dt><strong>service_provider</strong>
+<dd>
+<p>Service provider to use. By Default when a single service provider is
+possibe that one is selected.</p>
+</dd><dt><strong>init_defaults</strong>
+<dd>
+<p>Defaults file content in hash representation</p>
+</dd><dt><strong>init_defaults_file</strong>
+<dd>
+<p>Defaults file as puppet resource</p>
+</dd><dt><strong>init_template</strong>
+<dd>
+<p>Service file as a template</p>
+</dd><dt><strong>java_install</strong>
+<dd>
+<p>Install java which is required for Logstash. Defaults to: false</p>
+</dd><dt><strong>java_package</strong>
+<dd>
+<p>If you like to install a custom java package, put the name here.</p>
+</dd><dt><strong>manage_repo</strong>
+<dd>
+<p>Enable repo management by enabling our official repositories</p>
+</dd><dt><strong>repo_version</strong>
+<dd>
+<p>Our repositories are versioned per major version (1.3, 1.4) select here
+which version you want</p>
+</dd><dt><strong>configdir</strong>
+<dd>
+<p>Path to directory containing the logstash configuration. Use this setting
+if your packages deviate from the norm (/etc/logstash)</p>
+</dd><dt><strong>repo_stage</strong>
+<dd>
+<p>Use stdlib stage setup for managing the repo, instead of anchoring</p>
+</dd></dl>
+
+<h3 id="label-Examples">Examples</h3>
+<ul><li>
+<p>Installation, make sure service is running and will be started at boot
+time:</p>
+
+<pre class="ruby"><span class="ruby-identifier">class</span> { <span class="ruby-string">'logstash'</span><span class="ruby-operator">:</span>
+  <span class="ruby-identifier">manage_repo</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">true</span>,
+}
+</pre>
+</li><li>
+<p>If you're not already managing Java some other way:</p>
+
+<pre class="ruby"><span class="ruby-identifier">class</span> { <span class="ruby-string">'logstash'</span><span class="ruby-operator">:</span>
+  <span class="ruby-identifier">manage_repo</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">true</span>,
+  <span class="ruby-identifier">java_install</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">true</span>,
+}
+</pre>
+</li><li>
+<p>Removal/decommissioning:</p>
+
+<pre class="ruby"><span class="ruby-identifier">class</span> { <span class="ruby-string">'logstash'</span><span class="ruby-operator">:</span>
+  <span class="ruby-keyword">ensure</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'absent'</span>,
+}
+</pre>
+</li><li>
+<p>Install everything but disable service(s) afterwards</p>
+
+<pre class="ruby"><span class="ruby-identifier">class</span> { <span class="ruby-string">'logstash'</span><span class="ruby-operator">:</span>
+  <span class="ruby-identifier">status</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'disabled'</span>,
+}
+</pre>
+</li></ul>
+
+<h3 id="label-Authors">Authors</h3>
+<ul><li>
+<p>Richard Pijnenburg &lt;<a
+href="mailto:richard.pijnenburg@elasticsearch.com">richard.pijnenburg@elasticsearch.com</a>&gt;</p>
+</li></ul>
+</p>
+  </div>
+</div>
+<div class="tags">
+  
+  
+  
+</div>
+<h2>Parameter Summary</h2>
+<div class="tags">
+  <ul class="param">
+    <li><span class="name">ensure </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::ensure</tt></li><li><span class="name">status </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::status</tt></li><li><span class="name">restart_on_change </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::restart_on_change</tt></li><li><span class="name">autoupgrade </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::autoupgrade</tt></li><li><span class="name">version </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">software_provider </span><span class="type">(<tt>Any</tt>)</span><tt> => 'package'</tt></li><li><span class="name">package_url </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">package_dir </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::package_dir</tt></li><li><span class="name">purge_package_dir </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::purge_package_dir</tt></li><li><span class="name">package_dl_timeout </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::package_dl_timeout</tt></li><li><span class="name">logstash_user </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::logstash_user</tt></li><li><span class="name">logstash_group </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::logstash_group</tt></li><li><span class="name">configdir </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::configdir</tt></li><li><span class="name">purge_configdir </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::purge_configdir</tt></li><li><span class="name">java_install </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">java_package </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">service_provider </span><span class="type">(<tt>Any</tt>)</span><tt> => 'init'</tt></li><li><span class="name">init_defaults </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">init_defaults_file </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">init_template </span><span class="type">(<tt>Any</tt>)</span><tt> => undef</tt></li><li><span class="name">manage_repo </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li><li><span class="name">repo_version </span><span class="type">(<tt>Any</tt>)</span><tt> => $logstash::params::repo_version</tt></li><li><span class="name">repo_stage </span><span class="type">(<tt>Any</tt>)</span><tt> => false</tt></li>
+  </ul>
+</div>
+</div>
+
+    <div id="footer">
+  Generated on Fri May 13 16:02:59 2016 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.6 (ruby-1.9.3).
+</div>
+
+  </body>
+</html>

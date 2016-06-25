@@ -1,0 +1,18 @@
+HOSTS:
+  sles-11:
+    platform: sles-11-x86_64
+    image: netways/sles-11-sp3-x86_64
+    hypervisor: docker
+    docker_cmd: '["/sbin/init"]'
+    docker_image_commands:
+      - zypper install -y dbus-1 rubygems which augeas augeas-lenses wget
+      - zypper install -y -t pattern devel_basis || true
+      - mkdir -p /etc/selinux/targeted/contexts/
+      - echo '<busconfig><selinux></selinux></busconfig>' > /etc/selinux/targeted/contexts/dbus_contexts
+      - mkdir /etc/systemd/system/sshd.service.d/
+      - echo -e "[Service]\nExecStart=\nExecStart=/usr/bin/sshd -D"
+      - ln -s /usr/lib/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service
+    docker_preserve_image: true
+CONFIG:
+  type: foss
+  :trace_limit: 100  # Get more than 10 lines of trace when something fails.
