@@ -249,6 +249,8 @@ These boxes use these imported puppet modules for provisioning:
   puppet-selinux	| modules/selinux		| https://github.com/jfryman/puppet-selinux.git
   graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
   puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
+  puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git
+  puppet-kibana         | modules/kibana4               | https://github.com/lesaux/puppet-kibana4.git
   puppetlabs-mongodb	| modules/mongodb		| https://github.com/puppetlabs/puppetlabs-mongodb.git
   puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
   puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
