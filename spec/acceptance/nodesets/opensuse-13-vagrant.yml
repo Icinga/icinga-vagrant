@@ -1,0 +1,8 @@
+HOSTS:
+  opensuse-131-x64:
+    platform: sles-13-x64
+    box: elastic/opensuse-13-x86_64
+    hypervisor: vagrant
+CONFIG:
+  type: foss
+  :trace_limit: 100  # Get more than 10 lines of trace when something fails.

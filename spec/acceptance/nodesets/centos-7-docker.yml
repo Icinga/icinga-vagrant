@@ -1,0 +1,15 @@
+HOSTS:
+  centos-7-x64:
+    roles: [agent, database, dashboard, master]
+    platform: el-7-x86_64
+    image: electrical/centos:7
+    hypervisor: docker
+    docker_cmd: '["/usr/sbin/init"]'
+    docker_image_commands:
+      - rm /lib/systemd/system/systemd*udev*
+      - rm /lib/systemd/system/getty.target
+      - yum install -y wget ntpdate rubygems ruby-devel augeas-devel ruby-augeas tar logrotate
+    docker_preserve_image: true
+CONFIG:
+  type: foss
+  :trace_limit: 100  # Get more than 10 lines of trace when something fails.

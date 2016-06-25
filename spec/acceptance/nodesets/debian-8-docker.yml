@@ -1,0 +1,16 @@
+HOSTS:
+  debian-8:
+    roles: [agent, database, dashboard, master]
+    platform: debian-8-amd64
+    image: debian:8
+    hypervisor: docker
+    docker_cmd: '["/sbin/init"]'
+    docker_image_commands:
+      - rm /lib/systemd/system/systemd*udev*
+      - rm /lib/systemd/system/getty.target
+      - apt-get install -yq ruby ruby-dev lsb-release wget net-tools libaugeas-dev libaugeas-ruby ntpdate locales-all logrotate
+      - REALLY_GEM_UPDATE_SYSTEM=1 gem update --system --no-ri --no-rdoc
+    docker_preserve_image: true
+CONFIG:
+  type: foss
+  :trace_limit: 100  # Get more than 10 lines of trace when something fails.
