@@ -64,8 +64,50 @@
 # [*init_defaults_file*]
 #   Defaults file as puppet resource
 #
+# [*service_flags*]
+#   Service flags used for the OpenBSD service configuration, defaults to undef.
+#
+# [*init_template*]
+#   Service file as a template
+#
+# [*logdir*]
+#   Log directory for this instance.
+#
+# [*ssl*]
+#   Whether to manage TLS certificates for Shield. Requires the ca_certificate,
+#   certificate, private_key and keystore_password parameters to be set.
+#   Value type is boolean
+#   Default value: false
+#
+# [*ca_certificate*]
+#   Path to the trusted CA certificate to add to this node's java keystore.
+#   Value type is string
+#   Default value: undef
+#
+# [*certificate*]
+#   Path to the certificate for this node signed by the CA listed in
+#   ca_certificate.
+#   Value type is string
+#   Default value: undef
+#
+# [*private_key*]
+#   Path to the key associated with this node's certificate.
+#   Value type is string
+#   Default value: undef
+#
+# [*keystore_password*]
+#   Password to encrypt this node's Java keystore.
+#   Value type is string
+#   Default value: undef
+#
+# [*keystore_path*]
+#   Custom path to the java keystore file. This parameter is optional.
+#   Value type is string
+#   Default value: undef
+#
 # === Authors
 #
+# * Tyler Langlois <mailto:tyler@elastic.co>
 # * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
 #
 define elasticsearch::instance(
@@ -74,12 +116,21 @@ define elasticsearch::instance(
   $config             = undef,
   $configdir          = undef,
   $datadir            = undef,
+  $logdir             = undef,
   $logging_file       = undef,
   $logging_config     = undef,
   $logging_template   = undef,
   $logging_level      = $elasticsearch::default_logging_level,
+  $service_flags      = undef,
   $init_defaults      = undef,
-  $init_defaults_file = undef
+  $init_defaults_file = undef,
+  $init_template      = $elasticsearch::init_template,
+  $ssl                = false,
+  $ca_certificate     = undef,
+  $certificate        = undef,
+  $private_key        = undef,
+  $keystore_password  = undef,
+  $keystore_path      = undef,
 ) {
 
   require elasticsearch::params
@@ -199,6 +250,72 @@ define elasticsearch::instance(
       $dirs = $instance_datadir
     }
 
+    # Manage instance log directory
+    if ($logdir == undef) {
+      $instance_logdir = "${elasticsearch::logdir}/${name}"
+    } else {
+      $instance_logdir = $logdir
+    }
+
+    if(has_key($instance_config, 'path.logs')) {
+      $instance_logdir_config = { 'path.logs' => $instance_logdir }
+    } elsif(has_key($instance_config, 'path')) {
+      if(has_key($instance_config['path'], 'logs')) {
+        $instance_logdir_config = { 'path' => { 'logs' => $instance_logdir } }
+      } else {
+        $instance_logdir_config = { 'path.logs' => $instance_logdir }
+      }
+    } else {
+      $instance_logdir_config = { 'path.logs' => $instance_logdir }
+    }
+
+    validate_bool($ssl)
+    if $ssl {
+      validate_absolute_path($ca_certificate, $certificate, $private_key)
+      validate_string($keystore_password)
+
+      if ($keystore_path == undef) {
+        $_keystore_path = "${instance_configdir}/shield/${name}.ks"
+      } else {
+        validate_absolute_path($keystore_path)
+        $_keystore_path = $keystore_path
+      }
+
+      $tls_config = {
+        'shield.ssl.keystore.path'     => $_keystore_path,
+        'shield.ssl.keystore.password' => $keystore_password,
+        'shield.transport.ssl'         => true,
+        'shield.http.ssl'              => true,
+      }
+
+      # Trust CA Certificate
+      java_ks { "elasticsearch_instance_${name}_keystore_ca":
+        ensure       => 'latest',
+        certificate  => $ca_certificate,
+        target       => $_keystore_path,
+        password     => $keystore_password,
+        trustcacerts => true,
+      }
+
+      # Load node certificate and private key
+      java_ks { "elasticsearch_instance_${name}_keystore_node":
+        ensure      => 'latest',
+        certificate => $certificate,
+        private_key => $private_key,
+        target      => $_keystore_path,
+        password    => $keystore_password,
+      }
+    } else { $tls_config = {} }
+
+    file { $instance_logdir:
+      ensure  => 'directory',
+      owner   => $elasticsearch::elasticsearch_user,
+      group   => undef,
+      mode    => '0644',
+      require => Class['elasticsearch::package'],
+      before  => Elasticsearch::Service[$name],
+    }
+
     exec { "mkdir_datadir_elasticsearch_${name}":
       command => "mkdir -p ${dirs}",
       creates => $instance_datadir,
@@ -246,8 +363,18 @@ define elasticsearch::instance(
       target => "${elasticsearch::params::homedir}/scripts",
     }
 
+    file { "${instance_configdir}/shield":
+      ensure  => 'directory',
+      mode    => '0644',
+      source  => "${elasticsearch::params::homedir}/shield",
+      recurse => 'remote',
+      owner   => 'root',
+      group   => 'root',
+      before  => Elasticsearch::Service[$name],
+    }
+
     # build up new config
-    $instance_conf = merge($main_config, $instance_node_name, $instance_config, $instance_datadir_config)
+    $instance_conf = merge($main_config, $instance_node_name, $instance_config, $instance_datadir_config, $instance_logdir_config, $tls_config)
 
     # defaults file content
     # ensure user did not provide both init_defaults and init_defaults_file
@@ -261,7 +388,7 @@ define elasticsearch::instance(
       $global_init_defaults = { }
     }
 
-    $instance_init_defaults_main = { 'CONF_DIR' => $instance_configdir, 'CONF_FILE' => "${instance_configdir}/elasticsearch.yml", 'LOG_DIR' => "/var/log/elasticsearch/${name}", 'ES_HOME' => '/usr/share/elasticsearch' }
+    $instance_init_defaults_main = { 'CONF_DIR' => $instance_configdir, 'CONF_FILE' => "${instance_configdir}/elasticsearch.yml", 'LOG_DIR' => $instance_logdir, 'ES_HOME' => '/usr/share/elasticsearch' }
 
     if (is_hash($init_defaults)) {
       $instance_init_defaults = $init_defaults
@@ -273,12 +400,17 @@ define elasticsearch::instance(
     $user = $elasticsearch::elasticsearch_user
     $group = $elasticsearch::elasticsearch_group
 
-    file { "${instance_configdir}/elasticsearch.yml":
-      ensure  => file,
-      content => template("${module_name}/etc/elasticsearch/elasticsearch.yml.erb"),
-      mode    => '0644',
-      notify  => $notify_service,
-      require => Class['elasticsearch::package'],
+    datacat_fragment { "main_config_${name}":
+      target => "${instance_configdir}/elasticsearch.yml",
+      data   => $instance_conf,
+    }
+
+    datacat { "${instance_configdir}/elasticsearch.yml":
+      template => "${module_name}/etc/elasticsearch/elasticsearch.yml.erb",
+      notify   => $notify_service,
+      require  => Class['elasticsearch::package'],
+      owner    => $elasticsearch::elasticsearch_user,
+      group    => $elasticsearch::elasticsearch_group,
     }
 
     $require_service = Class['elasticsearch::package']
@@ -301,9 +433,10 @@ define elasticsearch::instance(
   elasticsearch::service { $name:
     ensure             => $ensure,
     status             => $status,
+    service_flags      => $service_flags,
     init_defaults      => $init_defaults_new,
     init_defaults_file => $init_defaults_file,
-    init_template      => "${module_name}/etc/init.d/${elasticsearch::params::init_template}",
+    init_template      => $init_template,
     require            => $require_service,
     before             => $before_service,
   }

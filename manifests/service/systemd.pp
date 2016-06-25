@@ -108,7 +108,7 @@ define elasticsearch::service::systemd(
     false => Exec["systemd_reload_${name}"]
   }
 
-  if ( $status != 'unmanaged' and $ensure == 'present' ) {
+  if ( $ensure == 'present' ) {
 
     # defaults file content. Either from a hash or file
     if ($init_defaults_file != undef) {
@@ -163,7 +163,7 @@ define elasticsearch::service::systemd(
         $memlock = undef
       }
 
-      file { "/lib/systemd/system/elasticsearch-${name}.service":
+      file { "${elasticsearch::params::systemd_service_path}/elasticsearch-${name}.service":
         ensure  => $ensure,
         content => template($init_template),
         before  => Service["elasticsearch-instance-${name}"],
@@ -174,9 +174,9 @@ define elasticsearch::service::systemd(
 
   $service_require = Exec["systemd_reload_${name}"]
 
-  } elsif($status != 'unmanaged') {
+  } else {
 
-    file { "/lib/systemd/system/elasticsearch-${name}.service":
+    file { "${elasticsearch::params::systemd_service_path}/elasticsearch-${name}.service":
       ensure    => 'absent',
       subscribe => Service["elasticsearch-instance-${name}"],
       notify    => Exec["systemd_reload_${name}"],
@@ -197,20 +197,16 @@ define elasticsearch::service::systemd(
     refreshonly => true,
   }
 
-  if ($status != 'unmanaged') {
-
-    # action
-    service { "elasticsearch-instance-${name}":
-      ensure     => $service_ensure,
-      enable     => $service_enable,
-      name       => "elasticsearch-${name}.service",
-      hasstatus  => $elasticsearch::params::service_hasstatus,
-      hasrestart => $elasticsearch::params::service_hasrestart,
-      pattern    => $elasticsearch::params::service_pattern,
-      provider   => 'systemd',
-      require    => $service_require,
-    }
-
+  # action
+  service { "elasticsearch-instance-${name}":
+    ensure     => $service_ensure,
+    enable     => $service_enable,
+    name       => "elasticsearch-${name}.service",
+    hasstatus  => $elasticsearch::params::service_hasstatus,
+    hasrestart => $elasticsearch::params::service_hasrestart,
+    pattern    => $elasticsearch::params::service_pattern,
+    provider   => 'systemd',
+    require    => $service_require,
   }
 
 }

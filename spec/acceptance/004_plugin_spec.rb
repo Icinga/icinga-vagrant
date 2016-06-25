@@ -2,6 +2,9 @@ require 'spec_helper_acceptance'
 
 describe "elasticsearch plugin define:" do
 
+  shell("mkdir -p #{default['distmoduledir']}/another/files")
+  shell("cp /tmp/elasticsearch-bigdesk.zip #{default['distmoduledir']}/another/files/elasticsearch-bigdesk.zip")
+
   describe "Install a plugin from official repository" do
 
     it 'should run successfully' do
@@ -204,6 +207,25 @@ describe "elasticsearch plugin define:" do
 
   end
 
+  describe "offline install via puppetmaster" do
+      it 'Should run succesful' do
+        pp = "class { 'elasticsearch': config => { 'node.name' => 'elasticsearch001', 'cluster.name' => '#{test_settings['cluster_name']}' }, manage_repo => true, repo_version => '#{test_settings['repo_version']}', java_install => true, elasticsearch_user => 'root', elasticsearch_group => 'root' }
+              elasticsearch::instance { 'es-01': config => { 'node.name' => 'elasticsearch001', 'http.port' => '#{test_settings['port_a']}' } }
+              elasticsearch::plugin{'bigdesk': source => 'puppet:///modules/another/elasticsearch-bigdesk.zip', instances => 'es-01' }
+        "
+
+        # Run it twice and test for idempotency
+        apply_manifest(pp, :catch_failures => true)
+        expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
+
+      end
+
+      it 'make sure elasticsearch reports it as existing' do
+        curl_with_retries('validated plugin as installed', default, "http://localhost:#{test_settings['port_a']}/_nodes/?plugin | grep bigdesk", 0)
+      end
+
+  end
+
   describe "module removal" do
 
     it 'should run successfully' do
@@ -228,5 +250,50 @@ describe "elasticsearch plugin define:" do
     end
 
   end
+
+  describe "install via url" do
+      it 'Should run succesful' do
+        pp = "class { 'elasticsearch': config => { 'node.name' => 'elasticsearch001', 'cluster.name' => '#{test_settings['cluster_name']}' }, manage_repo => true, repo_version => '#{test_settings['repo_version']}', java_install => true }
+              elasticsearch::instance { 'es-01': config => { 'node.name' => 'elasticsearch001', 'http.port' => '#{test_settings['port_a']}' } }
+              elasticsearch::plugin{'HQ': url => 'https://github.com/royrusso/elasticsearch-HQ/archive/v2.0.3.zip', instances => 'es-01' }
+        "
+
+        # Run it twice and test for idempotency
+        apply_manifest(pp, :catch_failures => true)
+        expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
+
+      end
+
+      it 'make sure elasticsearch reports it as existing' do
+        curl_with_retries('validated plugin as installed', default, "http://localhost:#{test_settings['port_a']}/_nodes/?plugin | grep HQ", 0)
+      end
+
+  end
+
+  describe "module removal" do
+
+    it 'should run successfully' do
+      pp = "class { 'elasticsearch': ensure => 'absent' }
+            elasticsearch::instance{ 'es-01': ensure => 'absent' }
+           "
+
+      apply_manifest(pp, :catch_failures => true)
+    end
+
+    describe file('/etc/elasticsearch/es-01') do
+      it { should_not be_directory }
+    end
+
+    describe package(test_settings['package_name']) do
+      it { should_not be_installed }
+    end
+
+    describe service(test_settings['service_name_a']) do
+      it { should_not be_enabled }
+      it { should_not be_running }
+    end
+
+  end
+
 
 end

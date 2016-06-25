@@ -13,20 +13,24 @@ describe 'elasticsearch', :type => 'class' do
       case facts[:osfamily]
       when 'Debian'
         let(:defaults_path) { '/etc/default' }
+        let(:system_service_folder) { '/lib/systemd/system' }
         let(:pkg_ext) { 'deb' }
         let(:pkg_prov) { 'dpkg' }
         let(:version_add) { '' }
         if facts[:lsbmajdistrelease] >= '8'
+          let(:systemd_service_path) { '/lib/systemd/system' }
           test_pid = true
         else
           test_pid = false
         end
       when 'RedHat'
         let(:defaults_path) { '/etc/sysconfig' }
+        let(:system_service_folder) { '/lib/systemd/system' }
         let(:pkg_ext) { 'rpm' }
         let(:pkg_prov) { 'rpm' }
         let(:version_add) { '-1' }
         if facts[:operatingsystemmajrelease] >= '7'
+          let(:systemd_service_path) { '/lib/systemd/system' }
           test_pid = true
         else
           test_pid = false
@@ -36,6 +40,12 @@ describe 'elasticsearch', :type => 'class' do
         let(:pkg_ext) { 'rpm' }
         let(:pkg_prov) { 'rpm' }
         let(:version_add) { '-1' }
+        if facts[:operatingsystem] == 'OpenSuSE' and
+            facts[:operatingsystemrelease].to_i <= 12
+          let(:systemd_service_path) { '/lib/systemd/system' }
+        else
+          let(:systemd_service_path) { '/usr/lib/systemd/system' }
+        end
       end
 
       let(:facts) do
@@ -60,22 +70,23 @@ describe 'elasticsearch', :type => 'class' do
         it { should contain_file('/etc/elasticsearch') }
         it { should contain_file('/usr/share/elasticsearch/templates_import') }
         it { should contain_file('/usr/share/elasticsearch/scripts') }
+        it { should contain_file('/usr/share/elasticsearch/shield') }
         it { should contain_file('/usr/share/elasticsearch') }
         it { should contain_file('/usr/share/elasticsearch/lib') }
-        it { should contain_file('/usr/share/elasticsearch/plugins') }
-        it { should contain_file('/usr/share/elasticsearch/bin').with(:mode => '0755') }
-	it { should contain_augeas("#{defaults_path}/elasticsearch") }
+        it { should contain_augeas("#{defaults_path}/elasticsearch") }
+
+        it { should contain_exec('remove_plugin_dir') }
 
         # Base files
         if test_pid == true
+          it { should contain_file('/etc/systemd/system/elasticsearch.service').with(:ensure => 'link', :target => '/dev/null') }
           it { should contain_file('/usr/lib/tmpfiles.d/elasticsearch.conf') }
         end
 
-	# file removal from package
-	it { should contain_file('/etc/init.d/elasticsearch').with(:ensure => 'absent') }
-	it { should contain_file('/lib/systemd/system/elasticsearch.service').with(:ensure => 'absent') }
-	it { should contain_file('/etc/elasticsearch/elasticsearch.yml').with(:ensure => 'absent') }
-	it { should contain_file('/etc/elasticsearch/logging.yml').with(:ensure => 'absent') }
+        # file removal from package
+        it { should contain_file('/etc/init.d/elasticsearch').with(:ensure => 'absent') }
+        it { should contain_file('/etc/elasticsearch/elasticsearch.yml').with(:ensure => 'absent') }
+        it { should contain_file('/etc/elasticsearch/logging.yml').with(:ensure => 'absent') }
       end
 
       context 'package installation' do
@@ -178,7 +189,7 @@ describe 'elasticsearch', :type => 'class' do
             it { should contain_exec('download_package_elasticsearch').with(:command => "wget --no-check-certificate -O /opt/elasticsearch/swdl/package.#{pkg_ext} http://www.domain.com/path/to/package.#{pkg_ext} 2> /dev/null", :require => 'File[/opt/elasticsearch/swdl]') }
             it { should contain_package('elasticsearch').with(:ensure => 'present', :source => "/opt/elasticsearch/swdl/package.#{pkg_ext}", :provider => "#{pkg_prov}") }
           end
-          
+
           context 'using http:// schema with proxy_url' do
 
             let (:params) {
@@ -244,7 +255,13 @@ describe 'elasticsearch', :type => 'class' do
           })
         }
 
-        it { should contain_package('elasticsearch').with(:ensure => 'purged') }
+        case facts[:osfamily]
+        when 'Suse'
+          it { should contain_package('elasticsearch').with(:ensure => 'absent') }
+        else
+          it { should contain_package('elasticsearch').with(:ensure => 'purged') }
+        end
+        it { should contain_file('/usr/share/elasticsearch/plugins').with(:ensure => 'absent') }
 
       end
 
@@ -268,6 +285,7 @@ describe 'elasticsearch', :type => 'class' do
           it { should contain_class('elasticsearch::repo').that_requires('Anchor[elasticsearch::begin]') }
           it { should contain_exec('elasticsearch_suse_import_gpg') }
           it { should contain_zypprepo('elasticsearch').with(:baseurl => 'http://packages.elastic.co/elasticsearch/1.0/centos') }
+          it { should contain_exec('elasticsearch_zypper_refresh_elasticsearch') }
         end
 
       end
@@ -293,7 +311,7 @@ describe 'elasticsearch', :type => 'class' do
         it { should contain_file('/etc/elasticsearch').with(:owner => 'myesuser', :group => 'myesgroup') }
         it { should contain_file('/var/log/elasticsearch').with(:owner => 'myesuser') }
         it { should contain_file('/usr/share/elasticsearch').with(:owner => 'myesuser', :group => 'myesgroup') }
-        it { should contain_file('/usr/share/elasticsearch/plugins').with(:owner => 'myesuser', :group => 'myesgroup') }
+        # it { should contain_file('/usr/share/elasticsearch/plugins').with(:owner => 'myesuser', :group => 'myesgroup') }
         it { should contain_file('/usr/share/elasticsearch/data').with(:owner => 'myesuser', :group => 'myesgroup') }
         it { should contain_file('/var/run/elasticsearch').with(:owner => 'myesuser') } if facts[:osfamily] == 'RedHat'
       end

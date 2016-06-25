@@ -1,26 +1,6 @@
 <%-
-
-  # Function to make a structured and sorted yaml representation out of a hash
-  def recursive_hash_to_yml_string(hash, depth=0)
-    spacer = ""
-    depth.times { spacer += "  "}
-    hash.keys.sort.each do |sorted_key|
-      @yml_string += spacer + sorted_key + ": "
-      if hash[sorted_key].is_a?(Array)
-         keyspacer = ""
-         sorted_key.length.times { keyspacer += " " }
-         @yml_string += "\n"
-         hash[sorted_key].each do |item|
-           @yml_string += spacer + keyspacer + "- " + item +"\n"
-         end
-      elsif hash[sorted_key].is_a?(Hash)
-        @yml_string += "\n"
-        recursive_hash_to_yml_string(hash[sorted_key], depth+1)
-      else
-        @yml_string += "#{hash[sorted_key].to_s}\n"
-      end
-    end
-  end
+  $LOAD_PATH.unshift(File.join(File.dirname(__FILE__),"..","..","..","lib"))
+  require 'puppet/provider/elastic_yaml'
 
   # Function to transform shorted write up of the keys into full hash representation
   def transform(hash)
@@ -33,7 +13,7 @@
         return_vals << stuff
       end
     else
-      if val.is_a?(Hash)
+      if val.is_a?(::Hash)
         transform(val).each do |stuff|
           return_vals << { key => stuff }
         end
@@ -52,13 +32,23 @@
     target = dup
 
     hash.keys.each do |key|
-      if hash[key].is_a? Hash and self[key].is_a? Hash
+      if hash[key].is_a? ::Hash and self[key].is_a? ::Hash
         target[key] = target[key].deep_merge_with_array_values_concatenated(hash[key])
         next
       end
 
-      if hash[key].is_a?(Array) && target[key].is_a?(Array)
+      if hash[key].is_a?(::Array) && target[key].is_a?(::Array)
         target[key] = target[key] + hash[key]
+        next
+      end
+
+      if not target[key].nil? and hash[key].is_a? ::Hash
+        # Key already exists, but it isn't a data structure, so we have to
+        # fully-qualify the new entry. This really only makes sense if the
+        # new value is hash.
+        hash[key].each do |nested_key, val|
+          target["#{key}.#{nested_key}"] = val
+        end
       else
         target[key] = hash[key]
       end
@@ -71,12 +61,10 @@
   # initial string
   @yml_string = "### MANAGED BY PUPPET ###\n"
 
-  if !@instance_conf.empty?
-
-    @yml_string += "---\n"
+  if !@data.empty?
 
     ## Transform shorted keys into full write up
-    transformed_config = transform(@instance_conf)
+    transformed_config = transform(@data)
 
     # Merge it back into a hash
     tmphash = { }
@@ -84,10 +72,15 @@
       tmphash = tmphash.deep_merge_with_array_values_concatenated(subhash)
     end
 
-    # Transform it into yaml
-    recursive_hash_to_yml_string(tmphash)
+    # Sort Hash and transform it into yaml
+    @yml_string += tmphash.extend(Puppet_X::Elastic::Hash).to_yaml
+
+    # Puppet < 4 uses ZAML, which has some deviations from Puppet 4 YAML implementation
+    unless Puppet::Util::Package.versioncmp(Puppet.version, '4') >= 0
+      @yml_string.gsub!(/^\s{2}/, '')
+    end
 
   end
 
 -%>
-<%= @yml_string -%>
+<%= @yml_string %>

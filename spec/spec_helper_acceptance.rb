@@ -1,7 +1,11 @@
 require 'beaker-rspec'
 require 'pry'
 require 'securerandom'
+require 'thread'
+require 'infrataster/rspec'
+require 'rspec/retry'
 require_relative 'spec_acceptance_integration'
+require_relative 'spec_helper_tls'
 
 def test_settings
   RSpec.configuration.test_settings
@@ -9,114 +13,133 @@ end
 
 RSpec.configure do |c|
   c.add_setting :test_settings, :default => {}
-end
 
-files_dir = ENV['files_dir'] || '/home/jenkins/puppet'
-
-proxy_host = ENV['BEAKER_PACKAGE_PROXY'] || ''
-
-if !proxy_host.empty?
-  gem_proxy = "http_proxy=#{proxy_host}" unless proxy_host.empty?
-
-  hosts.each do |host|
-    on host, "echo 'export http_proxy='#{proxy_host}'' >> /root/.bashrc"
-    on host, "echo 'export https_proxy='#{proxy_host}'' >> /root/.bashrc"
-    on host, "echo 'export no_proxy=\"localhost,127.0.0.1,localaddress,.localdomain.com,#{host.name}\"' >> /root/.bashrc"
+  # rspec-retry
+  c.display_try_failure_messages = true
+  c.default_sleep_interval = 5
+  c.around :each, :with_retries do |example|
+    example.run_with_retry retry: 4
   end
-else
-  gem_proxy = ''
 end
+
+files_dir = ENV['files_dir'] || './spec/fixtures/artifacts'
 
 hosts.each do |host|
 
   # Install Puppet
   if host.is_pe?
+    pe_progress = Thread.new { while sleep 5 ; print '.' ; end }
     install_pe
+    pe_progress.exit
   else
-    puppetversion = ENV['VM_PUPPET_VERSION']
-    on host, "#{gem_proxy} gem install puppet --no-ri --no-rdoc --version '~> #{puppetversion}'"
-    on host, "mkdir -p #{host['distmoduledir']}"
+    install_puppet_on host, :default_action => 'gem_install'
 
     if fact('osfamily') == 'Suse'
-      install_package host, 'rubygems ruby-devel augeas-devel libxml2-devel'
-      on host, "#{gem_proxy} gem install ruby-augeas --no-ri --no-rdoc"
+      install_package host, '--force-resolution augeas-devel libxml2-devel'
+      install_package host, 'ruby-devel' if fact('operatingsystem') == 'SLES'
+      on host, "gem install ruby-augeas --no-ri --no-rdoc"
     end
 
     if host[:type] == 'aio'
       on host, "mkdir -p /var/log/puppetlabs/puppet"
     end
-
   end
 
   if ENV['ES_VERSION']
 
     case fact('osfamily')
       when 'RedHat'
-        ext='noarch.rpm'
+        if ENV['ES_VERSION'][0,1] == '1'
+          ext='noarch.rpm'
+        else
+          ext='rpm'
+        end
       when 'Debian'
         ext='deb'
       when  'Suse'
-        ext='noarch.rpm'
+        ext='rpm'
     end
 
     url = get_url
     RSpec.configuration.test_settings['snapshot_package'] = url.gsub('$EXT$', ext)
-
   else
 
     case fact('osfamily')
       when 'RedHat'
-        scp_to(host, "#{files_dir}/elasticsearch-1.3.1.noarch.rpm", '/tmp/elasticsearch-1.3.1.noarch.rpm')
+        package_name = 'elasticsearch-1.3.1.noarch.rpm'
       when 'Debian'
         case fact('lsbmajdistrelease')
           when '6'
-            scp_to(host, "#{files_dir}/elasticsearch-1.1.0.deb", '/tmp/elasticsearch-1.1.0.deb')
+            package_name = 'elasticsearch-1.1.0.deb'
           else
-            scp_to(host, "#{files_dir}/elasticsearch-1.3.1.deb", '/tmp/elasticsearch-1.3.1.deb')
+            package_name = 'elasticsearch-1.3.1.deb'
         end
       when 'Suse'
-        case fact('operatingsystem')
-          when 'OpenSuSE'
-            scp_to(host, "#{files_dir}/elasticsearch-1.3.1.noarch.rpm", '/tmp/elasticsearch-1.3.1.noarch.rpm')
-        end
+        package_name = 'elasticsearch-1.3.1.noarch.rpm'
     end
 
+    snapshot_package = {
+        :src => "#{files_dir}/#{package_name}",
+        :dst => "/tmp/#{package_name}"
+    }
+
+    scp_to(host, snapshot_package[:src], snapshot_package[:dst])
+    scp_to(host, "#{files_dir}/elasticsearch-bigdesk.zip", "/tmp/elasticsearch-bigdesk.zip")
+    scp_to(host, "#{files_dir}/elasticsearch-kopf.zip", "/tmp/elasticsearch-kopf.zip")
+
+    RSpec.configuration.test_settings['snapshot_package'] = "file:#{snapshot_package[:dst]}"
+
   end
 
-  # on debian/ubuntu nodes ensure we get the latest info
-  # Can happen we have stalled data in the images
-  if fact('osfamily') == 'Debian'
-    on host, "apt-get update"
+  Infrataster::Server.define(:docker) do |server|
+    server.address = host[:ip]
+    server.ssh = host[:ssh].tap { |s| s.delete :forward_agent }
   end
-
+  Infrataster::Server.define(:container) do |server|
+    server.address = host[:vm_ip] # this gets ignored anyway
+    server.from = :docker
+  end
 end
 
 RSpec.configure do |c|
-  # Project root
-  proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
   # Readable test descriptions
   c.formatter = :documentation
 
   # Configure all nodes in nodeset
   c.before :suite do
+
     # Install module and dependencies
-    puppet_module_install(:source => proj_root, :module_name => 'elasticsearch')
+    install_dev_puppet_module :ignore_list => [
+      'junit'
+    ] + Beaker::DSL::InstallUtils::ModuleUtils::PUPPET_MODULE_INSTALL_IGNORE
+
     hosts.each do |host|
 
       copy_hiera_data_to(host, 'spec/fixtures/hiera/hieradata/')
-      on host, puppet('module','install','puppetlabs-java'), { :acceptable_exit_codes => [0,1] }
 
-      if fact('osfamily') == 'Debian'
-        on host, puppet('module','install','puppetlabs-apt', '--version=1.8.0'), { :acceptable_exit_codes => [0,1] }
+      modules = ['stdlib', 'java', 'datacat', 'java_ks']
+
+      dist_module = {
+        'Debian' => 'apt',
+        'Suse'   => 'zypprepo',
+        'RedHat' => 'yum',
+      }[fact('osfamily')]
+
+      modules << dist_module if not dist_module.nil?
+
+      modules.each do |mod|
+        copy_module_to host, {
+          :module_name => mod,
+          :source      => "spec/fixtures/modules/#{mod}"
+        }
       end
-      if fact('osfamily') == 'Suse'
-        on host, puppet('module','install','darin-zypprepo'), { :acceptable_exit_codes => [0,1] }
+
+      if host.is_pe?
+        on(host, 'sed -i -e "s/PATH=PATH:\/opt\/puppet\/bin:/PATH=PATH:/" ~/.ssh/environment')
       end
-      if fact('osfamily') == 'RedHat'
-        on host, puppet('module', 'upgrade', 'puppetlabs-stdlib'), {  :acceptable_exit_codes => [0,1] }
-        on host, puppet('module', 'install', 'ceritsc-yum'), { :acceptable_exit_codes => [0,1] }
-      end
+
+      on(host, 'mkdir -p etc/puppet/modules/another/files/')
 
     end
   end

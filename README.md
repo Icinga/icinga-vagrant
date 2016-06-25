@@ -1,6 +1,4 @@
-#Elasticsearch Puppet module
-
-[![Build Status](https://travis-ci.org/elastic/puppet-elasticsearch.png?branch=master)](https://travis-ci.org/elastic/puppet-elasticsearch)
+#Elasticsearch Puppet module [![Build Status](https://travis-ci.org/elastic/puppet-elasticsearch.svg?branch=master)](https://travis-ci.org/elastic/puppet-elasticsearch)
 
 ####Table of Contents
 
@@ -25,7 +23,7 @@ This module manages Elasticsearch (http://www.elasticsearch.org/overview/elastic
 
 The elasticsearch module sets up Elasticsearch instances and can manage plugins and templates.
 
-This module has been tested against ES 1.0 and up.
+This module has been tested against all versions of ES 1.x and 2.x
 
 ##Setup
 
@@ -37,17 +35,22 @@ This module has been tested against ES 1.0 and up.
 * Elasticsearch service.
 * Elasticsearch plugins.
 * Elasticsearch templates.
+* Elasticsearch Shield users, roles, and certificates.
 
 ###Requirements
 
 * The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) Puppet library.
-* Augeas
+* [ceritsc/yum](https://forge.puppetlabs.com/ceritsc/yum) For yum version lock.
+* [richardc/datacat](https://forge.puppetlabs.com/richardc/datacat)
+* [Augeas](http://augeas.net/)
+* [puppetlabs-java](https://forge.puppetlabs.com/puppetlabs/java) for Java installation (optional).
+* [puppetlabs-java_ks](https://forge.puppetlabs.com/puppetlabs/java_ks) for Shield certificate management (optional).
 
 #### Repository management
 When using the repository management you will need the following dependency modules:
 
-* Debian/Ubuntu: [Puppetlabs/apt](http://forge.puppetlabs.com/puppetlabs/apt) Version 1.8.x or lower.
-* OpenSuSE: [Darin/zypprepo](https://forge.puppetlabs.com/darin/zypprepo)
+* Debian/Ubuntu: [Puppetlabs/apt](http://forge.puppetlabs.com/puppetlabs/apt)
+* OpenSuSE/SLES: [Darin/zypprepo](https://forge.puppetlabs.com/darin/zypprepo)
 
 ##Usage
 
@@ -64,7 +67,7 @@ class { 'elasticsearch':
 Note: This will only work when using the repository.
 
 ####Automatic upgrade of the software ( default set to false )
-```
+```puppet
 class { 'elasticsearch':
   autoupgrade => true
 }
@@ -127,7 +130,6 @@ elasticsearch::plugin{ 'jetty':
 }
 ```
 
-
 ####Using a proxy
 You can also use a proxy if required by setting the `proxy_host` and `proxy_port` options:
 ```puppet
@@ -160,10 +162,15 @@ elasticsearch::plugin { 'elasticsearch/elasticsearch-cloud-aws/2.4.1':
 
 Please note that this does not work when you specify 'latest' as a version number.
 
+####ES 2.x official plugins
+For the Elasticsearch commercial plugins you can refer them to the simple name.
+
+See the [Plugin installation](https://www.elastic.co/guide/en/elasticsearch/plugins/current/installation.html) for more details.
+
 ###Scripts
 
-Install [scripts](http://www.elastic.co/guide/en/elasticsearch/reference/1.x/modules-scripting.html) to be used by Elasticsearch.
-These scripts are shared accross all defined instances on the same host.
+Install [scripts](http://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting.html) to be used by Elasticsearch.
+These scripts are shared across all defined instances on the same host.
 
 ```puppet
 elasticsearch::script { 'myscript':
@@ -254,12 +261,21 @@ There are 2 different ways of installing the software
 ####Repository
 
 This option allows you to use an existing repository for package installation.
-The `repo_version` corresponds with the major version of Elasticsearch.
+The `repo_version` corresponds with the `major.minor` version of Elasticsearch for versions before 2.x.
 
 ```puppet
 class { 'elasticsearch':
   manage_repo  => true,
   repo_version => '1.4',
+}
+```
+
+For 2.x versions of Elasticsearch, use `repo_version => '2.x'`.
+
+```puppet
+class { 'elasticsearch':
+  manage_repo  => true,
+  repo_version => '2.x',
 }
 ```
 
@@ -330,8 +346,7 @@ class { 'elasticsearch':
 #####hash representation
 ```puppet
 $config_hash = {
-  'ES_USER' => 'elasticsearch',
-  'ES_GROUP' => 'elasticsearch',
+  'ES_HEAP_SIZE' => '30g',
 }
 
 class { 'elasticsearch':
@@ -341,7 +356,148 @@ class { 'elasticsearch':
 
 Note: `init_defaults` hash can be passed to the main class and to the instance.
 
-##Advanced features
+## Advanced features
+
+### Shield
+
+[Shield](https://www.elastic.co/products/shield) users, roles, and certificates can be managed by this module.
+
+**Note**: If you are planning to use these features, it is *highly recommended* you read the following documentation to understand the caveats and extent of the resources available to you.
+
+#### Getting Started
+
+Although this module can handle several types of Shield resources, you are expected to manage the plugin installation and versions for your deployment.
+For example, the following manifest will install Elasticseach with a single instance running shield:
+
+```puppet
+class { 'elasticsearch':
+  java_install => true,
+  manage_repo  => true,
+  repo_version => '1.7',
+}
+
+elasticsearch::instance { 'es-01': }
+
+Elasticsearch::Plugin { instances => ['es-01'], }
+elasticsearch::plugin { 'elasticsearch/license/latest': }
+elasticsearch::plugin { 'elasticsearch/shield/latest': }
+```
+
+The following examples will assume the preceding resources are part of your puppet manifest.
+
+#### Roles
+
+Roles in the `esusers` realm can be managed using the `elasticsearch::shield::role` type.
+For example, to create a role called `myrole`, you could use the following resource:
+
+```puppet
+elasticsearch::shield::role { 'myrole':
+  privileges => {
+    'cluster' => 'monitor',
+    'indices' => {
+      '*' => 'read'
+    }
+  }
+}
+```
+
+This role would grant users access to cluster monitoring and read access to all indices.
+See the [Shield documentation](https://www.elastic.co/guide/en/shield/index.html) for your version to determine what `privileges` to use and how to format them (the Puppet hash representation will simply be translated into yaml.)
+
+**Note**: The Puppet provider for `esusers` has fine-grained control over the `roles.yml` file and thus will leave the default roles Shield installs in-place.
+If you would like to explicitly purge the default roles (leaving only roles managed by puppet), you can do so by including the following in your manifest:
+
+```puppet
+resources { 'elasticsearch_shield_role':
+  purge => true,
+}
+```
+
+##### Mappings
+
+Associating mappings with a role is done by passing an array of strings to the `mappings` parameter of the `elasticsearch::shield::role` type.
+For example, to define a role with mappings using Shield >= 2.3.x style role definitions:
+
+```puppet
+elasticsearch::shield::role { 'logstash':
+  mappings   => [
+    'cn=group,ou=devteam',
+  ],
+  privileges => {
+    'cluster' => 'manage_index_templates',
+    'indices' => [{
+      'names'      => ['logstash-*'],
+      'privileges' => [
+        'write',
+        'delete',
+        'create_index',
+      ],
+    }],
+  },
+}
+```
+
+**Note**: Observe the brackets around `indices` in the preceding role definition; which is an array of hashes per the format in Shield 2.3.x. Follow the documentation to determine the correct formatting for your version of Shield.
+
+If you'd like to keep the mappings file purged of entries not under Puppet's control, you should use the following `resources` declaration because mappings are a separate low-level type:
+
+```puppet
+resources { 'elasticsearch_shield_role_mapping':
+  purge => true,
+}
+```
+
+#### Users
+
+Users can be managed using the `elasticsearch::shield::user` type.
+For example, to create a user `mysuser` with membership in `myrole`:
+
+```puppet
+elasticsearch::shield::user { 'myuser':
+  password => 'mypassword',
+  roles    => ['myrole'],
+}
+```
+
+The `password` parameter will also accept password hashes generated from the `esusers` utility and ensure the password is kept in-sync with the Shield `users` file for all Elasticsearch instances.
+
+```puppet
+elasticsearch::shield::user { 'myuser':
+  password => '$2a$10$IZMnq6DF4DtQ9c4sVovgDubCbdeH62XncmcyD1sZ4WClzFuAdqspy',
+  roles    => ['myrole'],
+}
+```
+
+**Note**: When using the `esusers` provider (the default for plaintext passwords), Puppet has no way to determine whether the given password is in-sync with the password hashed by Shield.
+In order to work around this, the `elasticsearch::shield::user` resource has been designed to accept refresh events in order to update password values.
+This is not ideal, but allows you to instruct the resource to change the password when needed.
+For example, to update the aforementioned user's password, you could include the following your manifest:
+
+```puppet
+notify { 'update password': } ~>
+elasticsearch::shield::user { 'myuser':
+  password => 'mynewpassword',
+  roles    => ['myrole'],
+}
+```
+
+#### Certificates
+
+SSL/TLS can be enabled by providing an `elasticsearch::instance` type with paths to the certificate and private key files, and a password for the keystore.
+
+```puppet
+elasticsearch::instance { 'es-01':
+  ssl                  => true,
+  ca_certificate       => '/path/to/ca.pem',
+  certificate          => '/path/to/cert.pem',
+  private_key          => '/path/to/key.pem',
+  keystore_password    => 'keystorepassword',
+}
+```
+
+**Note**: Setting up a proper CA and certificate infrastructure is outside the scope of this documentation, see the aforementioned Shield guide for more information regarding the generation of these certificate files.
+
+The module will set up a keystore file for the node to use and set the relevant options in `elasticsearch.yml` to enable TLS/SSL using the certificates and key provided.
 
 ###Package version pinning
 
@@ -512,6 +668,7 @@ The module has been tested on:
 * CentOS 6/7
 * Ubuntu 12.04, 14.04
 * OpenSuSE 13.x
+* SLES 12
 
 Other distro's that have been reported to work:
 
@@ -523,6 +680,7 @@ Testing on other platforms has been light and cannot be guaranteed.
 
 ##Development
 
+Please see the [CONTRIBUTING.md][CONTRIBUTING.md] file for instructions regarding development environments and testing.
 
 ##Support
 
