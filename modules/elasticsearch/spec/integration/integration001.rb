@@ -7,7 +7,7 @@ describe "Integration testing" do
   shell("echo '#{test_settings['bad_json']}' >> #{default['distmoduledir']}/another/files/bad.json")
 
 
-  describe "Setup Elasticsearch" do
+  describe "Setup Elasticsearch", :main => true do
 
     it 'should run successfully' do
       pp = "class { 'elasticsearch': config => { 'cluster.name' => '#{test_settings['cluster_name']}'}, java_install => true, package_url => '#{test_settings['snapshot_package']}' }
@@ -51,7 +51,7 @@ describe "Integration testing" do
 
   end
 
-  describe "Template tests" do
+  describe "Template tests", :template => true do
 
     describe "Insert a template with valid json content" do
 
@@ -90,14 +90,14 @@ describe "Integration testing" do
 
   end
 
-  describe "Plugin tests" do
+  describe "Plugin tests", :plugin => true do
 
     describe "Install a plugin from official repository" do
 
       it 'should run successfully' do
         pp = "class { 'elasticsearch': config => { 'cluster.name' => '#{test_settings['cluster_name']}'}, java_install => true, package_url => '#{test_settings['snapshot_package']}' }
               elasticsearch::instance { 'es-01': config => { 'node.name' => 'elasticsearch001', 'http.port' => '#{test_settings['port_a']}' } }
-              elasticsearch::plugin{'mobz/elasticsearch-head': module_dir => 'head', instances => 'es-01' }
+              elasticsearch::plugin { 'lmenezes/elasticsearch-kopf': instances => 'es-01' }
              "
 
         # Run it twice and test for idempotency
@@ -120,11 +120,11 @@ describe "Integration testing" do
       end
 
       it 'make sure the directory exists' do
-        shell('ls /usr/share/elasticsearch/plugins/head/', {:acceptable_exit_codes => 0})
+        shell('ls /usr/share/elasticsearch/plugins/kopf/', {:acceptable_exit_codes => 0})
       end
 
       it 'make sure elasticsearch reports it as existing' do
-        curl_with_retries('validated plugin as installed', default, "http://localhost:#{test_settings['port_a']}/_nodes/?plugin | grep head", 0)
+        curl_with_retries('validated plugin as installed', default, "http://localhost:#{test_settings['port_a']}/_nodes/?plugin | grep kopf", 0)
       end
 
     end

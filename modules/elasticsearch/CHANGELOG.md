@@ -1,3 +1,151 @@
+## 0.11.0 ( May 23, 2016 )
+
+### Summary
+Shield support, SLES support, and overhauled testing setup.
+
+#### Features
+* Support for shield
+  * TLS Certificate management
+  * Users (role and password management for file-based realms)
+  * Roles (file-based with mapping support)
+* Support (repository proxies)[https://github.com/elastic/puppet-elasticsearch/pull/615]
+* Support for (SSL auth on API calls)[https://github.com/elastic/puppet-elasticsearch/pull/577]
+
+#### Bugfixes
+* (Fix Facter calls)[https://github.com/elastic/puppet-elasticsearch/pull/590] in custom providers
+
+#### Changes
+
+#### Testing changes
+* Overhaul testing methodology, see CONTRIBUTING for updates
+* Add SLES 12, Oracle 6, and PE 2016.1.1 to testing matrix
+* Enforce strict variable checking
+
+#### Known bugs
+* This is the first release with Shield support, some untested edge cases may exist
+
+
+##0.10.3 ( Feb 08, 2016 )
+
+###Summary
+Adding support for OpenBSD and minor fixes
+
+####Features
+* Add required changes to work with ES 2.2.x plugins
+* Support for custom log directory
+* Support for OpenBSD
+
+####Bugfixes
+* Add correct relation to file resource and plugin installation
+* Notify service when upgrading the package
+
+####Changes
+* Remove plugin dir when upgrading Elasticsearch
+
+####Testing changes
+
+####Known bugs
+* Possible package conflicts when using ruby/python defines with main package name
+
+
+##0.10.2 ( Jan 19, 2016 )
+
+###Summary
+Bugfix release and adding Gentoo support
+
+####Features
+* Added Gentoo support
+
+####Bugfixes
+* Create init script when set to unmanaged
+* init_template variable was not passed on correctly to other classes / defines
+* Fix issue with plugin type that caused run to stall
+* Export ES_GC_LOG_FILE in init scripts
+
+####Changes
+* Improve documentation about init_defaults
+* Update common files
+* Removed recurse option on data directory management
+* Add retry functionality to plugin type
+
+####Testing changes
+
+####Known bugs
+* Possible package conflicts when using ruby/python defines with main package name
+
+
+##0.10.1 ( Dec 17, 2015 )
+
+###Summary
+Bugfix release for proxy functionality in plugin installation
+
+####Features
+
+####Bugfixes
+* Proxy settings were not passed on correctly
+
+####Changes
+* Cleanup .pmtignore to exclude more files
+
+####Testing changes
+
+####Known bugs
+* Possible package conflicts when using ruby/python defines with main package name
+
+
+##0.10.0 ( Dec 14, 2015 )
+
+###Summary
+Module now works with ES 2.x completely
+
+####Features
+* Work with ES 2.x new plugin system and remain to work with 1.x
+* Implemented datacat module from Richard Clamp so other modules can hook into it for adding configuration options
+* Fixed init and systemd files to work with 1.x and 2.x
+* Made the module work with newer pl-apt module versions
+* Export es_include so it is passed on to ES
+* Ability to supply long gpg key for apt repo
+
+####Bugfixes
+* Documentation and typographical fixes
+* Do not force puppet:/// schema resource
+* Use package resource defaults rather than setting provider and source
+
+####Changes
+
+####Testing changes
+* Improve unit testing and shorten the runtime
+
+####Known bugs
+* Possible package conflicts when using ruby/python defines with main package name
+
+
+##0.9.9 ( Sep 01, 2015 )
+
+###Summary
+Bugfix release and extra features
+
+####Features
+* Work with ES 2.x
+* Add Java 8 detection in debian init script
+* Improve offline plugin installation
+
+####Bugfixes
+* Fix a bug with new ruby versions but older puppet versions causing type error
+* Fix config tempate to use correct ruby scoping
+* Fix regex retrieving proxy port while downloading plugin
+* Fix systemd template for better variable handling
+* Template define was using wrong pathing for removal
+
+
+####Changes
+
+####Testing changes
+
+####Known bugs
+* Possible package conflicts when using ruby/python defines with main package name
+
+
 ##0.9.8 ( Jul 07, 2015 )
 
 ###Summary
