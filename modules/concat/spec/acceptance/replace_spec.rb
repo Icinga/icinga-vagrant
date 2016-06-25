@@ -226,7 +226,7 @@ describe 'replacement of' do
       end
     end
 
-    # XXX concat's force param currently enables the creation of empty files
+    # XXX 
     # when there are no fragments, and the replace param will only replace
     # files and symlinks, not directories.  The semantics either need to be
     # changed, extended, or a new param introduced to control directory
@@ -234,7 +234,6 @@ describe 'replacement of' do
     context 'should succeed', :pending => 'not yet implemented' do
       pp = <<-EOS
         concat { '#{basedir}/file':
-          force => true,
         }
 
         concat::fragment { '1':

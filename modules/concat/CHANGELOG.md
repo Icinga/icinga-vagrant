@@ -1,3 +1,33 @@
+##Supported Release 2.1.0
+###Summary
+
+This is a re-release of concat as a resource type. This release also includes new features and bugfixes on top of the previously YANKED 2.0.1 release.
+
+####Features
+- Adds the show_diff property.
+- Adds the selinux related file params.
+- Allows integer UID/GID values to be passed into `$owner` and `$group`
+
+####Bugfixes
+- Adds a workaround to PUP-1963: generated resources never receiving dependency edges.
+- Fixes occassional failure to find directory environment.
+
+##Supported Release 1.2.5
+###Summary
+
+Small release for support of newer PE versions. This increments the version of PE in the metadata.json file.
+
+##2015-07-21 - Supported Release 1.2.4
+###Summary
+
+This release includes some ruby path and lint fixes.
+
+####Bugfixes
+- Use correct ruby path with PE and AIO
+- Lint fixes
+- Use correct ruby path on FreeBSD
+- Test fixes
+
 ##2015-06-02 - Supported Release 2.0.1 [YANKED]
 ###Summary
 
@@ -14,7 +44,6 @@ This is a bugfix release.
 This release includes a README fix to document correct behavior of fragment target parameter.
 
 ####Bugfixes
-
 - README Fix to correctly document how a fragment $target param should work.
 
 ##2015-05-12 - Supported Release 2.0.0 [YANKED]
