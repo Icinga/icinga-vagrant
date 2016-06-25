@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# configure graphite datasource
+curl 'http://admin:admin@192.168.33.5:8004/api/datasources' -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary '{ "name": "icinga2", "type": "graphite", "url": "http://192.168.33.5:8003", "access": "direkt", "isDefault": true }'
+
+# add default dashboards
+# exported dashboards require the 'dashboard' key including the payload in the http json body request
+# https://github.com/grafana/grafana/issues/2816
+# furthermore the 'id' field must be null in order to create a new dashboard
+# file is already patched
+curl 'http://admin:admin@192.168.33.5:8004/api/dashboards/db' -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/grafana-dashboard-icinga2.json
+
+
