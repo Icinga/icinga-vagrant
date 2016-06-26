@@ -30,6 +30,22 @@ describe 'create a repo' do
     end
   end
 
+  context 'no source but revision provided' do
+    it 'should not fail (MODULES-2125)' do
+      pp = <<-EOS
+      vcsrepo { "#{tmpdir}/testrepo_blank_with_revision_repo":
+        ensure   => present,
+        provider => git,
+        revision => 'master'
+      }
+      EOS
+
+      # Run it twice and test for idempotency
+      apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, :catch_changes => true)
+    end
+  end
+
   context 'bare repo' do
     it 'creates a bare repo' do
       pp = <<-EOS

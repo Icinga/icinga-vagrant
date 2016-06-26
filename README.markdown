@@ -94,6 +94,16 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
+If you want to clone your repository as bare or mirror, you can set `ensure` to 'bare' or 'mirror':
+
+~~~
+vcsrepo { '/path/to/repo':
+  ensure   => mirror,
+  provider => git,
+  source   => 'git://example.com/repo.git',
+}
+~~~
+
 By default, `vcsrepo` will use the HEAD of the source repository's master branch. To use another branch or a specific commit, set `revision` to either a branch name or a commit SHA or tag.
 
 Branch name:
@@ -577,9 +587,9 @@ Parameters: `ensure`, `excludes`, `force`, `group`, `owner`, `p4config`, `path`,
 
 #####`svn` - Supports the Subversion VCS.
 
-Features: `basic_auth`, `configuration`, `conflict`, `filesystem_types`, `reference_tracking`
+Features: `basic_auth`, `configuration`, `conflict`, `depth`, `filesystem_types`, `reference_tracking`
 
-Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conflict`, `ensure`, `excludes`, `force`, `fstype`, `group`, `owner`, `path`, `provider`, `revision`, `source`
+Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conflict`, `ensure`, `excludes`, `force`, `fstype`, `group`, `owner`, `path`, `provider`, `revision`, `source`, `trust_server_cert`
 
 ####Features
 
@@ -590,7 +600,7 @@ Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conf
 * `conflict` - Lets you decide how to resolve any conflicts between the source repository and your working copy. (Available with `svn`.)
 * `configuration` - Lets you specify the location of your configuration files. (Available with `svn`.)
 * `cvs_rsh` - Understands the `CVS_RSH` environment variable. (Available with `cvs`.)
-* `depth` - Supports shallow clones. (Available with `git`.)
+* `depth` - Supports shallow clones in `git` or sets scope limit in `svn`. (Available with `git` and `svn`.)
 * `filesystem_types` - Supports multiple types of filesystem. (Available with `svn`.)
 * `gzip_compression` - Supports explicit GZip compression levels. (Available with `cvs`.)
 * `modules` - Lets you choose a specific repository module. (Available with `cvs`.)
@@ -631,7 +641,9 @@ Provides a value for the `CVS_RSH` environment variable. (Requires the `cvs_rsh`
 
 ##### `depth`
 
-Sets the number of commits to include when creating a shallow clone. (Requires the `depth` feature.) Valid options: an integer. Default: none. 
+In `git` sets the number of commits to include when creating a shallow clone. (Requires the `depth` feature.) Valid options: an integer. Default: none. 
+
+In `svn` instructs Subversion to limit the scope of an operation to a particular tree depth. (Requires the `depth` feature.) Valid options: 'empty', 'files', 'immediates', 'infinity'. Default: none. 
 
 ##### `ensure`
 
@@ -710,6 +722,10 @@ Default: none.
 ##### `submodules`
 
 Specifies whether to initialize and update each submodule in the repository. (Requires the `submodules` feature.) Valid options: 'true' and 'false'. Default: 'true'. 
+
+##### `trust_server_cert`
+
+Instructs Subversion to accept SSL server certificates issued by unknown certificate authorities. Valid options: 'true' and 'false'. Default: 'false'. 
 
 ##### `user`
 

@@ -1,78 +1,42 @@
+require 'puppet_blacksmith/rake_tasks'
+require 'puppet-lint/tasks/puppet-lint'
 require 'puppetlabs_spec_helper/rake_tasks'
-require 'rake'
 
-desc "Run beaker-rspec and beaker tests"
-task 'beaker:test:all',[:host,:type] => ["rake:beaker:rspec:test", "rake:beaker:test"] do |t,args|
-end
+PuppetLint.configuration.fail_on_warnings = true
+PuppetLint.configuration.send('relative')
+PuppetLint.configuration.send('disable_80chars')
+PuppetLint.configuration.send('disable_class_inherits_from_params_class')
+PuppetLint.configuration.send('disable_documentation')
+PuppetLint.configuration.send('disable_single_quote_string_with_variables')
+PuppetLint.configuration.ignore_paths = ["spec/**/*.pp", "pkg/**/*.pp"]
 
-desc "Run beaker-rspec tests"
-task 'beaker:rspec:test',[:host,:type] => [:set_beaker_variables] do |t,args|
-  Rake::Task['beaker-rspec:test'].invoke(args)
-end
+desc 'Generate pooler nodesets'
+task :gen_nodeset do
+  require 'beaker-hostgenerator'
+  require 'securerandom'
+  require 'fileutils'
 
-desc "Run beaker tests"
-task 'beaker:test',[:host,:type] => [:set_beaker_variables] do |t,args|
-  sh(build_beaker_command args)
-end
+  agent_target = ENV['TEST_TARGET']
+  if ! agent_target
+    STDERR.puts 'TEST_TARGET environment variable is not set'
+    STDERR.puts 'setting to default value of "redhat-64default."'
+    agent_target = 'redhat-64default.'
+  end
 
-desc "Run beaker rspec tasks against pe"
-RSpec::Core::RakeTask.new('beaker-rspec:test',[:host,:type]=>:set_beaker_variables) do |t,args|
-  t.pattern     = 'spec/acceptance'
-  t.rspec_opts  = '--color'
-  t.verbose     = true
-end
+  master_target = ENV['MASTER_TEST_TARGET']
+  if ! master_target
+    STDERR.puts 'MASTER_TEST_TARGET environment variable is not set'
+    STDERR.puts 'setting to default value of "redhat7-64mdcl"'
+    master_target = 'redhat7-64mdcl'
+  end
 
-desc "Run beaker and beaker-rspec tasks"
-task 'beaker:test:pe',:host do |t,args|
-  args.with_defaults(:type=> 'pe')
-  Rake::Task['beaker:test'].invoke(args[:host],args[:type])
-end
-
-task 'beaker:test:git',:host do |t,args|
-  args.with_defaults({:type=> 'git'})
-  Rake::Task['beaker:test'].invoke(args[:host],args[:type])
-end
-
-task :set_beaker_variables do |t,args|
-  puts 'Setting environment variables for testing'
-  if args[:host]
-    ENV['BEAKER_set'] = args[:host]
-    puts "Host to test #{ENV['BEAKER_set']}"
+  targets = "#{master_target}-#{agent_target}"
+  cli = BeakerHostGenerator::CLI.new([targets])
+  nodeset_dir = "tmp/nodesets"
+  nodeset = "#{nodeset_dir}/#{targets}-#{SecureRandom.uuid}.yaml"
+  FileUtils.mkdir_p(nodeset_dir)
+  File.open(nodeset, 'w') do |fh|
+    fh.print(cli.execute)
   end
-  ENV['BEAKER_IS_PE'] = args[:type] == 'pe'? "true": "false"
-  if ENV['BEAKER_setfile']
-    @hosts_config = ENV['BEAKER_setfile']
-  end
-  if File.exists?(check_args_for_keyfile(args.extras))
-    ENV['BEAKER_keyfile'] = check_args_for_keyfile(args.extras)
-  end
-end
-
-def build_beaker_command(args)
-  cmd = ["beaker"]
-  cmd << "--type #{args[:type]}" unless !args[:type]
-  if File.exists?("./.beaker-#{args[:type]}.cfg")
-    cmd << "--options-file ./.beaker-#{args[:type]}.cfg"
-  end
-  if File.exists?(@hosts_config)
-    cmd << "--hosts #{@hosts_config}"
-  end
-  if File.exists?('./spec/acceptance/beaker_helper.rb')
-    cmd << "--pre-suite ./spec/acceptance/beaker_helper.rb"
-  end
-  if File.exists?("./spec/acceptance/beaker")
-    cmd << "--tests ./spec/acceptance/beaker"
-  end
-  if File.exists?(check_args_for_keyfile(args.extras))
-    cmd << "--keyfile #{check_args_for_keyfile(args.extras)}"
-  end
-  cmd.join(" ")
-end
-
-def check_args_for_keyfile(extra_args)
-  keyfile = ''
-  extra_args.each do |a|
-    keyfile = a unless (`ssh-keygen -l -f #{a}`.gsub(/\n/,"").match(/is not a .*key file/))
-  end
-  return keyfile
+  puts nodeset
 end

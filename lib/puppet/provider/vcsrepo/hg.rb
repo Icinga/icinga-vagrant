@@ -122,7 +122,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, :parent => Puppet::Provider::Vcsrepo) d
     end
     if @resource.value(:user) and @resource.value(:user) != Facter['id'].value
       args.map! { |a| if a =~ /\s/ then "'#{a}'" else a end }  # Adds quotes to arguments with whitespaces.
-      Puppet::Util::Execution.execute("hg #{args.join(' ')}", :uid => @resource.value(:user), :failonfail => true)
+      Puppet::Util::Execution.execute("hg #{args.join(' ')}", :uid => @resource.value(:user), :failonfail => true, :combine => true)
     else
       hg(*args)
     end

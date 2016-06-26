@@ -38,7 +38,7 @@ Puppet::Type.newtype(:vcsrepo) do
           "The provider understands the CVS_RSH environment variable"
 
   feature :depth,
-          "The provider can do shallow clones"
+          "The provider can do shallow clones or set scope limit"
 
   feature :branch,
           "The name of the branch"
@@ -69,6 +69,8 @@ Puppet::Type.newtype(:vcsrepo) do
         end
       when :bare
         return is == :bare
+      when :mirror
+        return is == :mirror
       end
     end
 
@@ -78,6 +80,12 @@ Puppet::Type.newtype(:vcsrepo) do
     end
 
     newvalue :bare, :required_features => [:bare_repositories] do
+      if !provider.exists?
+        provider.create
+      end
+    end
+
+    newvalue :mirror, :required_features => [:bare_repositories] do
       if !provider.exists?
         provider.create
       end
@@ -228,7 +236,13 @@ Puppet::Type.newtype(:vcsrepo) do
     desc "The action to take if conflicts exist between repository and working copy"
   end
 
+  newparam :trust_server_cert do
+    desc "Trust server certificate"
+    newvalues(:true, :false)
+    defaultto :false
+  end
+
   autorequire(:package) do
-    ['git', 'git-core']
+    ['git', 'git-core', 'mercurial']
   end
 end

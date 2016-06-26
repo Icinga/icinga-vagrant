@@ -52,6 +52,36 @@ describe Puppet::Type.type(:vcsrepo).provider(:svn) do
         provider.create
       end
     end
+    
+    context "with depth" do
+      it "should execute 'svn checkout' with a depth" do
+        resource[:source] = 'exists'
+        resource[:depth] = 'infinity'
+        provider.expects(:svn).with('--non-interactive', 'checkout', '--depth', 'infinity',
+          resource.value(:source),
+          resource.value(:path))
+        provider.create
+      end
+    end
+    
+    context "with trust_server_cert" do
+      it "should execute 'svn checkout' without a trust-server-cert" do
+        resource[:source] = 'exists'
+        resource[:trust_server_cert] = :false
+        provider.expects(:svn).with('--non-interactive', 'checkout',
+          resource.value(:source),
+          resource.value(:path))
+        provider.create
+      end
+      it "should execute 'svn checkout' with a trust-server-cert" do
+        resource[:source] = 'exists'
+        resource[:trust_server_cert] = :true
+        provider.expects(:svn).with('--non-interactive', '--trust-server-cert', 'checkout',
+          resource.value(:source),
+          resource.value(:path))
+        provider.create
+      end
+    end
   end
 
   describe 'destroying' do

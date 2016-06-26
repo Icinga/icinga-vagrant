@@ -127,9 +127,9 @@ Puppet::Type.type(:vcsrepo).provide(:cvs, :parent => Puppet::Provider::Vcsrepo) 
 
     if @resource.value(:user) and @resource.value(:user) != Facter['id'].value
       Puppet.debug "Running as user " + @resource.value(:user)
-      Puppet::Util::Execution.execute([:cvs, *args], :uid => @resource.value(:user), :custom_environment => e)
+      Puppet::Util::Execution.execute([:cvs, *args], :uid => @resource.value(:user), :custom_environment => e, :combine => true)
     else
-      Puppet::Util::Execution.execute([:cvs, *args], :custom_environment => e)
+      Puppet::Util::Execution.execute([:cvs, *args], :custom_environment => e, :combine => true)
     end
   end
 end
