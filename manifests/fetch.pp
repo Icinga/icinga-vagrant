@@ -33,6 +33,13 @@ define wget::fetch (
 
   include wget
 
+  # The strict_variables setting aborts compilation referencing unset variables.
+  $strict = defined('$::settings::strict_variables') and $::settings::strict_variables
+
+  if $strict and !defined('$schedule') {
+    $schedule = undef
+  }
+
   # Does $destination end in a slash? If so, treat as a directory
   case $destination   {
     # This is a nasty looking regex but it's simply checking to see if the $destination
@@ -47,13 +54,24 @@ define wget::fetch (
     }
   }
 
-  $http_proxy_env = $::http_proxy ? {
-    undef   => [],
-    default => [ "HTTP_PROXY=${::http_proxy}", "http_proxy=${::http_proxy}" ],
+  if $strict and !defined('$::http_proxy') {
+    $http_proxy = undef
+  } else {
+    $http_proxy = $::http_proxy
   }
-  $https_proxy_env = $::https_proxy ? {
+  if $strict and !defined('$::https_proxy') {
+    $https_proxy = undef
+  } else {
+    $https_proxy = $::https_proxy
+  }
+
+  $http_proxy_env = $http_proxy ? {
     undef   => [],
-    default => [ "HTTPS_PROXY=${::https_proxy}", "https_proxy=${::https_proxy}" ],
+    default => [ "HTTP_PROXY=${http_proxy}", "http_proxy=${http_proxy}" ],
+  }
+  $https_proxy_env = $https_proxy ? {
+    undef   => [],
+    default => [ "HTTPS_PROXY=${https_proxy}", "https_proxy=${https_proxy}" ],
   }
   $password_env = $user ? {
     undef   => [],
@@ -162,7 +180,7 @@ define wget::fetch (
     environment => $environment,
     user        => $exec_user,
     path        => $exec_path,
-    require     => Class['wget'],
+    require     => Package['wget'],
     schedule    => $schedule,
   }
 

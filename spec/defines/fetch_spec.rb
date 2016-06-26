@@ -39,7 +39,7 @@ describe 'wget::fetch' do
     context "with default params" do
       it { should contain_exec('wget-test').with({
         'command'     => "wget --no-verbose --user=myuser --output-document=\"#{destination}\" \"http://localhost/source\"",
-        'environment' => "WGETRC=#{destination}.wgetrc"
+        'environment' => ["WGETRC=#{destination}.wgetrc"]
         })
       }
       it { should contain_file("#{destination}.wgetrc").with_content('password=mypassword') }
@@ -53,7 +53,7 @@ describe 'wget::fetch' do
       it { should contain_exec('wget-test').with({
         'command' => "wget --no-verbose --user=myuser --output-document=\"#{destination}\" \"http://localhost/source\"",
         'user' => 'testuser',
-        'environment' => "WGETRC=#{destination}.wgetrc"
+        'environment' => ["WGETRC=#{destination}.wgetrc"]
       }) }
     end
 
