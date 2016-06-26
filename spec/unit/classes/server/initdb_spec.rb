@@ -30,7 +30,7 @@ describe 'postgresql::server::initdb', :type => :class do
         :path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
       }
     end
-    it { is_expected.to contain_file('/var/lib/pgsql9/data').with_ensure('directory') }
+    it { is_expected.to contain_file('/var/lib/pgsql92/data').with_ensure('directory') }
   end
 end
 

@@ -4,6 +4,7 @@ class postgresql::params inherits postgresql::globals {
   $postgis_version            = $postgresql::globals::globals_postgis_version
   $listen_addresses           = 'localhost'
   $port                       = 5432
+  $log_line_prefix            = '%t '
   $ip_mask_deny_postgres_user = '0.0.0.0/0'
   $ip_mask_allow_all_users    = '127.0.0.1/32'
   $ipv4acls                   = []
@@ -13,7 +14,8 @@ class postgresql::params inherits postgresql::globals {
   $service_ensure             = 'running'
   $service_enable             = true
   $service_manage             = true
-  $service_provider           = $service_provider
+  $service_restart_on_change  = true
+  $service_provider           = $postgresql::globals::service_provider
   $manage_pg_hba_conf         = pick($manage_pg_hba_conf, true)
   $manage_pg_ident_conf       = pick($manage_pg_ident_conf, true)
   $manage_recovery_conf       = pick($manage_recovery_conf, false)
@@ -29,7 +31,7 @@ class postgresql::params inherits postgresql::globals {
       $version_parts      = split($version, '[.]')
       $package_version    = "${version_parts[0]}${version_parts[1]}"
 
-      if $version == $postgresql::globals::default_version {
+      if $version == $postgresql::globals::default_version and $::operatingsystem != 'Amazon' {
         $client_package_name    = pick($client_package_name, 'postgresql')
         $server_package_name    = pick($server_package_name, 'postgresql-server')
         $contrib_package_name   = pick($contrib_package_name,'postgresql-contrib')
@@ -41,7 +43,7 @@ class postgresql::params inherits postgresql::globals {
         $service_name           = pick($service_name, 'postgresql')
         $bindir                 = pick($bindir, '/usr/bin')
         $datadir                = $::operatingsystem ? {
-          'Amazon' => pick($datadir, '/var/lib/pgsql9/data'),
+          'Amazon' => pick($datadir, "/var/lib/pgsql${package_version}/data"),
           default  => pick($datadir, '/var/lib/pgsql/data'),
         }
         $confdir                = pick($confdir, $datadir)
@@ -54,10 +56,16 @@ class postgresql::params inherits postgresql::globals {
         $docs_package_name      = pick($docs_package_name, "postgresql${package_version}-docs")
         $plperl_package_name    = pick($plperl_package_name, "postgresql${package_version}-plperl")
         $plpython_package_name  = pick($plpython_package_name, "postgresql${package_version}-plpython")
-        $service_name           = pick($service_name, "postgresql-${version}")
-        $bindir                 = pick($bindir, "/usr/pgsql-${version}/bin")
+        $service_name           = $::operatingsystem ? {
+          'Amazon' => pick($service_name, "postgresql${version_parts[0]}${version_parts[1]}"),
+          default  => pick($service_name, "postgresql-${version}"),
+        }
+        $bindir                 = $::operatingsystem ? {
+          'Amazon' => pick($bindir, '/usr/bin'),
+          default  => pick($bindir, "/usr/pgsql-${version}/bin"),
+        }
         $datadir                = $::operatingsystem ? {
-          'Amazon' => pick($datadir, "/var/lib/pgsql9/${version}/data"),
+          'Amazon' => pick($datadir, "/var/lib/pgsql${package_version}/data"),
           default  => pick($datadir, "/var/lib/pgsql/${version}/data"),
         }
         $confdir                = pick($confdir, $datadir)
@@ -69,15 +77,15 @@ class postgresql::params inherits postgresql::globals {
       $perl_package_name   = pick($perl_package_name, 'perl-DBD-Pg')
       $python_package_name = pick($python_package_name, 'python-psycopg2')
 
-      $postgis_package_name = pick(
-        $postgis_package_name,
-        $::operatingsystemrelease ? {
-          /5/     => 'postgis',
-          default => versioncmp($postgis_version, '2') ? {
-            '-1'    => "postgis${package_version}",
-            default => "postgis2_${package_version}",}
-        }
-      )
+      if $postgresql::globals::postgis_package_name {
+        $postgis_package_name = $postgresql::globals::postgis_package_name
+      } elsif $::operatingsystemrelease =~ /^5\./ {
+        $postgis_package_name = 'postgis'
+      } elsif $postgis_version and versioncmp($postgis_version, '2') < 0 {
+        $postgis_package_name = "postgis${package_version}"
+      } else {
+        $postgis_package_name = "postgis2_${package_version}"
+      }
     }
 
     'Archlinux': {
@@ -105,7 +113,7 @@ class postgresql::params inherits postgresql::globals {
       $psql_path              = pick($psql_path, "${bindir}/psql")
 
       $service_status         = $service_status
-      $service_reload         = "service ${service_name} reload"
+      $service_reload         = "systemctl reload ${service_name}"
       $python_package_name    = pick($python_package_name, 'python-psycopg2')
       # Archlinux does not have a perl::DBD::Pg package
       $perl_package_name      = pick($perl_package_name, 'undef')
@@ -134,7 +142,7 @@ class postgresql::params inherits postgresql::globals {
       $client_package_name    = pick($client_package_name, "postgresql-client-${version}")
       $server_package_name    = pick($server_package_name, "postgresql-${version}")
       $contrib_package_name   = pick($contrib_package_name, "postgresql-contrib-${version}")
-      if versioncmp($postgis_version, '2') < 0 {
+      if $postgis_version and versioncmp($postgis_version, '2') < 0 {
         $postgis_package_name = pick($postgis_package_name, "postgresql-${version}-postgis")
       } else {
         $postgis_package_name = pick($postgis_package_name, "postgresql-${version}-postgis-${postgis_version}")
@@ -152,6 +160,9 @@ class postgresql::params inherits postgresql::globals {
       if $::operatingsystem == 'Debian' and versioncmp($::operatingsystemrelease, '8.0') >= 0 {
         # Jessie uses systemd
         $service_status = pick($service_status, "/usr/sbin/service ${service_name}@*-main status")
+      } elsif $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0 {
+        # Ubuntu releases since vivid use systemd
+        $service_status = pick($service_status, "/usr/sbin/service ${service_name} status")
       } else {
         $service_status = pick($service_status, "/etc/init.d/${service_name} status | /bin/egrep -q 'Running clusters: .+|online'")
       }
@@ -253,7 +264,6 @@ class postgresql::params inherits postgresql::globals {
 
   $validcon_script_path = pick($validcon_script_path, '/usr/local/bin/validate_postgresql_connection.sh')
   $initdb_path          = pick($initdb_path, "${bindir}/initdb")
-  $createdb_path        = pick($createdb_path, "${bindir}/createdb")
   $pg_hba_conf_path     = pick($pg_hba_conf_path, "${confdir}/pg_hba.conf")
   $pg_hba_conf_defaults = pick($pg_hba_conf_defaults, true)
   $pg_ident_conf_path   = pick($pg_ident_conf_path, "${confdir}/pg_ident.conf")

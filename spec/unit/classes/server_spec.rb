@@ -5,7 +5,9 @@ describe 'postgresql::server', :type => :class do
     {
       :osfamily => 'Debian',
       :operatingsystem => 'Debian',
-      :operatingsystemrelease => '6.0',
+      :lsbdistid => 'Debian',
+      :lsbdistcodename => 'jessie',
+      :operatingsystemrelease => '8.0',
       :concat_basedir => tmpfilename('server'),
       :kernel => 'Linux',
       :id => 'root',
@@ -44,6 +46,7 @@ describe 'postgresql::server', :type => :class do
         'user'        => 'postgres',
         'environment' => [
           "PGPASSWORD=new-p@s$word-to-set",
+          "PGPORT=5432",
           "NEWPASSWD_ESCAPED=$$new-p@s$word-to-set$$"
         ],
         'unless'      => "/usr/bin/psql -h localhost -p 5432 -c 'select 1' > /dev/null",
@@ -57,6 +60,28 @@ describe 'postgresql::server', :type => :class do
     it { is_expected.to contain_class("postgresql::server") }
     it 'shouldnt validate connection' do
       is_expected.not_to contain_postgresql__validate_db_connection('validate_service_is_running')
+    end
+  end
+
+  describe 'service_restart_on_change => false' do
+    let(:params) {{ :service_restart_on_change => false }}
+    it { is_expected.to contain_class("postgresql::params") }
+    it { is_expected.to contain_class("postgresql::server") }
+    it { is_expected.to_not contain_Postgresql_conf('data_directory').that_notifies('Class[postgresql::server::service]')
+    }
+    it 'should validate connection' do
+      is_expected.to contain_postgresql__validate_db_connection('validate_service_is_running')
+    end
+  end
+
+  describe 'service_restart_on_change => true' do
+    let(:params) {{ :service_restart_on_change => true }}
+    it { is_expected.to contain_class("postgresql::params") }
+    it { is_expected.to contain_class("postgresql::server") }
+    it { is_expected.to contain_Postgresql_conf('data_directory').that_notifies('Class[postgresql::server::service]')
+    }
+    it 'should validate connection' do
+      is_expected.to contain_postgresql__validate_db_connection('validate_service_is_running')
     end
   end
 
@@ -115,6 +140,21 @@ describe 'postgresql::server', :type => :class do
 
     it 'should contain proper initdb exec' do
       is_expected.to contain_exec('postgresql_initdb')
+    end
+  end
+
+  describe 'postgresql_version' do
+    let(:pre_condition) do
+      <<-EOS
+      class { 'postgresql::globals':
+        manage_package_repo => true,
+        version             => '99.5',
+        before              => Class['postgresql::server'],
+      }
+      EOS
+    end
+    it 'contains the correct package version' do
+      is_expected.to contain_class('postgresql::repo').with_version('99.5')
     end
   end
 end

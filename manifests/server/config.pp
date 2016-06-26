@@ -14,12 +14,13 @@ class postgresql::server::config {
   $user                       = $postgresql::server::user
   $group                      = $postgresql::server::group
   $version                    = $postgresql::server::_version
-  $manage_package_repo        = $postgresql::server::manage_package_repo
   $manage_pg_hba_conf         = $postgresql::server::manage_pg_hba_conf
   $manage_pg_ident_conf       = $postgresql::server::manage_pg_ident_conf
   $manage_recovery_conf       = $postgresql::server::manage_recovery_conf
   $datadir                    = $postgresql::server::datadir
   $logdir                     = $postgresql::server::logdir
+  $service_name               = $postgresql::server::service_name
+  $log_line_prefix            = $postgresql::server::log_line_prefix
 
   if ($manage_pg_hba_conf == true) {
     # Prepare the main pg_hba file
@@ -115,6 +116,12 @@ class postgresql::server::config {
     }
 
   }
+  # Allow timestamps in log by default
+  if $log_line_prefix {
+    postgresql::server::config_entry {'log_line_prefix':
+      value => $log_line_prefix,
+    }
+  }
 
   # RedHat-based systems hardcode some PG* variables in the init script, and need to be overriden
   # in /etc/sysconfig/pgsql/postgresql. Create a blank file so we can manage it with augeas later.
@@ -161,9 +168,14 @@ class postgresql::server::config {
 
   if $::osfamily == 'RedHat' {
     if $::operatingsystemrelease =~ /^7/ or $::operatingsystem == 'Fedora' {
+      # Template uses:
+      # - $::operatingsystem
+      # - $service_name
+      # - $port
+      # - $datadir
       file { 'systemd-override':
         ensure  => present,
-        path    => "/etc/systemd/system/${postgresql::params::service_name}.service",
+        path    => "/etc/systemd/system/${service_name}.service",
         owner   => root,
         group   => root,
         content => template('postgresql/systemd-override.erb'),

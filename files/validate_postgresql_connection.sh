@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 # usage is: validate_db_connection 2 50 psql
 
@@ -8,7 +8,9 @@ PSQL=$3
 
 STATE=1
 
-for (( c=1; c<=$TRIES; c++ ))
+c=1
+
+while [ $c -le $TRIES ]
 do
   echo $c
   if [ $c -gt 1 ]
@@ -24,6 +26,7 @@ do
   then
     exit 0
   fi
+$c++
 done
 
 echo 'Unable to connect to postgresql'

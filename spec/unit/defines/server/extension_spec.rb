@@ -41,7 +41,7 @@ describe 'postgresql::server::extension', :type => :define do
     }) }
 
     it {
-      is_expected.to contain_package('Postgresql extension postgis').with({
+      is_expected.to contain_package('postgis').with({
         :ensure  => 'present',
         :name    => 'postgis',
       }).that_comes_before('Postgresql_psql[Add postgis extension to template_postgis]')
@@ -63,7 +63,7 @@ describe 'postgresql::server::extension', :type => :define do
     }
 
     it {
-      is_expected.to contain_package('Postgresql extension postgis').with({
+      is_expected.to contain_package('postgis').with({
         :ensure  => 'absent',
         :name    => 'postgis',
       })
@@ -83,11 +83,48 @@ describe 'postgresql::server::extension', :type => :define do
       }
 
       it {
-        is_expected.to contain_package('Postgresql extension postgis').with({
+        is_expected.to contain_package('postgis').with({
           :ensure  => 'present',
           :name    => 'postgis',
         }).that_requires('Postgresql_psql[Add postgis extension to template_postgis]')
       }
     end
+  end
+end
+
+describe 'postgresql::server::extension', :type => :define do
+  let :pre_condition do
+    "class { 'postgresql::server': }
+     postgresql::server::database { 'template_postgis2':
+       template   => 'template1',
+     }"
+  end
+
+  let :facts do
+    {
+      :osfamily => 'Debian',
+      :operatingsystem => 'Debian',
+      :operatingsystemrelease => '6.0',
+      :kernel => 'Linux',
+      :concat_basedir => tmpfilename('postgis'),
+      :id => 'root',
+      :path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+    }
+  end
+
+  let (:title) { 'postgis_db2' }
+  let (:params) { {
+    :database => 'template_postgis2',
+    :extension => 'postgis',
+  } }
+
+  context "with mandatory arguments only" do
+    it {
+      is_expected.to contain_postgresql_psql('Add postgis extension to template_postgis2').with({
+        :db      => 'template_postgis2',
+        :command => 'CREATE EXTENSION "postgis"',
+        :unless  => "SELECT t.count FROM (SELECT count(extname) FROM pg_extension WHERE extname = 'postgis') as t WHERE t.count = 1",
+      }).that_requires('Postgresql::Server::Database[template_postgis2]')
+    }
   end
 end

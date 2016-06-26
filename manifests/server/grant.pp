@@ -2,13 +2,14 @@
 define postgresql::server::grant (
   $role,
   $db,
-  $privilege     = undef,
-  $object_type   = 'database',
-  $object_name   = undef,
-  $psql_db       = $postgresql::server::default_database,
-  $psql_user     = $postgresql::server::user,
-  $port          = $postgresql::server::port,
-  $onlyif_exists = false,
+  $privilege        = undef,
+  $object_type      = 'database',
+  $object_name      = undef,
+  $psql_db          = $postgresql::server::default_database,
+  $psql_user        = $postgresql::server::user,
+  $port             = $postgresql::server::port,
+  $onlyif_exists    = false,
+  $connect_settings = $postgresql::server::default_connect_settings,
 ) {
   $group     = $postgresql::server::group
   $psql_path = $postgresql::server::psql_path
@@ -20,6 +21,16 @@ define postgresql::server::grant (
   }
 
   validate_bool($onlyif_exists)
+  #
+  # Port, order of precedence: $port parameter, $connect_settings[PGPORT], $postgresql::server::port
+  #
+  if $port != undef {
+    $port_override = $port
+  } elsif $connect_settings != undef and has_key( $connect_settings, 'PGPORT') {
+    $port_override = undef
+  } else {
+    $port_override = $postgresql::server::port
+  }
 
   ## Munge the input values
   $_object_type = upcase($object_type)
@@ -85,11 +96,13 @@ define postgresql::server::grant (
       validate_string($unless_privilege,'USAGE','ALL','ALL PRIVILEGES')
       $unless_function = 'has_sequence_privilege'
       $on_db = $db
+      $onlyif_function = undef
     }
     'ALL SEQUENCES IN SCHEMA': {
       validate_string($_privilege,'USAGE','ALL','ALL PRIVILEGES')
       $unless_function = 'custom'
       $on_db = $db
+      $onlyif_function = undef
 
       $schema = $object_name
 
@@ -217,15 +230,16 @@ define postgresql::server::grant (
   $grant_cmd = "GRANT ${_privilege} ON ${_object_type} \"${_togrant_object}\" TO
       \"${role}\""
   postgresql_psql { "grant:${name}":
-    command    => $grant_cmd,
-    db         => $on_db,
-    port       => $port,
-    psql_user  => $psql_user,
-    psql_group => $group,
-    psql_path  => $psql_path,
-    unless     => $_unless,
-    onlyif     => $_onlyif,
-    require    => Class['postgresql::server']
+    command          => $grant_cmd,
+    db               => $on_db,
+    port             => $port_override,
+    connect_settings => $connect_settings,
+    psql_user        => $psql_user,
+    psql_group       => $group,
+    psql_path        => $psql_path,
+    unless           => $_unless,
+    onlyif           => $_onlyif,
+    require          => Class['postgresql::server']
   }
 
   if($role != undef and defined(Postgresql::Server::Role[$role])) {

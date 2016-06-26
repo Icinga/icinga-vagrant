@@ -2,7 +2,7 @@ require 'spec_helper_acceptance'
 
 # These tests ensure that postgres can change itself to an alternative port
 # properly.
-describe 'postgres::server', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
+describe 'postgresql::server', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
   it 'on an alternative port' do
     pp = <<-EOS
       class { 'postgresql::server': port => '55433' }
