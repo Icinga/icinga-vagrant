@@ -433,7 +433,8 @@ file { '/usr/local/bin/restart-dashing':
   target => '/usr/share/dashing-icinga2/restart-dashing'
 } ->
 exec { 'dashing-start':
-  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  # fix path to /usr/local/bin, we don't have profile.d/env.sh yet
+  path => '/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin',
   command => "/usr/share/dashing-icinga2/restart-dashing",
   require => Service['icinga2'],
 }

@@ -124,8 +124,8 @@ Choose one of the available boxes below.
 * PNP4Nagios
 * NagVis
 * Graphite
-* Grafana 2
-* Dashing
+* Grafana
+* [Dashing](https://github.com/Icinga/dashing-icinga2)
 
 Run Vagrant:
 
@@ -138,12 +138,12 @@ Run Vagrant:
   Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
   PNP4Nagios        | http://192.168.33.5/pnp4nagios    | -
   Graphite Web	    | http://192.168.33.5:8003          | -
-  Grafana 2         | http://192.168.33.5:8004          | admin/admin
+  Grafana           | http://192.168.33.5:8004          | admin/admin
   Dashing           | http://192.168.33.5:8005          | -
 
 Note: In case Dashing is not running, restart it manually:
 
-    $ vagrant ssh -c "sudo /usr/share/dashing-icinga2/restart-dashing -p 8005 -D /usr/share/dashing-icinga2 -b /usr/local/bin/dashing"
+    $ vagrant ssh -c "sudo /usr/local/bin/restart-dashing"
 
 ### Icinga 2 API
 
