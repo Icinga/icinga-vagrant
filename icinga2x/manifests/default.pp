@@ -471,14 +471,14 @@ apache::vhost { 'graphite.localdomain':
     display-name       => '%{GROUP}',
     inactivity-timeout => '120',
   },
-  wsgi_import_script          => '/opt/graphite/conf/graphite.wsgi',
+  wsgi_import_script          => '/opt/graphite/conf/graphite_wsgi.py',
   wsgi_import_script_options  => {
     process-group     => 'graphite',
     application-group => '%{GLOBAL}'
   },
   wsgi_process_group          => 'graphite',
   wsgi_script_aliases         => {
-    '/' => '/opt/graphite/conf/graphite.wsgi'
+    '/' => '/opt/graphite/conf/graphite_wsgi.py'
   },
   headers => [
     'set Access-Control-Allow-Origin "*"',
@@ -493,6 +493,8 @@ apache::vhost { 'graphite.localdomain':
 class { 'graphite':
   gr_apache_24            => true,
   gr_web_server           => 'none',
+  gr_web_user             => 'apache',
+  gr_web_group            => 'apache',
   gr_disable_webapp_cache => true,
   secret_key => 'ICINGA2ROCKS',
   gr_graphite_ver => '0.9.14',
