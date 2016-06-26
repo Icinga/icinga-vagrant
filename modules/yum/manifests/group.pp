@@ -5,6 +5,7 @@
 # Parameters:
 #   [*ensure*]   - specifies if package group should be
 #                  present (installed) or absent (purged)
+#   [*timeout*]  - exec timeout for yum groupinstall command
 #
 # Actions:
 #
@@ -17,7 +18,8 @@
 #   }
 #
 define yum::group (
-  $ensure = present
+  $ensure  = present,
+  $timeout = undef,
 ) {
   Exec {
     path        => '/bin:/usr/bin:/sbin:/usr/sbin',
@@ -28,14 +30,16 @@ define yum::group (
     present,installed: {
       exec { "yum-groupinstall-${name}":
         command => "yum -y groupinstall '${name}'",
-        unless  => "yum grouplist '${name}' | egrep -i '^Installed.+Groups:$'",
+        unless  => "yum grouplist hidden '${name}' | egrep -i '^Installed.+Groups:$'",
+        timeout => $timeout,
       }
     }
 
     absent,purged: {
       exec { "yum-groupremove-${name}":
         command => "yum -y groupremove '${name}'",
-        onlyif  => "yum grouplist '${name}' | egrep -i '^Installed.+Groups:$'",
+        onlyif  => "yum grouplist hidden '${name}' | egrep -i '^Installed.+Groups:$'",
+        timeout => $timeout,
       }
     }
 

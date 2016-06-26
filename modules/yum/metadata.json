@@ -1,12 +1,15 @@
 {
   "name": "ceritsc-yum",
-  "version": "0.9.6",
+  "version": "0.9.8",
   "author": "ceritsc",
   "summary": "YUM utilities",
   "license": "MIT",
   "source": "https://github.com/CERIT-SC/puppet-yum.git",
   "project_page": "https://github.com/CERIT-SC/puppet-yum",
   "issues_url": "https://github.com/CERIT-SC/puppet-yum/issues",
+  "dependencies": [
+    {"name":"puppetlabs/stdlib","version_requirement":">= 4.2.0"}
+  ],
   "tags": [
     "yum",
     "package"
@@ -40,8 +43,5 @@
       "name": "puppet",
       "version_requirement": "3.3"
     }
-  ],
-  "dependencies": [
-    {"name":"puppetlabs/stdlib","version_requirement":">= 4.0.0"}
   ]
 }
