@@ -578,7 +578,7 @@ file { 'grafana-dashboard-icinga2':
 exec { 'finish-grafana-setup':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => "/usr/local/bin/grafana-setup",
-  require => [ File['grafana-setup'], File['grafana-dashboard-icinga2'], Class['graphite'], Class['grafana'] ],
+  require => [ Class['graphite'], Class['grafana::service'] ],
 }
 
 ####################################
