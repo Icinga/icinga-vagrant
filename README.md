@@ -265,5 +265,10 @@ These boxes use these imported puppet modules for provisioning:
 
 **Notes for developers only.**
 
+Add subtree:
+
     $ git subtree add --prefix modules/vim https://github.com/saz/puppet-vim master --squash
 
+Update subtree:
+
+    $ git subtree pull --prefix modules/postgresql https://github.com/puppetlabs/puppetlabs-postgresql.git master --squash
