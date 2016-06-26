@@ -16,10 +16,16 @@ class mysql::server::backup (
   $include_triggers   = false,
   $ensure             = 'present',
   $time               = ['23', '5'],
+  $prescript          = false,
   $postscript         = false,
   $execpath           = '/usr/bin:/usr/sbin:/bin:/sbin',
   $provider           = 'mysqldump',
+  $maxallowedpacket   = '1M',
 ) {
+
+  if $prescript and $provider =~ /(mysqldump|mysqlbackup)/ {
+    warning("The \$prescript option is not currently implemented for the ${provider} backup provider.")
+  }
 
   create_resources('class', {
     "mysql::backup::${provider}" => {
@@ -39,8 +45,10 @@ class mysql::server::backup (
       'include_triggers'   => $include_triggers,
       'ensure'             => $ensure,
       'time'               => $time,
+      'prescript'          => $prescript,
       'postscript'         => $postscript,
       'execpath'           => $execpath,
+      'maxallowedpacket'   => $maxallowedpacket,
     }
   })
 

@@ -25,7 +25,7 @@ Puppet::Type.type(:mysql_grant).provide(:mysql, :parent => Puppet::Provider::Mys
       # Once we have the list of grants generate entries for each.
       grants.each_line do |grant|
         # Match the munges we do in the type.
-        munged_grant = grant.delete("'").delete("`")
+        munged_grant = grant.delete("'").delete("`").delete('"')
         # Matching: GRANT (SELECT, UPDATE) PRIVILEGES ON (*.*) TO ('root')@('127.0.0.1') (WITH GRANT OPTION)
         if match = munged_grant.match(/^GRANT\s(.+)\sON\s(.+)\sTO\s(.*)@(.*?)(\s.*)?$/)
           privileges, table, user, host, rest = match.captures
@@ -81,7 +81,7 @@ Puppet::Type.type(:mysql_grant).provide(:mysql, :parent => Puppet::Provider::Mys
     query << " ON #{table_string}"
     query << " TO #{user_string}"
     query << self.class.cmd_options(options) unless options.nil?
-    mysql([defaults_file, '-e', query].compact)
+    mysql([defaults_file, system_database, '-e', query].compact)
   end
 
   def create
@@ -107,14 +107,18 @@ Puppet::Type.type(:mysql_grant).provide(:mysql, :parent => Puppet::Provider::Mys
     # exist to be executed successfully
     if revoke_privileges.include? 'ALL'
       query = "REVOKE GRANT OPTION ON #{table_string} FROM #{user_string}"
-      mysql([defaults_file, '-e', query].compact)
+      mysql([defaults_file, system_database, '-e', query].compact)
     end
     query = "REVOKE #{priv_string} ON #{table_string} FROM #{user_string}"
-    mysql([defaults_file, '-e', query].compact)
+    mysql([defaults_file, system_database, '-e', query].compact)
   end
 
   def destroy
-    revoke(@property_hash[:user], @property_hash[:table])
+    # if the user was dropped, it'll have been removed from the user hash
+    # as the grants are alraedy removed by the DROP statement
+    if self.class.users.include? @property_hash[:user]
+      revoke(@property_hash[:user], @property_hash[:table])
+    end
     @property_hash.clear
 
     exists? ? (return false) : (return true)

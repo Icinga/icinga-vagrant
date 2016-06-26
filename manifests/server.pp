@@ -3,6 +3,7 @@ class mysql::server (
   $config_file             = $mysql::params::config_file,
   $includedir              = $mysql::params::includedir,
   $install_options         = undef,
+  $install_secret_file     = $mysql::params::install_secret_file,
   $manage_config_file      = $mysql::params::manage_config_file,
   $override_options        = {},
   $package_ensure          = $mysql::params::server_package_ensure,
@@ -52,8 +53,8 @@ class mysql::server (
 
   Class['mysql::server::root_password'] -> Mysql::Db <| |>
 
-  include '::mysql::server::install'
   include '::mysql::server::config'
+  include '::mysql::server::install'
   include '::mysql::server::installdb'
   include '::mysql::server::service'
   include '::mysql::server::root_password'
@@ -74,8 +75,8 @@ class mysql::server (
   }
 
   Anchor['mysql::server::start'] ->
-  Class['mysql::server::install'] ->
   Class['mysql::server::config'] ->
+  Class['mysql::server::install'] ->
   Class['mysql::server::installdb'] ->
   Class['mysql::server::service'] ->
   Class['mysql::server::root_password'] ->
