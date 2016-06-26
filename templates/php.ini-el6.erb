@@ -416,13 +416,21 @@ ignore_user_abort = <%= @ignore_user_abort %>
 ; be increased on systems where PHP opens many files to reflect the quantity of
 ; the file operations performed.
 ; http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-size
+<% if @realpath_cache_size -%>
+realpath_cache_size = <%= @realpath_cache_size %>
+<% else -%>
 ;realpath_cache_size = 16k
+<% end -%>
 
 ; Duration of time, in seconds for which to cache realpath information for a given
 ; file or directory. For systems with rarely changing files, consider increasing this
 ; value.
 ; http://www.php.net/manual/en/ini.core.php#ini.realpath-cache-ttl
+<% if @realpath_cache_ttl -%>
+realpath_cache_ttl = <%= @realpath_cache_ttl %>
+<% else -%>
 ;realpath_cache_ttl = 120
+<% end -%>
 
 ; Enables or disables the circular reference collector.
 ; http://php.net/zend.enable-gc
@@ -1023,14 +1031,22 @@ date.timezone = <%= @date_timezone %>
 [Pcre]
 ;PCRE library backtracking limit.
 ; http://www.php.net/manual/en/pcre.configuration.php#ini.pcre.backtrack-limit
+<% if @pcre_backtrack_limit -%>
+pcre.backtrack_limit = <%= @pcre_backtrack_limit %>
+<% else -%>
 ;pcre.backtrack_limit=100000
+<% end -%>
 
 ;PCRE library recursion limit. 
 ;Please note that if you set this value to a high number you may consume all 
 ;the available process stack and eventually crash PHP (due to reaching the 
 ;stack size limit imposed by the Operating System).
 ; http://www.php.net/manual/en/pcre.configuration.php#ini.pcre.recursion-limit
+<% if @pcre_recursion_limit -%>
+pcre.recursion_limit = <%= @pcre_recursion_limit %>
+<% else -%>
 ;pcre.recursion_limit=100000
+<% end -%>
 
 [Pdo]
 ; Whether to pool ODBC connections. Can be one of "strict", "relaxed" or "off"
@@ -1320,7 +1336,11 @@ session.save_path = "<%= @session_save_path %>"
 session.use_cookies = <%= @session_use_cookies %>
 
 ; http://www.php.net/manual/en/session.configuration.php#ini.session.cookie-secure
+<% if @session_cookie_secure -%>
+session.cookie_secure = <%= @session_cookie_secure %>
+<% else -%>
 ;session.cookie_secure =
+<% end -%>
 
 ; This option forces PHP to fetch and use a cookie for storing and maintaining
 ; the session id. We encourage this operation as it's very helpful in combatting

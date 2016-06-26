@@ -35,6 +35,8 @@ define php::ini (
   $disable_functions          = '',
   $disable_classes            = '',
   $ignore_user_abort          = undef,
+  $realpath_cache_size        = undef,
+  $realpath_cache_ttl         = undef,
   $expose_php                 = 'On',
   $max_execution_time         = '30',
   $max_input_time             = '60',
@@ -79,6 +81,8 @@ define php::ini (
   $allow_url_include          = 'Off',
   $default_socket_timeout     = '60',
   $date_timezone              = undef,
+  $pcre_backtrack_limit       = undef,
+  $pcre_recursion_limit       = undef,
   $phar_readonly              = undef,
   $sendmail_path              = '/usr/sbin/sendmail -t -i',
   $mail_add_x_header          = 'On',
@@ -87,6 +91,7 @@ define php::ini (
   $session_save_handler       = 'files',
   $session_save_path          = '/var/lib/php/session',
   $session_use_cookies        = '1',
+  $session_cookie_secure      = undef,
   $session_use_only_cookies   = '1',
   $session_name               = 'PHPSESSID',
   $session_auto_start         = '0',
@@ -117,7 +122,7 @@ define php::ini (
   }
 
   # Reload FPM if present
-  if defined(Class['::php::fpm::daemon']) {
+  if defined(Class['::php::fpm::daemon']) and $::php::fpm::daemon::ensure == 'present' {
     File[$title] ~> Service[$php::params::fpm_service_name]
   }
 
