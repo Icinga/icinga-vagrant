@@ -1,7 +1,6 @@
 include icinga_rpm
 include epel
 include '::mysql::server'
-include '::postgresql::server'
 include icinga2
 include icinga2_ido_mysql
 include icingaweb2
