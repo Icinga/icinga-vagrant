@@ -580,6 +580,7 @@ exec { 'finish-grafana-setup':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => "/usr/local/bin/grafana-setup",
   require => [ Class['graphite'], Class['grafana::service'] ],
+  notify => Class['apache::service']
 }
 
 ####################################
