@@ -18,6 +18,10 @@
 #    The name of the java package. This is configurable in case a non-standard
 #    java package is desired.
 #
+#  [*package_options*]
+#    Array of strings to pass installation options to the 'package' Puppet resource.
+#    Options available depend on the 'package' provider for the target OS.
+#
 #  [*java_alternative*]
 #    The name of the java alternative to use on Debian systems.
 #    "update-java-alternatives -l" will show which choices are available.
@@ -41,12 +45,17 @@ class java(
   $distribution          = 'jdk',
   $version               = 'present',
   $package               = undef,
+  $package_options       = undef,
   $java_alternative      = undef,
   $java_alternative_path = undef
 ) {
   include java::params
 
-  validate_re($version, 'present|installed|latest|^[.+_0-9a-zA-Z:-]+$')
+  validate_re($version, 'present|installed|latest|^[.+_0-9a-zA-Z:~-]+$')
+  
+  if $package_options != undef {
+    validate_array($package_options)
+  }
 
   if has_key($java::params::java, $distribution) {
     $default_package_name     = $java::params::java[$distribution]['package']
@@ -98,8 +107,9 @@ class java(
   anchor { 'java::begin:': }
   ->
   package { 'java':
-    ensure => $version,
-    name   => $use_java_package_name,
+    ensure          => $version,
+    install_options => $package_options,
+    name            => $use_java_package_name,
   }
   ->
   class { 'java::config': }
