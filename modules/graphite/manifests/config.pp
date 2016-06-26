@@ -233,15 +233,7 @@ class graphite::config inherits graphite::params {
       enable     => true,
       hasrestart => true,
       hasstatus  => true,
-      require    => [ File['/etc/init.d/carbon-cache'], Exec['systemd-daemon-reload'] ],
-    }
-
-    # avoid problem with systemd service error
-    # https://github.com/echocat/puppet-graphite/issues/211
-    exec { 'systemd-daemon-reload':
-      path => '/bin:/usr/bin:/sbin:/usr/sbin',
-      command => '/bin/systemctl daemon-reload',
-      require => File['/etc/init.d/carbon-cache'],
+      require    => File['/etc/init.d/carbon-cache'],
     }
 
     file { '/etc/init.d/carbon-cache':
