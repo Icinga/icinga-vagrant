@@ -64,7 +64,7 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
   }
 }
 
-package { [ 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion', 'screen' ]:
+package { [ 'mailx', 'tree', 'gdb', 'git', 'bash-completion', 'screen', 'htop' ]:
   ensure => 'installed',
   require => Class['epel']
 }
@@ -79,6 +79,10 @@ file { '/etc/motd':
   source => 'puppet:////vagrant/files/etc/motd',
   owner => root,
   group => root
+}
+
+file { '/etc/profile.d/env.sh':
+  source => 'puppet:////vagrant/files/etc/profile.d/env.sh'
 }
 
 # Required by vim-icinga2
