@@ -221,9 +221,8 @@ file { '/etc/security/limits.d/99-elasticsearch.conf':
 class { 'java':
 } ->
 class { 'elasticsearch':
-  version      => '1.7.3-1',
   manage_repo  => true,
-  repo_version => '1.7',
+  repo_version => '2.x',
   java_install => false,
 } ->
 elasticsearch::instance { 'elastic-es':
