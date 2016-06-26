@@ -75,6 +75,9 @@ CACHES = {
 #CONF_DIR = '/opt/graphite/conf'
 #STORAGE_DIR = '/opt/graphite/storage'
 #CONTENT_DIR = '/opt/graphite/webapp/content'
+CONF_DIR = '<%= scope.lookupvar('graphite::graphiteweb_conf_dir_REAL') %>'
+STORAGE_DIR = '<%= scope.lookupvar('graphite::graphiteweb_storage_dir_REAL') %>'
+CONTENT_DIR = '<%= scope.lookupvar('graphite::graphiteweb_webapp_dir_REAL') %>/content'
 
 # To further or fully customize the paths, modify the following. Note that the
 # default settings for each of these are relative to CONF_DIR and STORAGE_DIR
@@ -85,10 +88,10 @@ CACHES = {
 
 ## Data directories
 # NOTE: If any directory is unreadable in DATA_DIRS it will break metric browsing
-WHISPER_DIR = '<%= scope.lookupvar('graphite::gr_local_data_dir') %>'
-#RRD_DIR = '/opt/graphite/storage/rrd'
+WHISPER_DIR = '<%= scope.lookupvar('graphite::local_data_dir_REAL') %>'
+RRD_DIR = '<%= scope.lookupvar('graphite::rrd_dir_REAL') %>'
 #DATA_DIRS = [WHISPER_DIR, RRD_DIR] # Default: set from the above variables
-#LOG_DIR = '/opt/graphite/storage/log/webapp'
+LOG_DIR = '<%= scope.lookupvar('graphite::graphiteweb_log_dir_REAL') %>'
 #INDEX_FILE = '/opt/graphite/storage/index'  # Search index file
 
 

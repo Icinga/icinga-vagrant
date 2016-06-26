@@ -14,7 +14,7 @@
 
 PYTHON_CMD='python -W ignore'
 CARBON_DAEMON="cache"
-GRAPHITE_DIR="/opt/graphite"
+GRAPHITE_DIR="<%= scope.lookupvar('graphite::base_dir_REAL') %>"
 STOP_COUNTER=12 # 12 times 5s -> 60 secs
 
 OPERATION="$1"

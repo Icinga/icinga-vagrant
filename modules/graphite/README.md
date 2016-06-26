@@ -21,6 +21,10 @@
 
 This module installs and makes basic configs for graphite, with carbon and whisper.
 
+[![Puppet Forge](http://img.shields.io/puppetforge/v/dwerder/graphite.svg)](https://forge.puppetlabs.com/dwerder/graphite)
+[![Build Status](https://secure.travis-ci.org/echocat/puppet-graphite.png?branch=master)](https://travis-ci.org/echocat/puppet-graphite)
+[![Puppet Forge Downloads](http://img.shields.io/puppetforge/dt/dwerder/graphite.svg)](https://forge.puppetlabs.com/dwerder/graphite)
+
 ##Module Description
 
 [Graphite](http://graphite.readthedocs.org/en/latest/overview.html), and its components Carbon and Whisper, is an enterprise-scale monitoring tool. This module sets up a simple graphite server with all its components. Furthermore it can be used to set up more complex graphite environments with metric aggregation, clustering and so on.
@@ -78,7 +82,7 @@ The defaults are determined by your operating system e.g. Debian systems have on
 
 ###Configure Graphite with Grafana
 
-This setup will use the [puppetlabs-apache](https://forge.puppetlabs.com/puppetlabs/apache) and [dwerder-grafana](https://forge.puppetlabs.com/dwerder/grafana) modules to setup a graphite system with grafana frontend. You will also need an elasticsearch as it is required for grafana.
+This setup will use the [puppetlabs-apache](https://forge.puppetlabs.com/puppetlabs/apache) and [bfraser-grafana](https://forge.puppet.com/bfraser/grafana) modules to setup a graphite system with grafana frontend. You will also need an elasticsearch as it is required for grafana.
 
 ```puppet
 include '::apache'
@@ -94,14 +98,14 @@ apache::vhost { graphite.my.domain:
     display-name       => '%{GROUP}',
     inactivity-timeout => '120',
   },
-  wsgi_import_script          => '/opt/graphite/conf/graphite.wsgi',
+  wsgi_import_script          => '/opt/graphite/conf/graphite_wsgi.py',
   wsgi_import_script_options  => {
     process-group     => 'graphite',
     application-group => '%{GLOBAL}'
   },
   wsgi_process_group          => 'graphite',
   wsgi_script_aliases         => {
-    '/' => '/opt/graphite/conf/graphite.wsgi'
+    '/' => '/opt/graphite/conf/graphite_wsgi.py'
   },
   headers => [
     'set Access-Control-Allow-Origin "*"',
@@ -119,26 +123,8 @@ class { 'graphite':
   gr_disable_webapp_cache => true,
 }
 
-apache::vhost { 'grafana.my.domain':
-  servername      => 'grafana.my.domain',
-  port            => 80,
-  docroot         => '/opt/grafana',
-  error_log_file  => 'grafana_error.log',
-  access_log_file => 'grafana_access.log',
-  directories     => [
-    {
-      path            => '/opt/grafana',
-      options         => [ 'None' ],
-      allow           => 'from All',
-      allow_override  => [ 'None' ],
-      order           => 'Allow,Deny',
-    }
-  ]
-}->
 class {'grafana':
-  graphite_host      => 'graphite.my.domain',
-  elasticsearch_host => 'elasticsearach.my.domain',
-  elasticsearch_port => 9200,
+ # see manual of this module
 }
 ```
 
@@ -195,9 +181,9 @@ ones set for the principal instance.
 ```puppet
    class {'graphite':
       gr_line_receiver_port => 2003,
-      gr_pickle_receiver_port => 2004, 
+      gr_pickle_receiver_port => 2004,
       gr_cache_query_port => 7002,
-      
+
       gr_cache_instances => {
          'cache:b' => {
             'LINE_RECEIVER_PORT' => 2103,
@@ -216,8 +202,8 @@ ones set for the principal instance.
 So in this case you would have 3 cache instances, the first one is `cache` (you can refer to it as `cache:a` too), `cache:b` and `cache:c`. cache:a will listen on ports 2003, 2004 and 7002 for line, pickle and query respectively. But, cache:b will do it on ports 2103, 2104, and 7102, and cache:c on 2203, 2204 and 7202. All other parameters from cache:a will be inherited by cache:b and c.
 
 ###Installing with something other than pip and specifying package names and versions
-If you need to install via something other pip, an internal apt repo with fpm converted packages for instance, you can set `gr_pip_install` to false.
-If you're doing this you'll most likely have to override the default package names and versions as well. 
+If you need to install via something other than pip, an internal apt repo with fpm converted packages for instance, you can set `gr_pip_install` to false.
+If you're doing this you'll most likely have to override the default package names and versions as well.
 ```puppet
   class { '::graphite':
     gr_pip_install        => false,
@@ -244,6 +230,15 @@ Additionally, the Django package is normally installed from a system package, bu
     gr_django_provider => 'pip',
   }
 ```
+
+####Managing system pip and Python development packages
+
+If gr_pip_install is set to true, both python-pip and Python development packages will need to be installed. If you want to manage those packages separately, set gr_manage_python_packages to false.
+
+  class { '::graphite':
+    gr_pip_install            => true,
+    gr_manage_python_packages => false,
+  }
 
 ##Usage
 
@@ -288,6 +283,11 @@ The prefix to be applied to internal performance metrics. Defaults to 'carbon'.
 #####`gr_carbon_metric_interval`
 
 Default is 60. Set the interval between sending internal performance metrics; affects all carbon daemons.
+
+#####`gr_carbon_relay_ulimit`
+
+Default is undef. Set the maximum number of file descriptors for
+carbon-relay process.
 
 #####`gr_line_receiver_interface`
 
@@ -349,9 +349,54 @@ Default is 7002. Self explaining.
 
 Default is 'GMT' (string). Timezone for graphite to be used.
 
+#####`gr_base_dir`
+
+Default is '/opt/graphite'. Set base install location of Graphite. This forms the base location for installs, predominantly appropriate for pip installations. When not installing using pip a typical location for this may be '/opt/carbon'.
+
+#####`gr_storage_dir`
+
+Default is '${gr_base_dir}/storage'. Set location of base storage files.  When not installing using pip a typical location for this may be '/opt/carbon'. This dir is also used as pid dir on RedHat.
+
 #####`gr_local_data_dir`
 
-Default is '/opt/graphite/storage/whisper'. Set location of whisper files.
+Default is '${gr_storage_dir}/whisper'. Set location of whisper files.
+
+#####`gr_rrd_dir`
+
+Default is '${gr_storage_dir}/rrd'. Set location of rrd data files.
+
+#####`gr_whitelists_dir`
+
+Default is '${gr_storage_dir}/rrd'. Set location of whitelist configuration files.
+
+#####`gr_carbon_conf_dir`
+
+Default is '${gr_base_dir}/conf'. Set location of Carbon's configuration files. Most relevant when not using pip for installation. A typical location for this may be '/etc/carbon'.
+
+#####`gr_carbon_log_dir`
+
+Default is '${gr_storage_dir}/log/carbon-cache'. Set location of carbon cache log files.
+
+#####`gr_graphiteweb_log_dir`
+
+Default is '${gr_storage_dir}/log'. Set location of graphite web log files.
+
+#####`gr_graphiteweb_conf_dir`
+
+Default is '${gr_base_dir}/conf'. Set location of graphite web configuration.
+
+#####`gr_graphiteweb_webapp_dir`
+
+Default is '${gr_base_dir}/webapp'. Set location of graphite web's webapp files.
+
+#####`gr_graphiteweb_storage_dir`
+
+Default is '/var/lib/graphite-web'. Set location of graphite web's storage, used for graphite.db file.
+
+#####`gr_graphiteweb_install_lib_dir`
+
+Default is '${gr_graphiteweb_webapp_dir}/graphite'. Set location of libraries directory for graphite web.
+
 
 #####`gr_storage_schemas`
 
@@ -387,7 +432,19 @@ The storage aggregation rules.
 
 #####`gr_web_server`
 
-Default is 'apache'. The web server to use. Valid values are 'apache', 'nginx', 'wsgionly' or 'none'. 'nginx' is only supported on Debian-like systems. And 'none' means that you will manage the webserver yourself.
+Default is 'apache'. The web server to configure. Valid values are 'apache', 'nginx', 'wsgionly' or 'none'.
+
+Apache is configured with mod_wsgi, nginx is configured with gunicorn. 'wsgionly' configures only gunicorn.
+
+The value 'none' means that you will manage the webserver yourself.
+
+#####`gr_web_server_port`
+
+Default is 80. The HTTP port which the web server will use. Only used for $gr_web_server => 'apache' or 'nginx'.
+
+#####`gr_web_server_port_https`
+
+Default is 443. The HTTPS port which the web server will use. Only used for $gr_web_server => 'apache'.
 
 #####`gr_web_servername`
 
@@ -416,19 +473,11 @@ Path to SSL dir containing keys and certs. Default is undef.
 
 #####`gr_web_group`
 
-Default is undef. Group name to chgrp the files that will served by webserver.  Use only with gr_web_server => 'wsgionly' or 'none'.
+Group name to chgrp the files that will served by webserver. Only necessary for gr_web_server => 'wsgionly' or 'none'.
 
 #####`gr_web_user`
 
-Default is undef. Username to chown the files that will served by webserver.  Use only with gr_web_server => 'wsgionly' or 'none'.
-
-#####`gr_apache_port`
-
-Default is 80. The HTTP port apache will use.
-
-#####`gr_apache_port_https`
-
-Default is 443. The HTTPS port apache will use.
+Username to chown the files that will served by webserver. Only necessary for gr_web_server => 'wsgionly' or 'none'.
 
 #####`gr_apache_conf_template`
 
@@ -504,6 +553,18 @@ Default is '0.0.0.0' (string)
 
 Default is 2013 (integer)
 
+#####`gr_relay_enable_udp_listener`
+
+Default is 'False'. Enables the UDP listener for carbon-relay.
+
+#####`gr_relay_udp_receiver_interface`
+
+Default is '0.0.0.0' (string)
+
+#####`gr_relay_udp_receiver_port`
+
+Default is 2013 (integer)
+
 #####`gr_relay_pickle_interface`
 
 Default is '0.0.0.0' (string)
@@ -523,6 +584,10 @@ Default is 'rules'
 #####`gr_relay_replication_factor`
 
 Default is 1 (integer). Add redundancy by replicating every datapoint to more than one machine.
+
+#####`gr_relay_diverse_replicas`
+
+Default is 'True' (string). Add to guarantee replicas across distributed hosts.
 
 #####`gr_relay_destinations`
 
@@ -711,7 +776,7 @@ Default is 30.  value to pass to gunicorns --timeout arg.
 Default is 'unix:/var/run/graphite.sock'.  value to pass to gunicorns --bind arg.
 
 #####`gunicorn_workers`
-  
+
 Default is 2. value to pass to gunicorn's --worker arg.
 
 #####`gr_cache_instances`    
@@ -852,7 +917,7 @@ On Redhat distributions you need the EPEL or RPMforge repository, because Graphi
 
 ##Limitations
 
-This module is tested on CentOS 6.5 and Debian 7 (Wheezy) and should also run without problems on
+This module is tested on CentOS 6.5 and Debian 7 (Wheezy) and should also run on
 
 * RHEL/CentOS/Scientific 6+
 * Debian 6+
@@ -861,8 +926,17 @@ This module is tested on CentOS 6.5 and Debian 7 (Wheezy) and should also run wi
 Most settings of Graphite can be set by parameters. So their can be special configurations for you. In this case you should edit
 the file `templates/opt/graphite/webapp/graphite/local_settings.py.erb`.
 
-The nginx configs are only supported on Debian based systems at the moment.
+###Compatibility Notes
+* There is currently an [open ticket](https://tickets.puppetlabs.com/browse/PUP-3829) with Puppet about broken pip support in CentOS 6/7. The
+workaround for this bug is to create a symlink from `/usr/bin/pip-python` (which doesn't exist) to `/usr/bin/pip` (which does).
+* CentOS 7's default `nginx.conf` includes a `server` section listening on port 80. Thus, it is not possible to set up graphite without modifying
+the package-provided configuration file. You will have to either manually remove the `server` section, or provide a `gr_web_server_port` other
+than port 80.
+* nginx/gunicorn requires a `systemctl restart gunicorn` after installing on Ubuntu 15.10
+* SELinux must be disabled
 
 ##Contributing
 
 Echocat modules are open projects. So if you want to make this module even better, you can contribute to this module on [Github](https://github.com/echocat/puppet-graphite).
+
+Make sure to read the repository's `DEVELOP.md` file first.

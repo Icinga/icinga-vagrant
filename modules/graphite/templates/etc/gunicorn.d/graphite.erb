@@ -1,11 +1,11 @@
 CONFIG = {
-    'mode': 'django',
-    'working_dir': '/opt/graphite/webapp/graphite',
-    'user': '<%= scope.lookupvar('graphite::gr_web_user') %>',
-    'group': '<%= scope.lookupvar('graphite::gr_web_group') %>',
+    'working_dir': '<%= scope.lookupvar('graphite::graphiteweb_webapp_dir_REAL') %>/graphite',
+    'user': '<%= scope.lookupvar('graphite::config::gr_web_user_REAL') %>',
+    'group': '<%= scope.lookupvar('graphite::config::gr_web_group_REAL') %>',
     'args': (
-	'--timeout=<%= scope.lookupvar('graphite::gunicorn_arg_timeout') %>',
+        '--timeout=<%= scope.lookupvar('graphite::gunicorn_arg_timeout') %>',
         '--bind=<%= scope.lookupvar('graphite::gunicorn_bind') %>',
-	'--workers=<%= scope.lookupvar('graphite::gunicorn_workers') %>',
-    ),
+        '--workers=<%= scope.lookupvar('graphite::gunicorn_workers') %>',
+        'graphite_wsgi:application',
+        ),
 }

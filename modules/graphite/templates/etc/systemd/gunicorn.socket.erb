@@ -1,0 +1,8 @@
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=<%= scope.lookupvar('graphite::gunicorn_bind')[/unix:(.*)/, 1] %>
+
+[Install]
+WantedBy=sockets.target

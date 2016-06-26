@@ -30,7 +30,7 @@
 #   LOG_DIR        = /var/log/carbon/
 #   PID_DIR        = /var/run/
 #
-LOCAL_DATA_DIR = <%= scope.lookupvar('graphite::gr_local_data_dir') %>/
+LOCAL_DATA_DIR = <%= scope.lookupvar('graphite::local_data_dir_REAL') %>/
 
 # Enable daily log rotation. If disabled, a kill -HUP can be used after a manual rotate
 ENABLE_LOGROTATION = True
@@ -60,8 +60,8 @@ MAX_UPDATES_PER_SECOND = <%= scope.lookupvar('graphite::gr_max_updates_per_secon
 # relatively low and carbon has cached a lot of updates; it enables the carbon
 # daemon to shutdown more quickly.
 # MAX_UPDATES_PER_SECOND_ON_SHUTDOWN = 1000
-<% unless [:undef, nil].include? scope['graphite::gr_max_updates_per_second_on_shutdown'] -%>
-MAX_UPDATES_PER_SECOND_ON_SHUTDOWN = <%= scope['graphite::gr_max_updates_per_second_on_shutdown'] %>
+<% unless [:undef, nil].include? scope.lookupvar('graphite::gr_max_updates_per_second_on_shutdown') -%>
+MAX_UPDATES_PER_SECOND_ON_SHUTDOWN = <%= scope.lookupvar('graphite::gr_max_updates_per_second_on_shutdown') %>
 <% end -%>
 
 # Softly limits the number of whisper files that get created each minute.
@@ -240,6 +240,13 @@ LINE_RECEIVER_PORT = <%= scope.lookupvar('graphite::gr_relay_line_port') %>
 PICKLE_RECEIVER_INTERFACE = <%= scope.lookupvar('graphite::gr_relay_pickle_interface') %>
 PICKLE_RECEIVER_PORT = <%= scope.lookupvar('graphite::gr_relay_pickle_port') %>
 
+# Set this to True to enable the UDP listener. By default this is off
+# because it is very common to run multiple carbon daemons and managing
+# another (rarely used) port for every carbon instance is not fun.
+ENABLE_UDP_LISTENER = <%= scope.lookupvar('graphite::gr_relay_enable_udp_listener') %>
+UDP_RECEIVER_INTERFACE = <%= scope.lookupvar('graphite::gr_relay_udp_receiver_interface') %>
+UDP_RECEIVER_PORT = <%= scope.lookupvar('graphite::gr_relay_udp_receiver_port') %>
+
 # Set to false to disable logging of successful connections
 LOG_LISTENER_CONNECTIONS = <%= scope.lookupvar('graphite::gr_relay_log_listener_connections') %>
 
@@ -262,6 +269,14 @@ RELAY_METHOD = <%= scope.lookupvar('graphite::gr_relay_method') %>
 # If you use consistent-hashing you can add redundancy by replicating every
 # datapoint to more than one machine.
 REPLICATION_FACTOR = <%= scope.lookupvar('graphite::gr_relay_replication_factor') %>
+
+# For REPLICATION_FACTOR >=2, set DIVERSE_REPLICAS to True to guarantee replicas
+# across distributed hosts. With this setting disabled, it's possible that replicas
+# may be sent to different caches on the same host. This has been the default
+# behavior since introduction of 'consistent-hashing' relay method.
+# Note that enabling this on an existing pre-0.9.14 cluster will require rebalancing
+# your metrics across the cluster nodes using a tool like Carbonate.
+DIVERSE_REPLICAS = <%= scope.lookupvar('graphite::gr_relay_diverse_replicas') %>
 
 # This is a list of carbon daemons we will send any relayed or
 # generated metrics to. The default provided would send to a single

@@ -3,7 +3,7 @@
 # Because graphite has now way to configure the logrotation,
 # we do that with a cronjob and this script.
  
-CARBON_LOGS_PATH="/opt/graphite/storage/log"
+CARBON_LOGS_PATH="<%= scope.lookupvar('graphite::graphiteweb_log_dir_REAL') %>"
 CARBON_LOGS="carbon-cache/ carbon-relay/ carbon-aggregator/"
 
 ROTATE_DAYS=3

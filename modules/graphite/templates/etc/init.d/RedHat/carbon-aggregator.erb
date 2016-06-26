@@ -4,7 +4,7 @@
 # chkconfig: 345 80 20
 # description: Start/Stop carbon-aggregator
 # processname: carbon-aggregator
-# config: /opt/graphite/conf/carbon.conf
+# config: '<%= scope.lookupvar('graphite::carbon_conf_dir_REAL') %>/carbon.conf'
 
 ### BEGIN INIT INFO
 # Provides: carbon-aggregator
@@ -21,7 +21,8 @@
 
 PYTHON_CMD='python -W ignore'
 CARBON_DAEMON="aggregator"
-GRAPHITE_DIR="/opt/graphite"
+GRAPHITE_DIR="<%= scope.lookupvar('graphite::base_dir_REAL') %>"
+PIDFILE_DIR="<%= scope.lookupvar('graphite::storage_dir_REAL') %>"
 pidfile=""
 OPERATION="$1"
 if [ $# -gt 1 ]; then
@@ -37,14 +38,14 @@ start()
         if [ "${INSTANCE}" = "${CARBON_DAEMON}" ]; then
             INSTANCE="a";
         fi;
-        pidfile=${GRAPHITE_DIR}/storage/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
+        pidfile=${PIDFILE_DIR}/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
         prog=carbon-${CARBON_DAEMON}-${INSTANCE}
         # check if instance is already running
         rh_status_q && continue
         
         ${PYTHON_CMD} ${GRAPHITE_DIR}/bin/carbon-${CARBON_DAEMON}.py --instance=${INSTANCE} start;
         retval=$?
-        pidfile=${GRAPHITE_DIR}/storage/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
+        pidfile=${PIDFILE_DIR}/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
         echo -n $"Starting carbon-${CARBON_DAEMON}:${INSTANCE}..."
         sleep 1
         if rh_status_q; then
@@ -66,14 +67,14 @@ stop()
         if [ "${INSTANCE}" = "${CARBON_DAEMON}" ]; then
             INSTANCE="a";
         fi;
-        pidfile=${GRAPHITE_DIR}/storage/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
+        pidfile=${PIDFILE_DIR}/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
         prog=carbon-${CARBON_DAEMON}-${INSTANCE}
         # check if instance is already stopped
         rh_status_q || continue
         
         ${PYTHON_CMD} ${GRAPHITE_DIR}/bin/carbon-${CARBON_DAEMON}.py --instance=${INSTANCE} stop;
         sleep 3
-        while [ -f ${GRAPHITE_DIR}/storage/carbon-${CARBON_DAEMON}-${INSTANCE}.pid ]; do
+        while [ -f ${PIDFILE_DIR}/carbon-${CARBON_DAEMON}-${INSTANCE}.pid ]; do
             echo "waiting another 5 secs for carbon-${CARBON_DAEMON}-${INSTANCE} to stop"
             sleep 5
             #TODO: add timer to prevend endless waiting
@@ -93,12 +94,12 @@ restart() {
         if [ "${INSTANCE}" = "${CARBON_DAEMON}" ]; then
             INSTANCE="a";
         fi;
-        pidfile=${GRAPHITE_DIR}/storage/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
+        pidfile=${PIDFILE_DIR}/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
         prog=carbon-${CARBON_DAEMON}-${INSTANCE}
         
         ${PYTHON_CMD} ${GRAPHITE_DIR}/bin/carbon-${CARBON_DAEMON}.py --instance=${INSTANCE} stop;
         sleep 3
-        while [ -f ${GRAPHITE_DIR}/storage/carbon-${CARBON_DAEMON}-${INSTANCE}.pid ]; do
+        while [ -f ${PIDFILE_DIR}/carbon-${CARBON_DAEMON}-${INSTANCE}.pid ]; do
             echo "waiting another 5 secs for carbon-${CARBON_DAEMON}-${INSTANCE} to stop"
             sleep 5
             #TODO: add timer to prevend endless waiting
@@ -110,8 +111,9 @@ restart() {
         
         ${PYTHON_CMD} ${GRAPHITE_DIR}/bin/carbon-${CARBON_DAEMON}.py --instance=${INSTANCE} start;
         retval=$?
-        pidfile=${GRAPHITE_DIR}/storage/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
+        pidfile=${PIDFILE_DIR}/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
         echo -n $"Starting carbon-${CARBON_DAEMON}:${INSTANCE}..."
+        sleep 1
         if rh_status_q; then
             touch /var/lock/subsys/carbon-${CARBON_DAEMON}-${INSTANCE}
             echo_success
@@ -159,7 +161,7 @@ case "${OPERATION}" in
         ;;
     condrestart|try-restart)
         # TODO: bad behavior. only checking instance "a" at the moment
-        pidfile=${GRAPHITE_DIR}/storage/carbon-${CARBON_DAEMON}-a.pid
+        pidfile=${PIDFILE_DIR}/carbon-${CARBON_DAEMON}-a.pid
         prog=carbon-${CARBON_DAEMON}-a
         rh_status_q || exit 0
         restart
@@ -169,7 +171,7 @@ case "${OPERATION}" in
             if [ "${INSTANCE}" = "${CARBON_DAEMON}" ]; then
                 INSTANCE="a";
             fi;
-            pidfile=${GRAPHITE_DIR}/storage/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
+            pidfile=${PIDFILE_DIR}/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
             prog=carbon-${CARBON_DAEMON}-${INSTANCE}
             rh_status
         done
