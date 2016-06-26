@@ -1,3 +1,103 @@
+## 2016-05-31 - 6.0.4 (Bugfix release)
+
+#### Bugfixes:
+
+- (2b3364c) better detection of service provider systemd
+- (2b3364c) The `wsgi.py` link is no longer needed
+- (2b3364c) Removing subscription to `$local_settings_py_file`. It is not defined when `config_gunicorn.pp` is evaluated
+- (2b3364c) run race condition fix after initial db creation
+- (2b3364c) Add service provider definition for Debian-based OSs
+- (2b3364c) Set RedHat service provider based on OS version
+- (2b3364c) Fix for float vs string problem
+
+## 2016-04-17 - 6.0.3 (Bugfix release)
+
+#### Bugfixes:
+
+- (1deb7f9) point Apache to the right WSGI file
+- (e01e6bc) ensure that graphiteweb_storage_dir is created
+- (5e7ce00) properly parameterize gunicorn --chdir option on redhat
+- (6f7fb67) notify web service for local_settings.py and graphite_wsgi.py
+- (1f49faf) add unit tests
+- (7042ddf) Update fail message when gr_web_server = none
+
+#### Features:
+
+- (1aa40af) patch graphite module to support UDP listener in [relay] section
+
+## 2016-04-11 - 6.0.2 (Bugfix release)
+
+#### Bugfixes:
+
+- (debfe5d) remove parameter `gr_pid_dir` and use `gr_storage_dir` instead.
+- RedHat init scripts use correct `gr_base_dir` for graphite.
+
+## 2016-04-01 - 6.0.1 (Bugfix release)
+
+#### Features:
+
+- Add alot more unit tests
+- Add code coverage analysis
+
+#### Bugfixes:
+
+- Fix/remove parameter interpolation for `gr_base_dir`. It set correct now.
+- Fix some hardcoded paths in templates, like logrotate or init scripts
+- Fix location of local_settings.py in some cases
+
+## 2016-03-30 - 6.0.0 (Major release)
+
+#### Features:
+
+- Nginx/Gunicorn is now fully supported on both Debian and RedHat-like systems
+- The correct username/group is now used across apache/nginx for both Debian and RedHat
+- Pip is now the default provider for Django to ensure mutually-working package versions are installed.
+- Added systemd scripts for when `$service_provider == 'systemd'`
+- Added workaround for [race condition bug in graphite](graphite-project/graphite-web#403)
+- Added configuration variable `gr_web_server_remove_default` -- default config is only wiped when the variable is true, or when it is `undef` and `gr_web_server_port` == 80
+- Renamed `gr_apache_port` and `gr_apache_port_https` to `gr_web_server_port` and `gr_web_server_port` respectively. If the old configuration values are used, puppet fails telling you to use the new ones.
+- Add param for carbon-relay init.d ulimit `gr_carbon_relay_ulimit`
+- Add support for custom directory locations , see `gr_base_dir` and `gr_*_dir`
+- Add `gr_relay_diverse_replicas` option, default to true
+
+#### Bugfixes:
+
+- python-crypto is obsoleted on RHEL7, replaced by python2-crypto
+- Redhat: avoid raise condition on initd restart
+
+## 2016-01-29 - 5.16.1 (Bugfix release)
+
+#### Bugfixes:
+
+(9636c9c) (e0807a1) add documented but missing parameter `gr_rrd_dir`
+
+## 2016-01-12 - 5.16.0 (Feature/Bugfix release)
+
+- !!! set default graphite version from 0.9.12 to 0.9.15 !!!
+
+#### Features:
+
+- (3c3f29d) #231 add new `gr_manage_python_packages` option
+
+#### Bugfixes:
+
+- (5f05fc5) #232 RedHat 6: reorder package installtion to avoid error messages
+- (bdd7e2c) #233 Redhat: add package python-tzlocal, so timezone can be set
+- (a70b484) #228 short fix for future parser in nginx template
+
+## 2015-11-26 - 5.15.0 (Feature/Bugfix release)
+
+- !!! stdlib required version is raised from 3.2.0 to 4.6.0 !!!
+
+#### Features:
+
+- (350a522) #216 add `gr_rrd_dir` to set location of rrd files
+
+#### Bugfixes:
+
+- (91f9d15) #220 fix font packages isntalled on RedHat/CentOS
+- (beba7ac) #219 #218 `gr_apache_port` and `gr_apache_port_https` are validated to integer
+
 ## 2015-07-08 - 5.14.0 (Feature/Bugfix release)
 
 #### Features:

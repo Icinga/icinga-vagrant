@@ -17,26 +17,26 @@
 # Read http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGISocketPrefix
 WSGISocketPrefix <%= scope.lookupvar('graphite::params::apache_wsgi_socket_prefix') %>
 
-<VirtualHost *:<%= scope.lookupvar('graphite::gr_apache_port') %>>
+<VirtualHost *:<%= scope.lookupvar('graphite::gr_web_server_port') %>>
 	ServerName <%= scope.lookupvar('graphite::gr_web_servername') %>
-	DocumentRoot "/opt/graphite/webapp"
+	DocumentRoot "<%= scope.lookupvar('graphite::graphiteweb_webapp_dir_REAL') %>"
 <% if ![nil, '', :undef].include?(scope.lookupvar('graphite::gr_apache_noproxy')) %>  NoProxy <%= scope.lookupvar('graphite::gr_apache_noproxy') %><% end %>
 
-	ErrorLog /opt/graphite/storage/error.log
-	CustomLog /opt/graphite/storage/access.log common
+	ErrorLog <%= scope.lookupvar('graphite::gr_apache_logdir') %>/graphite-web-error.log
+	CustomLog <%= scope.lookupvar('graphite::gr_apache_logdir') %>/graphite-web-access.log common
 
 	# I've found that an equal number of processes & threads tends
 	# to show the best performance for Graphite (ymmv).
 	WSGIDaemonProcess graphite processes=<%= scope.lookupvar('graphite::wsgi_processes') -%> threads=<%= scope.lookupvar('graphite::wsgi_threads') -%> display-name='%{GROUP}' inactivity-timeout=<%= scope.lookupvar('graphite::wsgi_inactivity_timeout') %>
 	WSGIProcessGroup graphite
 	WSGIApplicationGroup %{GLOBAL}
-	WSGIImportScript /opt/graphite/conf/graphite.wsgi process-group=graphite application-group=%{GLOBAL}
+	WSGIImportScript <%= scope.lookupvar('graphite::graphiteweb_conf_dir_REAL') %>/graphite_wsgi.py process-group=graphite application-group=%{GLOBAL}
 
 	# XXX You will need to create this file! There is a graphite.wsgi.example
 	# file in this directory that you can safely use, just copy it to graphite.wgsi
-	WSGIScriptAlias / /opt/graphite/conf/graphite.wsgi
+	WSGIScriptAlias / <%= scope.lookupvar('graphite::graphiteweb_conf_dir_REAL') %>/graphite_wsgi.py
 
-	Alias /content/ /opt/graphite/webapp/content/
+	Alias /content/ <%= scope.lookupvar('graphite::graphiteweb_webapp_dir_REAL') %>/content/
 	<Location "/content/">
 			SetHandler None
 <% if scope.lookupvar('graphite::gr_apache_24') %>
@@ -50,7 +50,7 @@ WSGISocketPrefix <%= scope.lookupvar('graphite::params::apache_wsgi_socket_prefi
 	# must change @DJANGO_ROOT@ to be the path to your django
 	# installation, which is probably something like:
 	# /usr/lib/python2.6/site-packages/django
-	Alias /media/ "@DJANGO_ROOT@/contrib/admin/media/"
+	Alias /media/ "/usr/lib/python2.6/site-packages/django/contrib/admin/media/"
 	<Location "/media/">
 			SetHandler None
 <% if scope.lookupvar('graphite::gr_apache_24') %>
@@ -62,7 +62,7 @@ WSGISocketPrefix <%= scope.lookupvar('graphite::params::apache_wsgi_socket_prefi
 
 	# The graphite.wsgi file has to be accessible by apache. It won't
 	# be visible to clients because of the DocumentRoot though.
-	<Directory /opt/graphite/conf/>
+	<Directory <%= scope.lookupvar('graphite::graphiteweb_conf_dir_REAL') %> >
 <% if scope.lookupvar('graphite::gr_apache_24') %>
 			Options All
 			AllowOverride All

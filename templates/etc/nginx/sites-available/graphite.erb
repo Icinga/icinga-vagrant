@@ -1,6 +1,6 @@
 # Serve static files directly and redirect remaining requests to graphite
 server {
-	listen   <%= scope.lookupvar('graphite::gr_apache_port') %>;
+	listen   <%= scope.lookupvar('graphite::gr_web_server_port') %>;
 	server_name <%= scope.lookupvar('graphite::gr_web_servername') %>;
 
 	client_max_body_size 64M;
@@ -14,7 +14,7 @@ server {
 	}
 
 	location ^~ /content/ {
-		root /opt/graphite/webapp;
+		root <%= scope.lookupvar('graphite::graphiteweb_webapp_dir_REAL') %>;
 		access_log off;
 		expires 30d;
 	}
@@ -22,7 +22,7 @@ server {
 	# proxy remaining requests to graphite
 
 	location / {
-<% unless scope.lookupvar('graphite::nginx_htpasswd') == :undef -%>
+<% unless [:undef, nil].include? scope.lookupvar('graphite::nginx_htpasswd') -%>
 		auth_basic "You shall not pass";
 		auth_basic_user_file /etc/nginx/graphite-htpasswd;
 <% end %>
@@ -33,7 +33,7 @@ server {
 		proxy_connect_timeout 10;
 		proxy_read_timeout <%= scope.lookupvar('graphite::nginx_proxy_read_timeout') %>;
 
-		proxy_pass http://unix:/var/run/graphite.sock:/;
+		proxy_pass http://<%= scope.lookupvar('graphite::gunicorn_bind') %>:/;
 
 	<% if scope.lookupvar('graphite::gr_web_cors_allow_from_all') %>
 		add_header Access-Control-Allow-Origin "*";
