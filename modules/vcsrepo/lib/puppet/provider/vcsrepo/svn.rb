@@ -7,7 +7,7 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
            :svnadmin => 'svnadmin',
            :svnlook  => 'svnlook'
 
-  has_features :filesystem_types, :reference_tracking, :basic_auth, :configuration, :conflict
+  has_features :filesystem_types, :reference_tracking, :basic_auth, :configuration, :conflict, :depth
 
   def create
     if !@resource.value(:source)
@@ -15,7 +15,8 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
     else
       checkout_repository(@resource.value(:source),
                           @resource.value(:path),
-                          @resource.value(:revision))
+                          @resource.value(:revision),
+                          @resource.value(:depth))
     end
     update_owner
   end
@@ -62,6 +63,10 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
       args.push('--config-dir', @resource.value(:configuration))
     end
 
+    if @resource.value(:trust_server_cert) != :false
+      args.push('--trust-server-cert')
+    end
+
     args
   end
 
@@ -105,10 +110,13 @@ Puppet::Type.type(:vcsrepo).provide(:svn, :parent => Puppet::Provider::Vcsrepo) 
 
   private
 
-  def checkout_repository(source, path, revision)
+  def checkout_repository(source, path, revision, depth)
     args = buildargs.push('checkout')
     if revision
       args.push('-r', revision)
+    end
+    if depth
+      args.push('--depth', depth)
     end
     args.push(source, path)
     svn(*args)
