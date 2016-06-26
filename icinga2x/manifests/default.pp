@@ -399,7 +399,10 @@ exec { 'Icinga Director Kickstart':
 # Dashing
 ####################################
 
-package { [ 'rubygems', 'rubygem-bundler', 'ruby-devel', 'openssl', 'gcc-c++', 'make', 'nodejs' ]:
+package { [ 'rubygems', 'rubygem-bundler',
+            'ruby-devel', 'openssl', 'gcc-c++',
+            'make', 'nodejs', 'v8'
+           ]:
   ensure => 'installed',
   require => Class['epel']
 }->
@@ -419,20 +422,19 @@ vcsrepo { '/usr/share/dashing-icinga2':
   force    => true,
   require  => Package['git']
 }->
-exec { 'dashing-install':
-  path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => "gem install --no-rdoc --no-ri dashing",
-  timeout => 1800
-}->
 exec { 'dashing-bundle-install':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  unless => 'test -d /usr/share/dashing-icinga2/binpaths',
-  command => "cd /usr/share/dashing-icinga2 && bundle install --path binpaths", # use binpaths to prevent 'ruby bundler: command not found: thin'
+  command => "cd /usr/share/dashing-icinga2 && bundle install --jobs 4 --system", # this already installs the dashing binary
   timeout => 1800
 }->
+file { '/usr/local/bin/restart-dashing':
+  ensure => link,
+  force => true,
+  target => '/usr/share/dashing-icinga2/restart-dashing'
+} ->
 exec { 'dashing-start':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => "/usr/share/dashing-icinga2/restart-dashing -p 8005 -D /usr/share/dashing-icinga2 -b /usr/local/bin/dashing",
+  command => "/usr/share/dashing-icinga2/restart-dashing",
   require => Service['icinga2'],
 }
 
