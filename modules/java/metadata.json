@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-java",
-  "version": "1.4.1",
+  "version": "1.6.0",
   "author": "puppetlabs",
   "summary": "Installs the correct Java package on various platforms.",
   "license": "Apache-2.0",
@@ -50,7 +50,8 @@
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
         "6",
-        "7"
+        "7",
+        "8"
       ]
     },
     {
@@ -58,7 +59,8 @@
       "operatingsystemrelease": [
         "10.04",
         "12.04",
-        "14.04"
+        "14.04",
+        "16.04"
       ]
     },
     {
@@ -78,7 +80,7 @@
   "requirements": [
     {
       "name": "pe",
-      "version_requirement": ">= 3.0.0 < 2015.3.0"
+      "version_requirement": ">= 3.0.0 < 2015.4.0"
     },
     {
       "name": "puppet",

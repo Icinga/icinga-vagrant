@@ -1,3 +1,53 @@
+## Supported Release 1.6.0
+### Summary
+
+Addition of a new supported OS, along with several other features and bugfixes.
+
+#### Features
+- Ubuntu 16.04 support.
+- Addition example for installing Java 8.
+- Update to newest modulesync_configs.
+- Addition of RedHat for Oracle Java.
+
+#### Bugfixes
+- Custom archive type now given extract_path.
+- Fix for rspec deprectation warnings.
+- Typo fixes for readme.
+- Fixed tests to run under strict variables.
+- Updated Java package for SLES 11.4.
+
+## Supported Release 1.5.0
+### Summary
+
+A release which has several support additions for different OSes. Also a couple of additional features and a few bug fixes.
+
+#### Features
+- Added Ubuntu 15.10 compatibility.
+- Addition of two facts: java_libjvm_path and java_default_home.
+- Added support for oracle-j2re1.8 and oracle-j2sdk1.8.
+- Adds FreeBSD Support.
+- Exposed the Puppet package resources install_options parameter via a new class parameter named package_options.
+- Debian 8 support.
+- Add support for official Oracle Java SE jdk and jre packages for CentOS.
+- Use java 8 as the default on RHEL > 7.0.
+
+#### Bugfixes
+- Updated fixtures.yml to use git instead of http for stdlib.
+- Updates to current msync configs.
+- Small README updates and syntax error fixes.
+
+## Supported Release 1.4.3
+###Summary
+
+Small release for support of newer PE versions. This increments the version of PE in the metadata.json file.
+
+## 2015-10-07 - Supported Release 1.4.2
+### Summary
+This release fixes the fact to not trigger java every time on OS X when it is not available.
+
+#### Bugfixes
+- Causes java\_version fact to not run `java` when java is not installed on OS X
+
 ## 2015-07-16 - Supported Release 1.4.1
 ### Summary
 This release updates the metadata for the upcoming release of PE and update params for OEL to match metadata
