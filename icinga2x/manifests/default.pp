@@ -578,3 +578,17 @@ exec { 'finish-grafana-setup':
   command => "/usr/local/bin/grafana-setup",
   require => [ File['grafana-setup'], File['grafana-dashboard-icinga2'], Class['graphite'], Class['grafana'] ],
 }
+
+####################################
+# Clippy.js
+####################################
+
+vcsrepo { '/var/www/html/icinga2-api-examples':
+  ensure   => 'present',
+  path     => '/var/www/html/icinga2-api-examples',
+  provider => 'git',
+  revision => 'master',
+  source   => 'https://github.com/Icinga/icinga2-api-examples.git',
+  force    => true,
+  require  => Package['git']
+}
