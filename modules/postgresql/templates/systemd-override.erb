@@ -1,7 +1,7 @@
-<% if @manage_package_repo and (scope.function_versioncmp([@version.to_s, '9.1']) >= 0) -%>
-.include /lib/systemd/system/postgresql-<%= @version %>.service
+<%- if scope.lookupvar('::operatingsystem') == 'Fedora' -%>
+.include /lib/systemd/system/<%= @service_name %>.service
 <% else -%>
-.include /lib/systemd/system/postgresql.service
+.include /usr/lib/systemd/system/<%= @service_name %>.service
 <% end -%>
 [Service]
 Environment=PGPORT=<%= @port %>

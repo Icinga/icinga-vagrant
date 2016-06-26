@@ -5,7 +5,7 @@ include ::apt
   #
   # http://www.postgresql.org/download/linux/debian/
   #
-  apt::pin { 'apt.postgresql.org':
+  apt::pin { 'apt_postgresql_org':
     originator => 'apt.postgresql.org',
     priority   => 500,
   }->
@@ -19,4 +19,5 @@ include ::apt
   }
 
   Apt::Source['apt.postgresql.org']->Package<|tag == 'postgresql'|>
+  Class['Apt::Update'] -> Package<|tag == 'postgresql'|>
 }

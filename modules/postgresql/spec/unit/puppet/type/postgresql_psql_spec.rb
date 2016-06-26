@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:postgresql_psql), "when validating attributes" do
-  [:name, :unless, :db, :psql_path, :psql_user, :psql_group].each do |attr|
+  [:name, :unless, :db, :psql_path, :psql_user, :psql_group, :connect_settings].each do |attr|
     it "should have a #{attr} parameter" do
       expect(Puppet::Type.type(:postgresql_psql).attrtype(attr)).to eq(:param)
     end
@@ -21,16 +21,18 @@ describe Puppet::Type.type(:postgresql_psql), :unless => Puppet.features.microso
 
   describe "available attributes" do
     {
-      :name        => "rspec",
-      :command     => "SELECT stuff",
-      :unless      => "SELECT other,stuff",
-      :db          => "postgres",
-      :psql_path   => "/bin/false",
-      :psql_user   => "postgres",
-      :psql_group  => "postgres",
-      :cwd         => "/var/lib",
-      :refreshonly => :true,
-      :search_path => [ "schema1", "schema2"]
+      :name             => "rspec",
+      :command          => "SELECT stuff",
+      :unless           => "SELECT other,stuff",
+      :db               => "postgres",
+      :psql_path        => "/bin/false",
+      :psql_user        => "postgres",
+      :psql_group       => "postgres",
+      :cwd              => "/var/lib",
+      :refreshonly      => :true,
+      :search_path      => [ "schema1", "schema2"],
+      :connect_settings => { 'PGHOST' => 'postgres-db-server',
+                             'DBVERSION' => '9.1', },
     }.each do |attr, value|
       context attr do
         let(:attributes) do { attr => value } end

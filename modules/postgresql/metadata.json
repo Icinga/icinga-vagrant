@@ -1,12 +1,18 @@
 {
   "name": "puppetlabs-postgresql",
-  "version": "4.4.2",
+  "version": "4.7.1",
   "author": "Inkling/Puppet Labs",
   "summary": "Offers support for basic management of PostgreSQL databases.",
   "license": "Apache-2.0",
   "source": "git://github.com/puppetlabs/puppetlabs-postgresql.git",
   "project_page": "https://github.com/puppetlabs/puppetlabs-postgresql",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
+  "dependencies": [
+    {"name":"puppetlabs/stdlib","version_requirement":"4.x"},
+    {"name":"puppetlabs/apt","version_requirement":">=1.8.0 <3.0.0"},
+    {"name":"puppetlabs/concat","version_requirement":">= 1.1.0 <3.0.0"}
+  ],
+  "data_provider": null,
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
@@ -44,7 +50,8 @@
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
         "6",
-        "7"
+        "7",
+        "8"
       ]
     },
     {
@@ -59,16 +66,11 @@
   "requirements": [
     {
       "name": "pe",
-      "version_requirement": ">= 3.0.0 < 5.0.0"
+      "version_requirement": ">= 3.0.0 < 2015.4.0"
     },
     {
       "name": "puppet",
       "version_requirement": ">= 3.0.0 < 5.0.0"
     }
-  ],
-  "dependencies": [
-    {"name":"puppetlabs/stdlib","version_requirement":"4.x"},
-    {"name":"puppetlabs/apt","version_requirement":">=1.8.0 <3.0.0"},
-    {"name":"puppetlabs/concat","version_requirement":">= 1.1.0 <2.0.0"}
   ]
 }
