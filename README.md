@@ -1,5 +1,7 @@
 # Puppet yum module
 
+## Please note this module is deprecated, future maintenance took over the Puppet Community. Please use new https://forge.puppet.com/puppet/yum
+
 This module provides helpful definitions for dealing with *yum*.
 
 ### Requirements
@@ -109,9 +111,42 @@ Install or remove *yum* package group:
 
 ```puppet
 yum::group { 'X Window System':
-  ensure => present,
+  ensure  => present,
+  timeout => 600,
 }
 ```
+
+### yum::install
+
+Install or remove packages via *yum* install subcommand:
+
+From URL:
+
+```puppet
+yum::install { 'package-name':
+  ensure => present,
+  source => 'http://path/to/package/filename.rpm',
+}
+```
+
+From local filesystem:
+
+```puppet
+yum::install { 'package-name':
+  ensure => present,
+  source => '/path/to/package/filename.rpm',
+}
+```
+
+Please note that resource name must be same as installed package name.
+
+# Contributors
+
+* Eugene Dementiev <eugene@dementiev.eu>
+* Mark McKinstry <mmckinst@nexcess.net>
+* Trey Dockendorf <treydock@gmail.com>
+* Derek McEachern <a0216331@ti.com>
+* John Zimmerman <zimmermj@trimet.org>
 
 ***
 
