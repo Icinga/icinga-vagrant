@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# wait until grafana-server is started
+until $(curl --output /dev/null --silent http://admin:admin@192.168.33.5:8004/api/datasources); do
+  printf '.'
+  sleep 1
+done
+
 # configure graphite datasource
 curl 'http://admin:admin@192.168.33.5:8004/api/datasources' -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary '{ "name": "icinga2", "type": "graphite", "url": "http://192.168.33.5:8003", "access": "direkt", "isDefault": true }'
 
