@@ -1,10 +1,7 @@
 require 'spec_helper'
 
 describe 'apache::mod::security', :type => :class do
-  let :pre_condition do
-    'include apache'
-  end
-
+  it_behaves_like "a mod class, without including apache"
   context "on RedHat based systems" do
     let :facts do
       {
@@ -28,8 +25,9 @@ describe 'apache::mod::security', :type => :class do
     ) }
     it { should contain_package('mod_security_crs') }
     it { should contain_file('security.conf').with(
-      :path => '/etc/httpd/conf.d/security.conf'
+      :path => '/etc/httpd/conf.modules.d/security.conf'
     ) }
+    it { should contain_file('security.conf').with_content %r{^\s+SecAuditLogParts ABIJDEFHZ$} }
     it { should contain_file('/etc/httpd/modsecurity.d').with(
       :ensure => 'directory',
       :path => '/etc/httpd/modsecurity.d',
@@ -46,6 +44,14 @@ describe 'apache::mod::security', :type => :class do
       :path => '/etc/httpd/modsecurity.d/security_crs.conf'
     ) }
     it { should contain_apache__security__rule_link('base_rules/modsecurity_35_bad_robots.data') }
+
+    describe 'with parameters' do
+      let :params do
+        { :audit_log_parts => "ABCDZ"
+        }
+      end
+      it { should contain_file('security.conf').with_content %r{^\s+SecAuditLogParts ABCDZ$} }
+    end
   end
 
   context "on Debian based systems" do
@@ -74,6 +80,7 @@ describe 'apache::mod::security', :type => :class do
     it { should contain_file('security.conf').with(
       :path => '/etc/apache2/mods-available/security.conf'
     ) }
+    it { should contain_file('security.conf').with_content %r{^\s+SecAuditLogParts ABIJDEFHZ$} }
     it { should contain_file('/etc/modsecurity').with(
       :ensure => 'directory',
       :path => '/etc/modsecurity',
@@ -90,6 +97,14 @@ describe 'apache::mod::security', :type => :class do
       :path => '/etc/modsecurity/security_crs.conf'
     ) }
     it { should contain_apache__security__rule_link('base_rules/modsecurity_35_bad_robots.data') }
+
+    describe 'with parameters' do
+      let :params do
+        { :audit_log_parts => "ACEZ"
+        }
+      end
+      it { should contain_file('security.conf').with_content  %r{^\s+SecAuditLogParts ACEZ$} }
+    end
   end
 
 end

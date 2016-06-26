@@ -22,8 +22,14 @@
   <%- if @passenger_pool_idle_time -%>
   PassengerPoolIdleTime <%= @passenger_pool_idle_time %>
   <%- end -%>
+  <%- if @passenger_max_request_queue_size -%>
+  PassengerMaxRequestQueueSize <%= @passenger_max_request_queue_size %>
+  <%- end -%>
   <%- if @passenger_max_requests -%>
   PassengerMaxRequests <%= @passenger_max_requests %>
+  <%- end -%>
+  <%- if @passenger_spawn_method -%>
+  PassengerSpawnMethod <%= @passenger_spawn_method %>
   <%- end -%>
   <%- if @passenger_stat_throttle_rate -%>
   PassengerStatThrottleRate <%= @passenger_stat_throttle_rate %>
@@ -39,5 +45,11 @@
   <%- end -%>
   <%- if @passenger_app_env -%>
   PassengerAppEnv <%= @passenger_app_env %>
+  <%- end -%>
+  <%- if @passenger_log_file -%>
+  PassengerLogFile <%= @passenger_log_file %>
+  <%- end -%>
+  <%- if @passenger_log_level -%>
+  PassengerLogLevel <%= @passenger_log_level %>
   <%- end -%>
 </IfModule>

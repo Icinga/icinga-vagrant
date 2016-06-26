@@ -1,25 +1,7 @@
 require 'spec_helper_acceptance'
+require_relative './version.rb'
 
-describe 'apache::mod::php class', :unless => UNSUPPORTED_PLATFORMS.include?(fact('osfamily')) do
-  case fact('osfamily')
-  when 'Debian'
-    vhost_dir    = '/etc/apache2/sites-enabled'
-    mod_dir      = '/etc/apache2/mods-available'
-    service_name = 'apache2'
-  when 'RedHat'
-    vhost_dir    = '/etc/httpd/conf.d'
-    mod_dir      = '/etc/httpd/conf.d'
-    service_name = 'httpd'
-  when 'FreeBSD'
-    vhost_dir    = '/usr/local/etc/apache24/Vhosts'
-    mod_dir      = '/usr/local/etc/apache24/Modules'
-    service_name = 'apache24'
-  when 'Gentoo'
-    vhost_dir    = '/etc/apache2/vhosts.d'
-    mod_dir      = '/etc/apache2/modules.d'
-    service_name = 'apache2'
-  end
-
+describe 'apache::mod::php class' do
   context "default php config" do
     it 'succeeds in puppeting php' do
       pp= <<-EOS
@@ -40,13 +22,23 @@ describe 'apache::mod::php class', :unless => UNSUPPORTED_PLATFORMS.include?(fac
       apply_manifest(pp, :catch_failures => true)
     end
 
-    describe service(service_name) do
-      it { is_expected.to be_enabled }
+    describe service($service_name) do
+      if (fact('operatingsystem') == 'Debian' && fact('operatingsystemmajrelease') == '8')
+        pending 'Should be enabled - Bug 760616 on Debian 8'
+      else
+        it { should be_enabled }
+      end
       it { is_expected.to be_running }
     end
 
-    describe file("#{mod_dir}/php5.conf") do
-      it { is_expected.to contain "DirectoryIndex index.php" }
+    if (fact('operatingsystem') == 'Ubuntu' && fact('operatingsystemmajrelease') == '16.04')
+      describe file("#{$mod_dir}/php7.0.conf") do
+        it { is_expected.to contain "DirectoryIndex index.php" }
+      end
+    else
+      describe file("#{$mod_dir}/php5.conf") do
+        it { is_expected.to contain "DirectoryIndex index.php" }
+      end
     end
 
     it 'should answer to php.example.com' do
@@ -83,14 +75,18 @@ describe 'apache::mod::php class', :unless => UNSUPPORTED_PLATFORMS.include?(fac
       apply_manifest(pp, :catch_failures => true)
     end
 
-    describe service(service_name) do
-      it { is_expected.to be_enabled }
+    describe service($service_name) do
+      if (fact('operatingsystem') == 'Debian' && fact('operatingsystemmajrelease') == '8')
+        pending 'Should be enabled - Bug 760616 on Debian 8'
+      else
+        it { should be_enabled }
+      end
       it { is_expected.to be_running }
     end
 
-    describe file("#{vhost_dir}/25-php.example.com.conf") do
+    describe file("#{$vhost_dir}/25-php.example.com.conf") do
       it { is_expected.to contain "  php_flag display_errors on" }
-      it { is_expected.to contain "  php_value include_path .:/usr/share/pear:/usr/bin/php" }
+      it { is_expected.to contain "  php_value include_path \".:/usr/share/pear:/usr/bin/php\"" }
       it { is_expected.to contain "  php_admin_flag engine on" }
       it { is_expected.to contain "  php_admin_value open_basedir /var/www/php/:/usr/share/pear/" }
     end
@@ -115,9 +111,14 @@ describe 'apache::mod::php class', :unless => UNSUPPORTED_PLATFORMS.include?(fac
       EOS
       apply_manifest(pp, :catch_failures => true)
     end
-
-    describe file("#{mod_dir}/php5.conf") do
-      it { should contain "# somecontent" }
+    if (fact('operatingsystem') == 'Ubuntu' && fact('operatingsystemmajrelease') == '16.04')
+      describe file("#{$mod_dir}/php7.0.conf") do
+        it { should contain "# somecontent" }
+      end
+    else
+      describe file("#{$mod_dir}/php5.conf") do
+        it { should contain "# somecontent" }
+      end
     end
   end
 
@@ -135,8 +136,14 @@ describe 'apache::mod::php class', :unless => UNSUPPORTED_PLATFORMS.include?(fac
       apply_manifest(pp, :catch_failures => true)
     end
 
-    describe file("#{mod_dir}/php5.conf") do
-      it { should contain "# somecontent" }
+    if (fact('operatingsystem') == 'Ubuntu' && fact('operatingsystemmajrelease') == '16.04')
+      describe file("#{$mod_dir}/php7.0.conf") do
+        it { should contain "# somecontent" }
+      end
+    else
+      describe file("#{$mod_dir}/php5.conf") do
+        it { should contain "# somecontent" }
+      end
     end
   end
 

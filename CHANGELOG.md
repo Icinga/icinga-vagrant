@@ -1,9 +1,227 @@
-##2015-06-11 - Supported Release 1.5.0
+## Supported Release 1.10.0
+#### Summary
+This release fixes backwards compatibility bugs introduced in 1.9.0. Also includes a new mod class and a new vhost feature.
+
+#### Features
+- Allow setting KeepAlive related options per vhost
+  - `apache::vhost::keepalive`
+  - `apache::vhost::keepalive_timeout`
+  - `apache::vhost::max_keepalive_requests`
+- Adds new class `apache::mod::cluster`
+
+#### Bugfixes
+- MODULES-2890: Allow php_version != 5
+- MODULES-2890: mod::php: Explicit test on jessie
+- MODULES-2890: Fix PHP on Debian stretch and Ubuntu Xenial
+- MODULES-2890: Fix mod_php SetHandler and cleanup
+- Fixed trailing slash in lib_path on Suse
+- Revert "MODULES-2956: Enable options within location block on proxy_match". Bug introduced in release 1.9.0.
+- Revert "changed rpaf Configuration Directives: RPAF -> RPAF_". Bug introduced in release 1.9.0.
+- Set actual path to apachectl on FreeBSD. Fixes snippets verification.
+
+## Supported Release 1.9.0 [DELETED]
+#### Features
+- Added `apache_version` fact
+- Added `apache::balancer::target` attribute
+- Added `apache::fastcgi::server::pass_header` attribute
+- Added ability for `apache::fastcgi::server::host` using sockets
+- Added `apache::root_directory_options` attribute
+- Added for `apache::mod::ldap`:
+  - `ldap_shared_cache_size`
+  - `ldap_cache_entries`
+  - `ldap_cache_ttl`
+  - `ldap_opcache_entries`
+  - `ldap_opcache_ttl`
+- Added `apache::mod::pagespeed::package_ensure` attribute
+- Added `apache::mod::passenger` attributes:
+  - `passenger_log_level`
+  - `manage_repo`
+- Added upstream repo for `apache::mod::passenger`
+- Added `apache::mod::proxy_fcgi` class
+- Added `apache::mod::security` attributes:
+  - `audit_log_parts`
+  - `secpcrematchlimit`
+  - `secpcrematchlimitrecursion`
+  - `secdefaultaction`
+  - `anomaly_score_blocking`
+  - `inbound_anomaly_threshold`
+  - `outbound_anomaly_threshold`
+- Added `apache::mod::ssl` attributes:
+  - `ssl_mutex`
+  - `apache_version`
+- Added ubuntu 16.04 support
+- Added `apache::mod::authnz_ldap::package_name` attribute
+- Added `apache::mod::ldap::package_name` attribute
+- Added `apache::mod::proxy::package_name` attribute
+- Added `apache::vhost` attributes:
+  - `ssl_proxy_check_peen_expire`
+  - `ssl_proxy_protocol`
+  - `logroot_owner`
+  - `logroot_group`
+  - `setenvifnocase`
+  - `passenger_user`
+  - `passenger_high_performance`
+  - `jk_mounts`
+  - `fastcgi_idle_timeout`
+  - `modsec_disable_msgs`
+  - `modsec_disable_tags`
+- Added ability for 2.4-style `RequireAll|RequireNone|RequireAny` directory permissions
+- Added ability for includes in vhost directory
+- Added directory values:
+  - `AuthMerging`
+  - `MellonSPMetadataFile`
+- Adds Configurability of Collaborative Detection Severity Levels for OWASP Core Rule Set to `apache::mod::security` class
+  - `critical_anomaly_score`
+  - `error_anomaly_score`
+  - `warning_anomaly_score`
+  - `notice_anomaly_score`
+- Adds ability to configure `info_path` in `apache::mod::info` class
+- Adds ability to configure `verify_config` in `apache::vhost::custom`
+
+#### Bugfixes
+- Fixed apache mod setup for event/worker failing syntax
+- Fixed concat deprecation warnings
+- Fixed pagespeed mod
+- Fixed service restart on mod update
+- Fixed mod dir purging to happen after package installs
+- Fixed various `apache::mod::*` file modes
+- Fixed `apache::mod::authnz_ldap` parameter `verifyServerCert` to be `verify_server_cert`
+- Fixed loadfile name in `apache::mod::fcgid`
+- Fixed `apache::mod::remoteip` to fail on apache < 2.4 (because it is not available)
+- Fixed `apache::mod::ssl::ssl_honorcipherorder` interpolation
+- Lint fixes
+- Strict variable fixes
+- Fixed `apache::vhost` attribute `redirectmatch_status` to be optional
+- Fixed SSLv3 on by default in mod\_nss
+- Fixed mod\_rpaf directive names in template
+- Fixed mod\_worker needing MaxClients with ThreadLimit
+- Fixed quoting on vhost php\_value
+- Fixed xml2enc for proxy\_html on debian
+- Fixed a problem where the apache service restarts too fast
+
+## Supported Release 1.8.1
+### Summary
+This release includes bug fixes and a documentation update.
+
+#### Bugfixes
+- Fixes a bug that occurs when using the module in combination with puppetlabs-concat 2.x.
+- Fixes a bug where passenger.conf was vulnerable to purging.
+- Removes the pin of the concat module dependency.
+
+## 2016-01-26 - Supported Release 1.8.0
+### Summary
+This release includes a lot of bug fixes and feature updates, including support for Debian 8, as well as many test improvements.
+
+#### Features
+- Debian 8 Support.
+- Added the 'file_mode' property to allow a custom permission setting for config files.
+- Enable 'PassengerMaxRequestQueueSize' to be set for mod_passenger.
+- MODULES-2956: Enable options within location block on proxy_match.
+- Support itk on redhat.
+- Support the mod_ssl SSLProxyVerify directive.
+- Support ProxPassReverseCookieDomain directive (mod_proxy).
+- Support proxy provider for vhost directories.
+- Added new 'apache::vhost::custom' resource.
+
+#### Bugfixes
+- Fixed ProxyPassReverse configuration.
+- Fixed error in Amazon operatingsystem detection.
+- Fixed mod_security catalog ordering issues for RedHat 7.
+- Fixed paths and packages for the shib2 apache module on Debian pre Jessie.
+- Fixed EL7 directory path for apache modules.
+- Fixed validation error when empty array is passed for the rewrites parameter.
+- Idempotency fixes with regards to '::apache::mod_enable_dir'.
+- ITK fixes.
+- (MODULES-2865) fix $mpm_module logic for 'false'.
+- Set SSLProxy directives even if ssl is false, due to issue with RewriteRules and ProxyPass directives.
+- Enable setting LimitRequestFieldSize globally, and remove it from vhost.
+
+#### Improvements
+- apache::mod::php now uses FilesMatch to configure the php handler. This is following the recommended upstream configuration guidelines (http://php.net/manual/en/install.unix.apache2.php#example-20) and distribution's default config (e.g.: http://bazaar.launchpad.net/~ubuntu-branches/ubuntu/vivid/php5/vivid/view/head:/debian/php5.conf). It avoids inadvertently exposing the PHP handler to executing uploads with names like 'file.php.jpg', but might impact setups with unusual requirements.
+- Improved compatibility for Gentoo.
+- Vhosts can now be supplied with a wildcard listen value.
+- Numerous test improvements.
+- Removed workarounds for https://bz.apache.org/bugzilla/show_bug.cgi?id=38864 as the issues have been fixed in Apache.
+- Documentation updates.
+- Ensureed order of ProxyPass and ProxyPassMatch parameters.
+- Ensure that ProxyPreserveHost is set to off mode explicitly if not set in manifest.
+- Put headers and request headers before proxy with regards to template generation.
+- Added X-Forwarded-For into log_formats defaults.
+- (MODULES-2703) Allow mod pagespeed to take an array of lines as additional_configuration.
+
+## Supported Release 1.7.1
+###Summary
+
+Small release for support of newer PE versions. This increments the version of PE in the metadata.json file.
+
+## 2015-11-17 - Supported Release 1.7.0
+### Summary
+This release includes many new features and bugfixes. There are test, documentation and misc improvements.
+
+#### Features
+- allow groups with - like vhost-users 
+- ability to enable/disable the secruleengine through a parameter
+- add mod_auth_kerb parameters to vhost
+- client auth for reverse proxy
+- support for mod_auth_mellon
+- change SSLProtocol in apache::vhost to be space separated
+- RewriteLock support
+
+#### Bugfixes
+- fix apache::mod::cgid so it can be used with the event MPM 
+- load unixd before fcgid on all operating systems
+- fixes conditional in vhost aliases
+- corrects mod_cgid worker/event defaults
+- ProxyPassMatch parameters were ending up on a newline
+- catch that mod_authz_default has been removed in Apache 2.4
+- mod::ssl fails on SLES
+- fix typo of MPM_PREFORK for FreeBSD package install 
+- install all modules before adding custom configs
+- fix acceptance testing for SSLProtocol behaviour for real
+- fix ordering issue with conf_file and ports_file 
+
+#### Known Issues
+- mod_passenger is having issues installing on Redhat/Centos 6, This is due to package dependency issues.
+
+#### Improvements
+- added docs for forcetype directive
+- removes ruby 1.8.7 from the travisci test matrix
+- readme reorganisation, minor fixups
+- support the mod_proxy ProxyPassReverseCookiePath directive
+- the purge_vhost_configs parameter is actually called purge_vhost_dir
+- add ListenBacklog for mod worker
+- deflate application/json by default 
+- install mod_authn_alias as default mod in debian for apache < 2.4
+- optionally set LimitRequestFieldSize on an apache::vhost
+- add SecUploadDir parameter to support file uploads with mod_security
+- optionally set parameters for mod_ext_filter module
+- allow SetOutputFilter to be set on a directory
+- RC4 is deprecated
+- allow empty docroot
+- add option to configure the include pattern for the vhost_enable dir
+- allow multiple IP addresses per vhost
+- default document root update for Ubuntu 14.04 and Debian 8 
+
+## 2015-07-28 - Supported Release 1.6.0
+### Summary
+This release includes a couple of new features, along with test and documentation updates, and support for the latest AIO puppet builds.
+
+#### Features
+- Add `scan_proxy_header_field` parameter to `apache::mod::geoip`
+- Add `ssl_openssl_conf_cmd` parameter to `apache::vhost` and `apache::mod::ssl`
+- Add `filters` parameter to `apache::vhost`
+
+#### Bugfixes
+- Test updates
+- Do not use systemd on Amazon Linux
+- Add missing docs for `timeout` parameter (MODULES-2148)
+
+## 2015-06-11 - Supported Release 1.5.0
 ### Summary
 This release primarily adds Suse compatibility. It also adds a handful of other
 parameters for greater configuration control.
 
-### Features
+#### Features
 - Add `apache::lib_path` parameter
 - Add `apache::service_restart` parameter
 - Add `apache::vhost::geoip_enable` parameter
@@ -17,7 +235,7 @@ parameters for greater configuration control.
 - Add `apache::mod::ssl::ssl_honorcipherorder` parameter
 - Add `apache::mod::userdir::options` parameter
 
-### Bugfixes
+#### Bugfixes
 - Document `apache::user` parameter
 - Document `apache::group` parameter
 - Fix apache::dev on FreeBSD
@@ -30,16 +248,16 @@ parameters for greater configuration control.
 - Fix userdir access permissions
 - Fix issue where the module was trying to use systemd on Amazon Linux.
 
-##2015-04-28 - Supported Release 1.4.1
+## 2015-04-28 - Supported Release 1.4.1
 
 This release corrects a metadata issue that has been present since release 1.2.0. The refactoring of `apache::vhost` to use `puppetlabs-concat` requires a version of concat newer than the version required in PE. If you are using PE 3.3.0 or earlier you will need to use version 1.1.1 or earlier of the `puppetlabs-apache` module.
 
-##2015-03-17 - Supported Release 1.4.0
+## 2015-03-17 - Supported Release 1.4.0
 ###Summary
 
 This release fixes the issue where the docroot was still managed even if the default vhosts were disabled and has many other features and bugfixes including improved support for 'deny' and 'require' as arrays in the 'directories' parameter under `apache::vhost`
 
-####Features
+#### Features
 - New parameters to `apache`
   - `default_charset`
   - `default_type`
@@ -67,7 +285,7 @@ This release fixes the issue where the docroot was still managed even if the def
 - Added proper array support for `require` in the `directories` parameter in `apache::vhost`
 - Added support for `setenv` inside proxy locations
 
-###Bugfixes
+### Bugfixes
 - Fix issue in `apache::vhost` that was preventing the scriptalias fragment from being included (MODULES-1784)
 - Install required `mod_ldap` package for EL7 (MODULES-1779)
 - Change default value of `maxrequestworkers` in `apache::mod::event` to be a multiple of the default `ThreadsPerChild` of 25.
@@ -77,12 +295,12 @@ This release fixes the issue where the docroot was still managed even if the def
 - Change the loadfile name for `mod_passenger` so `mod_proxy` will load by default before `mod_passenger`
 - Remove old Debian work-around that removed `passenger_extra.conf`
 
-##2015-02-17 - Supported Release 1.3.0
-###Summary
+## 2015-02-17 - Supported Release 1.3.0
+### Summary
 
 This release has many new features and bugfixes, including the ability to optionally not trigger service restarts on config changes.
 
-####Features
+#### Features
 - New parameters - `apache`
   - `service_manage`
   - `use_optional_includes`
@@ -106,7 +324,7 @@ This release has many new features and bugfixes, including the ability to option
   - Add `root_group` to `apache::mod::php`
   - Add `apache::mod::proxy_connect` class
   - Add `apache::mod::security` class
-  - Add `ssl_pass_phrase_dialog` and `ssl_random_seed_bytes parameters to `apache::mod::ssl` (MODULES-1719)
+  - Add `ssl_pass_phrase_dialog` and `ssl_random_seed_bytes` parameters to `apache::mod::ssl` (MODULES-1719)
   - Add `status_path` parameter to `apache::mod::status`
   - Add `apache_version` parameter to `apache::mod::version`
   - Add `package_name` and `mod_path` parameters to `apache::mod::wsgi` (MODULES-1458)
@@ -117,7 +335,7 @@ This release has many new features and bugfixes, including the ability to option
 - Add passenger support for Debian Jessie
 - Add support for not having puppet restart the apache service (MODULES-1559)
 
-####Bugfixes
+#### Bugfixes
 - For apache 2.4 `mod_itk` requires `mod_prefork` (MODULES-825)
 - Allow SSLCACertificatePath to be unset in `apache::vhost` (MODULES-1457)
 - Load fcgid after unixd on RHEL7
@@ -136,12 +354,12 @@ This release has many new features and bugfixes, including the ability to option
 - Fix indentation in `vhost/_directories.erb` template (MODULES-1688)
 - Create symlinks on all distros if `vhost_enable_dir` is specified
 
-##2014-09-30 - Supported Release 1.2.0
-###Summary
+## 2014-09-30 - Supported Release 1.2.0
+### Summary
 
 This release features many improvements and bugfixes, including several new defines, a reworking of apache::vhost for more extensibility, and many new parameters for more customization. This release also includes improved support for strict variables and the future parser.
 
-####Features
+#### Features
 - Convert apache::vhost to use concat for easier extensions
 - Test improvements
 - Synchronize files with modulesync
@@ -204,7 +422,7 @@ This release features many improvements and bugfixes, including several new defi
   - Add apache_version parameter to apache::mod::userdir
   - Add apache::mod::version class
 
-####Bugfixes
+#### Bugfixes
 - Set osfamily defaults for wsgi_socket_prefix
 - Support multiple balancermembers with the same url
 - Validate apache::vhost::custom_fragment
@@ -235,25 +453,25 @@ This release features many improvements and bugfixes, including several new defi
 - Fix RedirectMatch rules
 - Fix misleading error message in apache::version
 
-####Known Bugs
+#### Known Bugs
 * By default, the version of Apache that ships with Ubuntu 10.04 does not work with `wsgi_import_script`.
 * SLES is unsupported.
 
-##2014-07-15 - Supported Release 1.1.1
-###Summary
+## 2014-07-15 - Supported Release 1.1.1
+### Summary
 
 This release merely updates metadata.json so the module can be uninstalled and
 upgraded via the puppet module command.
 
 ## 2014-04-14 Supported Release 1.1.0
 
-###Summary
+### Summary
 
 This release primarily focuses on extending the httpd 2.4 support, tested
 through adding RHEL7 and Ubuntu 14.04 support.  It also includes Passenger 
 4 support, as well as several new modules and important bugfixes.
 
-####Features
+#### Features
 
 - Add support for RHEL7 and Ubuntu 14.04
 - More complete apache24 support
@@ -268,7 +486,7 @@ through adding RHEL7 and Ubuntu 14.04 support.  It also includes Passenger
 - Add support for custom extensions for mod_php
 - Improve proxy_html support for Debian
 
-####Bugfixes
+#### Bugfixes
 
 - Remove NameVirtualHost directive for apache >= 2.4
 - Order proxy_set option so it doesn't change between runs
@@ -276,42 +494,42 @@ through adding RHEL7 and Ubuntu 14.04 support.  It also includes Passenger
 - Fix missing ensure on concat::fragment resources
 - Fix bad dependencies in apache::mod and apache::mod::mime
 
-####Known Bugs
+#### Known Bugs
 * By default, the version of Apache that ships with Ubuntu 10.04 does not work with `wsgi_import_script`.
 * SLES is unsupported.
 
 ## 2014-03-04 Supported Release 1.0.1
-###Summary
+### Summary
 
 This is a supported release.  This release removes a testing symlink that can
 cause trouble on systems where /var is on a seperate filesystem from the
 modulepath.
 
-####Features
-####Bugfixes
-####Known Bugs
+#### Features
+#### Bugfixes
+#### Known Bugs
 * By default, the version of Apache that ships with Ubuntu 10.04 does not work with `wsgi_import_script`.
 * SLES is unsupported.
  
 ## 2014-03-04 Supported Release 1.0.0
-###Summary
+### Summary
 
 This is a supported release. This release introduces Apache 2.4 support for
 Debian and RHEL based osfamilies.
 
-####Features
+#### Features
 
 - Add apache24 support
 - Add rewrite_base functionality to rewrites
 - Updated README documentation
 - Add WSGIApplicationGroup and WSGIImportScript directives
 
-####Bugfixes
+#### Bugfixes
 
 - Replace mutating hashes with merge() for Puppet 3.5
 - Fix WSGI import_script and mod_ssl issues on Lucid
 
-####Known Bugs
+#### Known Bugs
 * By default, the version of Apache that ships with Ubuntu 10.04 does not work with `wsgi_import_script`.
 * SLES is unsupported.
 
@@ -493,7 +711,7 @@ worker/prefork
 - Fix formatting in vhost template
 - Fix spec tests such that they pass
 
-##2012-05-08 Puppet Labs <info@puppetlabs.com> - 0.0.4
+## 2012-05-08 Puppet Labs <info@puppetlabs.com> - 0.0.4
 * e62e362 Fix broken tests for ssl, vhost, vhost::*
 * 42c6363 Changes to match style guide and pass puppet-lint without error
 * 42bc8ba changed name => path for file resources in order to name namevar by it's name

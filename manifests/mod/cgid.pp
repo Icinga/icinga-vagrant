@@ -2,7 +2,11 @@ class apache::mod::cgid {
   case $::osfamily {
     'FreeBSD': {}
     default: {
-      Class['::apache::mod::worker'] -> Class['::apache::mod::cgid']
+      if defined(Class['::apache::mod::event']) {
+        Class['::apache::mod::event'] -> Class['::apache::mod::cgid']
+      } else {
+        Class['::apache::mod::worker'] -> Class['::apache::mod::cgid']
+      }
     }
   }
 
@@ -19,6 +23,7 @@ class apache::mod::cgid {
     file { 'cgid.conf':
       ensure  => file,
       path    => "${::apache::mod_dir}/cgid.conf",
+      mode    => $::apache::file_mode,
       content => template('apache/mod/cgid.conf.erb'),
       require => Exec["mkdir ${::apache::mod_dir}"],
       before  => File[$::apache::mod_dir],
