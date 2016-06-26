@@ -8,7 +8,7 @@ class php::params {
       $common_package_name = 'php5-common'
       $cli_package_name = 'php5-cli'
       $cli_inifile = '/etc/php5/cli/php.ini'
-      $php_conf_dir = '/etc/php5/conf.d'
+      $php_conf_dir = '/etc/php5/mods-available'
       $fpm_package_name = 'php5-fpm'
       $fpm_service_name = 'php5-fpm'
       $fpm_service_restart = 'restart'

@@ -24,8 +24,8 @@ class php::fpm::daemon (
   $process_priority            = undef,
   $rlimit_files                = undef,
   $rlimit_core                 = undef,
-  $log_owner                   = 'root',
-  $log_group                   = false,
+  $log_owner                   = undef,
+  $log_group                   = undef,
   $log_dir_mode                = '0770',
 ) inherits ::php::params {
 
