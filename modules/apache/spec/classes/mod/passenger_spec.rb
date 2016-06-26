@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 describe 'apache::mod::passenger', :type => :class do
-  let :pre_condition do
-    'include apache'
-  end
+  it_behaves_like "a mod class, without including apache"
   context "on a Debian OS" do
     let :facts do
       {
@@ -14,7 +12,6 @@ describe 'apache::mod::passenger', :type => :class do
         :lsbdistcodename        => 'squeeze',
         :operatingsystem        => 'Debian',
         :id                     => 'root',
-        :kernel                 => 'Linux',
         :path                   => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
         :is_pe                  => false,
       }
@@ -58,11 +55,30 @@ describe 'apache::mod::passenger', :type => :class do
       end
       it { is_expected.to contain_file('passenger.conf').with_content(/^  PassengerPoolIdleTime 1200$/) }
     end
+    describe "with passenger_max_request_queue_size => 100" do
+      let :params do
+        { :passenger_max_request_queue_size => 100 }
+      end
+      it { is_expected.to contain_file('passenger.conf').with_content(/^  PassengerMaxRequestQueueSize 100$/) }
+    end
+
     describe "with passenger_max_requests => 20" do
       let :params do
         { :passenger_max_requests => 20 }
       end
       it { is_expected.to contain_file('passenger.conf').with_content(/^  PassengerMaxRequests 20$/) }
+    end
+    describe "with passenger_spawn_method => bogus" do
+      let :params do
+        { :passenger_spawn_method => 'bogus' }
+      end
+      it { is_expected.to raise_error(Puppet::Error, /not permitted for passenger_spawn_method/) }
+    end
+    describe "with passenger_spawn_method => direct" do
+      let :params do
+        { :passenger_spawn_method => 'direct' }
+      end
+      it { is_expected.to contain_file('passenger.conf').with_content(/^  PassengerSpawnMethod direct$/) }
     end
     describe "with passenger_stat_throttle_rate => 10" do
       let :params do
@@ -105,6 +121,18 @@ describe 'apache::mod::passenger', :type => :class do
         { :passenger_app_env => 'foo' }
       end
       it { is_expected.to contain_file('passenger.conf').with_content(/^  PassengerAppEnv foo$/) }
+    end
+    describe "with passenger_log_file => '/var/log/apache2/passenger.log'" do
+      let :params do
+        { :passenger_log_file => '/var/log/apache2/passenger.log' }
+      end
+      it { is_expected.to contain_file('passenger.conf').with_content(%r{^  PassengerLogFile /var/log/apache2/passenger.log$}) }
+    end
+    describe "with passenger_log_level => 3" do
+      let :params do
+        { :passenger_log_level => 3 }
+      end
+      it { is_expected.to contain_file('passenger.conf').with_content(%r{^  PassengerLogLevel 3$}) }
     end
     describe "with mod_path => '/usr/lib/foo/mod_foo.so'" do
       let :params do
@@ -213,10 +241,9 @@ describe 'apache::mod::passenger', :type => :class do
   end
 
   context "on a RedHat OS" do
-    let :facts do
+    let :rh_facts do
       {
         :osfamily               => 'RedHat',
-        :operatingsystemrelease => '6',
         :concat_basedir         => '/dne',
         :operatingsystem        => 'RedHat',
         :id                     => 'root',
@@ -225,30 +252,46 @@ describe 'apache::mod::passenger', :type => :class do
         :is_pe                  => false,
       }
     end
-    it { is_expected.to contain_class("apache::params") }
-    it { is_expected.to contain_apache__mod('passenger') }
-    it { is_expected.to contain_package("mod_passenger") }
-    it { is_expected.to contain_file('passenger_package.conf').with({
-      'path' => '/etc/httpd/conf.d/passenger.conf',
-    }) }
-    it { is_expected.to contain_file('passenger_package.conf').without_content }
-    it { is_expected.to contain_file('passenger_package.conf').without_source }
-    it { is_expected.to contain_file('zpassenger.load').with({
-      'path' => '/etc/httpd/conf.d/zpassenger.load',
-    }) }
-    it { is_expected.to contain_file('passenger.conf').without_content(/PassengerRoot/) }
-    it { is_expected.to contain_file('passenger.conf').without_content(/PassengerRuby/) }
-    describe "with passenger_root => '/usr/lib/example'" do
-      let :params do
-        { :passenger_root => '/usr/lib/example' }
+
+    context "on EL6" do
+      let(:facts) { rh_facts.merge(:operatingsystemrelease => '6') }
+
+      it { is_expected.to contain_class("apache::params") }
+      it { is_expected.to contain_apache__mod('passenger') }
+      it { is_expected.to contain_package("mod_passenger") }
+      it { is_expected.to contain_file('passenger_package.conf').with({
+        'path' => '/etc/httpd/conf.d/passenger.conf',
+      }) }
+      it { is_expected.to contain_file('passenger_package.conf').without_content }
+      it { is_expected.to contain_file('passenger_package.conf').without_source }
+      it { is_expected.to contain_file('zpassenger.load').with({
+        'path' => '/etc/httpd/conf.d/zpassenger.load',
+      }) }
+      it { is_expected.to contain_file('passenger.conf').without_content(/PassengerRoot/) }
+      it { is_expected.to contain_file('passenger.conf').without_content(/PassengerRuby/) }
+      describe "with passenger_root => '/usr/lib/example'" do
+        let :params do
+          { :passenger_root => '/usr/lib/example' }
+        end
+        it { is_expected.to contain_file('passenger.conf').with_content(/^  PassengerRoot "\/usr\/lib\/example"$/) }
       end
-      it { is_expected.to contain_file('passenger.conf').with_content(/^  PassengerRoot "\/usr\/lib\/example"$/) }
+      describe "with passenger_ruby => /usr/lib/example/ruby" do
+        let :params do
+          { :passenger_ruby => '/usr/lib/example/ruby' }
+        end
+        it { is_expected.to contain_file('passenger.conf').with_content(/^  PassengerRuby "\/usr\/lib\/example\/ruby"$/) }
+      end
     end
-    describe "with passenger_ruby => /usr/lib/example/ruby" do
-      let :params do
-        { :passenger_ruby => '/usr/lib/example/ruby' }
-      end
-      it { is_expected.to contain_file('passenger.conf').with_content(/^  PassengerRuby "\/usr\/lib\/example\/ruby"$/) }
+
+    context "on EL7" do
+      let(:facts) { rh_facts.merge(:operatingsystemrelease => '7') }
+
+      it { is_expected.to contain_file('passenger_package.conf').with({
+        'path' => '/etc/httpd/conf.d/passenger.conf',
+      }) }
+      it { is_expected.to contain_file('zpassenger.load').with({
+        'path' => '/etc/httpd/conf.modules.d/zpassenger.load',
+      }) }
     end
   end
   context "on a FreeBSD OS" do

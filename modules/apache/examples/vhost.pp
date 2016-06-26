@@ -141,6 +141,7 @@ apache::vhost { 'fifteenth.example.com':
   rack_base_uris => ['/rackapp1', '/rackapp2'],
 }
 
+
 # Vhost to redirect non-ssl to ssl
 apache::vhost { 'sixteenth.example.com non-ssl':
   servername => 'sixteenth.example.com',
@@ -150,7 +151,7 @@ apache::vhost { 'sixteenth.example.com non-ssl':
     {
       comment      => 'redirect non-SSL traffic to SSL site',
       rewrite_cond => ['%{HTTPS} off'],
-      rewrite_rule => ['(.*) https://%{HTTPS_HOST}%{REQUEST_URI}'],
+      rewrite_rule => ['(.*) https://%{HTTP_HOST}%{REQUEST_URI}'],
     }
   ]
 }
@@ -182,7 +183,7 @@ apache::vhost { 'sixteenth.example.com non-ssl old rewrite':
   port         => '80',
   docroot      => '/var/www/sixteenth',
   rewrite_cond => '%{HTTPS} off',
-  rewrite_rule => '(.*) https://%{HTTPS_HOST}%{REQUEST_URI}',
+  rewrite_rule => '(.*) https://%{HTTP_HOST}%{REQUEST_URI}',
 }
 apache::vhost { 'sixteenth.example.com ssl old rewrite':
   servername => 'sixteenth.example.com',
@@ -238,7 +239,7 @@ apache::vhost { 'securedomain.com':
         ssl_cert             => '/etc/ssl/securedomain.cert',
         ssl_key              => '/etc/ssl/securedomain.key',
         ssl_chain            => '/etc/ssl/securedomain.crt',
-        ssl_protocol         => '-ALL +SSLv3 +TLSv1',
+        ssl_protocol         => '-ALL +TLSv1',
         ssl_cipher           => 'ALL:!aNULL:!ADH:!eNULL:!LOW:!EXP:RC4+RSA:+HIGH:+MEDIUM',
         ssl_honorcipherorder => 'On',
         add_listen           => false,
@@ -249,5 +250,12 @@ apache::vhost { 'twentyfirst.example.com':
   port               => '80',
   docroot            => '/var/www/twentyfirst',
   access_log_env_var => 'admin',
+}
+
+# Vhost with a passenger_base configuration
+apache::vhost { 'twentysecond.example.com':
+  port           => '80',
+  docroot        => '/var/www/twentysecond',
+  rack_base_uris => ['/passengerapp1', '/passengerapp2'],
 }
 

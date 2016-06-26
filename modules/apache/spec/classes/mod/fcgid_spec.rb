@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 describe 'apache::mod::fcgid', :type => :class do
-  let :pre_condition do
-    'include apache'
-  end
+  it_behaves_like "a mod class, without including apache"
 
   context "on a Debian OS" do
     let :facts do
@@ -17,15 +15,17 @@ describe 'apache::mod::fcgid', :type => :class do
         :id                        => 'root',
         :kernel                    => 'Linux',
         :path                      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-        :is_pe                  => false,
+        :is_pe                     => false,
       }
     end
     it { is_expected.to contain_class("apache::params") }
-    it { is_expected.to contain_apache__mod('fcgid') }
+    it { is_expected.to contain_apache__mod('fcgid').with({
+      'loadfile_name' => nil
+    }) }
     it { is_expected.to contain_package("libapache2-mod-fcgid") }
   end
 
-  context "on a RedHat OS" do
+  context "on a RHEL6" do
     let :facts do
       {
         :osfamily                  => 'RedHat',
@@ -36,13 +36,15 @@ describe 'apache::mod::fcgid', :type => :class do
         :id                        => 'root',
         :kernel                    => 'Linux',
         :path                      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-        :is_pe                  => false,
+        :is_pe                     => false,
       }
     end
 
     describe 'without parameters' do
       it { is_expected.to contain_class("apache::params") }
-      it { is_expected.to contain_apache__mod('fcgid') }
+      it { is_expected.to contain_apache__mod('fcgid').with({
+        'loadfile_name' => nil
+      }) }
       it { is_expected.to contain_package("mod_fcgid") }
     end
 
@@ -81,7 +83,7 @@ describe 'apache::mod::fcgid', :type => :class do
         :id                        => 'root',
         :kernel                    => 'Linux',
         :path                      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-        :is_pe                  => false,
+        :is_pe                     => false,
       }
     end
 
@@ -89,8 +91,7 @@ describe 'apache::mod::fcgid', :type => :class do
       it { is_expected.to contain_class("apache::params") }
       it { is_expected.to contain_apache__mod('fcgid').with({
         'loadfile_name' => 'unixd_fcgid.load'
-      })
-      }
+      }) }
       it { is_expected.to contain_package("mod_fcgid") }
     end
   end
@@ -99,19 +100,21 @@ describe 'apache::mod::fcgid', :type => :class do
     let :facts do
       {
         :osfamily                  => 'FreeBSD',
-        :operatingsystemrelease    => '9',
-        :operatingsystemmajrelease => '9',
+        :operatingsystemrelease    => '10',
+        :operatingsystemmajrelease => '10',
         :concat_basedir            => '/dne',
         :operatingsystem           => 'FreeBSD',
         :id                        => 'root',
         :kernel                    => 'FreeBSD',
         :path                      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-        :is_pe                  => false,
+        :is_pe                     => false,
       }
     end
 
     it { is_expected.to contain_class("apache::params") }
-    it { is_expected.to contain_apache__mod('fcgid') }
+    it { is_expected.to contain_apache__mod('fcgid').with({
+      'loadfile_name' => 'unixd_fcgid.load'
+    }) }
     it { is_expected.to contain_package("www/mod_fcgid") }
   end
 
@@ -125,12 +128,14 @@ describe 'apache::mod::fcgid', :type => :class do
         :id                        => 'root',
         :kernel                    => 'Linux',
         :path                      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin',
-        :is_pe                  => false,
+        :is_pe                     => false,
       }
     end
 
     it { is_expected.to contain_class("apache::params") }
-    it { is_expected.to contain_apache__mod('fcgid') }
+    it { is_expected.to contain_apache__mod('fcgid').with({
+      'loadfile_name' => nil,
+    }) }
     it { is_expected.to contain_package("www-apache/mod_fcgid") }
   end
 end

@@ -3,8 +3,10 @@
 # Managed by Puppet
 # ************************************
 
-<VirtualHost <%= @nvh_addr_port %>>
+<VirtualHost <%= [@nvh_addr_port].flatten.compact.join(' ') %>>
+<% if @servername -%>
   ServerName <%= @servername %>
+<% end -%>
 <% if @serveradmin -%>
   ServerAdmin <%= @serveradmin %>
 <% end -%>

@@ -1,30 +1,43 @@
 class apache::mod::passenger (
-  $passenger_conf_file            = $::apache::params::passenger_conf_file,
-  $passenger_conf_package_file    = $::apache::params::passenger_conf_package_file,
-  $passenger_high_performance     = undef,
-  $passenger_pool_idle_time       = undef,
-  $passenger_max_requests         = undef,
-  $passenger_stat_throttle_rate   = undef,
-  $rack_autodetect                = undef,
-  $rails_autodetect               = undef,
-  $passenger_root                 = $::apache::params::passenger_root,
-  $passenger_ruby                 = $::apache::params::passenger_ruby,
-  $passenger_default_ruby         = $::apache::params::passenger_default_ruby,
-  $passenger_max_pool_size        = undef,
-  $passenger_min_instances        = undef,
-  $passenger_use_global_queue     = undef,
-  $passenger_app_env              = undef,
-  $mod_package                    = undef,
-  $mod_package_ensure             = undef,
-  $mod_lib                        = undef,
-  $mod_lib_path                   = undef,
-  $mod_id                         = undef,
-  $mod_path                       = undef,
-) {
+  $passenger_conf_file              = $::apache::params::passenger_conf_file,
+  $passenger_conf_package_file      = $::apache::params::passenger_conf_package_file,
+  $passenger_high_performance       = undef,
+  $passenger_pool_idle_time         = undef,
+  $passenger_max_request_queue_size = undef,
+  $passenger_max_requests           = undef,
+  $passenger_spawn_method           = undef,
+  $passenger_stat_throttle_rate     = undef,
+  $rack_autodetect                  = undef,
+  $rails_autodetect                 = undef,
+  $passenger_root                   = $::apache::params::passenger_root,
+  $passenger_ruby                   = $::apache::params::passenger_ruby,
+  $passenger_default_ruby           = $::apache::params::passenger_default_ruby,
+  $passenger_max_pool_size          = undef,
+  $passenger_min_instances          = undef,
+  $passenger_use_global_queue       = undef,
+  $passenger_app_env                = undef,
+  $passenger_log_file               = undef,
+  $passenger_log_level              = undef,
+  $manage_repo                      = true,
+  $mod_package                      = undef,
+  $mod_package_ensure               = undef,
+  $mod_lib                          = undef,
+  $mod_lib_path                     = undef,
+  $mod_id                           = undef,
+  $mod_path                         = undef,
+) inherits ::apache::params {
+  include ::apache
+  if $passenger_spawn_method {
+    validate_re($passenger_spawn_method, '(^smart$|^direct$|^smart-lv2$|^conservative$)', "${passenger_spawn_method} is not permitted for passenger_spawn_method. Allowed values are 'smart', 'direct', 'smart-lv2', or 'conservative'.")
+  }
+  if $passenger_log_file {
+    validate_absolute_path($passenger_log_file)
+  }
+
   # Managed by the package, but declare it to avoid purging
   if $passenger_conf_package_file {
     file { 'passenger_package.conf':
-      path => "${::apache::mod_dir}/${passenger_conf_package_file}",
+      path => "${::apache::confd_dir}/${passenger_conf_package_file}",
     }
   }
 
@@ -39,6 +52,21 @@ class apache::mod::passenger (
     }
   } else {
     $_lib_path = $mod_lib_path
+  }
+
+  if $::osfamily == 'RedHat' and $manage_repo {
+    yumrepo { 'passenger':
+      ensure        => 'present',
+      baseurl       => 'https://oss-binaries.phusionpassenger.com/yum/passenger/el/$releasever/$basearch',
+      descr         => 'passenger',
+      enabled       => '1',
+      gpgcheck      => '0',
+      gpgkey        => 'https://packagecloud.io/gpg.key',
+      repo_gpgcheck => '1',
+      sslcacert     => '/etc/pki/tls/certs/ca-bundle.crt',
+      sslverify     => '1',
+      before        => Apache::Mod['passenger'],
+    }
   }
 
   $_id = $mod_id
@@ -61,8 +89,11 @@ class apache::mod::passenger (
   # - $passenger_min_instances
   # - $passenger_high_performance
   # - $passenger_max_requests
+  # - $passenger_spawn_method
   # - $passenger_stat_throttle_rate
   # - $passenger_use_global_queue
+  # - $passenger_log_file
+  # - $passenger_log_level
   # - $passenger_app_env
   # - $rack_autodetect
   # - $rails_autodetect

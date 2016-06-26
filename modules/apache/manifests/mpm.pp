@@ -47,16 +47,39 @@ define apache::mpm (
         }
 
         if $mpm == 'itk' {
-            file { "${lib_path}/mod_mpm_itk.so":
-              ensure => link,
-              target => "${lib_path}/mpm_itk.so"
-            }
+          file { "${lib_path}/mod_mpm_itk.so":
+            ensure  => link,
+            target  => "${lib_path}/mpm_itk.so",
+            require => Package['httpd'],
+            before  => Class['apache::service'],
+          }
         }
       }
 
-      if versioncmp($apache_version, '2.4') < 0 {
-        package { "apache2-mpm-${mpm}":
+      if $mpm == 'itk' and $::operatingsystem == 'Ubuntu' and $::operatingsystemrelease == '14.04' {
+        # workaround https://bugs.launchpad.net/ubuntu/+source/mpm-itk/+bug/1286882
+        exec {
+          '/usr/sbin/a2dismod mpm_event':
+            onlyif  => '/usr/bin/test -e /etc/apache2/mods-enabled/mpm_event.load',
+            require => Package['httpd'],
+            before  => Package['apache2-mpm-itk'],
+        }
+      }
+
+      if $mpm == 'itk' and $::operatingsystem == 'Ubuntu' and $::operatingsystemrelease == '16.04' {
+        $packagename = 'libapache2-mpm-itk'
+      } else {
+        $packagename = "apache2-mpm-${mpm}"
+      }
+
+      if versioncmp($apache_version, '2.4') < 0 or $mpm == 'itk' {
+        package { $packagename:
           ensure => present,
+        }
+        if $::apache::mod_enable_dir {
+          Package[$packagename] {
+            before => File[$::apache::mod_enable_dir],
+          }
         }
       }
     }
@@ -64,6 +87,9 @@ define apache::mpm (
       class { '::apache::package':
         mpm_module => $mpm
       }
+    }
+    'gentoo': {
+      # so we don't fail
     }
     'redhat': {
       # so we don't fail
@@ -87,10 +113,10 @@ define apache::mpm (
         }
 
         if $mpm == 'itk' {
-            file { "${lib_path}/mod_mpm_itk.so":
-              ensure => link,
-              target => "${lib_path}/mpm_itk.so"
-            }
+          file { "${lib_path}/mod_mpm_itk.so":
+            ensure => link,
+            target => "${lib_path}/mpm_itk.so"
+          }
         }
       }
 
