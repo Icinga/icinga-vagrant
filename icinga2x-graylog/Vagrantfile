@@ -47,7 +47,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         p.update_guest_tools = true
 
         # Set power consumption mode to "Better Performance"
-        p.optimize_power_consumption = false
+        p.customize ["set", :id, "--longer-battery-life", "off"]
 
         p.memory = 1024
         p.cpus = 2
