@@ -5,6 +5,7 @@ class mysql::params {
   $purge_conf_dir         = false
   $restart                = false
   $root_password          = 'UNSET'
+  $install_secret_file    = '/.mysql_secret'
   $server_package_ensure  = 'present'
   $server_package_manage  = true
   $server_service_manage  = true
@@ -54,22 +55,24 @@ class mysql::params {
       }
 
       if $provider == 'mariadb' {
-        $client_package_name = 'mariadb'
-        $server_package_name = 'mariadb-server'
-        $server_service_name = 'mariadb'
-        $log_error           = '/var/log/mariadb/mariadb.log'
-        $config_file         = '/etc/my.cnf.d/server.cnf'
+        $client_package_name     = 'mariadb'
+        $server_package_name     = 'mariadb-server'
+        $server_service_name     = 'mariadb'
+        $log_error               = '/var/log/mariadb/mariadb.log'
+        $config_file             = '/etc/my.cnf.d/server.cnf'
         # mariadb package by default has !includedir set in my.cnf to /etc/my.cnf.d
-        $includedir          = undef
-        $pidfile             = '/var/run/mariadb/mariadb.pid'
+        $includedir              = undef
+        $pidfile                 = '/var/run/mariadb/mariadb.pid'
+        $daemon_dev_package_name = 'mariadb-devel'
       } else {
-        $client_package_name = 'mysql'
-        $server_package_name = 'mysql-server'
-        $server_service_name = 'mysqld'
-        $log_error           = '/var/log/mysqld.log'
-        $config_file         = '/etc/my.cnf'
-        $includedir          = '/etc/my.cnf.d'
-        $pidfile             = '/var/run/mysqld/mysqld.pid'
+        $client_package_name     = 'mysql'
+        $server_package_name     = 'mysql-server'
+        $server_service_name     = 'mysqld'
+        $log_error               = '/var/log/mysqld.log'
+        $config_file             = '/etc/my.cnf'
+        $includedir              = '/etc/my.cnf.d'
+        $pidfile                 = '/var/run/mysqld/mysqld.pid'
+        $daemon_dev_package_name = 'mysql-devel'
       }
 
       $basedir                 = '/usr'
@@ -88,15 +91,22 @@ class mysql::params {
       $python_package_name     = 'MySQL-python'
       $ruby_package_name       = 'ruby-mysql'
       $client_dev_package_name = undef
-      $daemon_dev_package_name = 'mysql-devel'
     }
 
     'Suse': {
       case $::operatingsystem {
         'OpenSuSE': {
-          $client_package_name = 'mysql-community-server-client'
-          $server_package_name = 'mysql-community-server'
-          $basedir             = '/usr'
+          if versioncmp( $::operatingsystemmajrelease, '12' ) >= 0 {
+            $client_package_name = 'mariadb-client'
+            $server_package_name = 'mariadb'
+            # First service start fails if this is set. Runs fine without
+            # it being set, in any case. Leaving it as-is for the mysql.
+            $basedir             = undef
+          } else {
+            $client_package_name = 'mysql-community-server-client'
+            $server_package_name = 'mysql-community-server'
+            $basedir             = '/usr'
+          }
         }
         'SLES','SLED': {
           if versioncmp($::operatingsystemrelease, '12') >= 0 {
@@ -159,7 +169,7 @@ class mysql::params {
       $log_error               = '/var/log/mysql/error.log'
       $pidfile                 = '/var/run/mysqld/mysqld.pid'
       $root_group              = 'root'
-      $mysql_group             = 'mysql'
+      $mysql_group             = 'adm'
       $server_service_name     = 'mysql'
       $socket                  = '/var/run/mysqld/mysqld.sock'
       $ssl_ca                  = '/etc/mysql/cacert.pem'
@@ -349,7 +359,11 @@ class mysql::params {
 
   case $::operatingsystem {
     'Ubuntu': {
-      $server_service_provider = upstart
+      if versioncmp($::operatingsystemmajrelease, '14.10') > 0 {
+        $server_service_provider = 'systemd'
+      } else {
+        $server_service_provider = 'upstart'
+      }
     }
     default: {
       $server_service_provider = undef
@@ -366,6 +380,21 @@ class mysql::params {
       'log-error'        => $mysql::params::log_error,
       'socket'           => $mysql::params::socket,
     },
+    'mysqld-5.0'       => {
+      'myisam-recover' => 'BACKUP',
+    },
+    'mysqld-5.1'       => {
+      'myisam-recover' => 'BACKUP',
+    },
+    'mysqld-5.5'       => {
+      'myisam-recover' => 'BACKUP',
+    },
+    'mysqld-5.6'              => {
+      'myisam-recover-options' => 'BACKUP',
+    },
+    'mysqld-5.7'              => {
+      'myisam-recover-options' => 'BACKUP',
+    },
     'mysqld'                  => {
       'basedir'               => $mysql::params::basedir,
       'bind-address'          => '127.0.0.1',
@@ -376,7 +405,6 @@ class mysql::params {
       'max_allowed_packet'    => '16M',
       'max_binlog_size'       => '100M',
       'max_connections'       => '151',
-      'myisam_recover'        => 'BACKUP',
       'pid-file'              => $mysql::params::pidfile,
       'port'                  => '3306',
       'query_cache_limit'     => '1M',
@@ -404,7 +432,7 @@ class mysql::params {
   }
 
   ## Additional graceful failures
-  if $::osfamily == 'RedHat' and $::operatingsystemmajrelease == '4' {
+  if $::osfamily == 'RedHat' and $::operatingsystemmajrelease == '4' and $::operatingsystem != 'Amazon' {
     fail("Unsupported platform: puppetlabs-${module_name} only supports RedHat 5.0 and beyond")
   }
 }

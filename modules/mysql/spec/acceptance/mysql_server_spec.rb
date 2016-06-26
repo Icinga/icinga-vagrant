@@ -1,15 +1,15 @@
 require 'spec_helper_acceptance'
 
 describe 'mysql class' do
-
-  describe 'running puppet code' do
-    # Using puppet_apply as a helper
-    it 'should work with no errors' do
-      tmpdir = default.tmpdir('mysql')
-      pp = <<-EOS
+  describe 'advanced config' do
+    before(:all) do
+      @tmpdir = default.tmpdir('mysql')
+    end
+    let(:pp) do
+      <<-EOS
         class { 'mysql::server':
-          config_file             => '#{tmpdir}/my.cnf',
-          includedir              => '#{tmpdir}/include',
+          config_file             => '#{@tmpdir}/my.cnf',
+          includedir              => '#{@tmpdir}/include',
           manage_config_file      => 'true',
           override_options        => { 'mysqld' => { 'key_buffer_size' => '32M' }},
           package_ensure          => 'present',
@@ -46,23 +46,33 @@ describe 'mysql class' do
           }
         }
       EOS
-
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
     end
+
+    it_behaves_like "a idempotent resource"
   end
 
-  describe 'configuration needed for syslog' do
-    it 'should work with no errors' do
-      pp = <<-EOS
+  describe 'syslog configuration' do
+    let(:pp) do
+      <<-EOS
         class { 'mysql::server':
           override_options => { 'mysqld' => { 'log-error' => undef }, 'mysqld_safe' => { 'log-error' => false, 'syslog' => true }},
         }
       EOS
-
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
     end
+
+    it_behaves_like "a idempotent resource"
+  end
+
+  context 'when changing the password' do
+    let(:password) { 'THE NEW SECRET' }
+    let(:pp) { "class { 'mysql::server': root_password => '#{password}' }" }
+
+    it 'should not display the password' do
+      result = apply_manifest(pp, :catch_failures => true)
+      # this does not actually prove anything, as show_diff in the puppet config defaults to false.
+      expect(result.stdout).not_to match /#{password}/
+    end
+
+    it_behaves_like "a idempotent resource"
   end
 end
-

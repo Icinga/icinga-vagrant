@@ -2,6 +2,7 @@
 class mysql::backup::mysqlbackup (
   $backupuser         = '',
   $backuppassword     = '',
+  $maxallowedpacket   = '1M',
   $backupdir          = '',
   $backupdirmode      = '0700',
   $backupdirowner     = 'root',
@@ -16,9 +17,10 @@ class mysql::backup::mysqlbackup (
   $include_routines   = false,
   $ensure             = 'present',
   $time               = ['23', '5'],
+  $prescript          = false,
   $postscript         = false,
   $execpath           = '/usr/bin:/usr/sbin:/bin:/sbin',
-) {
+) inherits mysql::params {
 
   mysql_user { "${backupuser}@localhost":
     ensure        => $ensure,
@@ -61,7 +63,7 @@ class mysql::backup::mysqlbackup (
     user    => 'root',
     hour    => $time[0],
     minute  => $time[1],
-    weekday => 0,
+    weekday => '0',
     require => Package['meb'],
   }
 
@@ -71,7 +73,7 @@ class mysql::backup::mysqlbackup (
     user    => 'root',
     hour    => $time[0],
     minute  => $time[1],
-    weekday => 1-6,
+    weekday => '1-6',
     require => Package['meb'],
   }
 
