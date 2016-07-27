@@ -518,6 +518,25 @@ class { 'graphite':
   gr_whisper_ver => '0.9.14',
   gr_twisted_ver => '13.2.0', # 0.9.14 carbon-cache requirement
   gr_timezone => 'Europe/Berlin',
+  gr_max_updates_per_second => 10000,
+  gr_max_creates_per_minute => 1000,
+  gr_storage_schemas => [
+    {
+      name       => 'carbon',
+      pattern    => '^carbon\.',
+      retentions => '1m:90d'
+    },
+    {
+      name       => 'icinga2_default',
+      pattern    => '^icinga2\.',
+      retentions => '1m:2d,5m:10d,30m:90d,360m:4y'
+    },
+    {
+      name       => 'default',
+      pattern    => '.*',
+      retentions => '1m:14d'
+    }
+  ],
 }
 
 # icingaweb2 module
