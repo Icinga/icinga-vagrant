@@ -43,7 +43,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         p.name = "Icinga 2: #{server_name.to_s}"
 
         # Update Parallels Tools automatically
-        p.update_guest_tools = false
+        p.update_guest_tools = true
+
+        override.vm.boot_timeout = 600
 
         # Set power consumption mode to "Better Performance"
         p.customize ["set", :id, "--longer-battery-life", "off"]
