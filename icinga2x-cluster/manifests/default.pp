@@ -1,6 +1,5 @@
 include icinga_rpm
 include epel
-include '::mysql::server'
 include icinga2
 include icinga2_ido_mysql
 #include icinga2_classicui
@@ -11,6 +10,17 @@ include monitoring_plugins
 
 icingaweb2::module { [ 'businessprocess', 'pnp' ]:
   builtin => false
+}
+
+####################################
+# Database
+####################################
+$mysql_server_override_options = {}
+
+class { '::mysql::server':
+  root_password => 'icingar0xx',
+  remove_default_accounts => true,
+  override_options => $mysql_server_override_options
 }
 
 ####################################

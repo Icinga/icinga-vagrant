@@ -123,12 +123,19 @@ class { 'icinga_rpm':
   pkg_repo_version => 'release'
 }
 
-include '::mysql::server'
 include icinga2
 include icinga2_ido_mysql
 include icingaweb2
 include icingaweb2_internal_db_mysql
 include monitoring_plugins
+
+$mysql_server_override_options = {}
+
+class { '::mysql::server':
+  root_password => 'icingar0xx',
+  remove_default_accounts => true,
+  override_options => $mysql_server_override_options
+}
 
 file { '/etc/icinga2/conf.d/api-users.conf':
   owner  => icinga,
