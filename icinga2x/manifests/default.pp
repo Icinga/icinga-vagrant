@@ -382,6 +382,8 @@ exec { 'create-mysql-icingaweb2-director-db':
   path        => '/bin:/usr/bin:/sbin:/usr/sbin',
   unless      => 'mysql -udirector -pdirector director',
   command     => 'mysql -uroot -e "CREATE DATABASE director; GRANT ALL ON director.* TO director@localhost IDENTIFIED BY \'director\';"',
+  user        => 'root',
+  environment => [ "HOME=/root" ],
   require     => Service['mariadb']
 }->
 exec { 'Icinga Director DB migration':

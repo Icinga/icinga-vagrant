@@ -81,6 +81,8 @@ class icinga2_ido_mysql (
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless => "mysql -u$ido_db_user -p$ido_db_pass $ido_db_name",
     command => "mysql -uroot -e \"CREATE DATABASE $ido_db_name ; GRANT ALL ON $ido_db_name.* TO $ido_db_user@localhost IDENTIFIED BY \'$ido_db_pass\';\"",
+    user => 'root',
+    environment => [ "HOME=/root" ],
     require => Class['mysql::server']
   }
 
@@ -88,6 +90,8 @@ class icinga2_ido_mysql (
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless => "mysql -u$ido_db_user -p$ido_db_pass $ido_db_name -e \"SELECT * FROM icinga_dbversion;\" &> /dev/null",
     command => "mysql -u$ido_db_user -p$ido_db_pass $ido_db_name < $ido_db_schema",
+    user => 'root',
+    environment => [ "HOME=/root" ],
     require => [ Package['icinga2-ido-mysql'], Exec['create-mysql-icinga2-ido-db'] ]
   }
 
@@ -120,6 +124,8 @@ class icinga2_ido_pgsql (
     command => "sudo -u postgres psql -c \"CREATE ROLE $ido_db_user WITH LOGIN PASSWORD \'$ido_db_pass\';\" && \
                 sudo -u postgres createdb -O $ido_db_name -E UTF8 $ido_db_name && \
                 sudo -u postgres createlang plpgsql $ido_db_name",
+    user => 'root',
+    environment => [ "HOME=/root" ],
     require => Service['postgresql']
   }
 
@@ -128,6 +134,8 @@ class icinga2_ido_pgsql (
     environment => ["PGPASSWORD=$ido_db_pass"],
     unless => "psql -U $ido_db_user -d $ido_db_name -c \"SELECT * FROM icinga_dbversion;\" &> /dev/null",
     command => "psql -U $ido_db_user -d $ido_db_name < $ido_db_schema",
+    user => 'root',
+    environment => [ "HOME=/root" ],
     require => [ Package['icinga2-ido-pgsql'], Exec['create-pgsql-icinga2-ido-db'] ]
   }
 
