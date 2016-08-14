@@ -47,6 +47,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         override.vm.boot_timeout = 600
 
+        # save storage
+        p.linked_clone = true
+
         # Set power consumption mode to "Better Performance"
         p.customize ["set", :id, "--longer-battery-life", "off"]
 
@@ -63,6 +66,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         v.customize ["modifyvm", :id, "--cpus", "2"]
         # Using the host's resolver as a DNS proxy in NAT mode
         v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+
+        # save storage
+        v.linked_clone = true if Vagrant::VERSION =~ /^1.8/
       end
 
       app_config.vm.provider :libvirt do |l, override|
