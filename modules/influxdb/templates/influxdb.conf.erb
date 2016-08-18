@@ -1,0 +1,245 @@
+# This config file is managed by Puppet
+#
+
+reporting-disabled = <%= @reporting_disabled %>
+
+[meta]
+  enabled = true
+  dir = "<%= @meta_dir %>"
+  bind-address = "<%= @meta_bind_address %>"
+  http-bind-address = "<%= @meta_http_bind_address -%>"
+  retention-autocreate = <%= @retention_autocreate %>
+  election-timeout = "<%= @election_timeout %>"
+  heartbeat-timeout = "<%= @heartbeat_timeout %>"
+  leader-lease-timeout = "<%= @leader_lease_timeout %>"
+  commit-timeout = "<%= @commit_timeout %>"
+  cluster-tracing = <%= @cluster_tracing %>
+
+[data]
+  enabled = <%= @data_enabled %>
+  dir = "<%= @data_dir %>"
+  max-wal-size = <%= @max_wal_size %>
+  wal-flush-interval = "<%= @wal_flush_interval %>"
+  wal-partition-flush-delay = "<%= @wal_partition_flush_delay %>"
+  wal-dir = "<%= @wal_dir %>"
+  wal-logging-enabled = <%= @wal_logging_enabled %>
+  data-logging-enabled = <%= @data_logging_enabled %>
+<% if @wal_ready_series_size -%>
+  wal-ready-series-size = <%= @wal_ready_series_size %>
+<% end -%>
+<% if @wal_compaction_threshold -%>
+  wal-compaction-threshold = <%= @wal_compaction_threshold %>
+<% end -%>
+<% if @wal_max_series_size -%>
+  wal-max-series-size = <%= @wal_max_series_size %>
+<% end -%>
+<% if @wal_flush_cold_interval -%>
+  wal-flush-cold-interval = "<%= @wal_flush_cold_interval %>"
+<% end -%>
+<% if @wal_partition_size_threshold -%>
+  wal-partition-size-threshold = <%= @wal_partition_size_threshold %>
+<% end -%>
+<% if @query_log_enabled -%>
+  query-log-enabled = <%@query_log_enabled %>
+<% end -%>
+<% if @cache_max_memory_size -%>
+  cache-max-memory-size = <%= @cache_max_memory_size %>
+<% end -%>
+<% if @cache_snapshot_memory_size -%>
+  cache-snapshot-memory-size = <%= @cache_snapshot_memory_size %>
+<% end -%>
+<% if @cache_snapshot_write_cold_duration -%>
+  cache-snapshot-write-cold-duration = "<%= @cache_snapshot_write_cold_duration %>"
+<% end -%>
+<% if @compact_min_file_count -%>
+  compact-min-file-count = <%= @compact_min_file_count %>
+<% end -%>
+<% if @compact_full_write_cold_duration -%>
+  compact-full-write-cold-duration = "<%= @compact_full_write_cold_duration %>"
+<% end -%>
+<% if @max_points_per_block -%>
+  max-points-per-block = <%= @max_points_per_block %>
+<% end -%>
+
+[hinted-handoff]
+  enabled = <%= @hinted_handoff_enabled %>
+  dir = "<%= @hinted_handoff_dir %>"
+  max-size = <%= @hinted_handoff_max_size %>
+  max-age = "<%= @hinted_handoff_max_age %>"
+  retry-rate-limit = <%= @hinted_handoff_retry_rate_limit %>
+  retry-interval = "<%= @hinted_handoff_retry_interval %>"
+  retry-max-interval = "<%= @hinted_handoff_retry_max_interval %>"
+  purge-interval = "<%= @hinted_handoff_purge_interval %>"
+
+[cluster]
+  shard-writer-timeout = "<%= @shard_writer_timeout %>"
+  write-timeout = "<%= @cluster_write_timeout %>"
+
+[retention]
+  enabled = <%= @retention_enabled %>
+  check-interval = "<%= @retention_check_interval %>"
+
+[shard-precreation]
+  enabled = <%= @shard_precreation_enabled %>
+  check-interval = "<%= @shard_precreation_check_interval %>"
+  advance-period = "<%= @shard_precreation_advance_period %>"
+
+[monitor]
+  store-enabled = <%= @monitoring_enabled %>
+  store-database = "<%= @monitoring_database %>"
+  store-interval = "<%= @monitoring_write_interval %>"
+
+[admin]
+  enabled = <%= @admin_enabled %>
+  bind-address = "<%= @admin_bind_address %>"
+  https-enabled = <%= @admin_https_enabled %>
+  https-certificate = "<%= @admin_https_certificate %>"
+
+[http]
+  enabled = <%= @http_enabled %>
+  bind-address = "<%= @http_bind_address %>"
+  auth-enabled = <%= @http_auth_enabled %>
+  log-enabled = <%= @http_log_enabled %>
+  write-tracing = <%= @http_write_tracing %>
+  pprof-enabled = <%= @http_pprof_enabled %>
+  https-enabled = <%= @http_https_enabled %>
+  https-certificate = "<%= @http_https_certificate %>"
+
+<% if @graphite_options and ! @graphite_options.empty? -%>
+<% if @graphite_options.is_a?(Hash) -%>
+[[graphite]]
+<% @graphite_options.keys.sort.each do |key| -%>
+<% val = @graphite_options[key] 
+  if key == 'templates' and val.is_a?(Array) -%>
+  templates = [
+  <%- val.each do |template| -%>
+    "<%=template %>",
+  <%- end -%>
+  ]
+<% elsif val.is_a?(Array) or val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
+  <%=key %> = <%=val %>
+<% else -%>
+  <%=key %> = "<%=val %>"
+<% end -%>
+<% end -%>
+<% elsif @graphite_options.is_a?(Array) -%>
+<% @graphite_options.each do |option| -%>
+[[graphite]]
+<% @options.key.sort.each do |key| -%>
+<% val = @options[key] 
+  if key == 'templates' and val.is_a?(Array) -%>
+  templates = [
+  <%- val.each do |template| -%>
+    "<%=template %>",
+  <%- end -%>
+  ]
+<% elsif val.is_a?(Array) or val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
+  <%=key %> = <%=val %>
+<% else -%>
+  <%=key %> = "<%=val %>"
+<% end -%>
+<% end -%>
+<% end -%>
+<% end -%>
+<% else -%>
+[[graphite]]
+  enabled = false
+<% end -%>
+
+<% if @collectd_options and ! @collectd_options.empty? -%>
+<% if @collectd_options.is_a?(Hash) -%>
+[collectd]
+<% @collectd_options.keys.sort.each do |key| -%>
+<% val = @collectd_options[key] 
+  if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
+  <%=key %> = <%=val %>
+<% else -%>
+  <%=key %> = "<%=val %>"
+<% end -%>
+<% end -%>
+<% elsif @collectd_options.is_a?(Array) -%>
+<% @collectd_options.each do |option| -%>
+[collectd]
+<% option.keys.sort.each do |key| -%>
+<% val = @option[key] 
+  if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
+  <%=key %> = <%=val %>
+<% else -%>
+  <%=key %> = "<%=val %>"
+<% end -%>
+<% end -%>
+<% end -%>
+<% end -%>
+<% else -%>
+[collectd]
+  enabled = false
+<% end -%>
+
+<% if @opentsdb_options and ! @opentsdb_options.empty? -%>
+<% if @opentsdb_options.is_a?(Hash) -%>
+[opentsdb]
+<% @opentsdb_options.keys.sort.each do |key| 
+   val = @opentsdb_options[key] 
+  -%>
+<% if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
+  <%=key %> = <%=val %>
+<% else -%>
+  <%=key %> = "<%=val %>"
+<% end -%>
+<% end -%>
+<% elsif @opentsdb_options.is_a?(Array) -%>
+<% @opentsdb_options.each do |option| -%>
+[opentsdb]
+<% option.keys.sort.each do |key|
+   val = @option[key]
+  -%>
+<% if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
+  <%=key %> = <%=val %>
+<% else -%>
+  <%=key %> = "<%=val %>"
+<% end -%>
+<% end -%>
+<% end -%>
+<% end -%>
+<% else -%>
+[opentsdb]
+  enabled = false
+<% end -%>
+
+<% if @udp_options and ! @udp_options.empty? -%>
+<% if @udp_options.is_a?(Hash) -%>
+[[udp]]
+<% @udp_options.keys.sort.each do |key| 
+   val =  @udp_options[key]
+   -%>
+<% if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
+  <%=key %> = <%=val %>
+<% else -%>
+  <%=key %> = "<%=val %>"
+<% end -%>
+<% end -%>
+<% elsif @udp_options.is_a?(Array) -%>
+<% @udp_options.each do |option| -%>
+[[udp]]
+<% option.keys.sort.each do |key| 
+ val = option[key]
+  -%>
+<% if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
+  <%=key %> = <%=val %>
+<% else -%>
+  <%=key %> = "<%=val %>"
+<% end -%>
+<% end -%>
+<% end -%>
+<% end -%>
+<% else -%>
+[[udp]]
+  enabled = false
+<% end -%>
+
+[continuous_queries]
+  enabled = <%= @continuous_queries_enabled %>
+  log-enabled = <%= @continuous_queries_log_enabled %>
+<% if @continuous_queries_run_interval -%>
+  run-interval = "<%= @continuous_queries_run_interval %>"
+<% end -%>

@@ -1,0 +1,13 @@
+HOSTS:
+  ubuntu-precise:
+    roles:
+      - master
+    platform: ubuntu-12.04-x64
+    image: ubuntu:precise
+    hypervisor: docker
+    docker_image_commands:
+      - 'apt-get install -y net-tools'
+    docker_cmd: '["/usr/sbin/sshd","-D"]'
+CONFIG:
+  log_level: debug
+  type: foss

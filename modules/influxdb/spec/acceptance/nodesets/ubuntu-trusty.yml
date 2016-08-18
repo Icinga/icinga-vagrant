@@ -1,0 +1,10 @@
+HOSTS:
+  ubuntu-trusty:
+    roles:
+      - master
+    platform: ubuntu-14.04-x64
+    image: ubuntu:trusty
+    hypervisor: docker
+CONFIG:
+  log_level: debug
+  type: foss
