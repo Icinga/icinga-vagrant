@@ -119,10 +119,7 @@ file { '/usr/lib/nagios/plugins/check-graylog2-stream-wrapper':
 
 
 # Icinga 2
-class { 'icinga_rpm':
-  pkg_repo_version => 'release'
-}
-
+include icinga_rpm
 include icinga2
 include icinga2_ido_mysql
 include icingaweb2
