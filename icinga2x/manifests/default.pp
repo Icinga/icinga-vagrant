@@ -572,9 +572,10 @@ file { '/etc/icingaweb2/modules/graphite/config.ini':
 ####################################
 
 # https://github.com/bfraser/puppet-grafana
+# https://grafanarel.s3.amazonaws.com/builds/grafana-3.1.1-1470047149.x86_64.rpm
 class { 'grafana':
-  version => '3.0.4',
-  rpm_iteration => '1464167696',
+  version => '3.1.1',
+  rpm_iteration => '1470047149',
   cfg => {
     app_mode => 'production',
     server   => {
