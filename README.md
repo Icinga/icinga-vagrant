@@ -257,6 +257,7 @@ These boxes use these imported puppet modules for provisioning:
   puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
   puppet-graphite	| modules/graphite		| Patched for systemd usage from https://github.com/echocat/puppet-graphite.git
   puppet-grafana	| modules/grafana		| https://github.com/bfraser/puppet-grafana.git
+  golja-influxdb        | modules/influxdb              | https://github.com/n1tr0g/golja-influxdb.git
   puppet-wget           | modules/wget                  | https://github.com/maestrodev/puppet-wget.git
   puppet-vim            | modules/vim                   | https://github.com/saz/puppet-vim.git
   puppet-lib-file\_contact | modules/file\_contact      | https://github.com/electrical/puppet-lib-file_concat.git
