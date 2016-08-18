@@ -6,6 +6,8 @@
 * InfluxDB
 * Grafana
 
+![Icinga 2 Grafana with InfluxDB](../doc/screenshot/icinga2x-influxdb/vagrant_icinga2_influxdb_grafana.png)
+
 Run Vagrant:
 
     $ cd icinga2x-influxdb && vagrant up
