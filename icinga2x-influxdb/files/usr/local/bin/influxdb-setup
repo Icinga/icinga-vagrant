@@ -1,0 +1,26 @@
+#!/bin/bash
+
+INFLUXDB_BIN=/bin/influx
+INFLUXDB_DATABASE=icinga2
+INFLUXDB_USER=icinga2
+INFLUXDB_PASS=icinga2
+TIMEOUT=30
+
+START=$(date +%s)
+
+# wait until grafana-server is started
+echo -e "Checking whether InfluxDB server is ready"
+until $INFLUXDB_BIN -execute "show databases"; do
+  NOW=$(date +%s)
+  REAL_TIMEOUT=$(( START + TIMEOUT ))
+  if [[ "$NOW" -gt "$REAL_TIMEOUT" ]]; then
+    echo "Cannot reach InfluxDB server. Timeout reached."
+    exit 1
+  fi
+  printf '.'
+  sleep 1
+done
+
+$INFLUXDB_BIN -execute "CREATE DATABASE $INFLUXDB_DATABASE"
+$INFLUXDB_BIN -execute "CREATE USER $INFLUXDB_USER WITH PASSWORD '$INFLUXDB_PASS'"
+$INFLUXDB_BIN -execute "GRANT ALL ON $INFLUXDB_DATABASE TO $INFLUXDB_USER"
