@@ -4,6 +4,7 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 
 * [Icinga 2 Standalone](README.md#icinga2x)
 * [Icinga 2 Cluster](README.md#icinga2x-cluster)
+* [Icinga 2 InfluxDB](README.md#icinga2x-influxdb)
 * [Icinga 2 and Graylog](README.md#icinga2x-graylog)
 * [Icinga 1.x](README.md#icinga1x)
 
@@ -21,12 +22,12 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 
 ![Icinga 2 Dashing](doc/screenshot/icinga2x/vagrant_icinga2_dashing.png)
 
-### Grafana with Graphite
+### Graphite
 
 ![Icinga 2 Grafana with Graphite](doc/screenshot/icinga2x/vagrant_icinga2_grafana.png)
 ![Icinga 2 Graphite Web](doc/screenshot/icinga2x/vagrant_icinga2_graphite.png)
 
-### Grafana with InfluxDB
+### InfluxDB
 
 ![Icinga 2 Grafana with InfluxDB](doc/screenshot/icinga2x-influxdb/vagrant_icinga2_influxdb_grafana.png)
 
@@ -190,6 +191,55 @@ Run Vagrant:
 Access [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/v1/objects/hosts)
 and [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts)
 using the credentials `root/icinga`.
+
+## <a id="icinga2x-cluster"></a>Icinga 2 Cluster
+
+* 2 VMs as Icinga 2 Master/Checker Cluster
+* Icinga 2 Core, DB IDO MySQL, Icinga Web 2
+
+Run Vagrant:
+
+    $ cd icinga2x-cluster && vagrant up
+
+
+### User Interfaces
+
+  GUI               | Url                                   | Credentials
+  ------------------|---------------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.10/icingaweb2       | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.20/icingaweb2       | icingaadmin/icinga
+
+### Icinga 2 API
+
+Access [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/v1/objects/hosts)
+and [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts)
+using the credentials `root/icinga`.
+
+
+## <a id="icinga2x-influxdb"></a>Icinga 2 InfluxDB
+
+* 1 VM
+* Icinga 2 Core
+  * Icinga 2 API
+* Icinga Web 2
+* InfluxDB
+* Grafana
+
+Run Vagrant:
+
+    $ cd icinga2x-influxdb && vagrant up
+
+### User Interfaces
+
+  GUI               | Url                               | Credentials
+  ------------------|-----------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.8/icingaweb2    | icingaadmin/icinga
+  Grafana           | http://192.168.33.8:8004          | admin/admin
+
+### Icinga 2 API
+
+Access [https://192.168.33.8:5665/v1/objects/hosts](https://192.168.33.8:5665/v1/objects/hosts)
+using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.org/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
 
 
 ## <a id="icinga2x-graylog"></a>Icinga 2 and Graylog
