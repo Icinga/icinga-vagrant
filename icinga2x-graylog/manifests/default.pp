@@ -18,7 +18,7 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
   }
 }
 
-package { [ 'vim-enhanced', 'mailx', 'tree', 'gdb', 'rlwrap', 'git' ]:
+package { [ 'mailx', 'tree', 'gdb', 'rlwrap', 'git' ]:
   ensure => 'installed',
   require => Class['Epel']
 }
@@ -128,6 +128,11 @@ include icinga2_ido_mysql
 include icingaweb2
 include icingaweb2_internal_db_mysql
 include monitoring_plugins
+
+# Required by vim-icinga2
+class { 'vim':
+  opt_bg_shading => 'light',
+}
 
 $mysql_server_override_options = {}
 
