@@ -1,19 +1,33 @@
 #!/bin/bash
 
+GRAFANA_URL="http://admin:admin@localhost:8004"
+GRAFANA_DATASOURCES_URL="$GRAFANA_URL/api/datasources"
+GRAFANA_DASHBOARDS_URL="$GRAFANA_URL/api/dashboards/db"
+TIMEOUT=30
+
+START=$(date +%s)
+
 # wait until grafana-server is started
-until $(curl --output /dev/null --silent http://admin:admin@192.168.33.5:8004/api/datasources); do
+echo -e "Checking whether Grafana server is listening at $GRAFANA_DATASOURCES_URL"
+until $(curl --output /dev/null --silent $GRAFANA_DATASOURCES_URL); do
+  NOW=$(date +%s)
+  REAL_TIMEOUT=$(( START + TIMEOUT ))
+  if [[ "$NOW" -gt "$REAL_TIMEOUT" ]]; then
+    echo "Cannot reach Grafana server at $GRAFANA_URL. Timeout reached."
+    exit 1
+  fi
   printf '.'
   sleep 1
 done
 
 # configure graphite datasource
-curl 'http://admin:admin@192.168.33.5:8004/api/datasources' -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary '{ "name": "icinga2", "type": "graphite", "url": "http://192.168.33.5:8003", "access": "direkt", "isDefault": true }'
+echo -e "Adding Graphite datasource"
+curl "$GRAFANA_DATASOURCES_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary '{ "name": "icinga2", "type": "graphite", "url": "http://192.168.33.5:8003", "access": "direct", "isDefault": true }'
 
 # add default dashboards
 # exported dashboards require the 'dashboard' key including the payload in the http json body request
 # https://github.com/grafana/grafana/issues/2816
 # furthermore the 'id' field must be null in order to create a new dashboard
 # file is already patched
-curl 'http://admin:admin@192.168.33.5:8004/api/dashboards/db' -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/grafana-dashboard-icinga2.json
-
-
+echo -e "Adding Icinga 2 dashboard"
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/grafana-dashboard-icinga2.json
