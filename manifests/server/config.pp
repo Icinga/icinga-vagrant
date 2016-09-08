@@ -33,7 +33,7 @@ class influxdb::server::config {
   $wal_partition_flush_delay                    = $influxdb::server::wal_partition_flush_delay
   $wal_dir                                      = $influxdb::server::wal_dir
   $wal_logging_enabled                          = $influxdb::server::wal_logging_enabled
-  $data_logging_enabled                         = $influxdb::server::data_logging_enabled
+  $trace_logging_enabled                        = $influxdb::server::trace_logging_enabled
   $wal_ready_series_size                        = $influxdb::server::wal_ready_series_size
   $wal_compaction_threshold                     = $influxdb::server::wal_compaction_threshold
   $wal_max_series_size                          = $influxdb::server::wal_max_series_size

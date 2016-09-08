@@ -29,7 +29,7 @@ class influxdb::params {
   $wal_partition_flush_delay                    = '2s'
   $wal_dir                                      = '/var/lib/influxdb/wal'
   $wal_logging_enabled                          = true
-  $data_logging_enabled                         = true
+  $trace_logging_enabled                        = true
   $wal_ready_series_size                        = undef
   $wal_compaction_threshold                     = undef
   $wal_max_series_size                          = undef

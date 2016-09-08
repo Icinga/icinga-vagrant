@@ -26,6 +26,14 @@ such as databases, users, and privileges.
 
 ## Deprecation Warning
 
+Notes for version 3.1.1+:
+
+influxdb 1.0.0 contains [breaking changes](https://github.com/influxdata/influxdb/blob/master/CHANGELOG.md#v100-2016-09-08)
+which require changing the `data_logging_enabled` config attribute to `trace_logging_enabled`.
+The other configuration changes are managed by the `influxdb.conf.erb` template already.
+
+Notes for versions older than 3.1.1:
+
 This release is a major refactoring of the module which means that the API
 changed in backwards incompatible ways. If your project depends on the old API
 and you need to use influxdb prior to 0.10.X, please pin your module

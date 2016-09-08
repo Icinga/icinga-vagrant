@@ -23,7 +23,7 @@ reporting-disabled = <%= @reporting_disabled %>
   wal-partition-flush-delay = "<%= @wal_partition_flush_delay %>"
   wal-dir = "<%= @wal_dir %>"
   wal-logging-enabled = <%= @wal_logging_enabled %>
-  data-logging-enabled = <%= @data_logging_enabled %>
+  trace-logging-enabled = <%= @trace_logging_enabled %>
 <% if @wal_ready_series_size -%>
   wal-ready-series-size = <%= @wal_ready_series_size %>
 <% end -%>
@@ -71,7 +71,7 @@ reporting-disabled = <%= @reporting_disabled %>
   retry-max-interval = "<%= @hinted_handoff_retry_max_interval %>"
   purge-interval = "<%= @hinted_handoff_purge_interval %>"
 
-[cluster]
+[coordinator]
   shard-writer-timeout = "<%= @shard_writer_timeout %>"
   write-timeout = "<%= @cluster_write_timeout %>"
 
@@ -148,7 +148,7 @@ reporting-disabled = <%= @reporting_disabled %>
 
 <% if @collectd_options and ! @collectd_options.empty? -%>
 <% if @collectd_options.is_a?(Hash) -%>
-[collectd]
+[[collectd]]
 <% @collectd_options.keys.sort.each do |key| -%>
 <% val = @collectd_options[key] 
   if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
@@ -159,7 +159,7 @@ reporting-disabled = <%= @reporting_disabled %>
 <% end -%>
 <% elsif @collectd_options.is_a?(Array) -%>
 <% @collectd_options.each do |option| -%>
-[collectd]
+[[collectd]]
 <% option.keys.sort.each do |key| -%>
 <% val = @option[key] 
   if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
@@ -171,13 +171,13 @@ reporting-disabled = <%= @reporting_disabled %>
 <% end -%>
 <% end -%>
 <% else -%>
-[collectd]
+[[collectd]]
   enabled = false
 <% end -%>
 
 <% if @opentsdb_options and ! @opentsdb_options.empty? -%>
 <% if @opentsdb_options.is_a?(Hash) -%>
-[opentsdb]
+[[opentsdb]]
 <% @opentsdb_options.keys.sort.each do |key| 
    val = @opentsdb_options[key] 
   -%>
@@ -189,7 +189,7 @@ reporting-disabled = <%= @reporting_disabled %>
 <% end -%>
 <% elsif @opentsdb_options.is_a?(Array) -%>
 <% @opentsdb_options.each do |option| -%>
-[opentsdb]
+[[opentsdb]]
 <% option.keys.sort.each do |key|
    val = @option[key]
   -%>
@@ -202,7 +202,7 @@ reporting-disabled = <%= @reporting_disabled %>
 <% end -%>
 <% end -%>
 <% else -%>
-[opentsdb]
+[[opentsdb]]
   enabled = false
 <% end -%>
 
