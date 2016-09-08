@@ -350,8 +350,6 @@ file { 'nagvis-map-icinga2':
 # Director
 ####################################
 
-icinga2::feature { 'api': }
-
 icingaweb2::module { 'director':
   builtin => false
 }
@@ -404,7 +402,7 @@ exec { 'Icinga Director Kickstart':
   path    => '/usr/local/bin:/usr/bin:/bin',
   command => 'icingacli director kickstart run',
   onlyif  => 'icingacli director kickstart required',
-  require => Service['icinga2']
+  require => [ Service['icinga2'], Exec['enable-icinga2-api'] ]
 }
 
 
