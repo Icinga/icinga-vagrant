@@ -1,4 +1,4 @@
-# Icinga 2 Multi Instance Vagrant Boxes
+# Icinga 2 Cluster Vagrant Boxes
 
 * Icinga 2 Core as cluster (icinga2a cfg master, icinga2b checker)
 * Icinga Web 2 as user interface with internal auth db and IDO backend
