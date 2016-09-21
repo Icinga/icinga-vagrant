@@ -1,4 +1,7 @@
-include icinga_rpm
+class { 'icinga_rpm':
+  pkg_repo_version => 'release'
+}
+
 include epel
 include icinga2
 include icinga2_ido_mysql
