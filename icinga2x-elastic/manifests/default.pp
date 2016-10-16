@@ -1,12 +1,22 @@
 include icinga_rpm
 include epel
-include '::mysql::server'
-include '::postgresql::server'
 include icinga2
 include icinga2_ido_mysql
 include icingaweb2
 include icingaweb2_internal_db_mysql
 include monitoring_plugins
+
+####################################
+# Database
+####################################
+
+$mysql_server_override_options = {}
+
+class { '::mysql::server':
+  root_password => 'icingar0xx',
+  remove_default_accounts => true,
+  override_options => $mysql_server_override_options
+}
 
 ####################################
 # Webserver
@@ -238,7 +248,19 @@ class { 'logstash':
   manage_repo  => true,
   java_install => false,
 }->
-class { 'kibana4': }
+class { 'kibana4':
+  config => {
+    'server.port' => 5601,
+    'server.host' => '0.0.0.0',
+    'kibana.index' => '.kibana',
+    'kibana.defaultAppId' => 'discover',
+    'logging.silent'               => false,
+    'logging.quiet'                => false,
+    'logging.verbose'              => false,
+    'logging.events'               => "{ log: ['info', 'warning', 'error', 'fatal'], response: '*', error: '*' }",
+    'elasticsearch.requestTimeout' => 500000,
+  }
+}
 
 
 
