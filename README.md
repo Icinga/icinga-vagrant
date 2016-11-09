@@ -319,7 +319,8 @@ These boxes use these imported puppet modules for provisioning:
   puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
   puppet-datacat        | modules/datacat               | https://github.com/richardc/puppet-datacat.git
   puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git
-  puppet-kibana         | modules/kibana4               | https://github.com/lesaux/puppet-kibana4.git
+  puppet-kibana4        | modules/kibana4               | https://github.com/lesaux/puppet-kibana4.git
+  puppet-kibana5	| modules/kibana5		| https://github.com/Nextdoor/puppet-kibana5
   puppetlabs-mongodb	| modules/mongodb		| https://github.com/puppetlabs/puppetlabs-mongodb.git
   puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
   puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
