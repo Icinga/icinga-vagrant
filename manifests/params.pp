@@ -41,7 +41,7 @@ class elasticsearch::params {
   $status = 'enabled'
 
   # restart on configuration change?
-  $restart_on_change = true
+  $restart_on_change = false
 
   # Purge configuration directory
   $purge_configdir = false
@@ -59,6 +59,14 @@ class elasticsearch::params {
     'index.search.slowlog'   => 'TRACE, index_search_slow_log_file',
     'index.indexing.slowlog' => 'TRACE, index_indexing_slow_log_file',
   }
+
+  $file_rolling_type = 'dailyRollingFile'
+
+  $daily_rolling_date_pattern = '"\'.\'yyyy-MM-dd"'
+
+  $rolling_file_max_backup_index = 1
+
+  $rolling_file_max_file_size ='10MB'
 
   #### Internal module values
 
@@ -109,7 +117,6 @@ class elasticsearch::params {
       $installpath = '/opt/elasticsearch'
       $homedir     = '/usr/share/elasticsearch'
       $plugindir   = "${homedir}/plugins"
-      $plugintool  = "${homedir}/bin/plugin"
       $datadir     = '/usr/share/elasticsearch/data'
     }
     'OpenBSD': {
@@ -119,7 +126,6 @@ class elasticsearch::params {
       $installpath = undef
       $homedir     = '/usr/local/elasticsearch'
       $plugindir   = "${homedir}/plugins"
-      $plugintool  = "${homedir}/bin/plugin"
       $datadir     = '/var/elasticsearch/data'
     }
     default: {
