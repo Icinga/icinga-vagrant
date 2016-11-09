@@ -38,34 +38,42 @@ class elasticsearch::config {
 
   if ( $elasticsearch::ensure == 'present' ) {
 
-    $notify_service = $elasticsearch::restart_on_change ? {
-      true  => Class['elasticsearch::service'],
-      false => undef,
-    }
-
-    file { $elasticsearch::configdir:
-      ensure => directory,
-      mode   => '0644',
-    }
-
-    file { $elasticsearch::logdir:
-      ensure  => 'directory',
-      group   => undef,
-      mode    => '0644',
-      recurse => true,
-    }
-
-    file { $elasticsearch::params::homedir:
-      ensure  => 'directory',
-    }
-
-    file { $elasticsearch::datadir:
-      ensure  => 'directory',
-    }
-
-    file { "${elasticsearch::homedir}/lib":
-      ensure  => 'directory',
-      recurse => true,
+    file {
+      $elasticsearch::configdir:
+        ensure => 'directory',
+        mode   => '0644';
+      $elasticsearch::datadir:
+        ensure => 'directory';
+      $elasticsearch::logdir:
+        ensure  => 'directory',
+        group   => undef,
+        mode    => '0644',
+        recurse => true;
+      $elasticsearch::plugindir:
+        ensure => 'directory',
+        mode   => 'o+Xr';
+      "${elasticsearch::homedir}/lib":
+        ensure  => 'directory',
+        recurse => true;
+      $elasticsearch::params::homedir:
+        ensure => 'directory';
+      "${elasticsearch::params::homedir}/templates_import":
+        ensure => 'directory',
+        mode   => '0644';
+      "${elasticsearch::params::homedir}/scripts":
+        ensure => 'directory',
+        mode   => '0644';
+      "${elasticsearch::params::homedir}/shield":
+        ensure => 'directory',
+        mode   => '0644',
+        owner  => 'root',
+        group  => '0';
+      '/etc/elasticsearch/elasticsearch.yml':
+        ensure => 'absent';
+      '/etc/elasticsearch/logging.yml':
+        ensure => 'absent';
+      '/etc/init.d/elasticsearch':
+        ensure => 'absent';
     }
 
     if $elasticsearch::params::pid_dir {
@@ -84,41 +92,16 @@ class elasticsearch::config {
           ensure  => 'file',
           content => template("${module_name}/usr/lib/tmpfiles.d/elasticsearch.conf.erb"),
           owner   => 'root',
-          group   => 'root',
+          group   => '0',
         }
       }
     }
 
-
-    file { "${elasticsearch::params::homedir}/templates_import":
-      ensure => 'directory',
-      mode   => '0644',
-    }
-
-    file { "${elasticsearch::params::homedir}/scripts":
-      ensure => 'directory',
-      mode   => '0644',
-    }
-
-    # Resources for shield management
-    file { "${elasticsearch::params::homedir}/shield":
-      ensure => 'directory',
-      mode   => '0644',
-      owner  => 'root',
-      group  => 'root',
-    }
-
     if ($elasticsearch::service_providers == 'systemd') {
       # Mask default unit (from package)
-      file { '/etc/systemd/system/elasticsearch.service':
-        ensure => link,
-        target => '/dev/null',
+      exec { 'systemctl mask elasticsearch.service':
+        unless => 'test `systemctl is-enabled elasticsearch.service` = masked',
       }
-    }
-
-    # Removal of files that are provided with the package which we don't use
-    file { '/etc/init.d/elasticsearch':
-      ensure => 'absent',
     }
 
     $new_init_defaults = { 'CONF_DIR' => $elasticsearch::configdir }
@@ -128,13 +111,6 @@ class elasticsearch::config {
         lens    => 'Shellvars.lns',
         changes => template("${module_name}/etc/sysconfig/defaults.erb"),
       }
-    }
-
-    file { '/etc/elasticsearch/elasticsearch.yml':
-      ensure => 'absent',
-    }
-    file { '/etc/elasticsearch/logging.yml':
-      ensure => 'absent',
     }
 
   } elsif ( $elasticsearch::ensure == 'absent' ) {

@@ -3,7 +3,7 @@ PE ?= false
 STRICT_VARIABLES ?= yes
 
 ifeq ($(PE), true)
-	PE_VER ?= 3.8.3
+	PE_VER ?= 3.8.6
 	BEAKER_PE_VER := $(PE_VER)
 	BEAKER_IS_PE := $(PE)
 	export BEAKER_PE_VER
@@ -29,7 +29,7 @@ clean-logs:
 
 .PHONY: release
 release: clean-logs
-	puppet module build
+	bundle exec puppet module build
 
 .PHONY: test-intake
 test-intake: test-docs test-rspec
@@ -50,11 +50,11 @@ test-integration: .vendor
 
 .PHONY: test-docs
 test-docs: .vendor
-	bundle exec rake parse_doc
+	bundle exec rake spec_docs
 
 .PHONY: test-rspec
 test-rspec: .vendor
 	bundle exec rake lint
 	bundle exec rake validate
 	STRICT_VARIABLES=$(STRICT_VARIABLES) \
-		bundle exec rake spec_verbose
+		bundle exec rake spec_unit

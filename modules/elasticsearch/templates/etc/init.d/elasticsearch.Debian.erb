@@ -56,7 +56,7 @@ done
 export JAVA_HOME
 
 # Directory where the Elasticsearch binary distribution resides
-ES_HOME=/usr/share/$NAME
+#ES_HOME=/usr/share/$NAME
 
 # Heap Size (defaults to 256m min, 1g max)
 #ES_HEAP_SIZE=2g
@@ -77,19 +77,19 @@ MAX_OPEN_FILES=65535
 #MAX_LOCKED_MEMORY=
 
 # Elasticsearch log directory
-LOG_DIR=/var/log/$NAME
+#LOG_DIR=/var/log/$NAME
 
 # Elasticsearch data directory
-DATA_DIR=/var/lib/$NAME
+#DATA_DIR=/var/lib/$NAME
 
 # Elasticsearch work directory
 WORK_DIR=/tmp/$NAME
 
 # Elasticsearch configuration directory
-CONF_DIR=/etc/$NAME
+#CONF_DIR=/etc/$NAME
 
 # Elasticsearch configuration file (elasticsearch.yml)
-CONF_FILE=$CONF_DIR/elasticsearch.yml
+#CONF_FILE=$CONF_DIR/elasticsearch.yml
 
 # Maximum number of VMA (Virtual Memory Areas) a process can own
 MAX_MAP_COUNT=262144
@@ -149,7 +149,9 @@ case "$1" in
 	fi
 
 	# Prepare environment
-	mkdir -p "$LOG_DIR" "$DATA_DIR" "$WORK_DIR" && chown "$ES_USER":"$ES_GROUP" "$LOG_DIR" "$DATA_DIR" "$WORK_DIR"
+	for DIR in "$DATA_DIR" "$LOG_DIR" "$WORK_DIR"; do
+		[ ! -z "$DIR" ] && mkdir -p "$DIR" && chown "$ES_USER":"$ES_GROUP" "$DIR"
+	done
 	touch "$PID_FILE" && chown "$ES_USER":"$ES_GROUP" "$PID_FILE"
 
 	if [ -n "$MAX_OPEN_FILES" ]; then
