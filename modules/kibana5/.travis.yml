@@ -1,0 +1,8 @@
+language: ruby
+script:
+  - "bundle exec rake test"
+rvm:
+  - 2.0.0
+env:
+ - PUPPET_GEM_VERSION="~> 3.4.0"
+ - PUPPET_GEM_VERSION="~> 3.5.0"

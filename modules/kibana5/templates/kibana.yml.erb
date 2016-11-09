@@ -1,0 +1,5 @@
+# This file is managed by Puppet, any changes will be overwritten
+
+<% @config.keys.sort.each do |key| -%>
+<%= key %>: <%= @config[key] %>
+<% end -%>

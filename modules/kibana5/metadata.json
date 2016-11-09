@@ -1,0 +1,42 @@
+{
+    "name": "Nextdoor-kibana5",
+    "version": "1.0.0",
+    "author": "Nextdoor",
+    "license": "Apache-2.0",
+    "source": "https://github.com/Nextdoor/puppet-kibana5",
+    "project_page": "https://github.com/Nextdoor/puppet-kibana5",
+    "issues_url": "https://github.com/Nextdoor/puppet-kibana5/issues",
+    "summary": "Nextdoor kibana5 Management Module",
+    "tags": [ "kibana5", "elasticsearch", "kibana", "elk", "logstash" ],
+    "operatingsystem_support": [
+      {
+        "operatingsystem": "RedHat",
+        "operatingsystemrelease": [
+          "6",
+          "7"
+        ]
+      },
+      {
+        "operatingsystem": "Debian",
+        "operatingsystemrelease": [
+          "7",
+          "8"
+        ]
+      },
+      {
+        "operatingsystem": "Ubuntu",
+        "operatingsystemrelease": [
+          "14.04",
+          "12.04",
+          "10.04"
+        ]
+      }
+    ],
+    "requirements": [
+      { "name": "puppet", "version_requirement": "3.x" }
+    ],
+    "dependencies": [
+      { "name": "puppetlabs/stdlib", "version_requirement": ">= 2.2.1" },
+      { "name": "puppetlabs/firewall", "version_requirement": ">= 1.2.0" }
+    ]
+}
