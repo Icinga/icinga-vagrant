@@ -350,6 +350,9 @@ file { 'nagvis-map-icinga2':
 # Director
 ####################################
 
+icingaweb2::module { 'cube':
+  builtin => false
+}->
 icingaweb2::module { 'director':
   builtin => false
 }
