@@ -29,19 +29,19 @@ define logstash::plugin (
 )
 {
   require logstash::package
-  $exe = '/opt/logstash/bin/plugin'
+  $exe = '/usr/share/logstash/bin/logstash-plugin'
 
   case $source { # Where should we get the plugin from?
     undef: {
       # No explict source, so search Rubygems for the plugin, by name.
-      # ie. "/opt/logstash/bin/plugin install logstash-output-elasticsearch"
+      # ie. "logstash-plugin install logstash-output-elasticsearch"
       $plugin = $name
     }
 
     /^\//: {
       # A gem file that is already available on the local filesystem.
       # Install from the local path.
-      # ie. "/opt/logstash/bin/plugin install /tmp/logtash-filter-custom.gem"
+      # ie. "logstash-plugin install /tmp/logtash-filter-custom.gem"
       $plugin = $source
     }
 
@@ -65,22 +65,32 @@ define logstash::plugin (
     'present': {
       exec { "install-${name}":
         command => "${exe} install ${plugin}",
-        unless  => "${exe} list | grep -q ^${name}$",
-        timeout => 1800,
+        unless  => "${exe} list ^${name}$",
+      }
+    }
+
+    /^\d+\.\d+\.\d+/: {
+      exec { "install-${name}":
+        command => "${exe} install --version ${ensure} ${plugin}",
+        unless  => "${exe} list --verbose ^${name}$ | grep --fixed-strings --quiet '(${ensure})'",
       }
     }
 
     'absent': {
-      notify { "${exe} list | grep -q ^${name}$": } ->
       exec { "remove-${name}":
-        command => "${exe} uninstall ${name}",
-        onlyif  => "${exe} list | grep -q ^${name}$",
-        timeout => 1800,
+        command => "${exe} remove ${name}",
+        onlyif  => "${exe} list${exe_suffix} | grep -q ^${name}$",
       }
     }
 
     default: {
-      fail "'ensure' should be 'present' or 'absent'."
+      fail "'ensure' should be 'present', 'absent', or a version like '1.3.4'."
     }
+  }
+
+  Exec {
+    path    => '/bin:/usr/bin',
+    user    => $logstash::logstash_user,
+    timeout => 1800,
   }
 }

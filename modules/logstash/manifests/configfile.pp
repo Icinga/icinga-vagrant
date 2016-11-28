@@ -50,7 +50,7 @@ define logstash::configfile(
   if ($template != undef ) {
     $config_content = template($template)
   }
-  elsif ($content != undef) {
+  else {
     $config_content = $content
   }
 

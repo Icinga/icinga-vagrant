@@ -6,9 +6,23 @@ HOSTS:
     hypervisor: docker
     docker_cmd: '["/sbin/init"]'
     docker_image_commands:
-      - 'apt-get install -yq lsb-release wget net-tools ruby rubygems ruby1.8-dev libaugeas-dev libaugeas-ruby ntpdate locales-all logrotate'
-      - 'REALLY_GEM_UPDATE_SYSTEM=1 gem update --system --no-ri --no-rdoc'
+      - apt-get update
+      - apt-get -y upgrade
+      - apt-get install -yq apt-transport-https lsb-release wget net-tools ruby rubygems ruby1.8-dev libaugeas-dev libaugeas-ruby ntpdate locales-all logrotate
+
+      # Install Oracle Java 8
+      - echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list
+      - echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list
+      - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+      - apt-get -y update
+      - echo 'debconf shared/accepted-oracle-license-v1-1 select true' | debconf-set-selections
+      - echo 'debconf shared/accepted-oracle-license-v1-1 seen true' | debconf-set-selections
+      - apt-get install -yq oracle-java8-installer
+      - apt-get install -yq oracle-java8-set-default
+
+      - REALLY_GEM_UPDATE_SYSTEM=1 gem update --system --no-ri --no-rdoc
     docker_preserve_image: true
+
 CONFIG:
   type: foss
   :trace_limit: 100  # Get more than 10 lines of trace when something fails.
