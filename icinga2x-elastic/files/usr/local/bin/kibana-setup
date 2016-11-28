@@ -7,6 +7,9 @@ TIMEOUT=300
 
 START=$(date +%s)
 
+echo -e "Restart elasticsearch instance"
+systemctl restart elasticsearch-elastic-es
+
 echo -e "Checking whether Elasticsearch is listening at $ES_URL"
 until $(curl --output /dev/null --silent $ES_URL); do
   NOW=$(date +%s)
@@ -19,6 +22,8 @@ until $(curl --output /dev/null --silent $ES_URL); do
   sleep 1
 done
 
+echo -e "Adding filebeat index pattern"
 curl -XPUT $ES_INDEX_URL -d '{ "title":"filebeat", "timeFieldName":"@timestamp" }'
 
+echo -e "Setting filebeat as default index"
 curl -XPUT $ES_DEFAULT_INDEX_URL -d '{ "defaultIndex":"filebeat" }'
