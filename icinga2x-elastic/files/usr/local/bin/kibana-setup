@@ -1,0 +1,24 @@
+#!/bin/bash
+
+ES_URL="http://localhost:9200"
+ES_INDEX_URL="$ES_URL/.kibana/index-pattern/filebeat"
+ES_DEFAULT_INDEX_URL="$ES_URL/.kibana/config/5.0.1" #TODO on package update
+TIMEOUT=300
+
+START=$(date +%s)
+
+echo -e "Checking whether Elasticsearch is listening at $ES_URL"
+until $(curl --output /dev/null --silent $ES_URL); do
+  NOW=$(date +%s)
+  REAL_TIMEOUT=$(( START + TIMEOUT ))
+  if [[ "$NOW" -gt "$REAL_TIMEOUT" ]]; then
+    echo "Cannot reach Elasticsearch at $ES_URL. Timeout reached."
+    exit 1
+  fi
+  printf '.'
+  sleep 1
+done
+
+curl -XPUT $ES_INDEX_URL -d '{ "title":"filebeat", "timeFieldName":"@timestamp" }'
+
+curl -XPUT $ES_DEFAULT_INDEX_URL -d '{ "defaultIndex":"filebeat" }'

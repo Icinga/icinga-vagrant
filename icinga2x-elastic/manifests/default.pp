@@ -248,7 +248,7 @@ elasticsearch::instance { 'elastic-es':
 class { 'logstash':
   manage_repo  => true,
   repo_version => '5.x',
-  java_install => false,
+  #java_install => false,
 }->
 class { 'kibana5':
   version => '5.0.1-1', # version and revision are required for now
@@ -277,15 +277,19 @@ class { 'filebeat':
     'level' => 'debug' #TODO reset after finishing the box
   }
 }->
-exec { 'filebeat-kibana-index': # filebeat defines the index 'filebeat', but the dashboards provide "filebeat-*". create our own. https://www.elastic.co/guide/en/beats/filebeat/current/elasticsearch-output.html
-  path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => "curl -XPUT 'http://localhost:9200/.kibana/index-pattern/filebeat' -d '{ \"title\":\"filebeat\", \"timeFieldName\":\"@timestamp\" }'"
-}->
-exec { 'filebeat-kibana-defaultindex':
-  path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => "curl -XPUT 'http://localhost:9200/.kibana/config/5.0.1' -d '{ \"defaultIndex\": \"filebeat\" }'"
+file { 'kibana-setup':
+  name => '/usr/local/bin/kibana-setup',
+  owner => root,
+  group => root,
+  mode => '0755',
+  source => "puppet:////vagrant/files/usr/local/bin/kibana-setup",
 }
-
+->
+exec { 'finish-kibana-setup':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => "/usr/local/bin/kibana-setup",
+  timeout => 3600
+}
 
 filebeat::prospector { 'syslogs':
   paths => [
