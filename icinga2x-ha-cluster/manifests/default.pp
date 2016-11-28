@@ -219,6 +219,15 @@ file { '/etc/icinga2/remote':
   notify    => Service['icinga2']
 }
 
+# disable IDO HA
+file { "/etc/icinga2/features-available/ido-mysql.conf":
+  owner  => icinga,
+  group  => icinga,
+  source    => "puppet:////vagrant/files/etc/icinga2/features-available/ido-mysql.conf",
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
+
 ####################################
 # Icinga 2 Cluster Zones
 ####################################
