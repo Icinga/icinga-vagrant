@@ -1,0 +1,10 @@
+<% if @comment.is_a?(Array) -%>
+<% @comment.each do |line| -%>
+# <%= line %>
+<% end -%>
+<% elsif @comment.is_a?(String) -%>
+<% @comment.each_line do |line| -%>
+# <%= line.strip %>
+<% end -%>
+<% end -%>
+<%= @title %> = <%= @value %>
