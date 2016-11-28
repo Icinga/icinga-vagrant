@@ -22,7 +22,7 @@ Run Vagrant:
 ## Icinga 2 API
 
 Access [https://192.168.33.8:5665/v1/objects/hosts](https://192.168.33.8:5665/v1/objects/hosts)
-using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.org/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
+using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.com/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
 
 ## Requirements
 
@@ -82,7 +82,7 @@ the packages and configuration.
 
 ## Documentation
 
-The Icinga 2 documentation is located at http://docs.icinga.org
+The Icinga 2 documentation is located at http://docs.icinga.com
 
 # Updates
 

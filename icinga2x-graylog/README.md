@@ -67,35 +67,9 @@ If your box is broken, you can destroy it using `vagrant destroy`. Next `vagrant
 run will use the already imported base box, re-running the provisioner to install
 the packages and configuration.
 
-
-
-## Ports
-
-  VM Name   | Host Port | Guest Port
-  ----------|-----------|-----------
-  i2g2      | 2110      | 22
-  i2g2      | 8110      | 80
-  i2g2      | 9000      | 9000
-  i2g2      | 12201     | 12201 (tcp/udp)
-  i2g2      | 12900     | 12900
-
-
-## SSH Access
-
-Either `vagrant ssh <hostname>` or manually (open the VirtualBox gui and check the
-network port forwarding).
-
-  Name            | Value
-  ----------------|----------------
-  Host            | 127.0.0.1
-  Port            | Check [port list](#ports)
-  Username        | vagrant
-  Password        | vagrant
-
-
 ## Documentation
 
-The Icinga 2 documentation is located at http://docs.icinga.org
+The Icinga 2 documentation is located at https://docs.icinga.com
 The Graylog documentation is located at http://docs.graylog.org
 
 # Updates

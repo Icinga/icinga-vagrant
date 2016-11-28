@@ -81,7 +81,7 @@ network port forwarding).
 
 ## Documentation
 
-The Icinga 1.x documentation is located at http://docs.icinga.org
+The Icinga 1.x documentation is located at https://docs.icinga.com
 
 # Updates
 

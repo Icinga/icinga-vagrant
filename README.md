@@ -4,7 +4,9 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 
 * [Icinga 2 Standalone](README.md#icinga2x)
 * [Icinga 2 Cluster](README.md#icinga2x-cluster)
+* [Icinga 2 HA Cluster](README.md#icinga2x-ha-cluster)
 * [Icinga 2 InfluxDB](README.md#icinga2x-influxdb)
+* [Icinga 2 and Elastic](README.md#icinga2x-elastic)
 * [Icinga 2 and Graylog](README.md#icinga2x-graylog)
 * [Icinga 1.x](README.md#icinga1x)
 
@@ -167,7 +169,7 @@ Note: In case Dashing is not running, restart it manually:
 ### Icinga 2 API
 
 Access [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts)
-using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.org/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
+using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.com/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
 
 ## <a id="icinga2x-cluster"></a>Icinga 2 Cluster
 
@@ -215,6 +217,24 @@ Access [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/
 and [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts)
 using the credentials `root/icinga`.
 
+## <a id="icinga2x-ha-cluster"></a>Icinga 2 HA Cluster
+
+* 2 Master VMs, 1 Satellite VM
+* Icinga 2 Core, DB IDO MYSQL, Icinga Web 2
+
+Run Vagrant:
+
+    $ cd icinga2x-ha-cluster && vagrant up
+
+### User Interfaces
+
+Note: DB IDO HA is disabled.
+
+  GUI               | Url                                   | Credentials
+  ------------------|---------------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.101/icingaweb2       | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.102/icingaweb2       | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.103/icingaweb2       | icingaadmin/icinga
 
 ## <a id="icinga2x-influxdb"></a>Icinga 2 InfluxDB
 
@@ -239,14 +259,30 @@ Run Vagrant:
 ### Icinga 2 API
 
 Access [https://192.168.33.8:5665/v1/objects/hosts](https://192.168.33.8:5665/v1/objects/hosts)
-using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.org/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
+using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.com/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
 
+## <a id="icinga2x-elastic"></a>Icinga 2 and Elastic Stack
+
+* Elastic Stack: Elasticsearch, Logstash, Kibana, Beats (TODO)
+* Icinga 2, Icinga Web 2
+
+**Note:** This is for testing only. There is no integration between Icinga and Elastic yet.
+
+Run Vagrant:
+
+    $ cd icinga2x-elastic && vagrant up
+
+### User Interfaces
+
+  GUI               | Url                               | Credentials
+  ------------------|-----------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.7/icingaweb2    | icingaadmin/icinga
+  Kibana            | http://192.168.33.7:5601          | --
 
 ## <a id="icinga2x-graylog"></a>Icinga 2 and Graylog
 
-* 1 VM
-* Icinga 2 Core
 * Graylog Server and Web with Elasticsearch, MongoDB
+* Icinga 2, Icinga Web 2
 
 Run Vagrant:
 
@@ -258,6 +294,7 @@ Run Vagrant:
   -----------------|---------------------------------|------------------------
   Icinga Web 2     | http://192.168.33.6/icingaweb2  | icingaadmin/icinga
   Graylog          | http://192.168.33.6:9000        | admin/admin
+
 
 ## <a id="icinga1x"></a>Icinga 1.x
 
@@ -280,25 +317,6 @@ credentials.
   Jasperserver	    | :8082/jasperserver    | jasperadmin/jasperadmin
 
 ## Misc
-
-### Port Forwarding Overview
-
-  Box Name          | VM Name   | Host Port | Guest Port
-  ------------------|-----------|-----------|-----------
-  icinga1x          | icinga1x  | 2081      | 22
-  icinga1x          | icinga1x  | 8081      | 80
-  icinga1x          | icinga1x  | 8082      | 8080
-  icinga2x          | icinga2   | 2082      | 22
-  icinga2x          | icinga2   | 8082      | 80
-  icinga2x-cluster  | icinga2a  | 2085      | 22
-  icinga2x-cluster  | icinga2a  | 8085      | 80
-  icinga2x-cluster  | icinga2b  | 2086      | 22
-  icinga2x-cluster  | icinga2b  | 8086      | 80
-  icinga2x-graylog  | i2g2	| 2110      | 22
-  icinga2x-graylog  | i2g2	| 8110      | 80
-  icinga2x-graylog  | i2g2	| 9000      | 9000
-  icinga2x-graylog  | i2g2	| 12201     | 12201 (tcp/udp)
-  icinga2x-graylog  | i2g2	| 12900     | 12900
 
 ### Puppet Module Overview
 

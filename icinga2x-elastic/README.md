@@ -1,38 +1,24 @@
-# Icinga 2 Standalone Vagrant Box
+# Icinga 2 Elastic Vagrant Box
 
+* Elastic Stack 5.x
+ * Elasticsearch
+ * Logstash
+ * Kibana
+ * Beats
 * Icinga 2 Core
-  * Icinga 2 API
 * Icinga Web 2
- * Icinga [Director](https://github.com/Icinga/icingaweb2-module-director)
- * [PNP](https://github.com/Icinga/icingaweb2-module-pnp) module
- * [Graphite](https://github.com/Icinga/icingaweb2-module-graphite) module
- * [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess) module
- * [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts) module
- * [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) module
-* PNP4Nagios
-* NagVis
-* Graphite
-* Grafana 2
-* Dashing
 
 ## User Interfaces
 
   GUI               | Url                               | Credentials
   ------------------|-----------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
-  PNP4Nagios        | http://192.168.33.5/pnp4nagios    | -
-  Graphite Web	    | http://192.168.33.5:8003          | -
-  Grafana 2         | http://192.168.33.5:8004          | admin/admin
-  Dashing           | http://192.168.33.5:8005          | -
-
-Note: In case Dashing is not running, restart it manually:
-
-    $ vagrant ssh -c "sudo /usr/share/dashing-icinga2/restart-dashing -p 8005 -D /usr/share/dashing-icinga2 -b /usr/local/bin/dashing"
+  Icinga Web 2      | http://192.168.33.7/icingaweb2    | icingaadmin/icinga
+  Kibana            | http://192.168.33.7:5601          | -
 
 ## Icinga 2 API
 
-Access [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts)
-using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.org/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
+Access [https://192.168.33.7:5665/v1/objects/hosts](https://192.168.33.7:5665/v1/objects/hosts)
+using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.com/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
 
 ## Requirements
 
@@ -90,33 +76,10 @@ If your box is broken, you can destroy it using `vagrant destroy`. Next `vagrant
 run will use the already imported base box, re-running the provisioner to install
 the packages and configuration.
 
-
-
-## Ports
-
-  VM Name   | Host Port | Guest Port
-  ----------|-----------|-----------
-  icinga2   | 2082      | 22
-  icinga2   | 8082      | 80
-  icinga2   | 8083      | 8003
-
-
-## SSH Access
-
-Either `vagrant ssh <hostname>` or manually (open the VirtualBox gui and check the
-network port forwarding).
-
-  Name            | Value
-  ----------------|----------------
-  Host            | 127.0.0.1
-  Port            | Check [port list](#ports)
-  Username        | vagrant
-  Password        | vagrant
-
-
 ## Documentation
 
-The Icinga 2 documentation is located at http://docs.icinga.org
+The Icinga 2 documentation is located at http://docs.icinga.com
+The Elastic documentation is located at https://www.elastic.co/guide/index.html
 
 # Updates
 
