@@ -330,6 +330,7 @@ These boxes use these imported puppet modules for provisioning:
   puppet-wget           | modules/wget                  | https://github.com/maestrodev/puppet-wget.git
   puppet-vim            | modules/vim                   | https://github.com/saz/puppet-vim.git
   puppet-lib-file\_contact | modules/file\_contact      | https://github.com/electrical/puppet-lib-file_concat.git
+  puppet-sysctl		| modules/sysctl		| https://github.com/thias/puppet-sysctl.git
 
 #### Puppet Module Setup
 
