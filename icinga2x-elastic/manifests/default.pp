@@ -263,6 +263,41 @@ class { 'kibana5':
     'logging.events'               => "{ log: ['info', 'warning', 'error', 'fatal'], response: '*', error: '*' }",
     'elasticsearch.requestTimeout' => 500000,
   }
+}->
+class { 'filebeat':
+  outputs => {
+    'elasticsearch' => {
+      'hosts' => [
+        'http://localhost:9200'
+      ],
+      'index' => 'filebeat'
+    }
+  },
+  logging => {
+    'level' => 'debug' #TODO reset after finishing the box
+  }
+}->
+exec { 'filebeat-kibana-index': # filebeat defines the index 'filebeat', but the dashboards provide "filebeat-*". create our own. https://www.elastic.co/guide/en/beats/filebeat/current/elasticsearch-output.html
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => "curl -XPUT 'http://localhost:9200/.kibana/index-pattern/filebeat' -d '{ \"title\":\"filebeat\", \"timeFieldName\":\"@timestamp\" }'"
+}->
+exec { 'filebeat-kibana-defaultindex':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => "curl -XPUT 'http://localhost:9200/.kibana/config/5.0.1' -d '{ \"defaultIndex\": \"filebeat\" }'"
+}
+
+
+filebeat::prospector { 'syslogs':
+  paths => [
+    '/var/log/messages'
+  ],
+  doc_type => 'syslog-beat'
+}
+filebeat::prospector { 'icinga2logs':
+  paths => [
+    '/var/log/icinga2/icinga2.log'
+  ],
+  doc_type => 'syslog-beat'
 }
 
 
