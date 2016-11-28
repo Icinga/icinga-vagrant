@@ -322,6 +322,8 @@ credentials.
 
 These boxes use these imported puppet modules for provisioning:
 
+General:
+
   Name     		| Path				| Url
   ----------------------|-------------------------------|-------------------------------
   puppetlabs-stdlib	| modules/stdlib		| https://github.com/puppetlabs/puppetlabs-stdlib.git
@@ -333,22 +335,28 @@ These boxes use these imported puppet modules for provisioning:
   puppet-module-epel	| modules/epel			| https://github.com/stahnma/puppet-module-epel.git
   puppet-php		| modules/php			| https://github.com/thias/puppet-php.git
   puppet-selinux	| modules/selinux		| https://github.com/jfryman/puppet-selinux.git
-  graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
-  puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
-  puppet-datacat        | modules/datacat               | https://github.com/richardc/puppet-datacat.git
-  puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git
-  puppet-kibana4        | modules/kibana4               | https://github.com/lesaux/puppet-kibana4.git
-  puppet-kibana5	| modules/kibana5		| https://github.com/Nextdoor/puppet-kibana5
-  puppetlabs-mongodb	| modules/mongodb		| https://github.com/puppetlabs/puppetlabs-mongodb.git
   puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
   puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
-  puppet-graphite	| modules/graphite		| Patched for systemd usage from https://github.com/echocat/puppet-graphite.git
-  puppet-grafana	| modules/grafana		| https://github.com/bfraser/puppet-grafana.git
-  golja-influxdb        | modules/influxdb              | https://github.com/n1tr0g/golja-influxdb.git including a [PR for 1.0.0 support](https://github.com/n1tr0g/golja-influxdb/pull/47)
   puppet-wget           | modules/wget                  | https://github.com/maestrodev/puppet-wget.git
   puppet-vim            | modules/vim                   | https://github.com/saz/puppet-vim.git
   puppet-lib-file\_contact | modules/file\_contact      | https://github.com/electrical/puppet-lib-file_concat.git
   puppet-sysctl		| modules/sysctl		| https://github.com/thias/puppet-sysctl.git
+  puppet-datacat        | modules/datacat               | https://github.com/richardc/puppet-datacat.git
+
+Specific projects:
+
+  Name     		| Path				| Url
+  ----------------------|-------------------------------|-------------------------------
+  graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
+  puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
+  puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git
+  puppet-kibana4        | modules/kibana4               | https://github.com/lesaux/puppet-kibana4.git
+  puppet-kibana5	| modules/kibana5		| https://github.com/Nextdoor/puppet-kibana5
+  puppet-filebeat       | modules/filebeat		| https://github.com/pcfens/puppet-filebeat.git
+  puppetlabs-mongodb	| modules/mongodb		| https://github.com/puppetlabs/puppetlabs-mongodb.git
+  golja-influxdb        | modules/influxdb              | https://github.com/n1tr0g/golja-influxdb.git including a [PR for 1.0.0 support](https://github.com/n1tr0g/golja-influxdb/pull/47)
+  puppet-graphite	| modules/graphite		| Patched for systemd usage from https://github.com/echocat/puppet-graphite.git
+  puppet-grafana	| modules/grafana		| https://github.com/bfraser/puppet-grafana.git
 
 #### Puppet Module Setup
 
