@@ -263,10 +263,8 @@ using the credentials `root/icinga`. More details in the [documentation](http://
 
 ## <a id="icinga2x-elastic"></a>Icinga 2 and Elastic Stack
 
-* Elastic Stack: Elasticsearch, Logstash, Kibana, Beats (TODO)
+* Elastic Stack: Elasticsearch, Logstash, Kibana, Beats
 * Icinga 2, Icinga Web 2
-
-**Note:** This is for testing only. There is no integration between Icinga and Elastic yet.
 
 Run Vagrant:
 
@@ -277,7 +275,7 @@ Run Vagrant:
   GUI               | Url                               | Credentials
   ------------------|-----------------------------------|----------------
   Icinga Web 2      | http://192.168.33.7/icingaweb2    | icingaadmin/icinga
-  Kibana            | http://192.168.33.7:5601          | --
+  Kibana            | http://192.168.33.7:5601          | -
 
 ## <a id="icinga2x-graylog"></a>Icinga 2 and Graylog
 
