@@ -68,16 +68,10 @@
 #   This can be a http,https or ftp resource for remote packages
 #   puppet:// resource or file:/ for local packages
 #
-# [*software_provider*]
-#   Way to install the packages, currently only packages are supported.
+# [*package_name*]
+#   Logstash packagename
 #
-# [*package_dir*]
-#   Directory where the packages are downloaded to
-#
-# [*purge_package_dir*]
-#   Purge package directory on removal
-#
-# [*package_dl_timeout*]
+# [*download_timeout*]
 #   For http,https and ftp downloads you can set howlong the exec resource may take.
 #   Defaults to: 600 seconds
 #
@@ -93,46 +87,25 @@
 # [*service_provider*]
 #   Service provider to use. By Default when a single service provider is possibe that one is selected.
 #
-# [*init_defaults*]
-#   Defaults file content in hash representation
-#
-# [*init_defaults_file*]
-#   Defaults file as puppet resource
-#
-# [*init_template*]
-#   Service file as a template
-#
-# [*java_install*]
-#  Install java which is required for Logstash.
-#  Defaults to: false
-#
-# [*java_package*]
-#   If you like to install a custom java package, put the name here.
+# [*startup_options*]
+#   Options used for running the Logstash process.
+#   See: https://www.elastic.co/guide/en/logstash/current/config-setting-files.html
 #
 # [*manage_repo*]
-#   Enable repo management by enabling our official repositories
+#   Enable repo management by enabling official repositories
 #
 # [*repo_version*]
-#   Our repositories are versioned per major version (1.3, 1.4) select here which version you want
+#   Logstash repositories are versioned per major version (5.x) select here which version you want
 #
 # [*configdir*]
 #   Path to directory containing the logstash configuration.
 #   Use this setting if your packages deviate from the norm (/etc/logstash)
-#
-# [*repo_stage*]
-#   Use stdlib stage setup for managing the repo, instead of anchoring
 #
 # === Examples
 #
 # * Installation, make sure service is running and will be started at boot time:
 #     class { 'logstash':
 #       manage_repo => true,
-#     }
-#
-# * If you're not already managing Java some other way:
-#     class { 'logstash':
-#       manage_repo  => true,
-#       java_install => true,
 #     }
 #
 # * Removal/decommissioning:
@@ -148,7 +121,7 @@
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash(
   $ensure              = $logstash::params::ensure,
@@ -156,139 +129,47 @@ class logstash(
   $restart_on_change   = $logstash::params::restart_on_change,
   $autoupgrade         = $logstash::params::autoupgrade,
   $version             = false,
-  $software_provider   = 'package',
   $package_url         = undef,
-  $package_dir         = $logstash::params::package_dir,
-  $purge_package_dir   = $logstash::params::purge_package_dir,
-  $package_dl_timeout  = $logstash::params::package_dl_timeout,
+  $package_name        = $logstash::params::package_name,
+  $download_timeout    = $logstash::params::download_timeout,
   $logstash_user       = $logstash::params::logstash_user,
   $logstash_group      = $logstash::params::logstash_group,
   $configdir           = $logstash::params::configdir,
   $purge_configdir     = $logstash::params::purge_configdir,
-  $java_install        = false,
-  $java_package        = undef,
-  $service_provider    = 'init',
-  $init_defaults       = undef,
-  $init_defaults_file  = undef,
-  $init_template       = undef,
-  $manage_repo         = false,
+  $startup_options     = {},
+  $manage_repo         = true,
   $repo_version        = $logstash::params::repo_version,
-  $repo_stage          = false
 ) inherits logstash::params {
 
-  anchor {'logstash::begin': }
-  anchor {'logstash::end': }
-
   #### Validate parameters
+  validate_bool($autoupgrade)
+  validate_bool($restart_on_change)
+  validate_bool($purge_configdir)
+  validate_bool($manage_repo)
 
-  # ensure
   if ! ($ensure in [ 'present', 'absent' ]) {
     fail("\"${ensure}\" is not a valid ensure parameter value")
   }
 
-  # autoupgrade
-  validate_bool($autoupgrade)
-
-  # package download timeout
-  if ! is_integer($package_dl_timeout) {
-    fail("\"${package_dl_timeout}\" is not a valid number for 'package_dl_timeout' parameter")
+  if ! is_integer($download_timeout) {
+    fail("\"${download_timeout}\" is not a valid number for 'download_timeout' parameter")
   }
 
-  # service status
   if ! ($status in [ 'enabled', 'disabled', 'running', 'unmanaged' ]) {
     fail("\"${status}\" is not a valid status parameter value")
-  }
-
-  # restart on change
-  validate_bool($restart_on_change)
-
-  # purge conf dir
-  validate_bool($purge_configdir)
-
-  if ! ($service_provider in $logstash::params::service_providers) {
-    fail("\"${service_provider}\" is not a valid provider for \"${::operatingsystem}\"")
   }
 
   if ($package_url != undef and $version != false) {
     fail('Unable to set the version number when using package_url option.')
   }
 
-  validate_bool($manage_repo)
-
   if ($manage_repo == true) {
     validate_string($repo_version)
   }
 
-  #### Manage actions
 
-  # package(s)
-  class { 'logstash::package': }
-
-  # configuration
-  class { 'logstash::config': }
-
-  # service(s)
-  class { 'logstash::service': }
-
-  if $java_install == true {
-    # Install java
-    class { 'logstash::java': }
-
-    # ensure we first install java and then manage the service
-    Anchor['logstash::begin']
-    -> Class['logstash::java']
-    -> Class['logstash::package']
-  }
-
-  if ($manage_repo == true) {
-
-    if ($repo_stage == false) {
-      # use anchor for ordering
-
-      # Set up repositories
-      class { 'logstash::repo': }
-
-      # Ensure that we set up the repositories before trying to install
-      # the packages
-      Anchor['logstash::begin']
-      -> Class['logstash::repo']
-      -> Class['logstash::package']
-
-    } else {
-      # use staging for ordering
-
-      if !(defined(Stage[$repo_stage])) {
-        stage { $repo_stage:  before => Stage['main'] }
-      }
-
-      class { 'logstash::repo':
-        stage => $repo_stage,
-      }
-    }
-  }
-
-  #### Manage relationships
-
-  if $ensure == 'present' {
-
-    # we need the software before configuring it
-    Anchor['logstash::begin']
-    -> Class['logstash::package']
-    -> Class['logstash::config']
-
-    # we need the software and a working configuration before running a service
-    Class['logstash::package'] -> Class['logstash::service']
-    Class['logstash::config']  -> Class['logstash::service']
-
-    Class['logstash::service'] -> Anchor['logstash::end']
-
-  } else {
-
-    # make sure all services are getting stopped before software removal
-    Anchor['logstash::begin']
-    -> Class['logstash::service']
-    -> Class['logstash::package']
-    -> Anchor['logstash::end']
-
-  }
+  if ($manage_repo == true) { include logstash::repo }
+  include logstash::package
+  include logstash::config
+  include logstash::service
 }

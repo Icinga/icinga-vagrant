@@ -240,8 +240,9 @@ describe 'logstash', :type => 'class' do
             :repo_version => '1.3'
           } end
 
-          it { should contain_class('logstash::repo').that_requires('Anchor[logstash::begin]') }
+          it { should contain_class('logstash::repo') }
           it { should contain_class('apt') }
+          it { should contain_package('logstash').that_requires('Class[Apt::Update]') }
           it { should contain_apt__source('logstash').with(:release => 'stable', :repos => 'main', :location => 'http://packages.elasticsearch.org/logstash/1.3/debian') }
 
         end

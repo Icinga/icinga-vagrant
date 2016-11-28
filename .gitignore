@@ -1,4 +1,5 @@
 .swp
+.#*
 spec/fixtures/artifacts/*
 !spec/fixtures/artifacts/.gitignore
 spec/fixtures/modules/*

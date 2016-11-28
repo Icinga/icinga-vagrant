@@ -13,7 +13,7 @@ PUPPET_VERSION = ENV['PUPPET_VERSION'] || '3.8.6'
 PE_VERSION = ENV['BEAKER_PE_VER'] || ENV['PE_VERSION'] || '3.8.3'
 PE_DIR = ENV['BEAKER_PE_DIR']
 
-REPO_VERSION = LS_VERSION[0..(LS_VERSION.rindex('.') - 1)] # "1.5.3-1" -> "1.5"
+REPO_VERSION = LS_VERSION[0] + ".x" # "5.0.1" -> "5.x"
 
 def agent_version_for_puppet_version(puppet_version)
   # REF: https://docs.puppet.com/puppet/latest/reference/about_agent.html
@@ -44,36 +44,36 @@ def expect_no_change_from_manifest(manifest)
   expect(apply_manifest(manifest).exit_code).to eq(0)
 end
 
-# Package naming is not super-consistent for early versions, so we
-# need to explicitly provide URLs for the ones that we can't construct
-# correctly with simple string manipulation.
-def logstash_package_url
-  url_root = 'http://download.elasticsearch.org/logstash/logstash/packages'
-  url_map = {
-    '1.4.5' => {
-      'deb' => "#{url_root}/debian/logstash_1.4.5-1-a2bacae_all.deb",
-      'rpm' => "#{url_root}/centos/logstash-1.4.5-1_a2bacae.noarch.rpm"
-    }
-  }
+def http_package_url
+  url_root = "https://artifacts.elastic.co/downloads/logstash/logstash-#{LS_VERSION}"
 
   case fact('osfamily')
   when 'Debian'
-    package_format = 'deb'
+    "#{url_root}.deb"
   when 'RedHat', 'Suse'
-    package_format = 'rpm'
+    "#{url_root}.rpm"
   end
+end
 
-  if url_map[LS_VERSION].nil? || url_map[LS_VERSION][package_format].nil?
-    url = "#{url_root}/debian/logstash_#{LS_VERSION}-1_all.deb" if package_format == 'deb'
-    url = "#{url_root}/centos/logstash-#{LS_VERSION}-1.noarch.rpm" if package_format == 'rpm'
-  else
-    url = url_map[LS_VERSION][package_format]
-  end
-  url
+def local_file_package_url
+  "file:///tmp/#{logstash_package_filename}"
+end
+
+def puppet_fileserver_package_url
+  "puppet:///modules/logstash/#{logstash_package_filename}"
 end
 
 def logstash_package_filename
-  File.basename(logstash_package_url)
+  File.basename(http_package_url)
+end
+
+def logstash_package_version
+  case fact('osfamily') # FIXME: Put this logic in the module, not the tests.
+  when 'RedHat'
+    "#{LS_VERSION}-1"
+  when 'Debian', 'Suse'
+    "1:#{LS_VERSION}-1"
+  end
 end
 
 def logstash_config_manifest
@@ -87,9 +87,20 @@ end
 def install_logstash_manifest(extra_args = nil)
   <<-END
   class { 'logstash':
-    manage_repo => true,
+    manage_repo  => true,
     repo_version => '#{REPO_VERSION}',
-    java_install => true,
+    version      => '#{logstash_package_version}',
+    #{extra_args if extra_args}
+  }
+
+  #{logstash_config_manifest}
+  END
+end
+
+def install_logstash_from_url_manifest(url, extra_args = nil)
+  <<-END
+  class { 'logstash':
+    package_url  => '#{url}',
     #{extra_args if extra_args}
   }
 
@@ -98,32 +109,15 @@ def install_logstash_manifest(extra_args = nil)
 end
 
 def install_logstash_from_local_file_manifest(extra_args = nil)
-  <<-END
-  class { 'logstash':
-    package_url => 'file:///tmp/#{logstash_package_filename}',
-    java_install => true,
-    #{extra_args if extra_args}
-  }
-
-  #{logstash_config_manifest}
-  END
+  install_logstash_from_url_manifest(local_file_package_url, extra_args)
 end
 
 def remove_logstash_manifest
-  <<-END
-  class { 'logstash':
-    ensure => absent,
-  }
-  END
+  "class { 'logstash': ensure => 'absent' }"
 end
 
 def stop_logstash_manifest
-  <<-END
-  service { 'logstash':
-    ensure => stopped,
-    enable => false,
-  }
-  END
+  "class { 'logstash': status => 'disabled' }"
 end
 
 # Provide a basic Logstash install. Useful as a testing pre-requisite.
@@ -132,10 +126,19 @@ def install_logstash(extra_args = nil)
   sleep 5 # FIXME: This is horrible.
 end
 
-def install_logstash_from_local_file(extra_args = nil)
-  manifest = install_logstash_from_local_file_manifest(extra_args)
+def include_logstash
+  apply_manifest('include logstash', catch_failures: true, debug: true)
+  sleep 5 # FIXME: This is horrible.
+end
+
+def install_logstash_from_url(url, extra_args = nil)
+  manifest = install_logstash_from_url_manifest(url, extra_args)
   apply_manifest(manifest, catch_failures: true)
   sleep 5 # FIXME: This is horrible.
+end
+
+def install_logstash_from_local_file(extra_args = nil)
+  install_logstash_from_url(local_file_package_url, extra_args)
 end
 
 def remove_logstash
@@ -211,7 +214,7 @@ hosts.each do |host|
 
   # Aquire a binary package of Logstash.
   logstash_download = "spec/fixtures/artifacts/#{logstash_package_filename}"
-  `curl -s -o #{logstash_download} #{logstash_package_url}` unless File.exist?(logstash_download)
+  `curl -s -o #{logstash_download} #{http_package_url}` unless File.exist?(logstash_download)
   # ...send it to the test host
   scp_to(host, logstash_download, '/tmp/')
   # ...and also make it available as a "puppet://" url, by putting it in the
@@ -224,10 +227,10 @@ hosts.each do |host|
   end
 
   # Provide a Logstash plugin as a local Gem.
-  scp_to(host, './spec/fixtures/plugins/logstash-output-cowsay-0.1.0.gem', '/tmp/')
+  scp_to(host, './spec/fixtures/plugins/logstash-output-cowsay-5.0.0.gem', '/tmp/')
 
   # ...and another plugin that can be fetched from Puppet with "puppet://"
-  FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-0.1.0.gem', './files/')
+  FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-5.0.0.gem', './files/')
 
   # Provide this module to the test system.
   project_root = File.dirname(File.dirname(__FILE__))

@@ -251,7 +251,8 @@ describe 'logstash', :type => 'class' do
             :repo_version => '1.3'
           } end
 
-          it { should contain_class('logstash::repo').that_requires('Anchor[logstash::begin]') }
+          it { should contain_class('logstash::repo') }
+          it { should contain_package('logstash').that_requires('Zypprepo[logstash]') }
           it { should contain_exec('logstash_suse_import_gpg') }
           it { should contain_zypprepo('logstash').with(:baseurl => repo) }
 

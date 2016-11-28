@@ -25,139 +25,26 @@
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
-# * Matthias Baur <mailto:matthias.baur@dmc.de>
+# https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash::params {
-
-  #### Default values for the parameters of the main module class, init.pp
-
-  # ensure
+  # Default values for the parameters of the main module class, init.pp.
+  $package_name = 'logstash'
   $ensure = 'present'
-
-  # autoupgrade
-  $autoupgrade = false
-
-  # service status
   $status = 'enabled'
+  $logstash_user  = 'logstash'
+  $logstash_group = 'logstash'
+
+  $configdir = '/etc/logstash'
+  $patterndir = "${configdir}/patterns"
+  $plugindir = "${configdir}/plugins"
+  $purge_configdir = false
+
+  $repo_version = '5.x'
+  $autoupgrade = false
+  $download_tool = 'wget --no-check-certificate -O'
+  $download_timeout = 600  # Exec[] timeout default is 300.
 
   # restart on configuration change?
   $restart_on_change = true
-
-  # Purge configuration directory
-  $purge_configdir = false
-
-  $purge_package_dir = false
-
-  # package download timeout
-  $package_dl_timeout = 600 # 300 seconds is default of puppet
-
-  # default version to use if none is provided when manage_repo is set to true
-  $repo_version = '1.5'
-
-  #### Internal module values
-
-  # User and Group for the files and user to run the service as.
-  case $::kernel {
-    'Linux': {
-      $logstash_user  = 'root'
-      $logstash_group = 'root'
-    }
-    'Darwin': {
-      $logstash_user  = 'root'
-      $logstash_group = 'wheel'
-    }
-    default: {
-      fail("\"${module_name}\" provides no user/group default value
-           for \"${::kernel}\"")
-    }
-  }
-
-  # Download tool
-
-  case $::kernel {
-    'Linux': {
-      $download_tool = 'wget --no-check-certificate -O'
-    }
-    'Darwin': {
-      $download_tool = 'curl -o'
-    }
-    default: {
-      fail("\"${module_name}\" provides no download tool default value
-           for \"${::kernel}\"")
-    }
-  }
-
-  # Different path definitions
-  case $::kernel {
-    'Linux': {
-      $configdir = '/etc/logstash'
-      $package_dir = '/var/lib/logstash/swdl'
-      $installpath = '/opt/logstash'
-      $plugin = '/opt/logstash/bin/plugin'
-    }
-    'Darwin': {
-      $configdir = '/Library/Application Support/Logstash'
-      $package_dir = '/Library/Logstash/swdl'
-      $installpath = '/Library/Logstash'
-      $plugin = '/Library/Logstash/bin/plugin'
-    }
-    default: {
-      fail("\"${module_name}\" provides no config directory default value
-           for \"${::kernel}\"")
-    }
-  }
-  $patterndir = "${configdir}/patterns"
-  $plugindir = "${configdir}/plugins"
-
-  # packages
-  case $::operatingsystem {
-    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux', 'SLES', 'OpenSuSE': {
-      # main application
-      $package = [ 'logstash' ]
-      $contrib = [ 'logstash-contrib' ]
-    }
-    'Debian', 'Ubuntu': {
-      # main application
-      $package = [ 'logstash' ]
-      $contrib = [ 'logstash-contrib' ]
-    }
-    default: {
-      fail("\"${module_name}\" provides no package default value
-            for \"${::operatingsystem}\"")
-    }
-  }
-
-  # service parameters
-  case $::operatingsystem {
-    'RedHat', 'CentOS', 'Fedora', 'Scientific', 'Amazon', 'OracleLinux', 'SLES', 'OpenSuSE': {
-      $service_name       = 'logstash'
-      $service_hasrestart = true
-      $service_hasstatus  = true
-      $service_pattern    = $service_name
-      $service_providers  = [ 'init' ]
-      $defaults_location  = '/etc/sysconfig'
-    }
-    'Debian', 'Ubuntu': {
-      $service_name       = 'logstash'
-      $service_hasrestart = true
-      $service_hasstatus  = true
-      $service_pattern    = $service_name
-      $service_providers  = [ 'init' ]
-      $defaults_location  = '/etc/default'
-    }
-    'Darwin': {
-      $service_name       = 'net.logstash'
-      $service_hasrestart = true
-      $service_hasstatus  = true
-      $service_pattern    = $service_name
-      $service_providers  = [ 'launchd' ]
-      $defaults_location  = false
-    }
-    default: {
-      fail("\"${module_name}\" provides no service parameters
-            for \"${::operatingsystem}\"")
-    }
-  }
-
 }

@@ -2,21 +2,26 @@ require 'spec_helper_acceptance'
 
 shared_examples 'a logstash installer' do
   it "should install logstash version #{LS_VERSION}" do
-    expect(shell('/opt/logstash/bin/logstash --version').stdout).to eq("logstash #{LS_VERSION}\n")
+    expect(shell('/usr/share/logstash/bin/logstash --version').stdout).to eq("logstash #{LS_VERSION}\n")
   end
 
-  describe package('logstash') do
-    it { should be_installed }
+  case fact('osfamily')
+  when 'RedHat', 'Suse'
+    describe package('logstash') do
+      it { should be_installed }
+    end
+  when 'Debian'
+    # Serverspec has been falsely reporting the package as not installed on
+    # Debian 7, so we'll implement our own version of "should be_installed".
+    it "should install logstash package version #{logstash_package_version}" do
+      apt_output = shell('apt-cache policy logstash').stdout
+      expect(apt_output).to include("Installed: #{logstash_package_version}")
+    end
   end
 
   describe service('logstash') do
     it { should be_enabled }
     it { should be_running }
-  end
-
-  describe file('/var/run/logstash.pid') do
-    it { should be_file }
-    its(:content) { should match(/^[0-9]+$/) }
   end
 
   it 'should spawn a single logstash process' do
@@ -30,18 +35,15 @@ end
 
 describe 'class logstash' do
   describe 'ensure => present' do
-    context 'with basic arguments' do
+    context 'with include-like declaration' do
       before(:all) do
         remove_logstash
-        install_logstash
+        include_logstash
       end
 
       it_behaves_like 'a logstash installer'
 
       it 'should be idempotent' do
-        if fact('lsbdistdescription') =~ /debian.*jessie/i
-          skip('https://github.com/elastic/puppet-logstash/issues/266')
-        end
         expect_no_change_from_manifest(install_logstash_manifest)
       end
     end
@@ -49,7 +51,7 @@ describe 'class logstash' do
     context 'when installing from an http url' do
       before(:all) do
         remove_logstash
-        install_logstash("package_url => '#{logstash_package_url}'")
+        install_logstash_from_url(http_package_url)
       end
 
       it_behaves_like 'a logstash installer'
@@ -67,9 +69,7 @@ describe 'class logstash' do
     context 'when installing from a "puppet://" url' do
       before(:all) do
         remove_logstash
-        install_logstash(
-          "package_url => 'puppet:///modules/logstash/#{logstash_package_filename}'"
-        )
+        install_logstash_from_url(puppet_fileserver_package_url)
       end
 
       it_behaves_like 'a logstash installer'
@@ -83,9 +83,6 @@ describe 'class logstash' do
     end
 
     it 'should be idempotent' do
-      if fact('lsbdistdescription') =~ /debian.*jessie/i
-        skip('https://github.com/elastic/puppet-logstash/issues/266')
-      end
       expect_no_change_from_manifest(remove_logstash_manifest)
     end
 
@@ -96,19 +93,16 @@ describe 'class logstash' do
     describe service('logstash') do
       it { should_not be_running }
       it 'should not be enabled' do
-        if fact('lsbdistdescription') =~ /debian.*jessie/i
-          skip('https://github.com/elastic/puppet-logstash/issues/266')
-        end
         should_not be_enabled
       end
     end
   end
 
-  describe 'init_defaults parameter' do
+  describe 'startup_options parameter' do
     context "with 'LS_USER' => 'root'" do
       before do
-        init_defaults = "{ 'LS_USER' => 'root' }"
-        install_logstash_from_local_file("init_defaults => #{init_defaults}")
+        startup_options = "{ 'LS_USER' => 'root' }"
+        install_logstash_from_local_file("startup_options => #{startup_options}")
       end
 
       it 'should run logstash as root' do

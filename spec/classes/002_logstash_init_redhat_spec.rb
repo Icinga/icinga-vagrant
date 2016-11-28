@@ -245,7 +245,8 @@ describe 'logstash', :type => 'class' do
             :repo_version => '1.3'
           } end
 
-          it { should contain_class('logstash::repo').that_requires('Anchor[logstash::begin]') }
+          it { should contain_class('logstash::repo') }
+          it { should contain_package('logstash').that_requires('Yumrepo[logstash]') }
           it { should contain_yumrepo('logstash').with(:baseurl => 'http://packages.elasticsearch.org/logstash/1.3/centos', :gpgkey => 'http://packages.elasticsearch.org/GPG-KEY-elasticsearch', :enabled => 1) }
 
         end

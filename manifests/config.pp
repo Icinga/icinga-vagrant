@@ -20,9 +20,11 @@
 #
 # === Authors
 #
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash::config {
+  require logstash::package
+
   File {
     owner => $logstash::logstash_user,
     group => $logstash::logstash_group,

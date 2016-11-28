@@ -14,7 +14,7 @@ end
 describe 'logstash module' do
   it 'should be available' do
     shell(
-      "ls #{default['distmoduledir']}/logstash/Modulefile",
+      "ls #{default['distmoduledir']}/logstash/metadata.json",
       acceptable_exit_codes: 0
     )
   end
