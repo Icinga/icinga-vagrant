@@ -1,0 +1,84 @@
+filebeat:
+  prospectors:
+    - paths:
+      <%- @paths.each do |log_path| -%>
+      - <%= log_path %>
+      <%- end -%>
+      <%- if @exclude_files.length > 0 -%>
+      exclude_files:
+        <%- @exclude_files.each do |exclude_file| -%>
+        - <%= exclude_file %>
+        <%- end -%>
+      <%- end -%>
+      <%- if @encoding -%>
+      encoding: <%= @encoding %>
+      <%- end -%>
+      <%- if @fields.length > 0 -%>
+      fields:
+        <%- @fields.sort_by{|k,v| k}.each  do |key, value| -%>
+        <%= key %>: <%= value %>
+        <%- end -%>
+      <%- end -%>
+      fields_under_root: <%= @fields_under_root %>
+      <%- if @input_type -%>
+      input_type: <%= @input_type %>
+      <%- end -%>
+      <%- if @ignore_older -%>
+      ignore_older: <%= @ignore_older %>
+      <%- end -%>
+      <%- if @close_older -%>
+      close_older: <%= @close_older %>
+      <%- end -%>
+      <%- if @doc_type -%>
+      document_type: <%= @doc_type %>
+      <%- end -%>
+      <%- if @scan_frequency -%>
+      scan_frequency: <%= @scan_frequency %>
+      <%- end -%>
+      <%- if @harvester_buffer_size -%>
+      harvester_buffer_size: <%= @harvester_buffer_size %>
+      <%- end -%>
+      tail_files: <%= @tail_files %>
+      force_close_files: <%= @force_close_files %>
+      <%- if @backoff -%>
+      backoff: <%= @backoff %>
+      <%- end -%>
+      <%- if @max_backoff -%>
+      max_backoff: <%= @max_backoff %>
+      <%- end -%>
+      <%- if @backoff_factor -%>
+      backoff_factor: <%= @backoff_factor %>
+      <%- end -%>
+      <%- if @max_bytes -%>
+      max_bytes: <%= @max_bytes %>
+      <%- end -%>
+      <%- if @multiline.length > 0 -%>
+      multiline:
+        <%- if @multiline['pattern'] -%>
+        pattern: '<%= @multiline['pattern'] %>'
+        <%- end -%>
+        <%- if @multiline['negate'] -%>
+        negate: <%= @multiline['negate'] %>
+        <%- end -%>
+        <%- if @multiline['match'] -%>
+        match: <%= @multiline['match'] %>
+        <%- end -%>
+        <%- if @multiline['max_lines'] -%>
+        max_lines: <%= @multiline['max_lines'] %>
+        <%- end -%>
+        <%- if @multiline['timeout'] -%>
+        timeout: <%= @multiline['timeout'] %>
+        <%- end -%>
+      <%- end -%>
+      <%- if @include_lines.length > 0 -%>
+      include_lines:
+        <%- @include_lines.each do |include_line| -%>
+        - '<%= include_line %>'
+        <%- end -%>
+      <%- end -%>
+      <%- if @exclude_lines.length > 0 -%>
+      exclude_lines:
+        <%- @exclude_lines.each do |exclude_line| -%>
+        - '<%= exclude_line %>'
+        <%- end -%>
+      <%- end -%>
