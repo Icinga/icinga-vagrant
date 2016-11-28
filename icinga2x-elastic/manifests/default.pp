@@ -233,7 +233,7 @@ class { 'java':
 } ->
 class { 'elasticsearch':
   manage_repo  => true,
-  repo_version => '2.x',
+  repo_version => '5.x',
   java_install => false,
 } ->
 elasticsearch::instance { 'elastic-es':
@@ -242,14 +242,16 @@ elasticsearch::instance { 'elastic-es':
     'network.host' => '127.0.0.1'
   },
   init_defaults => {
-    'ES_HEAP_SIZE' => '256m',
+    'ES_JAVA_OPTS' => "\"-Xms256m -Xmx256m\"" # use this format, otherwise augeas will fail: https://github.com/elastic/puppet-elasticsearch/issues/736
   },
 }->
 class { 'logstash':
   manage_repo  => true,
+  repo_version => '5.x',
   java_install => false,
 }->
-class { 'kibana4':
+class { 'kibana5':
+  version => '5.0.1-1', # version and revision are required for now
   config => {
     'server.port' => 5601,
     'server.host' => '0.0.0.0',
