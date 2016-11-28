@@ -1,0 +1,40 @@
+---
+language: ruby
+cache: bundler
+script:
+    - "bundle exec rake validate lint spec SPEC_OPTS='--format documentation'"
+matrix:
+  fast_finish: true
+  include:
+  - rvm: 2.3.1
+    dist: trusty
+    env: PUPPET_INSTALL_TYPE=agent BEAKER_debug=true
+    script: bundle exec rake beaker
+    services: docker
+    sudo: required
+  - rvm: 2.3.1
+    dist: trusty
+    env: BEAKER_set=ubuntu-16.04 PUPPET_INSTALL_TYPE=agent BEAKER_debug=true
+    script: bundle exec rake beaker
+    services: docker
+    sudo: required
+  - rvm: 2.3.1
+    dist: trusty
+    env: BEAKER_set=centos-7 PUPPET_INSTALL_TYPE=agent BEAKER_debug=true
+    script: bundle exec rake beaker
+    services: docker
+    sudo: required
+  - rvm: 2.1.9
+    bundler_args: --without system_tests
+    env: PUPPET_GEM_VERSION="~> 4.5" STRICT_VARIABLES="yes"
+  - rvm: 2.1.6
+    bundler_args: --without system_tests
+    env: PUPPET_GEM_VERSION="~> 3.5" FUTURE_PARSER="yes"
+  - rvm: 2.1.6
+    bundler_args: --without system_tests
+    env: PUPPET_GEM_VERSION="~> 3.8"
+  - rvm: 1.9.3
+    bundler_args: --without system_tests
+    env: PUPPET_GEM_VERSION="~> 3.8"
+notifications:
+  email: false

@@ -1,0 +1,285 @@
+### Filebeat configuration managed by Puppet (Ruby 1.8 version) ###
+---
+  filebeat:
+    spool_size: <%= @filebeat_config['filebeat']['spool_size'] %>
+    publish_async: <%= @filebeat_config['filebeat']['publish_async'] %>
+    idle_timeout: <%= @filebeat_config['filebeat']['idle_timeout'] %>
+    registry_file: <%= @filebeat_config['filebeat']['registry_file'] %>
+    config_dir: <%= @filebeat_config['filebeat']['config_dir'] %>
+
+  output:
+    <%- if @filebeat_config['output']['elasticsearch'] != nil -%>
+    elasticsearch:
+      hosts:
+      <%- @filebeat_config['output']['elasticsearch']['hosts'].each do |host| -%>
+        - <%= host %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['port'] != nil -%>
+      port: <%= @filebeat_config['output']['elasticsearch']['port'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['protocol'] != nil -%>
+      protocol: "<%= @filebeat_config['output']['elasticsearch']['protocol'] %>"
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['username'] != nil -%>
+      username: "<%= @filebeat_config['output']['elasticsearch']['username'] %>"
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['password'] != nil -%>
+      password: "<%= @filebeat_config['output']['elasticsearch']['password'] %>"
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['worker'] != nil -%>
+      worker: <%= @filebeat_config['output']['elasticsearch']['worker'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['index'] != nil -%>
+      index: "<%= @filebeat_config['output']['elasticsearch']['index'] %>"
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['path'] != nil -%>
+      path: "<%= @filebeat_config['output']['elasticsearch']['path'] %>"
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['proxy_url'] != nil -%>
+      proxy_url: "<%= @filebeat_config['output']['elasticsearch']['proxy_url'] %>"
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['max_retries'] != nil -%>
+      max_retries: <%= @filebeat_config['output']['elasticsearch']['max_retries'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['bulk_max_size'] != nil -%>
+      bulk_max_size: <%= @filebeat_config['output']['elasticsearch']['bulk_max_size'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['timeout'] != nil -%>
+      timeout: <%= @filebeat_config['output']['elasticsearch']['timeout'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['flush_interval'] != nil -%>
+      flush_interval: <%= @filebeat_config['output']['elasticsearch']['flush_interval'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['save_topology'] != nil -%>
+      save_topology: <%= @filebeat_config['output']['elasticsearch']['save_topology'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['elasticsearch']['topology_expire'] != nil -%>
+      topology_expire: <%= @filebeat_config['output']['elasticsearch']['topology_expire'] %>
+      <%- end -%>
+
+      <%- if @filebeat_config['output']['elasticsearch']['template'] != nil -%>
+      template:
+        <%- if @filebeat_config['output']['elasticsearch']['template']['name'] != nil -%>
+        name: "<%= @filebeat_config['output']['elasticsearch']['name'] %>"
+        <%- end -%>
+        <%- if @filebeat_config['output']['elasticsearch']['template']['path'] != nil -%>
+        path: "<%= @filebeat_config['output']['elasticsearch']['path'] %>"
+        <%- end -%>
+        <%- if @filebeat_config['output']['elasticsearch']['template']['overwrite'] != nil -%>
+        overwrite: <%= @filebeat_config['output']['elasticsearch']['name'] %>
+        <%- end -%>
+      <%- end -%>
+
+      <%- if @filebeat_config['output']['elasticsearch']['tls'] != nil -%>
+      tls:
+        <%- if @filebeat_config['output']['elasticsearch']['tls']['certificate_authorities'] != nil -%>
+        certificate_authorities:
+        <%- @filebeat_config['output']['elasticsearch']['tls']['certificate_authorities'].each do |ca| -%>
+          - <%= ca %>
+        <%- end -%>
+        <%- end -%>
+        <%- if @filebeat_config['output']['elasticsearch']['tls']['certificate'] != nil -%>
+        certificate: "<%= @filebeat_config['output']['elasticsearch']['tls']['certificate'] %>"
+        <%- end -%>
+        <%- if @filebeat_config['output']['elasticsearch']['tls']['certificate_key'] != nil -%>
+        certificate_key: "<%= @filebeat_config['output']['elasticsearch']['tls']['certificate_key'] %>"
+        <%- end -%>
+        <%- if @filebeat_config['output']['elasticsearch']['tls']['insecure'] != nil -%>
+        insecure: <%= @filebeat_config['output']['elasticsearch']['tls']['insecure'] %>
+        <%- end -%>
+        <%- if @filebeat_config['output']['elasticsearch']['tls']['cipher_suites'] != nil -%>
+        cipher_suites:
+          <%- @filebeat_config['output']['elasticsearch']['tls']['cipher_suites'].each do |cipher_suite| -%>
+          - <%= cipher_suite %>
+          <%- end -%>
+        <%- end -%>
+        <%- if @filebeat_config['output']['elasticsearch']['tls']['curve_types'] != nil -%>
+        curve_types:
+          <%- @filebeat_config['output']['elasticsearch']['tls']['curve_types'].each do |curve_type| -%>
+          - <%= curve_type %>
+          <%- end -%>
+        <%- end -%>
+        <%- if @filebeat_config['output']['elasticsearch']['tls']['min_version'] != nil -%>
+        min_version: <%= @filebeat_config['output']['elasticsearch']['tls']['min_version'] %>
+        <%- end -%>
+        <%- if @filebeat_config['output']['elasticsearch']['tls']['max_version'] != nil -%>
+        max_version: <%= @filebeat_config['output']['elasticsearch']['tls']['max_version'] %>
+        <%- end -%>
+      <%- end -%>
+    <%- end -%>
+    <%- if @filebeat_config['output']['logstash'] != nil -%>
+    logstash:
+      hosts:
+      <%- @filebeat_config['output']['logstash']['hosts'].each do |host| -%>
+        - <%= host %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['logstash']['port'] != nil -%>
+      port: <%= @filebeat_config['output']['logstash']['port'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['logstash']['worker'] != nil -%>
+      worker: <%= @filebeat_config['output']['logstash']['worker'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['logstash']['compression_level'] != nil -%>
+      compression_level: <%= @filebeat_config['output']['logstash']['compression_level'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['logstash']['loadbalance'] != nil -%>
+      loadbalance: <%= @filebeat_config['output']['logstash']['loadbalance'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['logstash']['index'] != nil -%>
+      index: <%= @filebeat_config['output']['logstash']['index'] %>
+      <%- end -%>
+
+      <%- if @filebeat_config['output']['logstash']['tls'] != nil -%>
+      tls:
+        <%- if @filebeat_config['output']['logstash']['tls']['certificate_authorities'] != nil -%>
+        certificate_authorities:
+        <%- @filebeat_config['output']['logstash']['tls']['certificate_authorities'].each do |ca| -%>
+          - <%= ca %>
+        <%- end -%>
+        <%- end -%>
+        <%- if @filebeat_config['output']['logstash']['tls']['certificate'] != nil -%>
+        certificate: "<%= @filebeat_config['output']['logstash']['tls']['certificate'] %>"
+        <%- end -%>
+        <%- if @filebeat_config['output']['logstash']['tls']['certificate_key'] != nil -%>
+        certificate_key: "<%= @filebeat_config['output']['logstash']['tls']['certificate_key'] %>"
+        <%- end -%>
+        <%- if @filebeat_config['output']['logstash']['tls']['insecure'] != nil -%>
+        insecure: <%= @filebeat_config['output']['logstash']['tls']['insecure'] %>
+        <%- end -%>
+        <%- if @filebeat_config['output']['logstash']['tls']['cipher_suites'] != nil -%>
+        cipher_suites:
+          <%- @filebeat_config['output']['logstash']['tls']['cipher_suites'].each do |cipher_suite| -%>
+          - <%= cipher_suite %>
+          <%- end -%>
+        <%- end -%>
+        <%- if @filebeat_config['output']['logstash']['tls']['curve_types'] != nil -%>
+        curve_types:
+          <%- @filebeat_config['output']['logstash']['tls']['curve_types'].each do |curve_type| -%>
+          - <%= curve_type %>
+          <%- end -%>
+        <%- end -%>
+      <%- end -%>
+    <%- end -%>
+    <%- if @filebeat_config['output']['redis'] != nil -%>
+    redis:
+      <%- if @filebeat_config['output']['redis']['host'] != nil -%>
+      host: "<%= @filebeat_config['output']['redis']['host'] %>"
+      <%- end -%>
+      <%- if @filebeat_config['output']['redis']['port'] != nil -%>
+      port: <%= @filebeat_config['output']['redis']['port'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['redis']['save_topology'] != nil -%>
+      save_topology: <%= @filebeat_config['output']['redis']['save_topology'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['redis']['index'] != nil -%>
+      index: "<%= @filebeat_config['output']['redis']['index'] %>"
+      <%- end -%>
+      <%- if @filebeat_config['output']['redis']['db'] != nil -%>
+      db: <%= @filebeat_config['output']['redis']['db'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['redis']['db_topology'] != nil -%>
+      db_topology: <%= @filebeat_config['output']['redis']['db_topology'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['redis']['password'] != nil -%>
+      password: "<%= @filebeat_config['output']['redis']['password'] %>"
+      <%- end -%>
+      <%- if @filebeat_config['output']['redis']['timeout'] != nil -%>
+      timeout: <%= @filebeat_config['output']['redis']['timeout'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['redis']['reconnect_interval'] != nil -%>
+      reconnect_interval: <%= @filebeat_config['output']['redis']['reconnect_interval'] %>
+      <%- end -%>
+    <%- end -%>
+    <%- if @filebeat_config['output']['file'] != nil -%>
+    file:
+      <%- if @filebeat_config['output']['file']['path'] != nil -%>
+      path: "<%= @filebeat_config['output']['file']['path'] %>"
+      <%- end -%>
+      <%- if @filebeat_config['output']['file']['filename'] != nil -%>
+      filename: <%= @filebeat_config['output']['file']['filename'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['file']['rotate_every_kb'] != nil -%>
+      rotate_every_kb: <%= @filebeat_config['output']['file']['rotate_every_kb'] %>
+      <%- end -%>
+      <%- if @filebeat_config['output']['file']['number_of_files'] != nil -%>
+      number_of_files: <%= @filebeat_config['output']['file']['number_of_files'] %>
+      <%- end -%>
+    <%- end -%>
+    <%- if @filebeat_config['output']['console'] != nil -%>
+    console:
+      <%- if @filebeat_config['output']['console']['pretty'] != nil -%>
+      pretty: <%= @filebeat_config['output']['console']['pretty'] %>
+      <%- end -%>
+    <%- end -%>
+
+  <%- unless @filebeat_config['shipper'].empty? -%>
+  shipper:
+    <%- if @filebeat_config['shipper']['name'] != nil -%>
+    name: <%= @filebeat_config['shipper']['name'] %>
+    <%- end -%>
+    <%- if @filebeat_config['shipper']['tags'] != nil -%>
+    tags:
+    <%- @filebeat_config['shipper']['tags'].each do |tag| -%>
+      - <%= tag %>
+    <%- end -%>
+    <%- end -%>
+    <%- if @filebeat_config['shipper']['ignore_outgoing'] != nil -%>
+    ignore_outgoing: <%= @filebeat_config['shipper']['ignore_outgoing'] %>
+    <%- end -%>
+    <%- if @filebeat_config['shipper']['refresh_topology_freq'] != nil -%>
+    refresh_topology_freq: <%= @filebeat_config['shipper']['refresh_topology_freq'] %>
+    <%- end -%>
+    <%- if @filebeat_config['shipper']['topology_expire'] != nil -%>
+    topology_expire: <%= @filebeat_config['shipper']['topology_expire'] %>
+    <%- end -%>
+    <%- if @filebeat_config['shipper']['queue_size'] != nil -%>
+    queue_size: <%= @filebeat_config['shipper']['queue_size'] %>
+    <%- end -%>
+  <%- end -%>
+
+  <%- unless @filebeat_config['logging'].empty? -%>
+  logging:
+    <%- if @filebeat_config['logging']['to_syslog'] != nil -%>
+    to_syslog: <%= @filebeat_config['logging']['to_syslog'] %>
+    <%- end -%>
+    <%- if @filebeat_config['logging']['to_files'] != nil -%>
+    to_files: <%= @filebeat_config['logging']['to_files'] %>
+    <%- end -%>
+
+    <%- if @filebeat_config['logging']['files'] != nil -%>
+    files:
+      <%- if @filebeat_config['logging']['files']['path'] != nil -%>
+      path: <%= @filebeat_config['logging']['files']['path'] %>
+      <%- end -%>
+      <%- if @filebeat_config['logging']['files']['name'] != nil -%>
+      name: <%= @filebeat_config['logging']['files']['name'] %>
+      <%- end -%>
+      <%- if @filebeat_config['logging']['files']['rotateeverybytes'] != nil -%>
+      rotateeverybytes: <%= @filebeat_config['logging']['files']['rotateeverybytes'] %>
+      <%- end -%>
+      <%- if @filebeat_config['logging']['files']['keepfiles'] != nil -%>
+      keepfiles: <%= @filebeat_config['logging']['files']['keepfiles'] %>
+      <%- end -%>
+    <%- end -%>
+
+    <%- if @filebeat_config['logging']['selectors'] != nil -%>
+    selectors:
+    <%- @filebeat_config['logging']['selectors'].each do |selector| -%>
+    - <%= selector %>
+    <%- end -%>
+    <%- end -%>
+
+    <%- if @filebeat_config['logging']['level'] != nil -%>
+    level: <%= @filebeat_config['logging']['level'] %>
+    <%- end -%>
+  <%- end -%>
+
+  <%- unless @filebeat_config['runoptions'].empty? -%>
+  runoptions:
+    <%- if @filebeat_config['runoptions']['uid'] != nil -%>
+    uid=<%= @filebeat_config['runoptions']['uid'] %>
+    <%- end -%>
+    <%- if @filebeat_config['runoptions']['gid'] != nil -%>
+    gid=<%= @filebeat_config['runoptions']['gid'] %>
+    <%- end -%>
+  <%- end -%>
