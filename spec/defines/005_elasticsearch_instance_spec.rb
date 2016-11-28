@@ -56,6 +56,7 @@ describe 'elasticsearch::instance', :type => 'define' do
         :init_defaults => {
           "CONF_DIR"  => "/etc/elasticsearch/es-01",
           "CONF_FILE" => "/etc/elasticsearch/es-01/elasticsearch.yml",
+          "DATA_DIR"  => "$ES_HOME/data",
           "LOG_DIR"   => "/var/log/elasticsearch/es-01",
           "ES_HOME"   => "/usr/share/elasticsearch"
         }
@@ -147,6 +148,7 @@ describe 'elasticsearch::instance', :type => 'define' do
       it { should contain_datacat('/etc/elasticsearch/es-01/elasticsearch.yml') }
 
       it { should contain_file('/etc/elasticsearch/es-01/logging.yml') }
+      it { should contain_file('/etc/elasticsearch/es-01/log4j2.properties') }
       it { should contain_file('/usr/share/elasticsearch/scripts') }
       it { should contain_file('/usr/share/elasticsearch/shield') }
       it { should contain_file('/etc/elasticsearch/es-01/scripts').with(:target => '/usr/share/elasticsearch/scripts') }
@@ -169,6 +171,7 @@ describe 'elasticsearch::instance', :type => 'define' do
       it { should contain_datacat('/etc/elasticsearch-config/es-01/elasticsearch.yml') }
 
       it { should contain_file('/etc/elasticsearch-config/es-01/logging.yml') }
+      it { should contain_file('/etc/elasticsearch-config/es-01/log4j2.properties') }
       it { should contain_file('/usr/share/elasticsearch/scripts') }
       it { should contain_file('/usr/share/elasticsearch/shield') }
       it { should contain_file('/etc/elasticsearch-config/es-01/scripts').with(:target => '/usr/share/elasticsearch/scripts') }
@@ -187,6 +190,7 @@ describe 'elasticsearch::instance', :type => 'define' do
       it { should contain_datacat('/etc/elasticsearch-config/es-01/elasticsearch.yml') }
 
       it { should contain_file('/etc/elasticsearch-config/es-01/logging.yml') }
+      it { should contain_file('/etc/elasticsearch-config/es-01/log4j2.properties') }
       it { should contain_file('/usr/share/elasticsearch/scripts') }
       it { should contain_file('/usr/share/elasticsearch/shield') }
       it { should contain_file('/etc/elasticsearch-config/es-01/scripts').with(:target => '/usr/share/elasticsearch/scripts') }
@@ -456,6 +460,7 @@ describe 'elasticsearch::instance', :type => 'define' do
     it { should contain_datacat('/etc/elasticsearch/es-01/elasticsearch.yml').with(:owner => 'myesuser', :group => 'myesgroup') }
     it { should contain_file('/etc/elasticsearch/es-01/elasticsearch.yml').with(:owner => 'myesuser', :group => 'myesgroup') }
     it { should contain_file('/etc/elasticsearch/es-01/logging.yml').with(:owner => 'myesuser', :group => 'myesgroup') }
+    it { should contain_file('/etc/elasticsearch/es-01/log4j2.properties').with(:owner => 'myesuser', :group => 'myesgroup') }
   end
 
   context 'setting different service status then main class' do

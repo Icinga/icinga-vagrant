@@ -1,10 +1,26 @@
 ## x.x.x (Month Day, Year)
 
 ### Summary
+
+#### Features
+
+#### Bugfixes
+* Removed ES_HEAP_SIZE check in init scripts for Elasticsearch 5.x
+* Changed sysctl value to a string to avoid type errors for some versions
+
+#### Changes
+
+#### Testing changes
+
+## 0.15.0 (November 17, 2016)
+
+### Summary
 * Support for Ubuntu Xenial (16.04) formally declared.
+* Initial support for running Elasticsearch 5.x series.
 
 #### Features
 * Support management of 5.x-style Elastic yum/apt package repositories.
+* Support service scripts for 5.x series of Elasticsearch
 
 #### Bugfixes
 * Update the apt::source call to not cause deprecation warnings
