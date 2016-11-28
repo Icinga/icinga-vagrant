@@ -46,6 +46,7 @@ apache::vhost { 'vagrant-demo.icinga.org-ssl':
   port            => '443',
   docroot         => '/var/www/html',
   ssl		  => true,
+  add_listen      => false, #prevent duplicate listen entries
   rewrites => [
     {
       rewrite_rule => ['^/$ /icingaweb2 [NE,L,R=301]'],
