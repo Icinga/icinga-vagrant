@@ -194,29 +194,6 @@ Access [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/
 and [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts)
 using the credentials `root/icinga`.
 
-## <a id="icinga2x-cluster"></a>Icinga 2 Cluster
-
-* 2 VMs as Icinga 2 Master/Checker Cluster
-* Icinga 2 Core, DB IDO MySQL, Icinga Web 2
-
-Run Vagrant:
-
-    $ cd icinga2x-cluster && vagrant up
-
-
-### User Interfaces
-
-  GUI               | Url                                   | Credentials
-  ------------------|---------------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.10/icingaweb2       | icingaadmin/icinga
-  Icinga Web 2      | http://192.168.33.20/icingaweb2       | icingaadmin/icinga
-
-### Icinga 2 API
-
-Access [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/v1/objects/hosts)
-and [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts)
-using the credentials `root/icinga`.
-
 ## <a id="icinga2x-ha-cluster"></a>Icinga 2 HA Cluster
 
 * 2 Master VMs, 1 Satellite VM
