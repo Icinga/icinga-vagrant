@@ -89,6 +89,7 @@ setups are not supported.
 In case you've found a problem or want to submit a patch, please open an issue
 at [dev.icinga.org](https://dev.icinga.org/projects/icinga-tools/issues).
 
+
 ## Before you start
 
 Change the directory to the box you want to start.
@@ -128,6 +129,16 @@ Follow the instructions described in the `README.md` file
 for each box.
 
 Choose one of the available boxes below.
+
+### Behind a proxy
+
+If you are working behind a proxy, you can use https://github.com/tmatilai/vagrant-proxyconf
+Just install vagrant plugin by:   
+* vagrant plugin install vagrant-proxyconf
+* set proxy variables: 
+    export VAGRANT_HTTP_PROXY=http://proxy:8080
+	export VAGRANT_HTTPS_PROXY=http://proxy:8080
+Now your proxy variable is set inside the vagrant box and vagrant up should work
 
 
 ## <a id="icinga2x"></a>Icinga 2 Standalone
