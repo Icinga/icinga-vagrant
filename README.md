@@ -81,6 +81,22 @@ plugin first:
 
     $ vagrant plugin install vagrant-parallels
 
+### Behind a proxy
+
+If you are working behind a proxy, you can use the [proxyconf plugin](https://github.com/tmatilai/vagrant-proxyconf).
+
+Install the plugin:
+
+    $ vagrant plugin install vagrant-proxyconf
+
+Export the proxy variables into your environment:
+
+    $ export VAGRANT_HTTP_PROXY=http://proxy:8080
+    $ export VAGRANT_HTTPS_PROXY=http://proxy:8080
+
+Vagrant exports the proxy settings into the VM and provisioning
+will then work.
+
 ## Support
 
 Please note that these boxes are built for development and tests only. Productive
