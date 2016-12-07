@@ -1,0 +1,69 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+VAGRANT_REQUIRED_VERSION = "1.6.5"
+
+# Require 1.6.5 at least
+if ! defined? Vagrant.require_version
+  if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new(VAGRANT_REQUIRED_VERSION)
+    puts "Vagrant >= " + VAGRANT_REQUIRED_VERSION + " required. Your version is " + Vagrant::VERSION
+    exit 1
+  end
+else
+  Vagrant.require_version ">= " + VAGRANT_REQUIRED_VERSION
+end
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  servers = { 'icinga2-freebsd' => '192.168.33.9'
+            }
+  http_port = { 'icinga2-freebsd' => 8082
+              }
+  ssh_port = { 'icinga2-freebsd' => 2082
+             }
+
+  servers.each do |server_name, server_ip|
+    config.vm.define server_name do |app_config|
+
+      app_config.vm.base_mac = "080027D14C66"
+      app_config.vm.guest = :freebsd
+      app_config.vm.synced_folder ".", "/vagrant", disabled: true
+      app_config.ssh.shell = "bash"
+
+      # virtualbox
+      app_config.vm.provider :virtualbox do |v, override|
+        override.vm.box = "freebsd/FreeBSD-11.0-STABLE"
+
+        v.customize ["modifyvm", :id, "--memory", "2048"]
+        v.customize ["modifyvm", :id, "--cpus", "2"]
+        # Using the host's resolver as a DNS proxy in NAT mode
+        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+
+        # network settings for FreeBSD
+        v.customize ["modifyvm", :id, "--hwvirtex", "on"]
+        v.customize ["modifyvm", :id, "--nictype1", "virtio"]
+        v.customize ["modifyvm", :id, "--nictype2", "virtio"]
+      end
+
+      # network config
+      app_config.vm.hostname = "#{server_name.to_s}"
+      app_config.vm.network :forwarded_port, guest: 22, host: ssh_port[server_name], auto_correct: true
+      app_config.vm.network :forwarded_port, guest: 80, host: http_port[server_name], auto_correct: true
+      #app_config.vm.network :private_network, ip: "#{server_ip}"
+
+      #app_config.vm.provision :shell, :path => "manifests/puppet.sh"
+
+      # provisioner
+      #app_config.vm.provision :puppet do |puppet|
+      #  puppet.module_path = "../modules"
+      #  puppet.manifests_path = "manifests"
+      #  puppet.hiera_config_path = "hiera.yaml"
+      #  #puppet.options = "--verbose --debug --parser=future"
+      #  puppet.options = "--parser=future"
+      #end
+      #app_config.vm.provision :shell, :path => "manifests/finalize.sh"
+    end
+  end
+end
+
