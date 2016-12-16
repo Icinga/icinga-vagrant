@@ -30,7 +30,7 @@ class {'apache':
 
 class {'::apache::mod::php': }
 
-apache::vhost { 'vagrant-demo.icinga.org':
+apache::vhost { 'vagrant-demo.icinga.com':
   priority        => 5,
   port            => '80',
   docroot         => '/var/www/html',
@@ -41,7 +41,7 @@ apache::vhost { 'vagrant-demo.icinga.org':
   ],
 }
 
-apache::vhost { 'vagrant-demo.icinga.org-ssl':
+apache::vhost { 'vagrant-demo.icinga.com-ssl':
   priority        => 5,
   port            => '443',
   docroot         => '/var/www/html',
