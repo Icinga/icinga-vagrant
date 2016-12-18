@@ -507,6 +507,10 @@ apache::vhost { 'graphite.localdomain':
   }
   ]
 }->
+package { [ 'python2-pip', 'python-devel', 'gcc' ]:
+  ensure => 'installed', #workaround for EPEL rename of python-pip to python2-pip, http://smoogespace.blogspot.de/2016/12/why-are-epel-python-packages-getting.html
+  require => Class['epel']
+}->
 class { 'graphite':
   gr_apache_24            => true,
   gr_web_server           => 'none',
@@ -514,6 +518,8 @@ class { 'graphite':
   gr_web_group            => 'apache',
   gr_disable_webapp_cache => true,
   secret_key => 'ICINGA2ROCKS',
+  gr_pip_install => true,
+  gr_manage_python_packages => false, #workaround for EPEL rename of python-pip to python2-pip
   gr_graphite_ver => '0.9.14',
   gr_carbon_ver => '0.9.14',
   gr_whisper_ver => '0.9.14',
