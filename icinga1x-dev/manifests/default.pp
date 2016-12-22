@@ -73,7 +73,7 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
   }
 }
 
-$icinga_dev_pkg = [ 'gcc', 'glibc', 'glibc-common', 'gd', 'gd-devel', 'libpng', 'libpng-devel',
+$icinga_dev_pkg = [ 'gcc', 'autoconf', 'glibc', 'glibc-common', 'gd', 'gd-devel', 'libpng', 'libpng-devel',
 			'libdbi', 'libdbi-devel', 'libdbi-drivers', 'libdbi-dbd-mysql' ]
 
 package { [ 'mailx',

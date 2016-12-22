@@ -123,6 +123,7 @@ Changelog:
 Versions:
 
     vim etc/make/version.m4
+    autoconf
     vim doc/VERSION
     vim icinga-web.spec
 
