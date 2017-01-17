@@ -11,7 +11,7 @@ Development box for Icinga 1.x and Icinga Web 1.x.
 ## Icinga Core 1.x
 
     ssh -A vagrant@192.168.33.190
-    git clone git@git.icinga.org:icinga-core.git
+    git clone git@github.com:Icinga/icinga-core.git
 
     cd icinga-core
     make distclean
@@ -51,7 +51,7 @@ http://192.168.33.190/icinga - icingaadmin/icingaadmin
 ## Icinga Web 1.x
 
     ssh -A vagrant@192.168.33.190
-    git clone git@git.icinga.org:icinga-web.git
+    git clone git@github.com:Icinga/icinga-web.git
     cd icinga-web
 
     ./configure

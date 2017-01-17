@@ -4,7 +4,7 @@ class icingaweb2::params {
   $config_file_mode	= "0660" # this is mandatory for administrating web2 from the browser
   $config_user		= "root"
   $config_group		= "icingaweb2"
-  $git_repo_base 	= "https://git.icinga.org/"
+  $git_repo_base 	= "https://github.com/Icinga/"
   $web_root_dir		= "/usr/share/icingaweb2"
   $web_module_dir	= "$web_root_dir/modules/"
 }

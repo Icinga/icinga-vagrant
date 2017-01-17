@@ -2,7 +2,7 @@
 #
 #   This class installs the mysql server and client software.
 #
-#   Copyright (C) 2013-present Icinga Development Team (http://www.icinga.org/)
+#   Copyright (C) 2013-present Icinga Development Team (http://www.icinga.com/)
 #
 # Parameters:
 #

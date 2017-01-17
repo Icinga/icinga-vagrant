@@ -16,8 +16,8 @@ end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "centos-6.5-i386-vbox"
-  config.vm.box_url = "http://boxes.icinga.org/centos-65-i386-vbox.box"
-  config.vm.hostname = "icinga1x-demo.demo.icinga.org"
+  config.vm.box_url = "http://boxes.icinga.com/centos-65-i386-vbox.box"
+  config.vm.hostname = "icinga1x-demo.demo.icinga.com"
   config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
   config.vm.network :forwarded_port, guest: 22, host: 2081, auto_correct: true
   config.vm.network :forwarded_port, guest: 80, host: 8081, auto_correct: true

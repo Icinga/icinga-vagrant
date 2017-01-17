@@ -2,7 +2,7 @@
 #
 #   Downloads & installs Jasperserver with Tomcat & MySQL
 #   
-#   Copyright (C) 2014-present Icinga Development Team (http://www.icinga.org/)
+#   Copyright (C) 2014-present Icinga Development Team (http://www.icinga.com/)
 #
 # Parameters:
 #

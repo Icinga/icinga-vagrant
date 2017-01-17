@@ -2,7 +2,7 @@
 #
 #   Install tomcat6
 #
-#   Copyright (C) 2014-present Icinga Development Team (http://www.icinga.org/)
+#   Copyright (C) 2014-present Icinga Development Team (http://www.icinga.com/)
 #
 # Parameters:
 #

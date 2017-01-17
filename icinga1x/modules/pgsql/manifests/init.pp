@@ -3,7 +3,7 @@
 #   This class installs the postgresql server and client software.
 #   Further it configures pg_hba.conf to trust the local icinga user.
 #
-#   Copyright (C) 2013-present Icinga Development Team (http://www.icinga.org/)
+#   Copyright (C) 2013-present Icinga Development Team (http://www.icinga.com/)
 #
 # Parameters:
 #

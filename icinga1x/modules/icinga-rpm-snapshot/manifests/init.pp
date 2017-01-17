@@ -2,7 +2,7 @@
 #
 #   Configure icinga rpm snaphot repository
 #
-#   Copyright (C) 2013-present Icinga Development Team (http://www.icinga.org/)
+#   Copyright (C) 2013-present Icinga Development Team (http://www.icinga.com/)
 #
 # Parameters:
 #
@@ -16,7 +16,7 @@
 #
 class icinga-rpm-snapshot {
   yumrepo { 'icinga-rpm-snapshot':
-    baseurl => "http://packages.icinga.org/epel/6/snapshot/",
+    baseurl => "http://packages.icinga.com/epel/6/snapshot/",
     enabled => '1',
     gpgcheck => '1',
     gpgkey => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ICINGA',

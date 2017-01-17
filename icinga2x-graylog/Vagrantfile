@@ -15,11 +15,11 @@ else
 end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  servers = { 'g2i2.demo.icinga.org' => '192.168.33.6'
+  servers = { 'g2i2.demo.icinga.com' => '192.168.33.6'
             }
-  http_port = { 'g2i2.demo.icinga.org' => 8110
+  http_port = { 'g2i2.demo.icinga.com' => 8110
               }
-  ssh_port = { 'g2i2.demo.icinga.org' => 2119
+  ssh_port = { 'g2i2.demo.icinga.com' => 2119
              }
 
   servers.each do |server_name, server_ip|
@@ -56,7 +56,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # virtualbox
       app_config.vm.provider :virtualbox do |v, override|
         override.vm.box = "centos-71-x64-vbox"
-        override.vm.box_url = "http://boxes.icinga.org/centos-71-x64-vbox.box"
+        override.vm.box_url = "http://boxes.icinga.com/centos-71-x64-vbox.box"
 
         v.customize ["modifyvm", :id, "--memory", "1024"]
         v.customize ["modifyvm", :id, "--cpus", "2"]

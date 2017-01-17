@@ -2,7 +2,7 @@
 #
 #   Install Icinga 2 and DB IDO feature from snapshot rpms
 #   
-#   Copyright (C) 2013-present Icinga Development Team (http://www.icinga.org/)
+#   Copyright (C) 2013-present Icinga Development Team (http://www.icinga.com/)
 #
 # Parameters:
 #

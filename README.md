@@ -103,7 +103,7 @@ Please note that these boxes are built for development and tests only. Productiv
 setups are not supported.
 
 In case you've found a problem or want to submit a patch, please open an issue
-at [dev.icinga.org](https://dev.icinga.org/projects/icinga-tools/issues).
+https://github.com/Icinga/icinga-vagrant and/or create a PR.
 
 ## Before you start
 
