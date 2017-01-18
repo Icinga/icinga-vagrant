@@ -64,7 +64,7 @@ In addition the listed requirements you'll need:
 Install the Git package and set `autocrlf` to `false` (either in the setup
 dialog or using the cmd shell):
 
-    git config core.autocrlf false
+    git config --global core.autocrlf false
 
 Then clone this repository:
 
