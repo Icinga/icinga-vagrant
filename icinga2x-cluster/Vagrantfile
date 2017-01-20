@@ -36,6 +36,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       app_config.vm.provision :shell, :path => "manifests/puppet.sh"
 
+      # workaround for Vagrant >1.8.4-1.9.1 not bringing up eth1 properly
+      # https://github.com/mitchellh/vagrant/issues/8096
+      app_config.vm.provision "shell", inline: "service network restart", run: "always"
+
       # parallels
       app_config.vm.provider :parallels do |p, override|
         override.vm.box = "parallels/centos-7.2"
