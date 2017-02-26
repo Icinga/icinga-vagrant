@@ -507,8 +507,14 @@ apache::vhost { 'graphite.localdomain':
   }
   ]
 }->
-package { [ 'python2-pip', 'python-devel', 'gcc' ]:
-  ensure => 'installed', #workaround for EPEL rename of python-pip to python2-pip, http://smoogespace.blogspot.de/2016/12/why-are-epel-python-packages-getting.html
+# workaround for EPEL rename of python-pip to python2-pip, http://smoogespace.blogspot.de/2016/12/why-are-epel-python-packages-getting.html
+# pip also requires additional packages: http://graphite.readthedocs.io/en/latest/install-pip.html
+package { [ 'python2-pip',
+	    'python-devel',
+	    'cairo-devel',
+	    'libffi-devel',
+	    'gcc' ]:
+  ensure => 'installed',
   require => Class['epel']
 }->
 class { 'graphite':
