@@ -37,9 +37,6 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 
 ![Icinga 2 PNP](doc/screenshot/icinga2x/vagrant_icinga2_pnp.png)
 
-### Syntax Highlighting
-
-![Icinga 2 Vim Syntax Highlighting](doc/screenshot/icinga2x/vagrant_icinga2_vim_syntax_highlighting.png)
 
 ## Requirements
 
@@ -47,7 +44,12 @@ Each Vagrant box setup requires at least 2 Cores and 1 GB RAM.
 The required resources are automatically configured during the
 `vagrant up` run.
 
-* Vagrant >= 1.6.5 from http://www.vagrantup.com
+* [Vagrant]() >= 1.6.5 from http://www.vagrantup.com
+
+Note: There's a [bug](https://github.com/mitchellh/vagrant/issues/8096)
+in 1.8.5-1.9.1 preventing host only network interfaces
+being configured properly. A workaround is in place but you're encouraged
+to use the latest [1.9.2+](https://www.hashicorp.com/blog/vagrant-1-9-2-released/) release.
 
 One of these virtualization providers:
 
@@ -103,7 +105,7 @@ Please note that these boxes are built for development and tests only. Productiv
 setups are not supported.
 
 In case you've found a problem or want to submit a patch, please open an issue
-https://github.com/Icinga/icinga-vagrant and/or create a PR.
+on GitHub and/or create a PR.
 
 ## Before you start
 
@@ -262,6 +264,8 @@ using the credentials `root/icinga`. More details in the [documentation](http://
 Run Vagrant:
 
     $ cd icinga2x-elastic && vagrant up
+
+Note: This is a TODO and work in progress.
 
 ### User Interfaces
 
