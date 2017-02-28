@@ -152,11 +152,31 @@ the packages and configuration.
 
 ### More Usability Hints
 
-Follow the instructions described in the `README.md` file
-for each box.
+Documentation for software used inside these boxes.
 
-Choose one of the available boxes below.
+Project			| URL
+------------------------|------------------------------
+Icinga 2		| https://docs.icinga.com
+Icinga Web 2		| https://github.com/Icinga/icingaweb2/tree/master/doc
+PNP			| https://docs.pnp4nagios.org
+NagVis			| https://www.nagvis.org/doc
+Graphite		| https://graphite.readthedocs.io
+InfluxDB		| https://docs.influxdata.com/influxdb/
+Grafana			| http://docs.grafana.org
+Elastic			| https://www.elastic.co/guide/
+Graylog			| http://docs.graylog.org
 
+#### Vagrant update
+
+On local config change (git pull for this repository).
+
+    $ pwd
+    $ git pull
+    $ git log
+    $ vagrant provision
+
+
+# Box Overview
 
 ## <a id="icinga2x"></a>Icinga 2 Standalone
 
