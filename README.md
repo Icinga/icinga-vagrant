@@ -8,7 +8,6 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 * [Icinga 2 InfluxDB](README.md#icinga2x-influxdb)
 * [Icinga 2 and Elastic](README.md#icinga2x-elastic)
 * [Icinga 2 and Graylog](README.md#icinga2x-graylog)
-* [Icinga 1.x](README.md#icinga1x)
 
 ## Screenshots
 
@@ -299,27 +298,6 @@ Run Vagrant:
   -----------------|---------------------------------|------------------------
   Icinga Web 2     | http://192.168.33.6/icingaweb2  | icingaadmin/icinga
   Graylog          | http://192.168.33.6:9000        | admin/admin
-
-
-## <a id="icinga1x"></a>Icinga 1.x
-
-* 1 VM
-* Icinga 1.x Core, IDOUtils MySQL, Classic UI, Web
-
-Run Vagrant:
-
-    $ cd icinga1x && vagrant up
-
-### User Interfaces
-
-http://localhost:8081 shows an entry page including all urls and
-credentials.
-
-  GUI               | Url                   | Credentials
-  ------------------|-----------------------|----------------
-  Icinga Classic UI | :8081/icinga          | icingaadmin/icingaadmin
-  Icinga Web 1.x    | :8081/icinga-web	    | root/password
-  Jasperserver	    | :8082/jasperserver    | jasperadmin/jasperadmin
 
 ## Misc
 
