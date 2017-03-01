@@ -1,10 +1,16 @@
 
 define icingaweb2::module (
   $builtin = false,
-  $enable = true
+  $enable = true,
+  $repo_url = undef,
 ) {
   $repo_base_url = "https://github.com/Icinga/icingaweb2-module-"
-  $repo_url = "$repo_base_url$title"
+
+  if !$repo_url {
+    $repo_source_url = "$repo_base_url$title"
+  } else {
+    $repo_source_url = $repo_url
+  }
 
   $repo_path = "$::icingaweb2::web_module_dir/$title"
 
@@ -16,7 +22,7 @@ define icingaweb2::module (
       path     => $repo_path,
       provider => 'git',
       revision => 'master',
-      source   => $repo_url,
+      source   => $repo_source_url,
       force    => true,
       require  => [ Package['git'], File[$::icingaweb2::web_module_dir] ]
     }
