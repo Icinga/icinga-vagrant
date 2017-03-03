@@ -229,10 +229,10 @@ exec { 'finish-influxdb-setup':
 ####################################
 
 # https://github.com/bfraser/puppet-grafana
-# https://grafanarel.s3.amazonaws.com/builds/grafana-3.1.1-1470047149.x86_64.rpm
+# https://grafanarel.s3.amazonaws.com/builds/grafana-4.1.2-1486989747.x86_64.rpm
 class { 'grafana':
-  version => '3.1.1',
-  rpm_iteration => '1470047149',
+  version => '4.1.2',
+  rpm_iteration => '1486989747',
   cfg => {
     app_mode => 'production',
     server   => {
