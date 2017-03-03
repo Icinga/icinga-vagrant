@@ -222,6 +222,21 @@ file { '/etc/icingaweb2/enabledModules/icinga2':
 }
 
 ####################################
+# Icinga Web 2 Modules
+####################################
+
+# Demo config required by the modules
+file { '/etc/icinga2/demo':
+  ensure => directory,
+  recurse => true,
+  owner  => icinga,
+  group  => icinga,
+  source    => "puppet:////vagrant/files/etc/icinga2/demo",
+  require   => File['/etc/icinga2/icinga2.conf'],
+  notify    => Service['icinga2']
+}
+
+####################################
 # PNP
 ####################################
 
@@ -256,16 +271,6 @@ file { 'check_mysql_health':
   mode => '0755',
   source    => 'puppet:////vagrant/files/usr/lib64/nagios/plugins/check_mysql_health',
   require => Class['monitoring_plugins'],
-}
-
-file { '/etc/icinga2/bp':
-  ensure => directory,
-  recurse => true,
-  owner  => icinga,
-  group  => icinga,
-  source    => "puppet:////vagrant/files/etc/icinga2/bp",
-  require   => File['/etc/icinga2/icinga2.conf'],
-  notify    => Service['icinga2']
 }
 
 icingaweb2::module { 'businessprocess':
@@ -350,9 +355,6 @@ file { 'nagvis-map-icinga2':
 # Director
 ####################################
 
-icingaweb2::module { 'cube':
-  builtin => false
-}->
 icingaweb2::module { 'director':
   builtin => false
 }
@@ -408,6 +410,23 @@ exec { 'Icinga Director Kickstart':
   require => [ Service['icinga2'], Exec['enable-icinga2-api'] ]
 }
 
+####################################
+# More Icinga Web 2 modules
+####################################
+
+icingaweb2::module { 'cube':
+  builtin => false
+}
+
+icingaweb2::module { 'globe':
+  builtin => false,
+  repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-globe'
+}
+
+#icingaweb2::module { 'grafana':
+#  builtin => false,
+#  repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-grafana'
+#}
 
 ####################################
 # Dashing
@@ -585,10 +604,10 @@ file { '/etc/icingaweb2/modules/graphite/config.ini':
 ####################################
 
 # https://github.com/bfraser/puppet-grafana
-# https://grafanarel.s3.amazonaws.com/builds/grafana-3.1.1-1470047149.x86_64.rpm
+# https://grafanarel.s3.amazonaws.com/builds/grafana-4.1.2-1486989747.x86_64.rpm
 class { 'grafana':
-  version => '3.1.1',
-  rpm_iteration => '1470047149',
+  version => '4.1.2',
+  rpm_iteration => '1486989747',
   cfg => {
     app_mode => 'production',
     server   => {

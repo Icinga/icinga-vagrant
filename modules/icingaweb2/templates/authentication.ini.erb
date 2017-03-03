@@ -1,3 +1,8 @@
 [icingaweb2]
 backend             = "db"
 resource            = "icingaweb2"
+
+; consider using autologin for apache controlled auth
+; requires SetEnv REMOTE_USER "icingaadmin" in icingaweb2.conf apache conf file
+; [autologin]
+; backend = external
