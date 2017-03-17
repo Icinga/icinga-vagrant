@@ -273,6 +273,13 @@ file { 'check_mysql_health':
   require => Class['monitoring_plugins'],
 }
 
+# ensure that the icinga user is in the icingaweb2 group for executing the icingacli_businessprocess commands
+@user { icinga: ensure => present }
+User<| title == icinga |>{
+  groups +> ['icingaweb2'],
+  require => Package['icinga2']
+}
+
 icingaweb2::module { 'businessprocess':
   builtin => false
 }
