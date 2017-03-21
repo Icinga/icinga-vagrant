@@ -2,6 +2,7 @@ require 'beaker-rspec'
 require 'net/http'
 require 'pry'
 require 'securerandom'
+require 'yaml'
 
 # Collect global options from the environment.
 if ENV['LOGSTASH_VERSION'].nil?
@@ -19,6 +20,9 @@ def agent_version_for_puppet_version(puppet_version)
   # REF: https://docs.puppet.com/puppet/latest/reference/about_agent.html
   version_map = {
     # Puppet => Agent
+    '4.7.0' => '1.7.1',
+    '4.6.2' => '1.6.2',
+    '4.5.3' => '1.5.3',
     '4.4.2' => '1.4.2',
     '4.4.1' => '1.4.1',
     '4.4.0' => '1.4.0',
@@ -157,6 +161,14 @@ def logstash_process_list
   shell(ps_cmd, accept_all_exit_codes: true).stdout.split("\n")
 end
 
+def logstash_settings
+  YAML.load(shell('cat /etc/logstash/logstash.yml').stdout)
+end
+
+def expect_setting(setting, value)
+  expect(logstash_settings[setting]).to eq(value)
+end
+
 def pe_package_url
   distro, distro_version = ENV['BEAKER_set'].split('-')
   case distro
@@ -232,6 +244,9 @@ hosts.each do |host|
   # ...and another plugin that can be fetched from Puppet with "puppet://"
   FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-5.0.0.gem', './files/')
 
+  # Provide a config file template.
+  FileUtils.cp('./spec/fixtures/templates/configfile-template.erb', './templates/')
+
   # Provide this module to the test system.
   project_root = File.dirname(File.dirname(__FILE__))
   install_dev_puppet_module_on(host, source: project_root, module_name: 'logstash')
@@ -239,7 +254,6 @@ hosts.each do |host|
   # Also install any other modules we need on the test system.
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-stdlib')
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-apt')
-  install_puppet_module_via_pmt_on(host, module_name: 'electrical-file_concat')
   install_puppet_module_via_pmt_on(host, module_name: 'darin-zypprepo')
 end
 

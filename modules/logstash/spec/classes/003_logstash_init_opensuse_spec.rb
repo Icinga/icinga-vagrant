@@ -61,7 +61,7 @@ describe 'logstash', :type => 'class' do
           context 'with auto upgrade enabled' do
 
             let :params do {
-              :autoupgrade => true
+              :auto_upgrade => true
             } end
 
             it { should contain_class('logstash::package') }

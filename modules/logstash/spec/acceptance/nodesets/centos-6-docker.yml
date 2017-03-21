@@ -7,7 +7,7 @@ HOSTS:
     docker_cmd: '["/sbin/init"]'
     docker_image_commands:
       - rm /etc/init/tty.conf
-      - yum install -y wget ntpdate rubygems ruby-augeas ruby-devel augeas-devel logrotate
+      - yum install -y wget ntpdate redhat-lsb-core redhat-lsb rubygems ruby-augeas ruby-devel augeas-devel logrotate
       - touch /etc/sysconfig/network
       - 'cd / && wget -q --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jre-8u111-linux-x64.rpm"'
       - 'cd / && yum localinstall -y jre-8u111-linux-x64.rpm'

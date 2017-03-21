@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 ruby '2.2.5'
 
-puppetversion = ENV['PUPPET_VERSION'] || '4.5.1'
+puppetversion = ENV['PUPPET_VERSION'] || '4.8.1'
 gem 'puppet', puppetversion, :require => false
 
 gem 'beaker', '3.4.0'
@@ -21,6 +21,7 @@ gem 'ci_reporter_rspec'
 gem 'google-api-client', '0.9.4' # 0.9.5 needs Ruby 2.
 gem 'rspec', '~> 3.0'
 gem 'rake'
+gem 'metadata-json-lint'
 gem 'puppet-doc-lint'
 gem 'puppet-lint'
 gem 'puppet-strings'
@@ -30,6 +31,7 @@ gem 'rspec-puppet-facts'
 gem 'rubocop'
 gem 'serverspec', '2.37.2'
 gem 'specinfra', '2.57.2'
+gem 'syck'
 gem 'webmock'
 gem 'redcarpet'
 

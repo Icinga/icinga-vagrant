@@ -1,37 +1,25 @@
-# == Class: logstash::service
+# This mangages the system service for Logstash.
 #
-# This class exists to coordinate all service management related actions,
-# functionality and logical units in a central place.
+# It is usually used only by the top-level `logstash` class. It's unlikely
+# that you will need to declare this class yourself.
 #
-# <b>Note:</b> "service" is the Puppet term and type for background processes
-# in general and is used in a platform-independent way. E.g. "service" means
-# "daemon" in relation to Unix-like systems.
+# @example Include this class to ensure its resources are available.
+#   include logstash::service
 #
-#
-# === Parameters
-#
-# This class does not provide any parameters.
-#
-#
-# === Examples
-#
-# This class may be imported by other classes to use its functionality:
-#   class { 'logstash::service': }
-#
-# It is not intended to be used directly by external resources like node
-# definitions or other modules.
-#
-#
-# === Authors
-#
-# https://github.com/elastic/puppet-logstash/graphs/contributors
+# @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash::service {
+  $default_settings = {
+    'path.data'   => '/var/lib/logstash',
+    'path.config' => '/etc/logstash/conf.d',
+    'path.logs'   => '/var/log/logstash',
+  }
+
   $default_startup_options = {
     'JAVACMD'             => '/usr/bin/java',
-    'LS_HOME'             => '/usr/share/logstash',
-    'LS_SETTINGS_DIR'     => '/etc/logstash',
-    'LS_OPTS'             => '"--path.settings ${LS_SETTINGS_DIR}"',
+    'LS_HOME'             => $logstash::home_dir,
+    'LS_SETTINGS_DIR'     => $logstash::config_dir,
+    'LS_OPTS'             => "--path.settings=${logstash::config_dir}",
     'LS_JAVA_OPTS'        => '""',
     'LS_PIDFILE'          => '/var/run/logstash.pid',
     'LS_USER'             => $logstash::logstash_user,
@@ -43,7 +31,22 @@ class logstash::service {
     'SERVICE_DESCRIPTION' => '"logstash"',
   }
 
+  $default_jvm_options = [
+    '-Dfile.encoding=UTF-8',
+    '-Djava.awt.headless=true',
+    '-Xms256m',
+    '-Xmx1g',
+    '-XX:CMSInitiatingOccupancyFraction=75',
+    '-XX:+DisableExplicitGC',
+    '-XX:+HeapDumpOnOutOfMemoryError',
+    '-XX:+UseCMSInitiatingOccupancyOnly',
+    '-XX:+UseConcMarkSweepGC',
+    '-XX:+UseParNewGC',
+  ]
+
+  $settings = merge($default_settings, $logstash::settings)
   $startup_options = merge($default_startup_options, $logstash::startup_options)
+  $jvm_options = $logstash::jvm_options
 
   if $logstash::ensure == 'present' {
     case $logstash::status {
@@ -72,26 +75,54 @@ class logstash::service {
     # Then make sure the Logstash startup options are up to date.
     file {'/etc/logstash/startup.options':
       content => template('logstash/startup.options.erb'),
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0664',
     }
-    ~>
+
+    # ..and make sure the JVM options are up to date.
+    file {'/etc/logstash/jvm.options':
+      content => template('logstash/jvm.options.erb'),
+    }
+
+    # ..and the Logstash internal settings too.
+    file {'/etc/logstash/logstash.yml':
+      content => template('logstash/logstash.yml.erb'),
+    }
+
     # Invoke 'system-install', which generates startup scripts based on the
     # contents of the 'startup.options' file.
-    exec { '/usr/share/logstash/bin/system-install':
+    exec { 'logstash-system-install':
+      command     => "${logstash::home_dir}/bin/system-install",
       refreshonly => true,
       notify      => Service['logstash'],
     }
   }
 
-  # Puppet 3 doesn't know that Debian 8 uses systemd, not SysV init,
-  # so we'll help it out with our knowledge from the future.
-  if($::operatingsystem == 'debian' and $::operatingsystemmajrelease == '8'){
+  # Figure out which service provider (init system) we should be using.
+  # In general, we'll try to guess based on the operating system.
+  $os = downcase($::operatingsystem)
+  $release = $::operatingsystemmajrelease
+  # However, the operator may have explicitly defined the service provider.
+  if($logstash::service_provider) {
+    $service_provider = $logstash::service_provider
+  }
+  # In the absence of an explicit choice, we'll try to figure out a sensible
+  # default.
+  # Puppet 3 doesn't know that Debian 8 uses systemd, not SysV init, so we'll
+  # help it out with our knowledge from the future.
+  elsif($os == 'debian' and $release == '8') {
+    $service_provider = 'systemd'
+  }
+  # Centos 6 uses Upstart by default, but Puppet can get confused about this too.
+  elsif($os =~ /(redhat|centos)/ and $release == '6') {
+    $service_provider = 'upstart'
+  }
+  elsif($os =~ /ubuntu/ and $release == '12.04') {
+    $service_provider = 'upstart'
+  }
+  elsif($os =~ /opensuse/ and $release == '13') {
     $service_provider = 'systemd'
   }
   else {
-    # In most cases, Puppet can figure out the correct service
+    # In most cases, Puppet(4) can figure out the correct service
     # provider on its own, so we'll just say 'undef', and let it do
     # whatever it thinks is best.
     $service_provider = undef
@@ -110,5 +141,12 @@ class logstash::service {
   if $::logstash::restart_on_change {
     File<| tag == 'logstash_config' |> ~> Service['logstash']
     Logstash::Plugin<| |> ~> Service['logstash']
+  }
+
+  File {
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0664',
+    notify => Exec['logstash-system-install'],
   }
 }
