@@ -352,7 +352,7 @@ Specific projects:
   ----------------------|-------------------------------|-------------------------------
   graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
   puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
-  puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git - 5.x branch
+  puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git
   puppet-kibana4        | modules/kibana4               | https://github.com/lesaux/puppet-kibana4.git
   puppet-kibana5	| modules/kibana5		| https://github.com/Nextdoor/puppet-kibana5
   puppet-filebeat       | modules/filebeat		| https://github.com/pcfens/puppet-filebeat.git

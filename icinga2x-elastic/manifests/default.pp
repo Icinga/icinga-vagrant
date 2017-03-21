@@ -247,8 +247,7 @@ elasticsearch::instance { 'elastic-es':
 }->
 class { 'logstash':
   manage_repo  => true,
-  repo_version => '5.x',
-  #java_install => false,
+  version => '5.1.1-1', # version and revision are required for now
 }->
 class { 'kibana5':
   version => '5.0.1-1', # version and revision are required for now
