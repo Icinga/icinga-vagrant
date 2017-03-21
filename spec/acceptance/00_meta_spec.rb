@@ -9,6 +9,10 @@ describe 'puppet' do
     actual_version = shell('puppet --version').stdout.chomp
     expect(actual_version).to contain(desired_version)
   end
+
+  it "should have an lsbdistdescription fact" do
+    expect(fact('lsbdistdescription')).to match(/(centos|ubuntu|debian|suse)/i)
+  end
 end
 
 describe 'logstash module' do

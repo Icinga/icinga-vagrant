@@ -8,7 +8,7 @@ HOSTS:
     docker_image_commands:
       - rm /lib/systemd/system/systemd*udev*
       - rm /lib/systemd/system/getty.target
-      - yum install -y wget ntpdate rubygems ruby-devel augeas-devel ruby-augeas tar logrotate
+      - yum install -y wget ntpdate redhat-lsb-core redhat-lsb rubygems ruby-devel augeas-devel ruby-augeas tar logrotate
       - 'cd / && wget -q --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jre-8u111-linux-x64.rpm"'
       - 'cd / && yum localinstall -y jre-8u111-linux-x64.rpm'
     docker_preserve_image: true

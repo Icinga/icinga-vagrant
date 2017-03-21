@@ -1,3 +1,19 @@
+5.0.4
+  Expose $logstash::home_dir
+
+5.0.3
+  Sort startup_options to prevent triggering unneeded restarts.
+
+5.0.2
+  Do not autmatically add ".conf" to pipeline config filesnames.
+
+5.0.1
+  Trivial README update.
+
+5.0.0
+  Major re-write for Logstash 5.x.
+  Drop support for Logstash <5.0.0.
+
 0.6.4
   Puppet 4 support.
 
