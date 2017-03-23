@@ -1,0 +1,12 @@
+HOSTS:
+  centos-6-x64:
+    roles:
+      - master
+    platform: el-6-x86_64
+    image: centos:6.8
+    hypervisor: docker
+    docker_cmd: ["/sbin/init"]
+    docker_container_name: centos-6-x64
+    docker_preserve_image: true
+    docker_image_commands:
+      - rm /etc/init/tty.conf

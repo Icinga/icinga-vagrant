@@ -1,0 +1,12 @@
+HOSTS:
+  amazonlinux-2016.09-x64:
+    roles:
+      - master
+    platform: el-6-x86_64
+    image: amazonlinux:2016.09
+    hypervisor: docker
+    docker_cmd: ["/sbin/init"]
+    docker_container_name: amazonlinux-2016.09-x64
+    docker_preserve_image: true
+    docker_image_commands:
+      - rm /etc/init/tty.conf
