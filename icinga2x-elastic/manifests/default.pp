@@ -249,8 +249,8 @@ class { 'logstash':
   manage_repo  => true,
   version => '5.1.1-1', # version and revision are required for now
 }->
-class { 'kibana5':
-  version => '5.0.1-1', # version and revision are required for now
+class { 'kibana':
+  ensure => latest,
   config => {
     'server.port' => 5601,
     'server.host' => '0.0.0.0',
