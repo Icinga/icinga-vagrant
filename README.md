@@ -341,6 +341,7 @@ General:
   puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
   puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
   puppet-wget           | modules/wget                  | https://github.com/maestrodev/puppet-wget.git
+  puppet-archive	| modules/archive		| https://github.com/voxpupuli/puppet-archive.git
   puppet-vim            | modules/vim                   | https://github.com/saz/puppet-vim.git
   puppet-lib-file\_contact | modules/file\_contact      | https://github.com/electrical/puppet-lib-file_concat.git
   puppet-sysctl		| modules/sysctl		| https://github.com/thias/puppet-sysctl.git
