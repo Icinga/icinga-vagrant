@@ -1,0 +1,6 @@
+coverage/
+doc/
+junit/
+log/
+tmp/
+vendor/

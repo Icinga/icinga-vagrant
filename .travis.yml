@@ -1,0 +1,21 @@
+---
+sudo: required
+services:
+  - docker
+language: ruby
+bundler_args: --without development
+before_install: rm Gemfile.lock || true
+script: bundle exec rake $RAKE_TASK
+env:
+  matrix:
+  - RAKE_TASK=test
+  - RAKE_TASK=beaker:amazonlinux-2016.09-x64
+  - RAKE_TASK=beaker:centos-6-x64
+  - RAKE_TASK=beaker:centos-7-x64
+  - RAKE_TASK=beaker:debian-7-x64
+  - RAKE_TASK=beaker:debian-8-x64
+  - RAKE_TASK=beaker:fedora-24-x64
+  - RAKE_TASK=beaker:fedora-25-x64
+  - RAKE_TASK=beaker:ubuntu-1204-x64
+  - RAKE_TASK=beaker:ubuntu-1404-x64
+  - RAKE_TASK=beaker:ubuntu-1604-x64
