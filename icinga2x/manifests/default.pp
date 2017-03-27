@@ -277,7 +277,7 @@ file { 'check_mysql_health':
 @user { icinga: ensure => present }
 User<| title == icinga |>{
   groups +> ['icingaweb2'],
-  require => Package['icinga2']
+  require => [ Package['icinga2'], Package['icingaweb2'] ]
 }
 
 icingaweb2::module { 'businessprocess':
