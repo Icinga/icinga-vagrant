@@ -3,6 +3,7 @@
 ### Summary
 
 #### Features
+* Package revisions now supported for ensure values.
 
 #### Fixes
 
