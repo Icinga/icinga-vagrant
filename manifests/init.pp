@@ -28,7 +28,7 @@
 # @param repo_version Repository major version to use
 #
 class kibana (
-  Variant[Enum['present', 'absent', 'latest'], Pattern[/^\d([.]\d+)*$/]] $ensure          = 'present',
+  Variant[Enum['present', 'absent', 'latest'], Pattern[/^\d([.]\d+)*(-[\d\w]+)?$/]] $ensure          = 'present',
   Hash[String[1], Variant[String[1], Integer, Boolean, Array]]           $config          = {},
   Boolean                                                                $manage_repo     = true,
   String                                                                 $repo_key_id     = '46095ACC8548582C1A2699A9D27D666CD88E42B4',

@@ -79,6 +79,12 @@ In order to explicitly ensure that version 5.2.0 of Kibana is installed:
 class { 'kibana': ensure => '5.2.0' }
 ```
 
+Package revisions are supported too:
+
+```puppet
+class { 'kibana': ensure => '5.2.2-1' }
+```
+
 The `kibana` class also supports removal through use of `ensure => absent`:
 
 ```puppet
