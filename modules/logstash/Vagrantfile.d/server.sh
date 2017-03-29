@@ -19,7 +19,7 @@ service puppetserver start
 echo '127.0.0.1 localhost puppet' > /etc/hosts
 
 # Install puppet-logstash dependencies.
-for mod in puppetlabs-apt puppetlabs-stdlib electrical-file_concat; do
+for mod in puppetlabs-apt puppetlabs-stdlib; do
     puppet module install --target-dir=/etc/puppetlabs/code/environments/production/modules $mod
 done
 

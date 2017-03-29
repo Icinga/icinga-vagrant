@@ -23,6 +23,10 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 
 ![Icinga 2 Dashing](doc/screenshot/icinga2x/vagrant_icinga2_dashing.png)
 
+### Elastic & Icingabeat
+
+![Icinga 2 Dashing](doc/screenshot/icinga2x-elastic/vagrant_icinga2_elastic_kibana_icingabeat.png)
+
 ### Graphite
 
 ![Icinga 2 Grafana with Graphite](doc/screenshot/icinga2x/vagrant_icinga2_grafana.png)
@@ -287,14 +291,17 @@ using the credentials `root/icinga`. More details in the [documentation](http://
 
 ## <a id="icinga2x-elastic"></a>Icinga 2 and Elastic Stack
 
-* Elastic Stack: Elasticsearch, Logstash, Kibana, Beats
+* Elastic Stack
+ * Elasticsearch
+ * [icingabeat](https://github.com/icinga/icingabeat), filebeat
+ * Kibana
 * Icinga 2, Icinga Web 2
 
 Run Vagrant:
 
     $ cd icinga2x-elastic && vagrant up
 
-Note: This is a TODO and work in progress.
+Note: Logstash integration is missing (#31).
 
 ### User Interfaces
 
@@ -341,6 +348,7 @@ General:
   puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
   puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
   puppet-wget           | modules/wget                  | https://github.com/maestrodev/puppet-wget.git
+  puppet-archive	| modules/archive		| https://github.com/voxpupuli/puppet-archive.git
   puppet-vim            | modules/vim                   | https://github.com/saz/puppet-vim.git
   puppet-lib-file\_contact | modules/file\_contact      | https://github.com/electrical/puppet-lib-file_concat.git
   puppet-sysctl		| modules/sysctl		| https://github.com/thias/puppet-sysctl.git
@@ -352,7 +360,8 @@ Specific projects:
   ----------------------|-------------------------------|-------------------------------
   graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
   puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
-  puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git - 5.x branch
+  puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git
+  puppet-kibana		| modules/kibana		| https://github.com/elastic/puppet-kibana.git
   puppet-kibana4        | modules/kibana4               | https://github.com/lesaux/puppet-kibana4.git
   puppet-kibana5	| modules/kibana5		| https://github.com/Nextdoor/puppet-kibana5
   puppet-filebeat       | modules/filebeat		| https://github.com/pcfens/puppet-filebeat.git

@@ -18,7 +18,7 @@ bundle-install:
 	bundle install --path .vendor
 
 puppet-module-deps:
-	for m in puppetlabs/apt puppetlabs/stdlib electrical/file_concat darin/zypprepo ; do \
+	for m in puppetlabs/apt puppetlabs/stdlib darin/zypprepo ; do \
 	  bundle exec puppet module install --target-dir spec/fixtures/modules --force $$m ; \
 	done
 	touch spec/fixtures/manifests/site.pp
@@ -46,6 +46,7 @@ clean:
 	rm -f files/*.gem
 	rm -f files/*.rpm
 	rm -rf log
+	rm -rf package
 
-release: clean
+release: clean docs
 	puppet module build

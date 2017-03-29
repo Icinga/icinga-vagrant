@@ -1,0 +1,16 @@
+HOSTS:
+  ubuntu-14-04:
+    roles:
+      - master
+    platform: ubuntu-1404-amd64
+    image: ubuntu:14.04
+    hypervisor: docker
+    docker_cmd: ["/sbin/init"]
+    docker_container_name: ubuntu-1404-amd64
+    docker_preserve_image: true
+    docker_image_commands:
+      - apt-get update
+      - apt-get install -yq libssl-dev apt-transport-https
+      - ln -sf /sbin/initctl.distrib /sbin/initctl
+      - locale-gen en_US en_US.UTF-8
+      - dpkg-reconfigure locales

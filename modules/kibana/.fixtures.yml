@@ -1,0 +1,10 @@
+fixtures:
+  forge_modules:
+    apt:
+      repo: puppetlabs/apt
+      ref: 2.0.0
+    stdlib:
+      repo: puppetlabs/stdlib
+      ref: 4.5.0
+  symlinks:
+    kibana: "#{source_dir}"
