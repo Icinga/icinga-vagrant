@@ -75,7 +75,7 @@ if versioncmp($::puppetversion,'3.6.1') >= 0 {
   }
 }
 
-package { [ 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion', 'screen' ]:
+package { [ 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion', 'screen', 'htop', 'unzip' ]:
   ensure => 'installed',
   require => Class['epel']
 }
@@ -217,10 +217,16 @@ file { '/etc/icingaweb2/enabledModules/icinga2':
   require => File['/etc/icingaweb2/enabledModules'],
 }
 
-
 ####################################
 # Elastic
 ####################################
+
+$kibanaVersion = '5.2.2'
+
+class { 'java':
+  version => 'latest',
+  distribution => 'jdk'
+}
 
 file { '/etc/security/limits.d/99-elasticsearch.conf':
   ensure  => present,
@@ -229,12 +235,11 @@ file { '/etc/security/limits.d/99-elasticsearch.conf':
   mode    => '0644',
   content => "elasticsearch soft nofile 64000\nelasticsearch hard nofile 64000\n",
 } ->
-class { 'java':
-} ->
 class { 'elasticsearch':
   manage_repo  => true,
   repo_version => '5.x',
   java_install => false,
+  require => Class['java']
 } ->
 elasticsearch::instance { 'elastic-es':
   config => {
@@ -245,12 +250,8 @@ elasticsearch::instance { 'elastic-es':
     'ES_JAVA_OPTS' => "\"-Xms256m -Xmx256m\"" # use this format, otherwise augeas will fail: https://github.com/elastic/puppet-elasticsearch/issues/736
   },
 }->
-class { 'logstash':
-  manage_repo  => true,
-  version => '5.1.1-1', # version and revision are required for now
-}->
 class { 'kibana':
-  ensure => latest,
+  ensure => "$kibanaVersion-1",
   config => {
     'server.port' => 5601,
     'server.host' => '0.0.0.0',
@@ -261,7 +262,8 @@ class { 'kibana':
     'logging.verbose'              => false,
     'logging.events'               => "{ log: ['info', 'warning', 'error', 'fatal'], response: '*', error: '*' }",
     'elasticsearch.requestTimeout' => 500000,
-  }
+  },
+  require => Class['java']
 }->
 class { 'filebeat':
   outputs => {
@@ -290,6 +292,71 @@ exec { 'finish-kibana-setup':
   timeout => 3600
 }
 
+######## TODO: The Logstash class does not properly include Java and therefore fails to provision.
+
+#package { 'java-1.8.0-openjdk':
+#  ensure => 'present'
+#}
+#class { 'logstash':
+#  manage_repo  => true,
+#  auto_upgrade => false,
+#  version => '5.2.2-1', # version and revision are required for now
+##  require => Class['java']
+#  require => Package['java-1.8.0-openjdk'] # this is ugly
+#}
+#->
+#logstash::plugin { 'logstash-input-beats':
+#  require => Anchor['java::end']
+#}
+#->
+#logstash::plugin { 'logstash-input-udp':
+#  require => Anchor['java::end']
+#}
+#->
+#logstash::plugin { 'logstash-input-tcp':
+#  require => Anchor['java::end']
+#}
+#->
+#logstash::plugin { 'logstash-codec-json':
+#  require => Anchor['java::end']
+#}
+
+# icingabeat
+$icingabeatVersion = '1.0.0'
+
+yum::install { 'icingabeat':
+  ensure => present,
+  source => "https://github.com/Icinga/icingabeat/releases/download/v$icingabeatVersion/icingabeat-$icingabeatVersion-x86_64.rpm"
+}->
+file { '/etc/icingabeat/icingabeat.yml':
+  source    => 'puppet:////vagrant/files/etc/icingabeat/icingabeat.yml',
+}->
+service { 'icingabeat':
+  ensure => running
+}->
+# https://github.com/icinga/icingabeat#dashboards
+archive { '/tmp/icingabeat-dashboards.zip':
+  ensure => present,
+  extract => true,
+  extract_path => '/tmp',
+  source => "https://github.com/Icinga/icingabeat/releases/download/v$icingabeatVersion/icingabeat-dashboards-$icingabeatVersion.zip",
+  checksum => 'b6de2adf2f10b77bd4e7f9a7fab36b44ed92fa03',
+  checksum_type => 'sha1',
+  creates => "/tmp/icingabeat-dashboards-$icingabeatVersion",
+  cleanup => true,
+  require => Package['unzip']
+}->
+exec { 'icingabeat-kibana-dashboards':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => "/usr/share/icingabeat/scripts/import_dashboards -dir /tmp/icingabeat-dashboards-$icingabeatVersion -es http://127.0.0.1:9200",
+  require => Exec['finish-kibana-setup']
+}->
+exec { 'icingabeat-kibana-default-index-pattern':
+  path => '/bin:/usr/bin:/sbin:/usr/sbin',
+  command => "curl -XPUT http://127.0.0.1:9200/.kibana/config/$kibanaVersion -d '{ \"defaultIndex\":\"icingabeat-*\" }'",
+}
+
+# filebeat
 filebeat::prospector { 'syslogs':
   paths => [
     '/var/log/messages'
@@ -303,5 +370,20 @@ filebeat::prospector { 'icinga2logs':
   doc_type => 'syslog-beat'
 }
 
+# icinga2 logstash writer - TODO
+#icinga2::feature { 'logstash': }
+#->
+#file { '/etc/icinga2/features-available':
+#  ensure  => 'directory',
+#  require => Package['icinga2']
+#}->
+#file { '/etc/icinga2/features-available/logstash.conf':
+#  owner  => icinga,
+#  group  => icinga,
+#  source    => 'puppet:////vagrant/files/etc/icinga2/features-available/logstash.conf',
+#  require   => Package['icinga2'],
+#  notify    => Service['icinga2']
+#}
 
+## TODO: Add logstash config!
 

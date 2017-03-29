@@ -2,7 +2,7 @@
 
 ES_URL="http://localhost:9200"
 ES_INDEX_URL="$ES_URL/.kibana/index-pattern/filebeat"
-ES_DEFAULT_INDEX_URL="$ES_URL/.kibana/config/5.0.1" #TODO on package update
+#ES_DEFAULT_INDEX_URL="$ES_URL/.kibana/config/5.0.1" #TODO on package update
 TIMEOUT=300
 
 START=$(date +%s)
@@ -25,5 +25,6 @@ done
 echo -e "Adding filebeat index pattern"
 curl -XPUT $ES_INDEX_URL -d '{ "title":"filebeat", "timeFieldName":"@timestamp" }'
 
-echo -e "Setting filebeat as default index"
-curl -XPUT $ES_DEFAULT_INDEX_URL -d '{ "defaultIndex":"filebeat" }'
+# use icingabeat outside
+#echo -e "Setting filebeat as default index"
+#curl -XPUT $ES_DEFAULT_INDEX_URL -d '{ "defaultIndex":"filebeat" }'

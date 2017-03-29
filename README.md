@@ -23,6 +23,10 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 
 ![Icinga 2 Dashing](doc/screenshot/icinga2x/vagrant_icinga2_dashing.png)
 
+### Elastic & Icingabeat
+
+![Icinga 2 Dashing](doc/screenshot/icinga2x-elastic/vagrant_icinga2_elastic_kibana_icingabeat.png)
+
 ### Graphite
 
 ![Icinga 2 Grafana with Graphite](doc/screenshot/icinga2x/vagrant_icinga2_grafana.png)
@@ -287,14 +291,17 @@ using the credentials `root/icinga`. More details in the [documentation](http://
 
 ## <a id="icinga2x-elastic"></a>Icinga 2 and Elastic Stack
 
-* Elastic Stack: Elasticsearch, Logstash, Kibana, Beats
+* Elastic Stack
+ * Elasticsearch
+ * [icingabeat](https://github.com/icinga/icingabeat), filebeat
+ * Kibana
 * Icinga 2, Icinga Web 2
 
 Run Vagrant:
 
     $ cd icinga2x-elastic && vagrant up
 
-Note: This is a TODO and work in progress.
+Note: Logstash integration is missing (#31).
 
 ### User Interfaces
 
