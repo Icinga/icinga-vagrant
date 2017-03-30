@@ -1,4 +1,5 @@
 require 'uri'
+require 'puppet_x/elastic/es_versioning'
 require 'puppet_x/elastic/plugin_name'
 
 class Puppet::Provider::ElasticPlugin < Puppet::Provider
@@ -13,7 +14,6 @@ class Puppet::Provider::ElasticPlugin < Puppet::Provider
   end
 
   def exists?
-    es_version
     if !File.exists?(pluginfile)
       debug "Plugin file #{pluginfile} does not exist"
       return false
@@ -114,14 +114,8 @@ class Puppet::Provider::ElasticPlugin < Puppet::Provider
   end
 
   def create
-    es_version
     commands = []
-    if is2x?
-      commands << "-Des.path.conf=#{homedir}"
-      if @resource[:proxy]
-        commands += proxy_args(@resource[:proxy])
-      end
-    end
+    commands += proxy_args(@resource[:proxy]) if is2x? and @resource[:proxy]
     commands << 'install'
     commands << '--batch' if batch_capable?
     commands += is1x? ? install1x : install2x
@@ -151,60 +145,39 @@ class Puppet::Provider::ElasticPlugin < Puppet::Provider
   end
 
   def es_version
-    return @es_version if @es_version
-    es_save = ENV['ES_INCLUDE']
-    java_save = ENV['JAVA_HOME']
-
-    os = Facter.value('osfamily')
-    if os == 'OpenBSD'
-      ENV['JAVA_HOME'] = javapathhelper('-h', 'elasticsearch').chomp
-      ENV['ES_INCLUDE'] = '/etc/elasticsearch/elasticsearch.in.sh'
-    end
-    begin
-      version = es('-version')
-    rescue
-      ENV['ES_INCLUDE'] = es_save if es_save
-      ENV['JAVA_HOME'] = java_save if java_save
-      raise "Unknown ES version. Got #{version.inspect}"
-    ensure
-      ENV['ES_INCLUDE'] = es_save if es_save
-      ENV['JAVA_HOME'] = java_save if java_save
-      @es_version = version.scan(/\d+\.\d+\.\d+(?:\-\S+)?/).first
-      debug "Found ES version #{@es_version}"
-    end
+    Puppet_X::Elastic::EsVersioning.version(
+      resource[:elasticsearch_package_name], resource.catalog
+    )
   end
 
   def is1x?
-    Puppet::Util::Package.versioncmp(@es_version, '2.0.0') < 0
+    Puppet::Util::Package.versioncmp(es_version, '2.0.0') < 0
   end
 
   def is2x?
-    (Puppet::Util::Package.versioncmp(@es_version, '2.0.0') >= 0) && (Puppet::Util::Package.versioncmp(@es_version, '3.0.0') < 0)
+    (Puppet::Util::Package.versioncmp(es_version, '2.0.0') >= 0) && (Puppet::Util::Package.versioncmp(es_version, '3.0.0') < 0)
   end
 
   def batch_capable?
-    Puppet::Util::Package.versioncmp(@es_version, '2.2.0') >= 0
+    Puppet::Util::Package.versioncmp(es_version, '2.2.0') >= 0
   end
 
   def plugin_version(plugin_name)
     _vendor, _plugin, version = plugin_name.split('/')
-    return @es_version if is2x? && version.nil?
+    return es_version if is2x? && version.nil?
     return version.scan(/\d+\.\d+\.\d+(?:\-\S+)?/).first unless version.nil?
-    return false
+    false
   end
 
   # Run a command wrapped in necessary env vars
   def with_environment(&block)
     env_vars = {
-      'ES_JAVA_OPTS' => [],
+      'ES_JAVA_OPTS' => []
     }
     saved_vars = {}
 
-    if not is2x?
-      env_vars['ES_JAVA_OPTS'] << "-Des.path.conf=#{homedir}"
-      if @resource[:proxy]
-        env_vars['ES_JAVA_OPTS'] += proxy_args(@resource[:proxy])
-      end
+    if !is2x? and @resource[:proxy]
+      env_vars['ES_JAVA_OPTS'] += proxy_args(@resource[:proxy])
     end
 
     env_vars['ES_JAVA_OPTS'] = env_vars['ES_JAVA_OPTS'].join(' ')
@@ -220,7 +193,6 @@ class Puppet::Provider::ElasticPlugin < Puppet::Provider
       ENV[env_var] = value
     end
 
-    return ret
+    ret
   end
-
 end

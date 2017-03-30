@@ -58,6 +58,15 @@
 #   Default logging level for Elasticsearch.
 #   Defaults to: INFO
 #
+# [*deprecation_logging*]
+#   Wheter to enable deprecation logging. If enabled, deprecation logs will be
+#   saved to ${cluster.name}_deprecation.log in the elastic search log folder.
+#   Default value: false
+#
+# [*deprecation_logging_level*]
+#   Default deprecation logging level for Elasticsearch.
+#   Defaults to: DEBUG
+#
 # [*init_defaults*]
 #   Defaults file content in hash representation
 #
@@ -132,6 +141,10 @@
 #   Value type is string
 #   Default value: 10MB
 #
+# [*security_plugin*]
+#   Which security plugin will be used to manage users, roles, and
+#   certificates. Inherited from top-level Elasticsearch class.
+#
 # === Authors
 #
 # * Tyler Langlois <mailto:tyler@elastic.co>
@@ -148,6 +161,8 @@ define elasticsearch::instance(
   $logging_config                = undef,
   $logging_template              = undef,
   $logging_level                 = $elasticsearch::default_logging_level,
+  $deprecation_logging           = false,
+  $deprecation_logging_level     = 'DEBUG',
   $service_flags                 = undef,
   $init_defaults                 = undef,
   $init_defaults_file            = undef,
@@ -163,6 +178,7 @@ define elasticsearch::instance(
   $daily_rolling_date_pattern    = $elasticsearch::daily_rolling_date_pattern,
   $rolling_file_max_backup_index = $elasticsearch::rolling_file_max_backup_index,
   $rolling_file_max_file_size    = $elasticsearch::rolling_file_max_file_size,
+  $security_plugin               = $elasticsearch::security_plugin,
 ) {
 
   require elasticsearch::params
@@ -180,6 +196,12 @@ define elasticsearch::instance(
   # ensure
   if ! ($ensure in [ 'present', 'absent' ]) {
     fail("\"${ensure}\" is not a valid ensure parameter value")
+  }
+
+  if $ssl or ($system_key != undef) {
+    if $security_plugin == undef or ! ($security_plugin in ['shield', 'x-pack']) {
+      fail("\"${security_plugin}\" is not a valid security_plugin parameter value")
+    }
   }
 
   $notify_service = $elasticsearch::restart_config_change ? {
@@ -290,17 +312,26 @@ define elasticsearch::instance(
       validate_string($keystore_password)
 
       if ($keystore_path == undef) {
-        $_keystore_path = "${instance_configdir}/shield/${name}.ks"
+        $_keystore_path = "${instance_configdir}/${security_plugin}/${name}.ks"
       } else {
         validate_absolute_path($keystore_path)
         $_keystore_path = $keystore_path
       }
 
-      $tls_config = {
-        'shield.ssl.keystore.path'     => $_keystore_path,
-        'shield.ssl.keystore.password' => $keystore_password,
-        'shield.transport.ssl'         => true,
-        'shield.http.ssl'              => true,
+      if $security_plugin == 'shield' {
+        $tls_config = {
+          'shield.transport.ssl'         => true,
+          'shield.http.ssl'              => true,
+          'shield.ssl.keystore.path'     => $_keystore_path,
+          'shield.ssl.keystore.password' => $keystore_password,
+        }
+      } elsif $security_plugin == 'x-pack' {
+        $tls_config = {
+          'xpack.security.transport.ssl.enabled' => true,
+          'xpack.security.http.ssl.enabled'      => true,
+          'xpack.ssl.keystore.path'              => $_keystore_path,
+          'xpack.ssl.keystore.password'          => $keystore_password,
+        }
       }
 
       # Trust CA Certificate
@@ -398,28 +429,37 @@ define elasticsearch::instance(
       target => "${elasticsearch::params::homedir}/scripts",
     }
 
-    file { "${instance_configdir}/shield":
-      ensure  => 'directory',
-      mode    => '0644',
-      source  => "${elasticsearch::params::homedir}/shield",
-      recurse => 'remote',
-      owner   => 'root',
-      group   => '0',
-      before  => Elasticsearch::Service[$name],
+    if $security_plugin != undef {
+      file { "${instance_configdir}/${security_plugin}":
+        ensure  => 'directory',
+        mode    => '0644',
+        source  => "${elasticsearch::configdir}/${security_plugin}",
+        recurse => 'remote',
+        owner   => 'root',
+        group   => '0',
+        before  => Elasticsearch::Service[$name],
+      }
     }
 
     if $system_key != undef {
-      file { "${instance_configdir}/shield/system_key":
+      file { "${instance_configdir}/${security_plugin}/system_key":
         ensure  => 'file',
         source  => $system_key,
         mode    => '0400',
         before  => Elasticsearch::Service[$name],
-        require => File["${instance_configdir}/shield"],
+        require => File["${instance_configdir}/${security_plugin}"],
       }
     }
 
     # build up new config
-    $instance_conf = merge($main_config, $instance_node_name, $instance_config, $instance_datadir_config, $instance_logdir_config, $tls_config)
+    $instance_conf = merge(
+      $main_config,
+      $instance_node_name,
+      $instance_config,
+      $instance_datadir_config,
+      $instance_logdir_config,
+      $tls_config
+    )
 
     # defaults file content
     # ensure user did not provide both init_defaults and init_defaults_file
@@ -435,8 +475,7 @@ define elasticsearch::instance(
 
     $instance_init_defaults_main = {
       'CONF_DIR'  => $instance_configdir,
-      'CONF_FILE' => "${instance_configdir}/elasticsearch.yml",
-      'ES_HOME'   => '/usr/share/elasticsearch',
+      'ES_HOME'   => $elasticsearch::params::homedir,
       'LOG_DIR'   => $instance_logdir,
     }
 
@@ -446,7 +485,7 @@ define elasticsearch::instance(
       $instance_init_defaults = { }
     }
     $init_defaults_new = merge(
-      { 'DATA_DIR'  => '$ES_HOME/data' },
+      { 'DATA_DIR'  => $elasticsearch::params::datadir },
       $global_init_defaults,
       $instance_init_defaults_main,
       $instance_init_defaults
@@ -466,6 +505,7 @@ define elasticsearch::instance(
       require  => Class['elasticsearch::package'],
       owner    => $elasticsearch::elasticsearch_user,
       group    => $elasticsearch::elasticsearch_group,
+      mode     => '0440',
     }
 
     $require_service = Class['elasticsearch::package']

@@ -1,4 +1,4 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__),"..","..",".."))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__),"..",".."))
 
 require 'puppet/util/checksums'
 
@@ -48,6 +48,10 @@ Puppet::Type.newtype(:elasticsearch_service_file) do
 
   newparam(:group) do
     desc 'Group to run service under.'
+  end
+
+  newparam(:homedir) do
+    desc 'Elasticsearch home directory.'
   end
 
   newparam(:instance) do
