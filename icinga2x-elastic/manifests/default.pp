@@ -239,16 +239,17 @@ class { 'elasticsearch':
   manage_repo  => true,
   repo_version => '5.x',
   java_install => false,
+  jvm_options => [
+    '-Xms256m',
+    '-Xmx256m'
+  ],
   require => Class['java']
 } ->
 elasticsearch::instance { 'elastic-es':
   config => {
     'cluster.name' => 'elastic',
     'network.host' => '127.0.0.1'
-  },
-  init_defaults => {
-    'ES_JAVA_OPTS' => "\"-Xms256m -Xmx256m\"" # use this format, otherwise augeas will fail: https://github.com/elastic/puppet-elasticsearch/issues/736
-  },
+  }
 }->
 class { 'kibana':
   ensure => "$kibanaVersion-1",
