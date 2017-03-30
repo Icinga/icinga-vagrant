@@ -1,8 +1,8 @@
 {
-  "name": "elasticsearch-elasticsearch",
-  "version": "0.15.0",
+  "name": "elastic-elasticsearch",
+  "version": "5.1.0",
   "source": "https://github.com/elastic/puppet-elasticsearch",
-  "author": "elasticsearch",
+  "author": "elastic",
   "license": "Apache-2.0",
   "summary": "Module for managing and configuring Elasticsearch nodes",
   "description": "Module for managing and configuring Elasticsearch nodes",
@@ -26,12 +26,8 @@
       "version_requirement": ">= 4.6.0 < 5.0.0"
     },
     {
-      "name": "thias/sysctl",
-      "version_requirement": ">= 1.0.6 < 2.0.0"
-    },
-    {
-      "name": "ceritsc/yum",
-      "version_requirement": ">= 0.9.6 < 1.0.0"
+      "name": "puppet/yum",
+      "version_requirement": ">= 0.9.6"
     }
   ],
   "operatingsystem_support": [
@@ -70,7 +66,6 @@
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
-        "6",
         "7",
         "8"
       ]
@@ -78,7 +73,6 @@
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "10.04",
         "12.04",
         "14.04",
         "16.04"
@@ -87,26 +81,26 @@
     {
       "operatingsystem": "OpenSuSE",
       "operatingsystemrelease": [
-        "12",
-        "13"
+        "42.1",
+        "42.2"
       ]
     },
     {
       "operatingsystem": "SLES",
       "operatingsystemrelease": [
-        "12.0",
-        "12.1"
+        "12.1",
+        "12.2"
       ]
     }
   ],
   "requirements": [
     {
       "name": "pe",
-      "version_requirement": ">= 3.3.2"
+      "version_requirement": ">= 3.8.0"
     },
     {
       "name": "puppet",
-      "version_requirement": ">=3.2.0 <5.0.0"
+      "version_requirement": ">=3.8.0 <5.0.0"
     }
   ]
 }

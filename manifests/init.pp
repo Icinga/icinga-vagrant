@@ -170,6 +170,11 @@
 # [*java_package*]
 #   If you like to install a custom java package, put the name here.
 #
+# [*jvm_options*]
+#   Array of options to set in jvm_options.
+#   Value type is Array
+#   Default value: []
+#
 # [*manage_repo*]
 #   Enable repo management by enabling our official repositories
 #
@@ -230,30 +235,6 @@
 #   package upgrades.
 #   Defaults to: true
 #
-# [*use_ssl*]
-#   Enable auth on api calls. This parameter is deprecated in favor of setting
-#   the `api_protocol` parameter to "https".
-#   Defaults to: false
-#   This variable is deprecated
-#
-# [*validate_ssl*]
-#   Enable ssl validation on api calls. This parameter is deprecated in favor
-#   of the `validate_tls` parameter.
-#   Defaults to: true
-#   This variable is deprecated
-#
-# [*ssl_user*]
-#   Defines the username for authentication. This parameter is deprecated in
-#   favor of the `api_basic_auth_username` parameter.
-#   Defaults to: undef
-#   This variable is deprecated
-#
-# [*ssl_password*]
-#   Defines the password for authentication. This parameter is deprecated in
-#   favor of the `api_basic_auth_password` parameter.
-#   Defaults to: undef
-#   This variable is deprecated
-#
 # [*api_protocol*]
 #   Default protocol to use when accessing Elasticsearch APIs.
 #   Defaults to: http
@@ -293,7 +274,7 @@
 #   Defaults to: undef
 #
 # [*system_key*]
-#   Source for the Shield system key. Valid values are any that are
+#   Source for the Shield/x-pack system key. Valid values are any that are
 #   supported for the file resource `source` parameter.
 #   Value type is string
 #   Default value: undef
@@ -318,6 +299,12 @@
 #   Max log file size when file_rolling_type is 'rollingFile'
 #   Value type is string
 #   Default value: 10MB
+#
+# [*security_plugin*]
+#   Which security plugin will be used to manage users, roles, and
+#   certificates. Valid values are 'shield' and 'x-pack'
+#   Value type is string
+#   Default value: undef
 #
 # The default values for the parameters are set in elasticsearch::params. Have
 # a look at the corresponding <tt>params.pp</tt> manifest file if you need more
@@ -375,6 +362,7 @@ class elasticsearch(
   $plugindir                      = $elasticsearch::params::plugindir,
   $java_install                   = false,
   $java_package                   = undef,
+  $jvm_options                    = [],
   $manage_repo                    = false,
   $repo_version                   = undef,
   $repo_priority                  = undef,
@@ -390,10 +378,6 @@ class elasticsearch(
   $instances_hiera_merge          = false,
   $plugins                        = undef,
   $plugins_hiera_merge            = false,
-  $use_ssl                        = undef,
-  $validate_ssl                   = undef,
-  $ssl_user                       = undef,
-  $ssl_password                   = undef,
   $api_protocol                   = 'http',
   $api_host                       = 'localhost',
   $api_port                       = 9200,
@@ -408,6 +392,7 @@ class elasticsearch(
   $daily_rolling_date_pattern     = $elasticsearch::params::daily_rolling_date_pattern,
   $rolling_file_max_backup_index  = $elasticsearch::params::rolling_file_max_backup_index,
   $rolling_file_max_file_size     = $elasticsearch::params::rolling_file_max_file_size,
+  $security_plugin                = undef,
 ) inherits elasticsearch::params {
 
   anchor {'elasticsearch::begin': }
@@ -429,13 +414,13 @@ class elasticsearch(
   }
 
   if ! ($file_rolling_type in [ 'dailyRollingFile', 'rollingFile']) {
-    file("\"${file_rolling_type}\" is not a valid type")
+    fail("\"${file_rolling_type}\" is not a valid type")
   }
 
+  validate_array($jvm_options)
   validate_integer($rolling_file_max_backup_index)
   validate_string($daily_rolling_date_pattern)
   validate_string($rolling_file_max_file_size)
-
 
   # restart on change
   validate_bool(
@@ -505,43 +490,11 @@ class elasticsearch(
     }
   }
 
-  # Various parameters governing API access to Elasticsearch, handling
-  # deprecated params.
+  # Various parameters governing API access to Elasticsearch
   validate_string($api_protocol, $api_host)
-  if $use_ssl != undef {
-    validate_bool($use_ssl)
-    warning('"use_ssl" parameter is deprecated; set $api_protocol to "https" instead')
-    $_api_protocol = 'https'
-  } else {
-    $_api_protocol = $api_protocol
-  }
-
   validate_bool($validate_tls)
-  if $validate_ssl != undef {
-    validate_bool($validate_ssl)
-    warning('"validate_ssl" parameter is deprecated; use $validate_tls instead')
-    $_validate_tls = $validate_ssl
-  } else {
-    $_validate_tls = $validate_tls
-  }
-
   if $api_basic_auth_username { validate_string($api_basic_auth_username) }
-  if $ssl_user != undef {
-    validate_string($ssl_user)
-    warning('"ssl_user" parameter is deprecated; use $api_basic_auth_username instead')
-    $_api_basic_auth_username = $ssl_user
-  } else {
-    $_api_basic_auth_username = $api_basic_auth_username
-  }
-
   if $api_basic_auth_password { validate_string($api_basic_auth_password) }
-  if $ssl_password != undef {
-    validate_string($ssl_password)
-    warning('"ssl_password" parameter is deprecated; use $api_basic_auth_password instead')
-    $_api_basic_auth_password = $ssl_password
-  } else {
-    $_api_basic_auth_password = $api_basic_auth_password
-  }
 
   if ! is_integer($api_timeout) {
     fail("'${api_timeout}' is not an integer")
@@ -644,11 +597,6 @@ class elasticsearch(
       }
     }
 
-    if defined(Class['elasticsearch::package::pin']) {
-      Class['elasticsearch::package::pin']
-      -> Class['elasticsearch::repo']
-    }
-
   }
 
   #### Manage relationships
@@ -675,11 +623,15 @@ class elasticsearch(
     Class['elasticsearch::config']
     -> Elasticsearch::Instance <| |>
     Class['elasticsearch::config']
-    -> Elasticsearch::Shield::User <| |>
+    -> Elasticsearch::User <| |>
     Class['elasticsearch::config']
-    -> Elasticsearch::Shield::Role <| |>
+    -> Elasticsearch::Role <| |>
     Class['elasticsearch::config']
     -> Elasticsearch::Template <| |>
+    Class['elasticsearch::config']
+    -> Elasticsearch::Pipeline <| |>
+    Class['elasticsearch::config']
+    -> Elasticsearch::Index <| |>
 
   } else {
 
@@ -696,54 +648,76 @@ class elasticsearch(
     -> Elasticsearch::Instance <| |>
     -> Class['elasticsearch::config']
     Anchor['elasticsearch::begin']
-    -> Elasticsearch::Shield::User <| |>
+    -> Elasticsearch::User <| |>
     -> Class['elasticsearch::config']
     Anchor['elasticsearch::begin']
-    -> Elasticsearch::Shield::Role <| |>
+    -> Elasticsearch::Role <| |>
     -> Class['elasticsearch::config']
     Anchor['elasticsearch::begin']
     -> Elasticsearch::Template <| |>
     -> Class['elasticsearch::config']
+    Anchor['elasticsearch::begin']
+    -> Elasticsearch::Pipeline <| |>
+    -> Class['elasticsearch::config']
+    Anchor['elasticsearch::begin']
+    -> Elasticsearch::Index <| |>
+    -> Class['elasticsearch::config']
 
   }
 
-  # Install plugins before managing instances or shield users/roles
+  # Install plugins before managing instances or users/roles
   Elasticsearch::Plugin <| ensure == 'present' or ensure == 'installed' |>
   -> Elasticsearch::Instance <| |>
   Elasticsearch::Plugin <| ensure == 'present' or ensure == 'installed' |>
-  -> Elasticsearch::Shield::User <| |>
+  -> Elasticsearch::User <| |>
   Elasticsearch::Plugin <| ensure == 'present' or ensure == 'installed' |>
-  -> Elasticsearch::Shield::Role <| |>
+  -> Elasticsearch::Role <| |>
 
-  # Remove plugins after managing shield users/roles
-  Elasticsearch::Shield::User <| |>
+  # Remove plugins after managing users/roles
+  Elasticsearch::User <| |>
   -> Elasticsearch::Plugin <| ensure == 'absent' |>
-  Elasticsearch::Shield::Role <| |>
+  Elasticsearch::Role <| |>
   -> Elasticsearch::Plugin <| ensure == 'absent' |>
 
   # Ensure roles are defined before managing users that reference roles
-  Elasticsearch::Shield::Role <| |>
-  -> Elasticsearch::Shield::User <| ensure == 'present' |>
+  Elasticsearch::Role <| |>
+  -> Elasticsearch::User <| ensure == 'present' |>
   # Ensure users are removed before referenced roles are managed
-  Elasticsearch::Shield::User <| ensure == 'absent' |>
-  -> Elasticsearch::Shield::Role <| |>
+  Elasticsearch::User <| ensure == 'absent' |>
+  -> Elasticsearch::Role <| |>
 
-  # Ensure users and roles are managed before calling out to templates
-  Elasticsearch::Shield::Role <| |>
+  # Ensure users and roles are managed before calling out to REST resources
+  Elasticsearch::Role <| |>
   -> Elasticsearch::Template <| |>
-  Elasticsearch::Shield::User <| |>
+  Elasticsearch::User <| |>
   -> Elasticsearch::Template <| |>
+  Elasticsearch::Role <| |>
+  -> Elasticsearch::Pipeline <| |>
+  Elasticsearch::User <| |>
+  -> Elasticsearch::Pipeline <| |>
+  Elasticsearch::Role <| |>
+  -> Elasticsearch::Index <| |>
+  Elasticsearch::User <| |>
+  -> Elasticsearch::Index <| |>
 
-  # Manage users/roles before instances (req'd to keep shield dir in sync)
-  Elasticsearch::Shield::Role <| |>
+  # Manage users/roles before instances (req'd to keep dir in sync)
+  Elasticsearch::Role <| |>
   -> Elasticsearch::Instance <| |>
-  Elasticsearch::Shield::User <| |>
+  Elasticsearch::User <| |>
   -> Elasticsearch::Instance <| |>
 
-  # Ensure instances are started before managing templates
+  # Ensure instances are started before managing REST resources
   Elasticsearch::Instance <| ensure == 'present' |>
   -> Elasticsearch::Template <| |>
-  # Ensure instances are stopped after managing templates
+  Elasticsearch::Instance <| ensure == 'present' |>
+  -> Elasticsearch::Pipeline <| |>
+  Elasticsearch::Instance <| ensure == 'present' |>
+  -> Elasticsearch::Index <| |>
+  # Ensure instances are stopped after managing REST resources
   Elasticsearch::Template <| |>
+  -> Elasticsearch::Instance <| ensure == 'absent' |>
+  Elasticsearch::Pipeline <| |>
+  -> Elasticsearch::Instance <| ensure == 'absent' |>
+  Elasticsearch::Index <| |>
   -> Elasticsearch::Instance <| ensure == 'absent' |>
 }
