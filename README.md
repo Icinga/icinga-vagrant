@@ -39,10 +39,6 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 
 ## Requirements
 
-Each Vagrant box setup requires at least 2 Cores and 1 GB RAM.
-The required resources are automatically configured during the
-`vagrant up` run.
-
 * [Vagrant](https://www.vagrantup.com) >= 1.6.5
 
 Note: There's a [bug](https://github.com/mitchellh/vagrant/issues/8096)
@@ -54,6 +50,12 @@ One of these virtualization providers:
 
 * Virtualbox >= 4.2.16 from http://www.virtualbox.org
 * Parallels Desktop Pro/Business >= 11 from http://www.parallels.com/products/desktop/
+
+Each Vagrant box setup requires at least 2 Cores and 1 GB RAM.
+The required resources are automatically configured during the
+`vagrant up` run.
+
+### Linux
 
 Example on Fedora:
 
@@ -79,11 +81,15 @@ In addition the listed requirements you'll need:
 Install the Git package and set `autocrlf` to `false` (either in the setup
 dialog or using the cmd shell):
 
-    git config --global core.autocrlf false
+```
+git config --global core.autocrlf false
+```
 
 Then clone this repository:
 
-    git clone https://github.com/Icinga/icinga-vagrant
+```
+git clone https://github.com/Icinga/icinga-vagrant
+```
 
 ### Virtualbox Provider
 
@@ -94,7 +100,9 @@ If Virtualbox is installed, this will be enabled by default.
 You'll need to install the [vagrant-parallels](http://parallels.github.io/vagrant-parallels/docs/)
 plugin first:
 
-    $ vagrant plugin install vagrant-parallels
+```
+$ vagrant plugin install vagrant-parallels
+```
 
 ### Behind a proxy
 
@@ -102,12 +110,16 @@ If you are working behind a proxy, you can use the [proxyconf plugin](https://gi
 
 Install the plugin:
 
-    $ vagrant plugin install vagrant-proxyconf
+```
+$ vagrant plugin install vagrant-proxyconf
+```
 
 Export the proxy variables into your environment:
 
-    $ export VAGRANT_HTTP_PROXY=http://proxy:8080
-    $ export VAGRANT_HTTPS_PROXY=http://proxy:8080
+```
+$ export VAGRANT_HTTP_PROXY=http://proxy:8080
+$ export VAGRANT_HTTPS_PROXY=http://proxy:8080
+```
 
 Vagrant exports the proxy settings into the VM and provisioning
 will then work.
@@ -126,16 +138,20 @@ Change the directory to the box you want to start.
 
 Example icinga2x:
 
-    $ cd icinga2x
+```
+$ cd icinga2x
+```
 
 You can only do `vagrant up` in a box directory. Verify that
 by checking for the existance of the `Vagrantfile` file in the current
 directory.
 
-    $ pwd
-    /home/michi/coding/icinga/icinga-vagrant/icinga2x
-    $ ls -la Vagrantfile
-    -rw-------. 1 michi michi 1,4K 28. Aug 12:11 Vagrantfile
+```
+$ pwd
+/home/michi/coding/icinga/icinga-vagrant/icinga2x
+$ ls -la Vagrantfile
+-rw-------. 1 michi michi 1,4K 28. Aug 12:11 Vagrantfile
+```
 
 ### Vagrant Commands
 
@@ -173,35 +189,37 @@ Graylog			| http://docs.graylog.org
 
 On local config change (git pull for this repository).
 
-    $ pwd
-    $ git pull
-    $ git log
-    $ vagrant provision
-
+```
+$ pwd
+$ git pull
+$ git log
+$ vagrant provision
+```
 
 # Box Overview
 
 ## <a id="icinga2x"></a>Icinga 2 Standalone
 
 * 1 VM
-* Icinga 2 Core
-  * Icinga 2 API
-* Icinga Web 2
- * Icinga [Director](https://github.com/Icinga/icingaweb2-module-director)
- * [PNP](https://github.com/Icinga/icingaweb2-module-pnp) module
- * [Graphite](https://github.com/Icinga/icingaweb2-module-graphite) module
- * [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess) module
- * [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts) module
- * [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) module
-* PNP4Nagios
-* NagVis
-* Graphite
-* Grafana
+* [Icinga 2](https://www.icinga.com/products/icinga-2/)
+* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
+  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director)
+  * [PNP](https://github.com/Icinga/icingaweb2-module-pnp) module
+  * [Graphite](https://github.com/Icinga/icingaweb2-module-graphite) module
+  * [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess) module
+  * [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts) module
+  * [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) module
+* [PNP4Nagios](http://docs.pnp4nagios.org/)
+* [NagVis](http://nagvis.org/)
+* [Graphite](https://graphiteapp.org/)
+* [Grafana](https://grafana.com/)
 * [Dashing](https://github.com/Icinga/dashing-icinga2)
 
 Run Vagrant:
 
-    $ cd icinga2x && vagrant up
+```
+$ cd icinga2x && vagrant up
+```
 
 ### User Interfaces
 
@@ -215,7 +233,9 @@ Run Vagrant:
 
 Note: In case Dashing is not running, restart it manually:
 
-    $ vagrant ssh -c "sudo /usr/local/bin/restart-dashing"
+```
+$ vagrant ssh -c "sudo /usr/local/bin/restart-dashing"
+```
 
 ### Icinga 2 API
 
@@ -225,12 +245,14 @@ using the credentials `root/icinga`. More details in the [documentation](http://
 ## <a id="icinga2x-cluster"></a>Icinga 2 Cluster
 
 * 2 VMs as Icinga 2 Master/Checker Cluster
-* Icinga 2 Core, DB IDO MySQL, Icinga Web 2
+* [Icinga 2](https://www.icinga.com/products/icinga-2/)
+* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
 
 Run Vagrant:
 
-    $ cd icinga2x-cluster && vagrant up
-
+```
+$ cd icinga2x-cluster && vagrant up
+```
 
 ### User Interfaces
 
@@ -248,11 +270,14 @@ using the credentials `root/icinga`.
 ## <a id="icinga2x-ha-cluster"></a>Icinga 2 HA Cluster
 
 * 2 Master VMs, 1 Satellite VM
-* Icinga 2 Core, DB IDO MYSQL, Icinga Web 2
+* [Icinga 2](https://www.icinga.com/products/icinga-2/)
+* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
 
 Run Vagrant:
 
-    $ cd icinga2x-ha-cluster && vagrant up
+```
+$ cd icinga2x-ha-cluster && vagrant up
+```
 
 ### User Interfaces
 
@@ -267,15 +292,16 @@ Note: DB IDO HA is disabled.
 ## <a id="icinga2x-influxdb"></a>Icinga 2 InfluxDB
 
 * 1 VM
-* Icinga 2 Core
-  * Icinga 2 API
-* Icinga Web 2
-* InfluxDB
-* Grafana
+* [Icinga 2](https://www.icinga.com/products/icinga-2/)
+* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
+* [InfluxDB](https://docs.influxdata.com/influxdb/)
+* [Grafana](https://grafana.com/)
 
 Run Vagrant:
 
-    $ cd icinga2x-influxdb && vagrant up
+```
+$ cd icinga2x-influxdb && vagrant up
+```
 
 ### User Interfaces
 
@@ -291,15 +317,18 @@ using the credentials `root/icinga`. More details in the [documentation](http://
 
 ## <a id="icinga2x-elastic"></a>Icinga 2 and Elastic Stack
 
-* Elastic Stack
- * Elasticsearch
- * [icingabeat](https://github.com/icinga/icingabeat), filebeat
- * Kibana
-* Icinga 2, Icinga Web 2
+* [Elastic Stack](https://www.elastic.co/products)
+  * [Elasticsearch](https://www.elastic.co/products/elasticsearch)
+  * [icingabeat](https://github.com/icinga/icingabeat), [filebeat](https://www.elastic.co/products/beats/filebeat)
+  * [Kibana](https://www.elastic.co/products/kibana)
+* [Icinga 2](https://www.icinga.com/products/icinga-2/)
+* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
 
 Run Vagrant:
 
-    $ cd icinga2x-elastic && vagrant up
+```
+$ cd icinga2x-elastic && vagrant up
+```
 
 Note: Logstash integration is missing (#31).
 
@@ -312,12 +341,15 @@ Note: Logstash integration is missing (#31).
 
 ## <a id="icinga2x-graylog"></a>Icinga 2 and Graylog
 
-* Graylog Server and Web with Elasticsearch, MongoDB
-* Icinga 2, Icinga Web 2
+* [Graylog](https://www.graylog.org)
+* [Icinga 2](https://www.icinga.com/products/icinga-2/)
+* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
 
 Run Vagrant:
 
-    $ cd icinga2x-graylog && vagrant up
+```
+$ cd icinga2x-graylog && vagrant up
+```
 
 ### User Interfaces
 
@@ -330,7 +362,8 @@ Run Vagrant:
 
 ### Puppet Module Overview
 
-These boxes use these imported puppet modules for provisioning:
+The Vagrant boxes use these imported puppet modules for provisioning. The modules are
+pulled into this repository as git subtree.
 
 General:
 
@@ -370,7 +403,7 @@ Specific projects:
   puppet-graphite	| modules/graphite		| Patched for systemd usage from https://github.com/echocat/puppet-graphite.git
   puppet-grafana	| modules/grafana		| https://github.com/bfraser/puppet-grafana.git
 
-#### Puppet Module Setup
+#### Puppet Module Git Subtree
 
 **Notes for developers only.**
 
