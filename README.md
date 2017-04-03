@@ -17,7 +17,6 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 ![Icinga Web 2 Detail View with PNP](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_detail_pnp.png)
 ![Icinga Web 2 Business Process](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_businessprocess.png)
 ![Icinga Web 2 Director](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_director.png)
-![Icinga Web 2 Grafana](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_grafana.png)
 
 ### Dashing
 
@@ -30,7 +29,6 @@ Icinga Vagrant boxes used for development, tests and demo cases.
 ### Graphite
 
 ![Icinga 2 Grafana with Graphite](doc/screenshot/icinga2x/vagrant_icinga2_grafana.png)
-![Icinga 2 Graphite Web](doc/screenshot/icinga2x/vagrant_icinga2_graphite.png)
 
 ### InfluxDB
 
