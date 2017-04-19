@@ -221,7 +221,14 @@ file { '/etc/icingaweb2/enabledModules/icinga2':
 # Elastic
 ####################################
 
+# global vars
 $kibanaVersion = '5.2.2'
+$icingabeatVersion = '1.1.0'
+$icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
+# keep this in sync with the icingabeat dashboard ids!
+# http://192.168.33.7:5601/app/kibana#/dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426
+$kibanaDefaultAppId = 'dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426'
+
 
 class { 'java':
   version => 'latest',
@@ -254,10 +261,10 @@ elasticsearch::instance { 'elastic-es':
 class { 'kibana':
   ensure => "$kibanaVersion-1",
   config => {
-    'server.port' => 5601,
-    'server.host' => '0.0.0.0',
-    'kibana.index' => '.kibana',
-    'kibana.defaultAppId' => 'discover',
+    'server.port'                  => 5601,
+    'server.host'                  => '0.0.0.0',
+    'kibana.index'                 => '.kibana',
+    'kibana.defaultAppId'          => "$kibanaDefaultAppId",
     'logging.silent'               => false,
     'logging.quiet'                => false,
     'logging.verbose'              => false,
@@ -323,9 +330,6 @@ exec { 'finish-kibana-setup':
 #}
 
 # icingabeat
-$icingabeatVersion = '1.1.0'
-$icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
-
 yum::install { 'icingabeat':
   ensure => present,
   source => "https://github.com/Icinga/icingabeat/releases/download/v$icingabeatVersion/icingabeat-$icingabeatVersion-x86_64.rpm"
