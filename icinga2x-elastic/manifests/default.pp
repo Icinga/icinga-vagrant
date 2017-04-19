@@ -323,13 +323,16 @@ exec { 'finish-kibana-setup':
 #}
 
 # icingabeat
-$icingabeatVersion = '1.0.0'
+$icingabeatVersion = '1.1.0'
+$icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
 
 yum::install { 'icingabeat':
   ensure => present,
   source => "https://github.com/Icinga/icingabeat/releases/download/v$icingabeatVersion/icingabeat-$icingabeatVersion-x86_64.rpm"
 }->
 file { '/etc/icingabeat/icingabeat.yml':
+  owner  => root,
+  group  => root,
   source    => 'puppet:////vagrant/files/etc/icingabeat/icingabeat.yml',
 }->
 service { 'icingabeat':
@@ -341,7 +344,7 @@ archive { '/tmp/icingabeat-dashboards.zip':
   extract => true,
   extract_path => '/tmp',
   source => "https://github.com/Icinga/icingabeat/releases/download/v$icingabeatVersion/icingabeat-dashboards-$icingabeatVersion.zip",
-  checksum => 'b6de2adf2f10b77bd4e7f9a7fab36b44ed92fa03',
+  checksum => "$icingabeatDashboardsChecksum",
   checksum_type => 'sha1',
   creates => "/tmp/icingabeat-dashboards-$icingabeatVersion",
   cleanup => true,
