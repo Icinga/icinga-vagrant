@@ -82,6 +82,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         l.cpus = 2
       end
 
+      app_config.vm.provider :libvirt do |l, override|
+        override.vm.box = "centos/7"
+
+        l.memory = 1024
+        l.cpus = 2
+      end
+
       # provisioner
       app_config.vm.provision :puppet do |puppet|
         puppet.module_path = "../modules"
