@@ -55,12 +55,15 @@ The required resources are automatically configured during the
 
 ### Linux
 
-Example on Fedora:
+Example on Fedora (needs RPMFusion repository for VirtualBox):
 
 ```
 dnf install vagrant
 dnf install virtualbox
+vagrant plugin install virtualbox
 ```
+
+Fedora uses libvirt by default. More details on VirtualBox can be found [here](https://developer.fedoraproject.org/tools/vagrant/vagrant-virtualbox.html).
 
 Example on Ubuntu:
 
