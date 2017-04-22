@@ -126,9 +126,6 @@ file { "/etc/icinga2/zones.conf":
   notify    => Service['icinga2']
 }
 
-# enable the command pipe
-icinga2::feature { 'command': }
-
 file { '/etc/icinga2/conf.d/hosts.conf':
   owner  => icinga,
   group  => icinga,
