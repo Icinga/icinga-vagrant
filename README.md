@@ -20,31 +20,29 @@ A simple `vagrant up` fully installs these VMs and you are ready to explore
 the Icinga ecosystem. You can use these boxes for your own local demos, or
 to learn how to install and configure Icinga.
 
-* [Icinga 2 Standalone](README.md#icinga2x)
-* [Icinga 2 Cluster](README.md#icinga2x-cluster)
-* [Icinga 2 HA Cluster](README.md#icinga2x-ha-cluster)
-* [Icinga 2 InfluxDB](README.md#icinga2x-influxdb)
+* [Icinga 2 Standalone](README.md#icinga2x), [Icinga 2 Cluster](README.md#icinga2x-cluster), [Icinga 2 HA Cluster](README.md#icinga2x-ha-cluster)
+* [Icinga 2 and InfluxDB](README.md#icinga2x-influxdb)
 * [Icinga 2 and Elastic](README.md#icinga2x-elastic)
 * [Icinga 2 and Graylog](README.md#icinga2x-graylog)
 
 ### Icinga Web 2
 
-![Icinga Web 2 Dashboard](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_dashboard.png)
-![Icinga Web 2 Detail View with PNP](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_detail_pnp.png)
-![Icinga Web 2 Business Process](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_businessprocess.png)
-![Icinga Web 2 Director](doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_director.png)
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_dashboard.png" alt="Icinga Web 2 Dashboard" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_detail_pnp.png" alt="Icinga Web 2 Detail View with PNP" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_businessprocess.png" alt="Icinga Web 2 Business Process" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_director.png" alt="Icinga Web 2 Director" height="300">
 
 ### Dashing
 
-![Icinga 2 Dashing](doc/screenshot/icinga2x/vagrant_icinga2_dashing.png)
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_dashing.png" alt="Dashing" height="300">
 
 ### Elastic & Icingabeat
 
-![Icinga 2 Dashing](doc/screenshot/icinga2x-elastic/vagrant_icinga2_elastic_kibana_icingabeat.png)
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x-elastic/vagrant_icinga2_elastic_kibana_icingabeat.png" alt="Elastic Stack and Icingabeat" height="300">
 
 ### Grafana
 
-![Icinga 2 Grafana with Graphite](doc/screenshot/icinga2x/vagrant_icinga2_grafana.png)
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_grafana.png" alt="Icinga 2 Grafana with Graphite" height="300">
 
 ## Support
 
