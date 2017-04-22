@@ -446,13 +446,6 @@ package { [ 'rubygems', 'rubygem-bundler',
   ensure => 'installed',
   require => Class['epel']
 }->
-file { 'gemrc':
-  name => '/etc/gemrc',
-  owner => root,
-  group => root,
-  mode => '0644',
-  source => "puppet:////vagrant/files/etc/gemrc",
-}->
 vcsrepo { '/usr/share/dashing-icinga2':
   ensure   => 'present',
   path     => '/usr/share/dashing-icinga2',
@@ -467,17 +460,28 @@ exec { 'dashing-bundle-install':
   command => "cd /usr/share/dashing-icinga2 && bundle install --jobs 4 --system", # this already installs the dashing binary
   timeout => 1800
 }->
-file { '/usr/local/bin/restart-dashing':
-  ensure => link,
-  force => true,
-  target => '/usr/share/dashing-icinga2/restart-dashing'
-} ->
-exec { 'dashing-start':
-  # fix path to /usr/local/bin, we don't have profile.d/env.sh yet
-  path => '/usr/local/bin:/bin:/usr/bin:/sbin:/usr/sbin',
-  command => "/usr/share/dashing-icinga2/restart-dashing",
+file { '/usr/lib/systemd/system/dashing-icinga2.service':
+  owner  => root,
+  group  => root,
+  mode   => '0644',
+  source	=> '/usr/share/dashing-icinga2/tools/systemd/dashing-icinga2.service',
+}
+->
+exec { 'dashing-reload-systemd':
+  command     => 'systemctl daemon-reload',
+  path        => ['/usr/bin', '/usr/sbin', '/bin', '/sbin'],
+  refreshonly => true,
+}
+->
+service { 'dashing-icinga2':
+  provider => 'systemd',
+  ensure => running,
+  enable => true,
+  hasstatus => true,
+  hasrestart => true,
   require => Service['icinga2'],
 }
+
 
 ####################################
 # Graphite
