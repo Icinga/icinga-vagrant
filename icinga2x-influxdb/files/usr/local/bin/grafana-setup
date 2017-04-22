@@ -24,7 +24,7 @@ done
 echo -e "Adding InfluxDB datasource"
 curl "$GRAFANA_DATASOURCES_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary <<DATASOURCE \
   '{
-    "name": "influxdb",
+    "name": "icinga2-influxdb",
     "type": "influxdb",
     "url": "http://192.168.33.8:8086",
     "access": "direct",
