@@ -380,7 +380,7 @@ Run Vagrant:
 $ cd icinga2x-elastic && vagrant up
 ```
 
-Note: Logstash integration is missing (#31).
+Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-vagrant/issues/31).
 
 #### Application Interfaces
 
@@ -401,6 +401,8 @@ Run Vagrant:
 ```
 $ cd icinga2x-graylog && vagrant up
 ```
+
+Note: Requires an update to Graylog 2 and Elasticsearch 5 in [#44](https://github.com/Icinga/icinga-vagrant/issues/44).
 
 #### Application Interfaces
 
