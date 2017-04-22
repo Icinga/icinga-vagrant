@@ -612,10 +612,8 @@ file { '/etc/icingaweb2/modules/graphite/config.ini':
 ####################################
 
 # https://github.com/bfraser/puppet-grafana
-# https://grafanarel.s3.amazonaws.com/builds/grafana-4.1.2-1486989747.x86_64.rpm
 class { 'grafana':
-  version => '4.1.2',
-  rpm_iteration => '1486989747',
+  package_source => 'https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-4.2.0-1.x86_64.rpm',
   cfg => {
     app_mode => 'production',
     server   => {
