@@ -3,9 +3,9 @@
 #### Table of Contents
 
 1. [About](#about)
-2. [Requirements](#requirements)
-3. [Providers](#providers)
-4. [Support](#support)
+2. [Support](#support)
+3. [Requirements](#requirements)
+4. [Providers](#providers)
 5. [Run](#run)
 6. [Boxes](#boxes)
 7. [Misc](#misc)
@@ -13,7 +13,12 @@
 
 ## About
 
-Icinga Vagrant boxes for development, tests and demo cases.
+The Icinga Vagrant boxes allow you to run Icinga 2, Icinga Web 2 and integrations
+(Graphite, InfluxDB, Grafana, Elastic Stack, Graylog) in various scenarios.
+
+A simple `vagrant up` fully installs these VMs and you are ready to explore
+the Icinga ecosystem. You can use these boxes for your own local demos, or
+to learn how to install and configure Icinga.
 
 * [Icinga 2 Standalone](README.md#icinga2x)
 * [Icinga 2 Cluster](README.md#icinga2x-cluster)
@@ -37,13 +42,19 @@ Icinga Vagrant boxes for development, tests and demo cases.
 
 ![Icinga 2 Dashing](doc/screenshot/icinga2x-elastic/vagrant_icinga2_elastic_kibana_icingabeat.png)
 
-### Graphite
+### Grafana
 
 ![Icinga 2 Grafana with Graphite](doc/screenshot/icinga2x/vagrant_icinga2_grafana.png)
 
-### InfluxDB
+## Support
 
-![Icinga 2 Grafana with InfluxDB](doc/screenshot/icinga2x-influxdb/vagrant_icinga2_influxdb_grafana.png)
+Please note that these boxes are built for demos and development tests only. Several
+boxes will run snapshot builds and unstable code to test the latest and the greatest.
+
+You can also use them to test Icinga packages prior to the next release.
+
+In case you've found a problem or want to submit a patch, please open an issue
+on GitHub and/or create a PR.
 
 
 ## Requirements
@@ -85,8 +96,8 @@ apt-get install virtualbox
 
 In addition the listed requirements you'll need:
 
-* SSH provided by the Git package from http://msysgit.github.io
-* Ruby for Windows from http://rubyinstaller.org (add Ruby executables to PATH)
+* [Git package](https://git-for-windows.github.io/) which also includes SSH
+* [Ruby for Windows](https://rubyinstaller.org/) (add Ruby executables to PATH)
 
 Install the Git package and set `autocrlf` to `false` (either in the setup
 dialog or using the cmd shell):
@@ -125,6 +136,8 @@ plugin first:
 $ vagrant plugin install vagrant-parallels
 ```
 
+The Parallels provider uses the [Parallels CentOS base box](https://github.com/Parallels/vagrant-parallels/wiki/Available-Vagrant-Boxes).
+
 ### Libvirt Provider
 
 You should have `qemu` and `libvirt installed if you plan to run Vagrant
@@ -134,9 +147,12 @@ on your local system. Then install the `vagrant-libvirt` plugin:
 $ vagrant plugin install vagrant-libvirt
 ```
 
-## Additional Plugins
+The libvirt provider uses the official CentOS base boxes.
 
-### Behind a proxy
+
+### Additional Plugins
+
+#### Behind a proxy
 
 If you are working behind a proxy, you can use the [proxyconf plugin](https://github.com/tmatilai/vagrant-proxyconf).
 
@@ -156,14 +172,6 @@ $ export VAGRANT_HTTPS_PROXY=http://proxy:8080
 Vagrant exports the proxy settings into the VM and provisioning
 will then work.
 
-## Support
-
-Please note that these boxes are built for development and tests only. Productive
-setups are not supported.
-
-In case you've found a problem or want to submit a patch, please open an issue
-on GitHub and/or create a PR.
-
 ## Run
 
 Change the directory to the box you want to start.
@@ -180,16 +188,29 @@ directory.
 
 ### Vagrant Commands
 
-> **Note**
->
-> Multi-VM boxes require the hostname for `vagrant ssh` like so: `vagrant ssh icinga2b`.
-> That works in a similar fashion for other sub commands.
-
 Start all VMs:
 
 ```
 vagrant up
 ```
+
+Depending on the provider you have chosen above, you might want to set
+it explicitely:
+
+```
+$ vagrant up --provider=virtualbox
+```
+
+SSH into the box as local `vagrant` user (**Tip**: Use `sudo -i` to become `root`):
+
+```
+vagrant ssh
+```
+
+> **Note**
+>
+> Multi-VM boxes require the hostname for `vagrant ssh` like so: `vagrant ssh icinga2b`.
+> That works in a similar fashion for other sub commands.
 
 Stop all VMs:
 
@@ -203,24 +224,12 @@ Update packages/reset configuration for all VMs:
 vagrant provision
 ```
 
-SSH into the box as local `vagrant` user (**Tip**: Use `sudo -i` to become `root`):
-
-```
-vagrant ssh
-```
-
 Destroy the VM (add `-f` to avoid the safety question)
 
 ```
 vagrant destroy
 ```
 
-Depending on the provider you have chosen above, you might want to set
-them explicitely:
-
-```
-$ vagrant up --provider=virtualbox
-```
 
 ### More Usability Hints
 
@@ -234,7 +243,7 @@ PNP			| https://docs.pnp4nagios.org
 NagVis			| https://www.nagvis.org/doc
 Graphite		| https://graphite.readthedocs.io
 InfluxDB		| https://docs.influxdata.com/influxdb/
-Grafana			| http://docs.grafana.org
+Grafana			| https://docs.grafana.org
 Elastic			| https://www.elastic.co/guide/
 Graylog			| http://docs.graylog.org
 
@@ -256,12 +265,7 @@ $ vagrant provision
 * 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director)
-  * [PNP](https://github.com/Icinga/icingaweb2-module-pnp) module
-  * [Graphite](https://github.com/Icinga/icingaweb2-module-graphite) module
-  * [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess) module
-  * [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts) module
-  * [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) module
+  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director), [PNP](https://github.com/Icinga/icingaweb2-module-pnp), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts), [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) modules
 * [PNP4Nagios](http://docs.pnp4nagios.org/)
 * [NagVis](http://nagvis.org/)
 * [Graphite](https://graphiteapp.org/)
@@ -274,11 +278,12 @@ Run Vagrant:
 $ cd icinga2x && vagrant up
 ```
 
-#### User Interfaces
+#### Application Interfaces
 
-  GUI               | Url                               | Credentials
+  Application       | Url                               | Credentials
   ------------------|-----------------------------------|----------------
   Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
+  Icinga 2 API      | https://192.168.33.5:5665/v1      | root/icinga
   PNP4Nagios        | http://192.168.33.5/pnp4nagios    | -
   Graphite Web	    | http://192.168.33.5:8003          | -
   Grafana           | http://192.168.33.5:8004          | admin/admin
@@ -290,10 +295,6 @@ Note: In case Dashing is not running, restart it manually:
 $ vagrant ssh -c "sudo systemctl start dashing-icinga2"
 ```
 
-#### Icinga 2 API
-
-Access [https://192.168.33.5:5665/v1/objects/hosts](https://192.168.33.5:5665/v1/objects/hosts)
-using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.com/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
 
 ### <a id="icinga2x-cluster"></a>Icinga 2 Cluster
 
@@ -307,18 +308,15 @@ Run Vagrant:
 $ cd icinga2x-cluster && vagrant up
 ```
 
-#### User Interfaces
+#### Application Interfaces
 
-  GUI               | Url                                   | Credentials
+  Application       | Url                                   | Credentials
   ------------------|---------------------------------------|----------------
   Icinga Web 2      | http://192.168.33.10/icingaweb2       | icingaadmin/icinga
   Icinga Web 2      | http://192.168.33.20/icingaweb2       | icingaadmin/icinga
+  Icinga 2 API      | https://192.168.33.10:5665/v1         | root/icinga
+  Icinga 2 API      | https://192.168.33.20:5665/v1         | root/icinga
 
-#### Icinga 2 API
-
-Access [https://192.168.33.10:5665/v1/objects/hosts](https://192.168.33.10:5665/v1/objects/hosts)
-and [https://192.168.33.20:5665/v1/objects/hosts](https://192.168.33.20:5665/v1/objects/hosts)
-using the credentials `root/icinga`.
 
 ### <a id="icinga2x-ha-cluster"></a>Icinga 2 HA Cluster
 
@@ -332,15 +330,17 @@ Run Vagrant:
 $ cd icinga2x-ha-cluster && vagrant up
 ```
 
-#### User Interfaces
+#### Application Interfaces
 
-Note: DB IDO HA is disabled.
-
-  GUI               | Url                                   | Credentials
+  Application       | Url                                   | Credentials
   ------------------|---------------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.101/icingaweb2       | icingaadmin/icinga
-  Icinga Web 2      | http://192.168.33.102/icingaweb2       | icingaadmin/icinga
-  Icinga Web 2      | http://192.168.33.103/icingaweb2       | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.101/icingaweb2      | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.102/icingaweb2      | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.103/icingaweb2      | icingaadmin/icinga
+  Icinga 2 API      | https://192.168.33.101:5665/v1        | root/icinga
+  Icinga 2 API      | https://192.168.33.102:5665/v1        | root/icinga
+  Icinga 2 API      | https://192.168.33.103:5665/v1        | root/icinga
+
 
 ### <a id="icinga2x-influxdb"></a>Icinga 2 InfluxDB
 
@@ -356,17 +356,14 @@ Run Vagrant:
 $ cd icinga2x-influxdb && vagrant up
 ```
 
-#### User Interfaces
+#### Application Interfaces
 
-  GUI               | Url                               | Credentials
+  Application       | Url                               | Credentials
   ------------------|-----------------------------------|----------------
   Icinga Web 2      | http://192.168.33.8/icingaweb2    | icingaadmin/icinga
+  Icinga 2 API      | https://192.168.33.8:5665/v1      | root/icinga
   Grafana           | http://192.168.33.8:8004          | admin/admin
 
-#### Icinga 2 API
-
-Access [https://192.168.33.8:5665/v1/objects/hosts](https://192.168.33.8:5665/v1/objects/hosts)
-using the credentials `root/icinga`. More details in the [documentation](http://docs.icinga.com/icinga2/snapshot/doc/module/icinga2/chapter/icinga2-api#icinga2-api).
 
 ### <a id="icinga2x-elastic"></a>Icinga 2 and Elastic Stack
 
@@ -385,11 +382,12 @@ $ cd icinga2x-elastic && vagrant up
 
 Note: Logstash integration is missing (#31).
 
-#### User Interfaces
+#### Application Interfaces
 
-  GUI               | Url                               | Credentials
+  Application       | Url                               | Credentials
   ------------------|-----------------------------------|----------------
   Icinga Web 2      | http://192.168.33.7/icingaweb2    | icingaadmin/icinga
+  Icinga 2 API      | https://192.168.33.7:5665/v1      | root/icinga
   Kibana            | http://192.168.33.7:5601          | -
 
 ### <a id="icinga2x-graylog"></a>Icinga 2 and Graylog
@@ -404,12 +402,15 @@ Run Vagrant:
 $ cd icinga2x-graylog && vagrant up
 ```
 
-#### User Interfaces
+#### Application Interfaces
 
-  GUI              | Url                             | Credentials
-  -----------------|---------------------------------|------------------------
-  Icinga Web 2     | http://192.168.33.6/icingaweb2  | icingaadmin/icinga
-  Graylog          | http://192.168.33.6:9000        | admin/admin
+  Application       | Url                             | Credentials
+  ------------------|---------------------------------|------------------------
+  Icinga Web 2      | http://192.168.33.6/icingaweb2  | icingaadmin/icinga
+  Icinga 2 API      | https://192.168.33.6:5665/v1    | root/icinga
+  Graylog           | http://192.168.33.6:9000        | admin/admin
+
+
 
 ## Misc
 
@@ -455,6 +456,7 @@ Specific projects:
   golja-influxdb        | modules/influxdb              | https://github.com/n1tr0g/golja-influxdb.git including a [PR for 1.0.0 support](https://github.com/n1tr0g/golja-influxdb/pull/47)
   puppet-graphite	| modules/graphite		| Patched for systemd usage from https://github.com/echocat/puppet-graphite.git
   puppet-grafana	| modules/grafana		| https://github.com/bfraser/puppet-grafana.git
+
 
 #### Puppet Module Git Subtree
 
