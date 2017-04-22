@@ -55,8 +55,6 @@ class icinga2 (
     mode => '0775',
     require => Package['icinga2-common']
   }
-
-  icinga2::feature { 'livestatus': }
 }
 
 class icinga2_ido_mysql (
