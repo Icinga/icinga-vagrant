@@ -149,6 +149,7 @@ $ vagrant plugin install vagrant-libvirt
 
 The libvirt provider uses the official CentOS base boxes.
 
+Note: Full libvirt support is pending. Please help test and send in patches for [#52](https://github.com/Icinga/icinga-vagrant/issues/52).
 
 ### Additional Plugins
 
