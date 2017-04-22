@@ -3,6 +3,7 @@
 
 VAGRANTFILE_API_VERSION = "2"
 VAGRANT_REQUIRED_VERSION = "1.6.5"
+VAGRANT_REQUIRED_LINKED_CLONE_VERSION = "1.8.4"
 
 # Require 1.6.5 at least
 if ! defined? Vagrant.require_version
@@ -14,79 +15,112 @@ else
   Vagrant.require_version ">= " + VAGRANT_REQUIRED_VERSION
 end
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  servers = { 'g2i2.demo.icinga.com' => '192.168.33.6'
+# inspired by https://github.com/lbetz/vagrant-icinga-book/blob/master/Vagrantfile
+nodes = { 'icinga2-graylog' => {
+            :box 	=> 'centos/7',
+            :mac	=> '020027000111',
+	    :net	=> 'icinga2-graylog.demo.local',
+            :hostonly   => '192.168.33.6',
+            :memory	=> '2048',
+	    :cpu	=> '2',
+            :fowarded	=> {
+              '443'  => '8443',
+              '80'   => '8082',
+              '22'   => '2082',
+              '9000' => '9000',
+              '12201' => '12201',
+              '12900' => '12900'
             }
-  http_port = { 'g2i2.demo.icinga.com' => 8110
-              }
-  ssh_port = { 'g2i2.demo.icinga.com' => 2119
-             }
+          }
+}
 
-  servers.each do |server_name, server_ip|
-    config.vm.define server_name do |app_config|
-      app_config.vm.hostname = "#{server_name.to_s}"
-      app_config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
-      app_config.vm.network :forwarded_port, guest: 22, host: ssh_port[server_name], auto_correct: true
-      app_config.vm.network :forwarded_port, guest: 80, host: http_port[server_name], auto_correct: true
-      # we need to keep the same ports, since re-configuration requires -server/-web cfg changes
-      app_config.vm.network :forwarded_port, guest: 9000, host: 9000
-      app_config.vm.network :forwarded_port, guest: 12201, host: 12201, protocol: 'udp', auto_correct: true
-      app_config.vm.network :forwarded_port, guest: 12201, host: 12201, protocol: 'tcp', auto_correct: true
-      app_config.vm.network :forwarded_port, guest: 12900, host: 12900
-      app_config.vm.network :private_network, ip: "#{server_ip}"
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  nodes.each_pair do |name, options|
+    config.vm.define name do |node_config|
+      node_config.vm.box = options[:box]
+      node_config.vm.hostname = name
+      node_config.vm.box_url = options[:url] if options[:url]
+      if options[:forwarded]
+        options[:forwarded].each_pair do |guest, local|
+          node_config.vm.network "forwarded_port", guest: guest, host: local
+        end
+      end
 
-      app_config.vm.provision :shell, :path => "manifests/puppet.sh"
+      node_config.vm.network :private_network, ip: options[:hostonly] if options[:hostonly]
 
-      # workaround for Vagrant >1.8.4-1.9.1 not bringing up eth1 properly
-      # https://github.com/mitchellh/vagrant/issues/8096
-      app_config.vm.provision "shell", inline: "service network restart", run: "always"
-
-      # parallels
-      app_config.vm.provider :parallels do |p, override|
+      # provider: parallels
+      node_config.vm.provider :parallels do |p, override|
         override.vm.box = "parallels/centos-7.2"
+        override.vm.boot_timeout = 600
 
-        p.name = "Icinga 2: #{server_name.to_s}"
-
-        # Update Parallels Tools automatically
-        p.update_guest_tools = true
+        p.name = "Icinga 2: #{name.to_s}"
+        p.update_guest_tools = false
+        p.linked_clone = true if Gem::Version.new(Vagrant::VERSION) >= Gem::Version.new(VAGRANT_REQUIRED_LINKED_CLONE_VERSION)
 
         # Set power consumption mode to "Better Performance"
         p.customize ["set", :id, "--longer-battery-life", "off"]
 
-        p.memory = 1024
-        p.cpus = 2
+        p.memory = options[:memory] if options[:memory]
+        p.cpus = options[:cpus] if options[:cpus]
       end
 
-      # virtualbox
-      app_config.vm.provider :virtualbox do |v, override|
-        override.vm.box = "centos-71-x64-vbox"
-        override.vm.box_url = "http://boxes.icinga.com/centos-71-x64-vbox.box"
-
-        v.customize ["modifyvm", :id, "--memory", "1024"]
-        v.customize ["modifyvm", :id, "--cpus", "2"]
-        # Using the host's resolver as a DNS proxy in NAT mode
-        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      # provider: virtualbox
+      node_config.vm.provider :virtualbox do |vb, override|
+        unless Vagrant.has_plugin?("vagrant-vbguest")
+          raise 'vagrant-vbguest is not installed! Run "vagrant plugin install vagrant-vbguest"'
+        end
+        node_config.vbguest.auto_update = true
+        vb.linked_clone = true if Gem::Version.new(Vagrant::VERSION) >= Gem::Version.new(VAGRANT_REQUIRED_LINKED_CLONE_VERSION)
+        vb.name = name
+        vb.gui = options[:gui] if options[:gui]
+        vb.customize ["modifyvm", :id,
+          "--groups", "/Icinga Vagrant/" + options[:net],
+          "--memory", "512",
+          "--cpus", "1",
+          "--audio", "none",
+          "--usb", "on",
+          "--usbehci", "off",
+          "--natdnshostresolver1", "on",
+          #"--nic2", "intnet",
+          #"--intnet2", options[:net],
+          #"--macaddress2". options[:mac]
+        ]
+        vb.memory = options[:memory] if options[:memory]
+        vb.cpus = options[:cpus] if options[:cpus]
       end
 
-      app_config.vm.provider :libvirt do |l, override|
-        override.vm.box = "centos/7"
-
-        l.memory = 1024
-        l.cpus = 2
+      # provider: libvirt
+      node_config.vm.provider :libvirt do |lv, override|
+        lv.memory = options[:memory] if options[:memory]
+        lv.cpus = options[:cpus] if options[:cpus]
       end
 
-      # provisioner
-      app_config.vm.provision :puppet do |puppet|
+      # provisioner: ensure that hostonly network is up
+      #
+      # workaround for Vagrant >1.8.4-1.9.1 not bringing up eth1 properly
+      # https://github.com/mitchellh/vagrant/issues/8096
+      node_config.vm.provision "shell", inline: "service network restart", run: "always"
+
+      # provisioner: install requirements
+      node_config.vm.provision :shell, :path => "../scripts/shell_provisioner.sh"
+
+      # provisioner: install box using puppet manifest
+      node_config.vm.provision :puppet do |puppet|
         puppet.module_path = "../modules"
         puppet.manifests_path = "manifests"
         puppet.hiera_config_path = "hiera.yaml"
-        #puppet.options = "--verbose --debug"
+        #puppet.options = "--verbose --debug --parser=future"
         puppet.options = "--parser=future"
       end
-      # add gelf inputs etc
-      app_config.vm.provision :shell, :path => "scripts/graylog2-seed.rb"
-      # tell the user where to login
-      app_config.vm.provision :shell, :path => "scripts/finalize.sh"
+
+      #Graylog specific modification
+      node_config.vm.provision :shell, :path => "scripts/graylog2-seed.rb"
+
+      # print a friendly message
+      node_config.vm.provision "shell", inline: <<-SHELL
+        echo "Finished installing the Vagrant box '#{name}'."
+        echo "Navigate to http://#{options[:hostonly]}"
+      SHELL
     end
   end
 end
