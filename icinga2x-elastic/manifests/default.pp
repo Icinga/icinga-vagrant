@@ -122,9 +122,6 @@ file { "/etc/icinga2/zones.conf":
   notify    => Service['icinga2']
 }
 
-# enable the command pipe
-icinga2::feature { 'command': }
-
 file { '/etc/icinga2/conf.d/hosts.conf':
   owner  => icinga,
   group  => icinga,
@@ -222,7 +219,7 @@ file { '/etc/icingaweb2/enabledModules/icinga2':
 ####################################
 
 # global vars
-$kibanaVersion = '5.2.2'
+$kibanaVersion = '5.3.1'
 $icingabeatVersion = '1.1.0'
 $icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
 # keep this in sync with the icingabeat dashboard ids!
