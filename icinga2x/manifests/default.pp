@@ -647,6 +647,21 @@ file { 'grafana-dashboard-icinga2':
   source => "puppet:////vagrant/files/etc/icinga2/grafana-dashboard-icinga2.json",
 }
 ->
+file { 'grafana-dashboard-graphite-base-metrics':
+  name => '/etc/icinga2/graphite-base-metrics.json',
+  owner => root,
+  group => root,
+  mode => '0644',
+  source => "puppet:////vagrant/files/etc/icinga2/graphite-base-metrics.json",
+}->
+file { 'grafana-dashboard-graphite-icinga2-default':
+  name => '/etc/icinga2/graphite-icinga2-default.json',
+  owner => root,
+  group => root,
+  mode => '0644',
+  source => "puppet:////vagrant/files/etc/icinga2/graphite-icinga2-default.json",
+}
+->
 exec { 'finish-grafana-setup':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => "/usr/local/bin/grafana-setup",

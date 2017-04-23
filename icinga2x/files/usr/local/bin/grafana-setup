@@ -31,3 +31,7 @@ curl "$GRAFANA_DATASOURCES_URL" -X POST -H 'Content-Type: application/json;chars
 # file is already patched
 echo -e "Adding Icinga 2 dashboard"
 curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/grafana-dashboard-icinga2.json
+
+echo -e "Adding Icinga Web 2 Grafana Module Dashboards"
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/graphite-base-metrics.json
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/graphite-icinga2-default.json
