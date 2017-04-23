@@ -427,11 +427,6 @@ icingaweb2::module { 'globe':
   repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-globe'
 }
 
-#icingaweb2::module { 'grafana':
-#  builtin => false,
-#  repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-grafana'
-#}
-
 ####################################
 # Dashing
 ####################################
@@ -667,6 +662,24 @@ exec { 'finish-grafana-setup':
   command => "/usr/local/bin/grafana-setup",
   require => [ Class['graphite'], Class['grafana::service'] ],
   notify => Class['apache::service']
+}
+
+####################################
+# Icinga Web 2 Grafana Module
+####################################
+
+icingaweb2::module { 'grafana':
+  builtin => false,
+  repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-grafana'
+}->
+file { '/etc/icingaweb2/modules/grafana':
+  ensure => directory,
+  recurse => true,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  source    => "puppet:////vagrant/files/etc/icingaweb2/modules/grafana",
+  require => [ Package['icingaweb2'], File['/etc/icingaweb2/modules'] ]
 }
 
 ####################################
