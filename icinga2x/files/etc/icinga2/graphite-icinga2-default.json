@@ -1,7 +1,9 @@
+{ "dashboard":
+
 {
   "__inputs": [
     {
-      "name": "DS_ICINGA2-GRAPHITE",
+      "name": "icinga2-graphite",
       "label": "icinga2-graphite",
       "description": "",
       "type": "datasource",
@@ -46,7 +48,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": "${DS_ICINGA2-GRAPHITE}",
+          "datasource": "icinga2-graphite",
           "fill": 0,
           "id": 1,
           "legend": {
@@ -175,7 +177,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "${DS_ICINGA2-GRAPHITE}",
+        "datasource": "icinga2-graphite",
         "hide": 2,
         "includeAll": false,
         "label": null,
@@ -195,7 +197,7 @@
       {
         "allValue": null,
         "current": {},
-        "datasource": "${DS_ICINGA2-GRAPHITE}",
+        "datasource": "icinga2-graphite",
         "hide": 2,
         "includeAll": false,
         "label": null,
@@ -246,4 +248,7 @@
   "timezone": "browser",
   "title": "icinga2-default",
   "version": 15
+},
+
+"overwrite": true
 }
