@@ -238,7 +238,6 @@ Project			| URL
 ------------------------|------------------------------
 Icinga 2		| https://docs.icinga.com
 Icinga Web 2		| https://github.com/Icinga/icingaweb2/tree/master/doc
-PNP			| https://docs.pnp4nagios.org
 NagVis			| https://www.nagvis.org/doc
 Graphite		| https://graphite.readthedocs.io
 InfluxDB		| https://docs.influxdata.com/influxdb/
@@ -264,8 +263,7 @@ $ vagrant provision
 * 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director), [PNP](https://github.com/Icinga/icingaweb2-module-pnp), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts), [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) modules
-* [PNP4Nagios](http://docs.pnp4nagios.org/)
+  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director), [Grafana](https://github.com/Mikesch-mp/icingaweb2-module-grafana), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts), [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) modules
 * [NagVis](http://nagvis.org/)
 * [Graphite](https://graphiteapp.org/)
 * [Grafana](https://grafana.com/)
@@ -283,7 +281,6 @@ $ cd icinga2x && vagrant up
   ------------------|-----------------------------------|----------------
   Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
   Icinga 2 API      | https://192.168.33.5:5665/v1      | root/icinga
-  PNP4Nagios        | http://192.168.33.5/pnp4nagios    | -
   Graphite Web	    | http://192.168.33.5:8003          | -
   Grafana           | http://192.168.33.5:8004          | admin/admin
   Dashing           | http://192.168.33.5:8005          | -
