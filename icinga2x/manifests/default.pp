@@ -325,16 +325,11 @@ file { 'nagvis-core-functions-index.php':
   path    => '/usr/local/nagvis/share/server/core/functions/index.php',
   source  => 'puppet:////vagrant/files/usr/local/nagvis/share/server/core/functions/index.php',
   mode    => '644',
-  require => Class['nagvis']
+  owner   => 'apache',
+  group   => 'apache',
+  require => Class['nagvis::config']
 }
 
-file { 'nagvis-map-icinga2':
-  ensure  => 'present',
-  path    => '/usr/local/nagvis/etc/maps/icinga2.cfg',
-  source  => 'puppet:////vagrant/files/usr/local/nagvis/etc/maps/icinga2.cfg',
-  mode    => '644',
-  require => Class['nagvis']
-}
 ####################################
 # Director
 ####################################
