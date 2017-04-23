@@ -24,7 +24,7 @@ done
 echo -e "Adding InfluxDB datasource"
 curl "$GRAFANA_DATASOURCES_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary <<DATASOURCE \
   '{
-    "name": "influxdb",
+    "name": "icinga2-influxdb",
     "type": "influxdb",
     "url": "http://192.168.33.8:8086",
     "access": "direct",
@@ -43,6 +43,10 @@ DATASOURCE
 # file is already patched
 echo -e "Adding Icinga 2 dashboard"
 curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/grafana-dashboard-icinga2-influxdb.json
+
+echo -e "Adding Icinga Web 2 Grafana Module Dashboards"
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/influxdb-base-metrics.json
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/influxdb-icinga2-default.json
 
 # diff for future reference
 

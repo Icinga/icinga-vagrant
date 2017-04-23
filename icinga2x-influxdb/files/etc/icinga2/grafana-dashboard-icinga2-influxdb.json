@@ -3,7 +3,7 @@
 {
   "__inputs": [
     {
-      "name": "influxdb",
+      "name": "icinga2-influxdb",
       "label": "influxdb",
       "description": "",
       "type": "datasource",
@@ -48,7 +48,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": "influxdb",
+          "datasource": "icinga2-influxdb",
           "editable": true,
           "error": false,
           "fill": 3,
@@ -155,7 +155,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": "influxdb",
+          "datasource": "icinga2-influxdb",
           "editable": true,
           "error": false,
           "fill": 1,
@@ -263,7 +263,7 @@
         {
           "aliasColors": {},
           "bars": false,
-          "datasource": "influxdb",
+          "datasource": "icinga2-influxdb",
           "editable": true,
           "error": false,
           "fill": 1,

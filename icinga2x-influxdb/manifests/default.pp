@@ -126,9 +126,6 @@ file { "/etc/icinga2/zones.conf":
   notify    => Service['icinga2']
 }
 
-# enable the command pipe
-icinga2::feature { 'command': }
-
 file { '/etc/icinga2/conf.d/hosts.conf':
   owner  => icinga,
   group  => icinga,
@@ -262,6 +259,20 @@ file { 'grafana-dashboard-icinga2-influxdb':
   group => root,
   mode => '0644',
   source => "puppet:////vagrant/files/etc/icinga2/grafana-dashboard-icinga2-influxdb.json",
+}->
+file { 'grafana-dashboard-influxdb-base-metrics':
+  name => '/etc/icinga2/influxdb-base-metrics.json',
+  owner => root,
+  group => root,
+  mode => '0644',
+  source => "puppet:////vagrant/files/etc/icinga2/influxdb-base-metrics.json",
+}->
+file { 'grafana-dashboard-influxdb-icinga2-default':
+  name => '/etc/icinga2/influxdb-icinga2-default.json',
+  owner => root,
+  group => root,
+  mode => '0644',
+  source => "puppet:////vagrant/files/etc/icinga2/influxdb-icinga2-default.json",
 }
 ->
 exec { 'finish-grafana-setup':
@@ -270,4 +281,23 @@ exec { 'finish-grafana-setup':
   require => [ Class['grafana::service'], Class['influxdb::server::service'] ],
   notify => Class['apache::service']
 }
+
+####################################
+# Icinga Web 2 Grafana Module
+####################################
+
+icingaweb2::module { 'grafana':
+  builtin => false,
+  repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-grafana'
+}->
+file { '/etc/icingaweb2/modules/grafana':
+  ensure => directory,
+  recurse => true,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  source    => "puppet:////vagrant/files/etc/icingaweb2/modules/grafana",
+  require => [ Package['icingaweb2'], File['/etc/icingaweb2/modules'] ]
+}
+
 
