@@ -20,9 +20,17 @@ until $(curl --output /dev/null --silent $GRAFANA_DATASOURCES_URL); do
   sleep 1
 done
 
-# configure graphite datasource
+# add datasource
 echo -e "Adding Graphite datasource"
-curl "$GRAFANA_DATASOURCES_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary '{ "name": "icinga2", "type": "graphite", "url": "http://192.168.33.5:8003", "access": "direct", "isDefault": true }'
+curl "$GRAFANA_DATASOURCES_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary <<DATASOURCE \
+  '{
+    "name": "icinga2-graphite",
+    "type": "graphite",
+    "url": "http://192.168.33.5:8003",
+    "access": "direct",
+    "isDefault": true
+   }'
+DATASOURCE
 
 # add default dashboards
 # exported dashboards require the 'dashboard' key including the payload in the http json body request
