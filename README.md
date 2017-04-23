@@ -343,6 +343,7 @@ $ cd icinga2x-ha-cluster && vagrant up
 * 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
+  * [Grafana](https://github.com/Mikesch-mp/icingaweb2-module-grafana) module
 * [InfluxDB](https://docs.influxdata.com/influxdb/)
 * [Grafana](https://grafana.com/)
 

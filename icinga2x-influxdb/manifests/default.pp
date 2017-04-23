@@ -158,6 +158,15 @@ file { '/etc/icinga2/conf.d/api-users.conf':
   notify    => Service['icinga2']
 }
 
+file { 'check_mysql_health':
+  name => '/usr/lib64/nagios/plugins/check_mysql_health',
+  owner => root,
+  group => root,
+  mode => '0755',
+  source    => 'puppet:////vagrant/files/usr/lib64/nagios/plugins/check_mysql_health',
+  require => Class['monitoring_plugins'],
+}
+
 ####################################
 # Icinga Web 2
 ####################################
