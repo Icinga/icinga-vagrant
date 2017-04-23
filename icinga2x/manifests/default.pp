@@ -234,30 +234,6 @@ file { '/etc/icinga2/demo':
 }
 
 ####################################
-# PNP
-####################################
-
-include pnp4nagios
-
-icinga2::feature { 'perfdata': }
-
-icingaweb2::module { 'pnp':
-  builtin => false
-}
-
-# override the default httpd config w/o basic auth
-
-file { 'pnp4nagios_httpd_config':
-  name => '/etc/httpd/conf.d/pnp4nagios.conf',
-  owner => root,
-  group => root,
-  mode => '0644',
-  content => template('pnp4nagios/pnp4nagios.conf.erb'),
-  require => Class['apache'],
-  notify => Class['apache::service'],
-}
-
-####################################
 # BP
 ####################################
 
@@ -426,11 +402,6 @@ icingaweb2::module { 'globe':
   builtin => false,
   repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-globe'
 }
-
-#icingaweb2::module { 'grafana':
-#  builtin => false,
-#  repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-grafana'
-#}
 
 ####################################
 # Dashing
@@ -647,11 +618,44 @@ file { 'grafana-dashboard-icinga2':
   source => "puppet:////vagrant/files/etc/icinga2/grafana-dashboard-icinga2.json",
 }
 ->
+file { 'grafana-dashboard-graphite-base-metrics':
+  name => '/etc/icinga2/graphite-base-metrics.json',
+  owner => root,
+  group => root,
+  mode => '0644',
+  source => "puppet:////vagrant/files/etc/icinga2/graphite-base-metrics.json",
+}->
+file { 'grafana-dashboard-graphite-icinga2-default':
+  name => '/etc/icinga2/graphite-icinga2-default.json',
+  owner => root,
+  group => root,
+  mode => '0644',
+  source => "puppet:////vagrant/files/etc/icinga2/graphite-icinga2-default.json",
+}
+->
 exec { 'finish-grafana-setup':
   path => '/bin:/usr/bin:/sbin:/usr/sbin',
   command => "/usr/local/bin/grafana-setup",
   require => [ Class['graphite'], Class['grafana::service'] ],
   notify => Class['apache::service']
+}
+
+####################################
+# Icinga Web 2 Grafana Module
+####################################
+
+icingaweb2::module { 'grafana':
+  builtin => false,
+  repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-grafana'
+}->
+file { '/etc/icingaweb2/modules/grafana':
+  ensure => directory,
+  recurse => true,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  source    => "puppet:////vagrant/files/etc/icingaweb2/modules/grafana",
+  require => [ Package['icingaweb2'], File['/etc/icingaweb2/modules'] ]
 }
 
 ####################################
