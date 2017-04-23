@@ -234,30 +234,6 @@ file { '/etc/icinga2/demo':
 }
 
 ####################################
-# PNP
-####################################
-
-include pnp4nagios
-
-icinga2::feature { 'perfdata': }
-
-icingaweb2::module { 'pnp':
-  builtin => false
-}
-
-# override the default httpd config w/o basic auth
-
-file { 'pnp4nagios_httpd_config':
-  name => '/etc/httpd/conf.d/pnp4nagios.conf',
-  owner => root,
-  group => root,
-  mode => '0644',
-  content => template('pnp4nagios/pnp4nagios.conf.erb'),
-  require => Class['apache'],
-  notify => Class['apache::service'],
-}
-
-####################################
 # BP
 ####################################
 
