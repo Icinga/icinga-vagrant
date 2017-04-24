@@ -8,8 +8,8 @@ class selinux::restorecond (
   $config_file_group = $selinux::params::restorecond_config_file_group,
 ) inherits selinux::params {
 
-  include selinux
+  include ::selinux
   Class['selinux'] ->
-  class{'selinux::restorecond::config':} ~>
-  class{'selinux::restorecond::service':}
+  class{'::selinux::restorecond::config':} ~>
+  class{'::selinux::restorecond::service':}
 }

@@ -19,6 +19,7 @@
 #   - $context: A particular network port context, like "syslogd_port_t"
 #   - $protocol: Either tcp or udp. If unset, omits -p flag from semanage.
 #   - $port: An network port number, like '8514'
+#   - $argument: An argument for semanage port. Default: "-a"
 #
 # Actions:
 #  Runs "semanage port" with options to persistently set the file context
@@ -39,21 +40,27 @@ define selinux::port (
   $context,
   $port,
   $protocol = undef,
+  $argument = '-a',
 ) {
 
-  include selinux
+  include ::selinux
 
   if $protocol {
     validate_re($protocol, ['^tcp6?$', '^udp6?$'])
-    $protocol_switch="-p ${protocol} "
+    $protocol_switch = ['-p', $protocol]
+    $protocol_check = "${protocol} "
+    $port_exec_command = "add_${context}_${port}_${protocol}"
   } else {
-    $protocol_switch=''
+    $protocol_switch = []
+    $protocol_check = '' # lint:ignore:empty_string_assignment variable is used to create regexp and undef is not possible
+    $port_exec_command = "add_${context}_${port}"
   }
 
-  exec { "add_${context}_${port}":
-    command => "semanage port -a -t ${context} ${protocol_switch}${port}",
-    unless  => "semanage port -l|grep \"^${context}.*${protocol}.*${port}\"|grep -w ${port}",
+  exec { $port_exec_command:
+    command => shellquote('semanage', 'port', $argument, '-t', $context, $protocol_switch, "${port}"), # lint:ignore:only_variable_string port can be number and we need to force it to be string for shellquote
+    # This works because there seems to be more than one space after protocol and before first port
+    unless  => sprintf('semanage port -l | grep -E %s', shellquote("^${context}  *${protocol_check}.* ${port}(\$|,)")),
     path    => '/bin:/sbin:/usr/bin:/usr/sbin',
-    require => Class['selinux::package']
+    require => Class['selinux::package'],
   }
 }

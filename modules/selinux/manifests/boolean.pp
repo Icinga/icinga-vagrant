@@ -11,9 +11,10 @@
 #
 # Parameters:
 #   - $ensure: (on|off) - Sets the current state of a particular SELinux boolean
+#   - $persistent: (true|false) - Should a particular SELinux boolean persist across reboots
 #
 # Actions:
-#  Runs "setsebool" to set boolean state
+#  Wraps selboolean to set states
 #
 # Requires:
 #  - SELinux
@@ -21,31 +22,34 @@
 # Sample Usage:
 #
 #  selinux::boolean{ 'named_write_master_zones':
-#     ensure => "on",
+#     ensure     => "on",
+#     persistent => true,
 #  }
 #
-
 define selinux::boolean (
-  $ensure = true
+  $ensure     = 'on',
+  $persistent = true,
 ) {
 
-  include selinux
+  include ::selinux
 
-  Exec {
-    path => '/bin:/sbin:/usr/bin:/usr/sbin',
+  $ensure_real = $ensure ? {
+    true    => 'true', # lint:ignore:quoted_booleans
+    false   => 'false', # lint:ignore:quoted_booleans
+    default => $ensure,
   }
 
-  case $ensure {
-    on, true: {
-      exec { "setsebool -P '${name}' true":
-        unless => "getsebool '${name}' | awk '{ print \$3 }' | grep on",
-      }
-    }
-    off, false: {
-      exec { "setsebool -P '${name}' false":
-        unless => "getsebool '${name}' | awk '{ print \$3 }' | grep off",
-      }
-    }
-    default: { err ( "Unknown or undefined boolean state ${ensure}" ) }
+  validate_re($ensure_real, ['^on$', '^true$', '^present$', '^off$', '^false$', '^absent$'], 'Valid ensures must be one of on, true, present, off, false, or absent')
+  validate_bool($persistent)
+
+  $value = $ensure_real ? {
+    /(?i-mx:on|true|present)/  => 'on',
+    /(?i-mx:off|false|absent)/ => 'off',
+    default                    => undef,
+  }
+
+  selboolean { $name:
+    value      => $value,
+    persistent => $persistent,
   }
 }

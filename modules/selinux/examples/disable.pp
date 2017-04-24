@@ -11,7 +11,7 @@
 # Sample Usage:
 #
 
-class { 'selinux':
+class { '::selinux':
   mode => 'disabled',
 }
 
@@ -19,4 +19,3 @@ class { 'selinux':
 # class { 'selinux':
 #   mode => 'permissive',
 # }
-

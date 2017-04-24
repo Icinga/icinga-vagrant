@@ -11,6 +11,6 @@
 # Sample Usage:
 #
 
-class { 'selinux':
-  mode => 'enforcing',
+class { '::selinux':
+  type => 'targeted',
 }
