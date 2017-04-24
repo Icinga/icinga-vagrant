@@ -1,126 +1,79 @@
-# Definition: selinux::module
+# Defined type: selinux::module
 #
-# Description
-#  This class will either install or uninstall a SELinux module from a running system.
-#  This module allows an admin to keep .te files in text form in a repository, while
-#  allowing the system to compile and manage SELinux modules.
+# This class will either install or uninstall a SELinux module from a running system.
+# This module allows an admin to keep .te files in text form in a repository, while
+# allowing the system to compile and manage SELinux modules.
 #
-#  Concepts incorporated from:
-#  http://stuckinadoloop.wordpress.com/2011/06/15/puppet-managed-deployment-of-selinux-modules/
+# Concepts incorporated from:
+# http://stuckinadoloop.wordpress.com/2011/06/15/puppet-managed-deployment-of-selinux-modules/
+# 
+# @example compile and load the apache module
+#   selinux::module{ 'apache':
+#     ensure => 'present',
+#     source => 'puppet:///modules/selinux/apache.te',
+#   }
 #
-# Parameters:
-#   - $ensure: (present|absent) - sets the state for a module
-#   - $selinux::params::sx_mod_dir: The directory compiled modules will live on a system (default: /usr/share/selinux)
-#   - $mode: Allows an admin to set the SELinux status. (default: enforcing)
-#   - $source: the source file (either a puppet URI or local file) of the SELinux .te module
-#
-# Actions:
-#  Compiles a module using 'checkmodule' and 'semodule_package'.
-#
-# Requires:
-#  - SELinux
-#
-# Sample Usage:
-#  selinux::module{ 'apache':
-#    ensure => 'present',
-#    source => 'puppet:///modules/selinux/apache.te',
-#  }
-#
+# @param ensure present or absent
+# @param sx_mod_dir path where source is stored and the module built. 
+#   Valid values: absolute path
+# @param source the source file (either a puppet URI or local file) of the SELinux .te file
+# @param content content of the source .te file
+# @param makefile absolute path to the selinux-devel Makefile
+# @param prefix (DEPRECATED) the prefix to add to the loaded module. Defaults to ''.
+#   Does not work with CentOS >= 7.2 and Fedora >= 24 SELinux tools.
+# @param syncversion selmodule syncversion param
 define selinux::module(
-  $source,
-  $ensure         = 'present',
-  $use_makefile   = false,
-  $makefile       = '/usr/share/selinux/devel/Makefile',
+  $source       = undef,
+  $content      = undef,
+  $ensure       = 'present',
+  $makefile     = '/usr/share/selinux/devel/Makefile',
+  $prefix       = '',
+  $sx_mod_dir   = '/usr/share/selinux',
+  $syncversion  = undef,
 ) {
 
-  include selinux
+  include ::selinux
 
-  if $::selinux_config_policy in ['targeted','strict']
-  {
-    $selinux_policy = $::selinux_config_policy
+  validate_re($ensure, [ '^present$', '^absent$' ], '$ensure must be "present" or "absent"')
+  if $ensure == 'present' and $source == undef and $content == undef {
+    fail("You must provide 'source' or 'content' field for selinux module")
   }
-  elsif $::selinux_custom_policy
-  {
-    $selinux_policy = $::selinux_custom_policy
+  if $source != undef {
+    validate_string($source)
   }
-
-  # Set Resource Defaults
-  File {
-    owner => 'root',
-    group => 'root',
-    mode  => '0644',
+  if $content != undef {
+    validate_string($content)
   }
-
-  # Only allow refresh in the event that the initial .te file is updated.
-  Exec {
-    path         => '/sbin:/usr/sbin:/bin:/usr/bin',
-    refreshonly  => true,
-    cwd          => $selinux::params::sx_mod_dir,
-  }
-
-  exec { "${name}-checkloaded":
-    refreshonly => false,
-    creates     => "/etc/selinux/${selinux_policy}/modules/active/modules/${name}.pp",
-
-    command     => 'true', # lint:ignore:quoted_booleans
-    notify      => Exec["${name}-buildmod"],
+  validate_string($prefix)
+  validate_absolute_path($sx_mod_dir)
+  validate_absolute_path($makefile)
+  if $syncversion != undef {
+    validate_bool($syncversion)
   }
 
   ## Begin Configuration
-  file { "${::selinux::params::sx_mod_dir}/${name}.te":
-    ensure => $ensure,
-    source => $source,
-    tag    => "selinux-module-${name}",
+  file { "${sx_mod_dir}/${prefix}${name}.te":
+    ensure  => $ensure,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    source  => $source,
+    content => $content,
   }
-  if !$use_makefile {
-    file { "${::selinux::params::sx_mod_dir}/${name}.mod":
-      tag   => ["selinux-module-build-${name}", "selinux-module-${name}"],
-    }
+  ~>
+  exec { "${sx_mod_dir}/${prefix}${name}.pp":
+  # Only allow refresh in the event that the initial .te file is updated.
+    command     => shellquote('make', '-f', $makefile, "${prefix}${name}.pp"),
+    path        => '/bin:/sbin:/usr/bin:/usr/sbin',
+    refreshonly => true,
+    cwd         => $sx_mod_dir,
   }
-  file { "${::selinux::params::sx_mod_dir}/${name}.pp":
-    tag   => ["selinux-module-build-${name}", "selinux-module-${name}"],
-  }
-
-  # Specific executables based on present or absent.
-  case $ensure {
-    present: {
-      if $use_makefile {
-        exec { "${name}-buildmod":
-          command => 'true', # lint:ignore:quoted_booleans
-        }
-        exec { "${name}-buildpp":
-          command => "make -f ${makefile} ${name}.pp",
-        }
-      } else {
-        exec { "${name}-buildmod":
-          command => "checkmodule -M -m -o ${name}.mod ${name}.te",
-        }
-        exec { "${name}-buildpp":
-          command => "semodule_package -m ${name}.mod -o ${name}.pp",
-        }
-      }
-      exec { "${name}-install":
-        command => "semodule -i ${name}.pp",
-      }
-
-      # Set dependency ordering
-      File["${::selinux::params::sx_mod_dir}/${name}.te"]
-      ~> Exec["${name}-buildmod"]
-      ~> Exec["${name}-buildpp"]
-      ~> Exec["${name}-install"]
-      -> File<| tag == "selinux-module-build-${name}" |>
-    }
-    absent: {
-      exec { "${name}-remove":
-        command => "semodule -r ${name}.pp > /dev/null 2>&1",
-      }
-
-      # Set dependency ordering
-      Exec["${name}-remove"]
-      -> File<| tag == "selinux-module-${name}" |>
-    }
-    default: {
-      fail("Invalid status for SELinux Module: ${ensure}")
-    }
+  ->
+  selmodule { $name:
+    # Load the module if it has changed or was not loaded
+    # Warning: change the .te version!
+    ensure        => $ensure,
+    selmodulepath => "${sx_mod_dir}/${prefix}${name}.pp",
+    syncversion   => $syncversion,
   }
 }
