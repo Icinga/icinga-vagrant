@@ -28,7 +28,7 @@ to learn how to install and configure Icinga.
 ### Icinga Web 2
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_dashboard.png" alt="Icinga Web 2 Dashboard" height="300">
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_grafana_module_graphite.png" alt="Icinga Web 2 Detail View with Grafana" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x-influxdb/vagrant_icinga2_icingaweb2_grafana_module_influxdb.png" alt="Icinga Web 2 Detail View with Grafana" height="300">
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_businessprocess.png" alt="Icinga Web 2 Business Process" height="300">
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_director.png" alt="Icinga Web 2 Director" height="300">
 
