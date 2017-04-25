@@ -15,26 +15,28 @@ else
   Vagrant.require_version ">= " + VAGRANT_REQUIRED_VERSION
 end
 
-# inspired by https://github.com/lbetz/vagrant-icinga-book/blob/master/Vagrantfile
 nodes = { 'icinga2-elastic' => {
-            :box 	=> 'centos/7',
-            :mac	=> '020027000110',
-	    :net	=> 'icinga2-elastic.demo.local',
-            :hostonly   => '192.168.33.7',
-            :memory	=> '2048',
-	    :cpu	=> '2',
-            :fowarded	=> {
-              '443'  => '8443',
-              '80'   => '8082',
-              '22'   => '2082',
-            }
+          :box_virtualbox => 'bento/centos-7.3',
+          :box_parallels  => 'parallels/centos-7.3',
+          :box_libvirt 	=> 'centos/7',
+          :net	=> 'demo.local',
+          :hostonly   => '192.168.33.7',
+          :memory	=> '2048',
+          :cpu	=> '2',
+          :mac	=> '020027000900',
+          :fowarded	=> {
+            '443'  => '8443',
+            '80'   => '8082',
+            '22'   => '2082',
+            '8003' => '8082'
           }
+        }
 }
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   nodes.each_pair do |name, options|
     config.vm.define name do |node_config|
-      node_config.vm.box = options[:box]
+      node_config.vm.box = options[:box_virtualbox]
       node_config.vm.hostname = name
       node_config.vm.box_url = options[:url] if options[:url]
       if options[:forwarded]
@@ -47,7 +49,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # provider: parallels
       node_config.vm.provider :parallels do |p, override|
-        override.vm.box = "parallels/centos-7.2"
+        override.vm.box = options[:box_parallels]
         override.vm.boot_timeout = 600
 
         p.name = "Icinga 2: #{name.to_s}"
@@ -63,11 +65,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # provider: virtualbox
       node_config.vm.provider :virtualbox do |vb, override|
-        unless Vagrant.has_plugin?("vagrant-vbguest")
-          raise 'vagrant-vbguest is not installed! Run "vagrant plugin install vagrant-vbguest"'
-        end
-        node_config.vbguest.auto_update = true
-        node_config.vm.synced_folder '.', '/vagrant', :type => 'virtualbox' # avoid rsync
         vb.linked_clone = true if Gem::Version.new(Vagrant::VERSION) >= Gem::Version.new(VAGRANT_REQUIRED_LINKED_CLONE_VERSION)
         vb.name = name
         vb.gui = options[:gui] if options[:gui]
@@ -78,10 +75,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           "--audio", "none",
           "--usb", "on",
           "--usbehci", "off",
-          "--natdnshostresolver1", "on",
-          #"--nic2", "intnet",
-          #"--intnet2", options[:net],
-          #"--macaddress2". options[:mac]
+          "--natdnshostresolver1", "on"
         ]
         vb.memory = options[:memory] if options[:memory]
         vb.cpus = options[:cpus] if options[:cpus]
@@ -89,6 +83,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # provider: libvirt
       node_config.vm.provider :libvirt do |lv, override|
+        override.vm.box = options[:box_libvirt]
         lv.memory = options[:memory] if options[:memory]
         lv.cpus = options[:cpus] if options[:cpus]
       end

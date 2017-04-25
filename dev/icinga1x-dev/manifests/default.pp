@@ -2,6 +2,10 @@ include epel
 include icinga_rpm
 include monitoring_plugins
 
+class { 'selinux':
+  mode => 'disabled'
+}
+
 ####################################
 # Database
 ####################################

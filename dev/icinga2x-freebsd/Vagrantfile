@@ -19,10 +19,10 @@ end
 nodes = { 'icinga2-freebsd' => {
             :box 	=> 'freebsd/FreeBSD-11.0-STABLE',
             :mac	=> '080027D14C66',
-	    :net	=> 'icinga2-freebsd.demo.local',
+	          :net	=> 'dev.local',
             :hostonly   => '192.168.33.9',
             :memory	=> '2048',
-	    :cpu	=> '2',
+	          :cpu	=> '2',
             :fowarded	=> {
               '443'  => '8443',
               '80'   => '8082',

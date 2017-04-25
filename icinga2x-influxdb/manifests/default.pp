@@ -6,6 +6,10 @@ include icingaweb2
 include icingaweb2_internal_db_mysql
 include monitoring_plugins
 
+class { 'selinux':
+  mode => 'disabled'
+}
+
 ####################################
 # Database
 ####################################

@@ -8,6 +8,10 @@ include epel
 $graylog_version = "1.2"
 $elasticsearch_version = ""
 
+class { 'selinux':
+  mode => 'disabled'
+}
+
 # basic stuff
 # fix puppet warning.
 # https://ask.puppetlabs.com/question/6640/warning-the-package-types-allow_virtual-parameter-will-be-changing-its-default-value-from-false-to-true-in-a-future-release/

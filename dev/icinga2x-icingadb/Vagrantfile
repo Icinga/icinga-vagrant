@@ -1,0 +1,93 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+VAGRANT_REQUIRED_VERSION = "1.6.5"
+
+# Require 1.6.5 at least
+if ! defined? Vagrant.require_version
+  if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new(VAGRANT_REQUIRED_VERSION)
+    puts "Vagrant >= " + VAGRANT_REQUIRED_VERSION + " required. Your version is " + Vagrant::VERSION
+    exit 1
+  end
+else
+  Vagrant.require_version ">= " + VAGRANT_REQUIRED_VERSION
+end
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  servers = { 'icinga2' => '192.168.33.199'
+            }
+  http_port = { 'icinga2' => 8082
+              }
+  ssh_port = { 'icinga2' => 2082
+             }
+  redis_port = { 'icinga2' => 6082
+             }
+
+  servers.each do |server_name, server_ip|
+    config.vm.define server_name do |app_config|
+
+      # network config
+      app_config.vm.hostname = "#{server_name.to_s}"
+      #app_config.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
+      app_config.vm.network :forwarded_port, guest: 22, host: ssh_port[server_name], auto_correct: true
+      app_config.vm.network :forwarded_port, guest: 80, host: http_port[server_name], auto_correct: true
+      app_config.vm.network :forwarded_port, guest: 6379, host: redis_port[server_name], auto_correct: true
+      app_config.vm.network :private_network, ip: "#{server_ip}"
+
+      app_config.vm.provision :shell, :path => "manifests/puppet.sh"
+
+      # workaround for Vagrant >1.8.4-1.9.1 not bringing up eth1 properly
+      # https://github.com/mitchellh/vagrant/issues/8096
+      app_config.vm.provision "shell", inline: "service network restart", run: "always"
+
+      # parallels
+      app_config.vm.provider :parallels do |p, override|
+        override.vm.box = "parallels/centos-7.2"
+
+        p.name = "Icinga 2: #{server_name.to_s}"
+
+        # Update Parallels Tools automatically
+        p.update_guest_tools = false
+
+        override.vm.boot_timeout = 600
+
+        # Set power consumption mode to "Better Performance"
+        p.customize ["set", :id, "--longer-battery-life", "off"]
+
+        p.memory = 2048
+        p.cpus = 2
+      end
+
+      # virtualbox
+      app_config.vm.provider :virtualbox do |v, override|
+        override.vm.box = "centos-71-x64-vbox"
+        override.vm.box_url = "http://boxes.icinga.com/centos-71-x64-vbox.box"
+
+        v.customize ["modifyvm", :id, "--memory", "2048"]
+        v.customize ["modifyvm", :id, "--cpus", "2"]
+        # Using the host's resolver as a DNS proxy in NAT mode
+        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      end
+
+      app_config.vm.provider :libvirt do |l, override|
+        override.vm.box = "centos/7"
+
+        l.memory = 2048
+        l.cpus = 2
+      end
+
+      # provisioner
+      app_config.vm.provision :puppet do |puppet|
+        puppet.module_path = "../../modules"
+        puppet.manifests_path = "manifests"
+        puppet.hiera_config_path = "hiera.yaml"
+        #puppet.options = "--verbose --debug --parser=future"
+        puppet.options = "--parser=future"
+      end
+      app_config.vm.provision :shell, :path => "manifests/finalize.sh"
+    end
+  end
+end
+
