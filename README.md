@@ -8,7 +8,7 @@
 4. [Providers](#providers)
 5. [Run](#run)
 6. [Boxes](#boxes)
-7. [Misc](#misc)
+7. [Development](#development)
 
 
 ## About
@@ -76,8 +76,8 @@ The required resources are automatically configured during the
 Example on Fedora (needs RPMFusion repository for VirtualBox):
 
 ```
-dnf install vagrant
-dnf install virtualbox
+sudo dnf install vagrant
+sudo dnf install virtualbox
 vagrant plugin install virtualbox
 ```
 
@@ -86,13 +86,13 @@ Fedora uses libvirt by default. More details on VirtualBox can be found [here](h
 Example on Ubuntu:
 
 ```
-apt-get install vagrant
-apt-get install virtualbox
+$ sudo apt-get install vagrant
+$ sudo apt-get install virtualbox
 ```
 
 ### Windows
 
-In addition the listed requirements you'll need:
+Windows requires VirtualBox as provider. You'll also need:
 
 * [Git package](https://git-for-windows.github.io/) which also includes SSH
 * [Ruby for Windows](https://rubyinstaller.org/) (add Ruby executables to PATH)
@@ -101,29 +101,24 @@ Install the Git package and set `autocrlf` to `false` (either in the setup
 dialog or using the cmd shell):
 
 ```
-git config --global core.autocrlf false
+C:\Users\michi> git.exe config --global core.autocrlf false
 ```
 
 Then clone this repository:
 
 ```
-git clone https://github.com/Icinga/icinga-vagrant
+C:\Users\michi> git.exe clone https://github.com/Icinga/icinga-vagrant
 ```
 
 ## Providers
 
 Choose one of the providers below. VirtualBox can be used nearly everwhere. If
-if you have a Parallels Pro license on macOS, or prefer to use libvirt, that's possible
+you have a Parallels Pro license on macOS, or prefer to use libvirt, that's possible
 too.
 
 ### Virtualbox Provider
 
-If Virtualbox is installed, this will be enabled by default. The Vagrant boxes use the
-official CentOS base boxes and require you to have the `vagrant-vbguest` plugin installed:
-
-```
-vagrant plugin install vagrant-vbguest
-```
+If Virtualbox is installed, this will be enabled by default.
 
 ### Parallels Provider
 
@@ -190,7 +185,7 @@ directory.
 Start all VMs:
 
 ```
-vagrant up
+$ vagrant up
 ```
 
 Depending on the provider you have chosen above, you might want to set
@@ -203,7 +198,7 @@ $ vagrant up --provider=virtualbox
 SSH into the box as local `vagrant` user (**Tip**: Use `sudo -i` to become `root`):
 
 ```
-vagrant ssh
+$ vagrant ssh
 ```
 
 > **Note**
@@ -214,19 +209,19 @@ vagrant ssh
 Stop all VMs:
 
 ```
-vagrant halt
+$ vagrant halt
 ```
 
 Update packages/reset configuration for all VMs:
 
 ```
-vagrant provision
+$ vagrant provision
 ```
 
 Destroy the VM (add `-f` to avoid the safety question)
 
 ```
-vagrant destroy
+$ vagrant destroy
 ```
 
 
@@ -411,7 +406,21 @@ Note: Requires an update to Graylog 2 and Elasticsearch 5 in [#44](https://githu
 
 
 
-## Misc
+## Development
+
+### Base Boxes
+
+Provider        | Base Box
+----------------|----------------
+VirtualBox      | [Bento](https://atlas.hashicorp.com/bento/).
+Parallels       | [Parallels](https://atlas.hashicorp.com/parallels/)
+libvirt         | [libvirt](https://atlas.hashicorp.com/centos/)
+
+Pull updates.
+
+```
+vagrant box update
+```
 
 ### Puppet Module Overview
 
@@ -430,7 +439,7 @@ General:
   puppetlabs-vcsrepo	| modules/vcsrepo		| https://github.com/puppetlabs/puppetlabs-vcsrepo.git
   puppet-module-epel	| modules/epel			| https://github.com/stahnma/puppet-module-epel.git
   puppet-php		| modules/php			| https://github.com/thias/puppet-php.git
-  puppet-selinux	| modules/selinux		| https://github.com/jfryman/puppet-selinux.git
+  puppet-selinux	| modules/selinux		| https://github.com/voxpupuli/puppet-selinux.git (branch `puppet3`)
   puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
   puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
   puppet-wget           | modules/wget                  | https://github.com/maestrodev/puppet-wget.git
