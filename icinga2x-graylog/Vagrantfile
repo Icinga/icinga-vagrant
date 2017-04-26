@@ -22,7 +22,7 @@ nodes = { 'icinga2-graylog' => {
           :net  => 'demo.local',
           :hostonly   => '192.168.33.6',
           :memory => '2048',
-          :cpu  => '2',
+          :cpus  => '2',
           :mac  => '020027000600',
           :fowarded => {
             '443'  => '8443',

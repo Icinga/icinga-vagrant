@@ -23,7 +23,7 @@ nodes = { 'icinga2a' => {
   	        :net	=> 'cluster.local',
             :hostonly   => '192.168.33.10',
             :memory	=> '1024',
-  	        :cpu	=> '2',
+            :cpus	=> '2',
             :fowarded	=> {
               '443'  => '8445',
               '80'   => '8085',
@@ -38,7 +38,7 @@ nodes = { 'icinga2a' => {
 	          :net	=> 'cluster.local',
             :hostonly   => '192.168.33.20',
             :memory	=> '1024',
-	          :cpu	=> '2',
+	          :cpus	=> '2',
             :fowarded	=> {
               '443'  => '8446',
               '80'   => '8086',

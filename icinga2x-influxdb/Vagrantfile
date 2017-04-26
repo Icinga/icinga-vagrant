@@ -22,7 +22,7 @@ nodes = { 'icinga2-influxdb' => {
           :net	=> 'demo.local',
           :hostonly   => '192.168.33.8',
           :memory	=> '2048',
-          :cpu	=> '2',
+          :cpus	=> '2',
           :mac	=> '020027000199',
           :fowarded	=> {
             '443'  => '8443',
