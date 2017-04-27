@@ -92,23 +92,29 @@ $ sudo apt-get install virtualbox
 
 ### Windows
 
-Windows requires VirtualBox as provider. You'll also need:
+Windows requires VirtualBox as provider. You'll also need the [Git package](https://git-for-windows.github.io/) which includes SSH.
 
-* [Git package](https://git-for-windows.github.io/) which also includes SSH
-* [Ruby for Windows](https://rubyinstaller.org/) (add Ruby executables to PATH)
+Install the Git package and set `autocrlf` to `false`.
 
-Install the Git package and set `autocrlf` to `false` (either in the setup
-dialog or using the cmd shell):
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/images/basics/git_windows_clrf_false.png" alt="Windows Git CRLF" height="300">
+
+You can also set the options on the command line afterwards:
 
 ```
 C:\Users\michi> git.exe config --global core.autocrlf false
 ```
 
+Set the Windows command line as default:
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/images/basics/git_windows_default_shell_cmd.png" alt="Windows Git Command Line" height="300">
+
 Then clone this repository:
 
 ```
-C:\Users\michi> git.exe clone https://github.com/Icinga/icinga-vagrant
+C:\Users\michi\Documents> git.exe clone https://github.com/Icinga/icinga-vagrant
 ```
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/images/basics/vagrant_windows_icinga_git_clone.png" alt="Windows Git Clone" height="300">
 
 ## Providers
 
@@ -182,11 +188,19 @@ directory.
 
 ### Vagrant Commands
 
+#### Start
+
 Start all VMs:
+
+Linux:
 
 ```
 $ vagrant up
 ```
+
+Windows:
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/images/basics/vagrant_windows_icinga_list_up" alt="Windows Vagrant Up" height="300">
 
 Depending on the provider you have chosen above, you might want to set
 it explicitely:
@@ -194,6 +208,8 @@ it explicitely:
 ```
 $ vagrant up --provider=virtualbox
 ```
+
+#### SSH
 
 SSH into the box as local `vagrant` user (**Tip**: Use `sudo -i` to become `root`):
 
@@ -206,17 +222,23 @@ $ vagrant ssh
 > Multi-VM boxes require the hostname for `vagrant ssh` like so: `vagrant ssh icinga2b`.
 > That works in a similar fashion for other sub commands.
 
+#### Stop
+
 Stop all VMs:
 
 ```
 $ vagrant halt
 ```
 
+#### Update/Soft Reset
+
 Update packages/reset configuration for all VMs:
 
 ```
 $ vagrant provision
 ```
+
+#### Destroy
 
 Destroy the VM (add `-f` to avoid the safety question)
 
@@ -421,6 +443,16 @@ Pull updates.
 ```
 vagrant box update
 ```
+
+### Tools
+
+#### InfluxDB
+
+Current version via HTTP API:
+```
+curl -sl -I 192.168.33.8:8086/ping
+```
+
 
 ### Puppet Module Overview
 
