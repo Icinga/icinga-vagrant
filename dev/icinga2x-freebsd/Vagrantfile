@@ -69,10 +69,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # provider: virtualbox
       node_config.vm.provider :virtualbox do |vb, override|
-        #unless Vagrant.has_plugin?("vagrant-vbguest")
-        #  raise 'vagrant-vbguest is not installed! Run "vagrant plugin install vagrant-vbguest"'
+        #if Vagrant.has_plugin?("vagrant-vbguest")
+        #  node_config.vbguest.auto_update = false
         #end
-        #node_config.vbguest.auto_update = true
         #vb.linked_clone = true if Gem::Version.new(Vagrant::VERSION) >= Gem::Version.new(VAGRANT_REQUIRED_LINKED_CLONE_VERSION)
         vb.name = name
         vb.gui = options[:gui] if options[:gui]
