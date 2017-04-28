@@ -200,7 +200,7 @@ $ vagrant up
 
 Windows:
 
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/images/basics/vagrant_windows_icinga_list_up" alt="Windows Vagrant Up" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/images/basics/vagrant_windows_icinga_list_up.png" alt="Windows Vagrant Up" height="300">
 
 Depending on the provider you have chosen above, you might want to set
 it explicitely:
