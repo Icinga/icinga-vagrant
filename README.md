@@ -59,6 +59,8 @@ on GitHub and/or create a PR.
 
 * [Vagrant](https://www.vagrantup.com) >= 1.8.x
 
+Note: If you are on Windows, 1.9.4 is [broken](https://github.com/mitchellh/vagrant/issues/8520).
+
 One of these virtualization providers:
 
 * [Virtualbox](https://www.virtualbox.org/) >= 5.x
