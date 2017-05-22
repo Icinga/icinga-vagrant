@@ -491,8 +491,6 @@ Specific projects:
   puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
   puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git
   puppet-kibana		| modules/kibana		| https://github.com/elastic/puppet-kibana.git
-  puppet-kibana4        | modules/kibana4               | https://github.com/lesaux/puppet-kibana4.git
-  puppet-kibana5	| modules/kibana5		| https://github.com/Nextdoor/puppet-kibana5
   puppet-filebeat       | modules/filebeat		| https://github.com/pcfens/puppet-filebeat.git
   puppetlabs-mongodb	| modules/mongodb		| https://github.com/puppetlabs/puppetlabs-mongodb.git
   golja-influxdb        | modules/influxdb              | https://github.com/n1tr0g/golja-influxdb.git including a [PR for 1.0.0 support](https://github.com/n1tr0g/golja-influxdb/pull/47)
