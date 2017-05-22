@@ -487,7 +487,7 @@ Specific projects:
 
   Name     		| Path				| Url
   ----------------------|-------------------------------|-------------------------------
-  graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
+  puppet-graylog	| modules/graylog		| https://github.com/Graylog2/puppet-graylog.git
   puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
   puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git
   puppet-kibana		| modules/kibana		| https://github.com/elastic/puppet-kibana.git
@@ -498,6 +498,7 @@ Specific projects:
   golja-influxdb        | modules/influxdb              | https://github.com/n1tr0g/golja-influxdb.git including a [PR for 1.0.0 support](https://github.com/n1tr0g/golja-influxdb/pull/47)
   puppet-graphite	| modules/graphite		| Patched for systemd usage from https://github.com/echocat/puppet-graphite.git
   puppet-grafana	| modules/grafana		| https://github.com/bfraser/puppet-grafana.git
+  graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
 
 
 #### Puppet Module Git Subtree
