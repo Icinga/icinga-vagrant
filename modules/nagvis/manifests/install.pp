@@ -16,6 +16,7 @@ class nagvis::install {
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     command => "/bin/tar -xzf /tmp/nagvis-${nagvis_version}.tar.gz",
     cwd => "/tmp",
+    unless => "test -d /tmp/nagvis-${nagvis_version}",
     require => Wget::Fetch['nagvis']
   }
 

@@ -325,16 +325,11 @@ file { 'nagvis-core-functions-index.php':
   path    => '/usr/local/nagvis/share/server/core/functions/index.php',
   source  => 'puppet:////vagrant/files/usr/local/nagvis/share/server/core/functions/index.php',
   mode    => '644',
-  require => Class['nagvis']
+  owner   => 'apache',
+  group   => 'apache',
+  require => Class['nagvis::config']
 }
 
-file { 'nagvis-map-icinga2':
-  ensure  => 'present',
-  path    => '/usr/local/nagvis/etc/maps/icinga2.cfg',
-  source  => 'puppet:////vagrant/files/usr/local/nagvis/etc/maps/icinga2.cfg',
-  mode    => '644',
-  require => Class['nagvis']
-}
 ####################################
 # Director
 ####################################
@@ -553,34 +548,6 @@ class { 'graphite':
     }
   ],
 }
-
-# icingaweb2 module
-icingaweb2::module { 'graphite':
-  builtin => false
-}
-
-# ship box specific graphite module config
-file {'/etc/icingaweb2/modules/graphite':
-  ensure => directory,
-  owner  => root,
-  group  => icingaweb2,
-  mode => '2770',
-  require => [ Package['icingaweb2'], File['/etc/icingaweb2/modules'] ]
-} ->
-file { '/etc/icingaweb2/modules/graphite/templates':
-  ensure => link,
-  force => true,
-  target => '/usr/share/icingaweb2/modules/graphite/sample-config/icinga2/templates'
-} ->
-file { '/etc/icingaweb2/modules/graphite/config.ini':
-  ensure => file,
-  owner => root,
-  group => icingaweb2,
-  mode => '2770',
-  source => 'puppet:////vagrant/files/etc/icingaweb2/modules/graphite/config.ini', #TODO use hiera and templates
-  require => File['/etc/icingaweb2/modules/graphite']
-}
-
 
 ####################################
 # Grafana
