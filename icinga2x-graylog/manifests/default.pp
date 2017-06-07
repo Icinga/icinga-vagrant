@@ -5,9 +5,6 @@
 
 include epel
 
-$graylog_version = "1.2"
-$elasticsearch_version = ""
-
 class { 'selinux':
   mode => 'disabled'
 }
@@ -55,20 +52,22 @@ file { '/etc/security/limits.d/99-elasticsearch.conf':
   content => "elasticsearch soft nofile 64000\nelasticsearch hard nofile 64000\n",
 } ->
 class { 'java':
+  version => 'latest',
+  distribution => 'jdk'
 } ->
 class { 'elasticsearch':
-  version      => '1.7.3-1',
   manage_repo  => true,
-  repo_version => '1.7',
+  repo_version => '5.x',
   java_install => false,
+  jvm_options => [
+    '-Xms256m',
+    '-Xmx256m'
+  ],
 } ->
 elasticsearch::instance { 'graylog-es':
   config => {
     'cluster.name' => 'graylog',
     'network.host' => '127.0.0.1'
-  },
-  init_defaults => {
-    'ES_HEAP_SIZE' => '256m',
   },
 }
 
@@ -80,38 +79,47 @@ class { '::mongodb::server': }
 
 
 # Graylog
-class { 'graylog2::repo':
-  version => $graylog_version,
+class { 'graylog::repository':
+  version => '2.3'
+}->
+class { 'graylog::server':
+  package_version => '2.3.0-3.alpha.3',
+  config                       => {
+    'password_secret'          => '0CDCipdUvE3cSPN8OXARpAKU6bO9N41DuVNEMD95KyPgI3oGExLJiiZdy57mwpbqrvXqta5C2yaARe2tLPpmTfos47QOoBDP',
+    'root_password_sha2'       => '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+    'rest_listen_uri'          => "http://${::ipaddress}:9000/api/",
+    'web_listen_uri'           => "http://${::ipaddress}:9000/",
+    'web_endpoint_uri'         => "http://localhost:9000/api/",
+    'versionchecks'            => false,
+    'usage_statistics_enabled' => false,
+  },
+  require => Class['::java'],
 } ->
-class { 'graylog2::server':
-  service_enable	     => true,
-  service_ensure	     => true,
-  rest_enable_cors           => true,
-  rest_listen_uri            => "http://${::ipaddress}:12900/",
-  rest_transport_uri         => "http://${::ipaddress}:12900/",
-  elasticsearch_discovery_zen_ping_multicast_enabled => false,
-  elasticsearch_discovery_zen_ping_unicast_hosts     => '127.0.0.1:9300',
-  elasticsearch_network_host => '127.0.0.1',
-  password_secret            => '3eb06615884fec5ae541b8661b430e8da89ed5fddf81c4bdc6a2a714abb9b51d',
-  root_password_sha2         => '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
-  elasticsearch_cluster_name => 'graylog',
-  java_opts                  => '-Xms256m -Xmx512m -XX:NewRatio=1 -XX:PermSize=128m -XX:MaxPermSize=256m -server -XX:+ResizeTLAB -XX:+UseConcMarkSweepGC -XX:+CMSConcurrentMTEnabled -XX:+CMSClassUnloadingEnabled -XX:+UseParNewGC -XX:-OmitStackTraceInFastThrow',
-  require                    => [
-    Elasticsearch::Instance['graylog-es'],
-    Class['mongodb::server'],
-    Class['graylog2::repo'],
-  ],
+exec { 'download-check-graylog2-stream':
+  command => '/usr/bin/wget -O /var/tmp/check-graylog2-stream.tar.gz https://github.com/graylog-labs/check-graylog2-stream/releases/download/1.4/check-graylog2-stream.linux_x86.tar.gz',
+  creates => '/var/tmp/check-graylog2-stream.tar.gz',
 } ->
-class { 'graylog2::web':
-  application_secret => '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
-  graylog2_server_uris => [ "http://${::ipaddress}:12900/" ],
-  require            => Class['graylog2::server'],
-  timeout            => '60s',
+exec { 'extract-check-graylog2-stream':
+  command => '/usr/bin/tar -C /usr/lib64/nagios/plugins -xzf /var/tmp/check-graylog2-stream.tar.gz',
+  creates => '/usr/lib64/nagios/plugins/check-graylog2-stream',
 } ->
-# check-graylog2-stream
-package { 'check-graylog2-stream':
-  ensure => '1.2-1',
-  require => Class['graylog2::server']
+file { '/usr/lib64/nagios/plugins/check-graylog2-stream':
+  ensure  => present,
+  owner   => 'root',
+  group   => 'root',
+  mode    => '0555',
+} ->
+file { '/usr/lib/nagios':
+  ensure  => directory,
+  owner   => 'root',
+  group   => 'root',
+  mode    => '0555',
+} ->
+file { '/usr/lib/nagios/plugins':
+  ensure  => directory,
+  owner   => 'root',
+  group   => 'root',
+  mode    => '0555',
 } ->
 file { '/usr/lib/nagios/plugins/check-graylog2-stream-wrapper':
   ensure  => present,
@@ -159,11 +167,12 @@ file { '/etc/icinga2/conf.d/demo.conf':
   notify    => Service['icinga2']
 } ->
 icinga2::feature { 'gelf':
-} ->
-file { '/usr/lib/nagios/plugins/check-graylog-stream':
-  ensure => symlink,
-  target => '/usr/lib64/nagios/plugins/check-graylog2-stream',
-  force => true,
-  replace => true,
-  require => [ Package['check-graylog2-stream'], Class['monitoring_plugins'] ]
-}
+}# ->
+#file { '/usr/lib64/nagios/plugins/check-graylog-stream':
+#  ensure => symlink,
+#  target => '/usr/lib/nagios/plugins/check-graylog2-stream',
+#  force => true,
+#  replace => true,
+#  #require => [ Package['check-graylog2-stream'], Class['monitoring_plugins'] ]
+#  require => [ Class['monitoring_plugins'] ]
+#}

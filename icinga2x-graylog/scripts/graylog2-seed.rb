@@ -34,7 +34,7 @@ class HTTPClient < Struct.new(:url)
   end
 
   def host_alive?
-    !!Net::HTTP.get(uri)
+    !!Net::HTTP.get(URI.join(uri, 'system'))
   rescue
     false
   end
@@ -57,41 +57,46 @@ class HTTPClient < Struct.new(:url)
 end
 
 class Graylog2Server < Struct.new(:client)
+  def get_node_id
+    res = client.get('/api/system')
+
+    res.data['node_id']
+  end
+
   def has_input?(type)
-    response = client.get('/system/inputs')
+    response = client.get('/api/system/inputs')
 
     input = response.data['inputs'].find do |i|
-      i['message_input']['type'][type]
+      i['type'][type]
     end
 
     !input.nil?
   end
 
-  def has_stream?(title)
-    !!get_stream(title)
+  def has_stream_alert?(title)
+    !!get_stream_alert(title)
   end
 
   def add_input(data)
-    client.post('/system/inputs', data)
-  end
-
-  def add_stream(data)
-    response = client.post('/streams', data)
-    stream_id = response.data['stream_id']
-
-    client.post("/streams/#{stream_id}/resume")
+    client.post('/api/system/inputs', data)
   end
 
   def add_stream_alert(title, data)
     stream_id = get_stream(title)['id']
 
-    client.post("/streams/#{stream_id}/alerts/conditions", data)
+    client.post("/api/streams/#{stream_id}/alerts/conditions", data)
   end
 
   def get_stream(title)
-    response = client.get('/streams')
+    response = client.get('/api/streams')
 
     response.data['streams'].find {|i| i['title'][title] }
+  end
+
+  def get_stream_alert(title)
+    response = client.get('/api/alerts/conditions')
+
+    response.data['conditions'].find {|i| i['title'][title] }
   end
 
   def wait_until_alive(interval, additional_interval, limit = 600)
@@ -116,13 +121,15 @@ end
 ## MAIN
 
 ipaddress = Facter.fact(:ipaddress).value
-client = HTTPClient.new("http://admin:admin@#{ipaddress}:12900/")
+client = HTTPClient.new("http://admin:admin@#{ipaddress}:9000/api/")
 server = Graylog2Server.new(client)
 
 # Wait until the Graylog2 server is reachable.
 server.wait_until_alive(2, 6) do |seconds|
   puts "Waiting for server to startup. (elapsed: #{seconds}s)"
 end
+
+node_id = server.get_node_id
 
 if server.has_input?('org.graylog2.inputs.gelf.tcp.GELFTCPInput')
   puts '==> GELFTCPInput exists'
@@ -134,7 +141,8 @@ else
       port: 12201,
       bind_address: '0.0.0.0'
     },
-    type: 'org.graylog2.inputs.gelf.tcp.GELFTCPInput'
+    type: 'org.graylog2.inputs.gelf.tcp.GELFTCPInput',
+    node: node_id
   })
 
   puts '==> Added GELFTCPInput'
@@ -150,30 +158,19 @@ else
       port: 12201,
       bind_address: '0.0.0.0'
     },
-    type: 'org.graylog2.inputs.gelf.udp.GELFUDPInput'
+    type: 'org.graylog2.inputs.gelf.udp.GELFUDPInput',
+    node: node_id
   })
 
   puts '==> Added GELFUDPInput'
 end
 
-if server.has_stream?('Catch all')
-  puts '==> Stream "Catch all" exists'
+if server.has_stream_alert?('Message count alert')
+  puts '==> Stream alert exists'
 else
-  server.add_stream({
-    title: 'Catch all',
-    description: 'All messages',
-    rules: [
-      {
-        field: 'message',
-        value: '.*',
-        type: 2,
-        inverted: false
-      }
-    ]
-  })
-
-  server.add_stream_alert('Catch all', {
+  server.add_stream_alert('All messages', {
     type: 'message_count',
+    title: 'Message count alert',
     parameters: {
       grace: 10,
       time: 5,
@@ -183,5 +180,5 @@ else
     }
   })
 
-  puts '==> Added stream "Catch all"'
+  puts '==> Added stream alert for "All messages"'
 end
