@@ -21,7 +21,11 @@ if [ ! -e /var/initial_update ]; then
         apt-get dist-upgrade -y
         date > /var/initial_update
     elif [ "$OSTYPE" = "RedHat" ]; then
-        yum update -y
+# Disable initial update to prevent the kernel update bug
+# https://bugs.centos.org/view.php?id=13453
+# https://bugzilla.redhat.com/show_bug.cgi?id=1463241
+#
+#        yum update -y
         date > /var/initial_update
     fi
 fi
