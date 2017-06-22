@@ -24,7 +24,7 @@ nodes = { 'icinga2a' => {
             :hostonly   => '192.168.33.101',
             :memory	=> '1024',
             :cpus	=> '1',
-            :fowarded	=> {
+            :forwarded	=> {
               '443'  => '8445',
               '80'   => '8085',
               '22'   => '2085'
@@ -39,7 +39,7 @@ nodes = { 'icinga2a' => {
             :hostonly   => '192.168.33.102',
             :memory	=> '1024',
             :cpus	=> '1',
-            :fowarded	=> {
+            :forwarded	=> {
               '443'  => '8446',
               '80'   => '8086',
               '22'   => '2086'
@@ -54,7 +54,7 @@ nodes = { 'icinga2a' => {
             :hostonly   => '192.168.33.103',
             :memory	=> '1024',
             :cpus	=> '1',
-            :fowarded	=> {
+            :forwarded	=> {
               '443'  => '8447',
               '80'   => '8087',
               '22'   => '2087'

@@ -23,7 +23,7 @@ nodes = { 'icinga2-freebsd' => {
             :hostonly   => '192.168.33.9',
             :memory	=> '2048',
 	          :cpus	=> '2',
-            :fowarded	=> {
+            :forwarded	=> {
               '443'  => '8443',
               '80'   => '8082',
               '22'   => '2082'
