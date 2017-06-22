@@ -1,27 +1,15 @@
-# == Class: elasticsearch::repo
-#
 # This class exists to install and manage yum and apt repositories
-# that contain elasticsearch official elasticsearch packages
-#
-#
-# === Parameters
-#
-# This class does not provide any parameters.
-#
-#
-# === Examples
-#
-# This class may be imported by other classes to use its functionality:
-#   class { 'elasticsearch::repo': }
+# that contain elasticsearch official elasticsearch packages.
 #
 # It is not intended to be used directly by external resources like node
 # definitions or other modules.
 #
+# @example importing this class to be used by other classes to use its functionality:
+#   class { 'elasticsearch::repo': }
 #
-# === Authors
-#
-# * Phil Fenstermacher <mailto:phillip.fenstermacher@gmail.com>
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# @author Richard Pijnenburg <richard.pijnenburg@elasticsearch.com>
+# @author Phil Fenstermacher <phillip.fenstermacher@gmail.com>
+# @author Tyler Langlois <tyler.langlois@elastic.co>
 #
 class elasticsearch::repo {
 
@@ -31,29 +19,33 @@ class elasticsearch::repo {
   }
 
   if $elasticsearch::ensure == 'present' {
-    if versioncmp($elasticsearch::repo_version, '5.0') >= 0 {
-      $_repo_url = 'https://artifacts.elastic.co/packages'
-      case $::osfamily {
-        'Debian': {
-          $_repo_path = 'apt'
-        }
-        default: {
-          $_repo_path = 'yum'
-        }
-      }
+    if $::elasticsearch::repo_baseurl != undef {
+      $_baseurl = $::elasticsearch::repo_baseurl
     } else {
-      $_repo_url = 'http://packages.elastic.co/elasticsearch'
-      case $::osfamily {
-        'Debian': {
-          $_repo_path = 'debian'
+      if versioncmp($elasticsearch::repo_version, '5.0') >= 0 {
+        $_repo_url = 'https://artifacts.elastic.co/packages'
+        case $::osfamily {
+          'Debian': {
+            $_repo_path = 'apt'
+          }
+          default: {
+            $_repo_path = 'yum'
+          }
         }
-        default: {
-          $_repo_path = 'centos'
+      } else {
+        $_repo_url = 'http://packages.elastic.co/elasticsearch'
+        case $::osfamily {
+          'Debian': {
+            $_repo_path = 'debian'
+          }
+          default: {
+            $_repo_path = 'centos'
+          }
         }
       }
-    }
 
-    $_baseurl = "${_repo_url}/${elasticsearch::repo_version}/${_repo_path}"
+      $_baseurl = "${_repo_url}/${elasticsearch::repo_version}/${_repo_path}"
+    }
   } else {
     case $::osfamily {
       'Debian': {
@@ -102,8 +94,8 @@ class elasticsearch::repo {
         enabled  => 1,
         proxy    => $::elasticsearch::repo_proxy,
         priority => $elasticsearch::repo_priority,
-      } ~>
-      exec { 'elasticsearch_yumrepo_yum_clean':
+      }
+      ~> exec { 'elasticsearch_yumrepo_yum_clean':
         command     => 'yum clean metadata expire-cache --disablerepo="*" --enablerepo="elasticsearch"',
         refreshonly => true,
         returns     => [0, 1],
@@ -132,8 +124,8 @@ class elasticsearch::repo {
         gpgcheck    => 1,
         gpgkey      => $::elasticsearch::repo_key_source,
         type        => 'yum',
-      } ~>
-      exec { 'elasticsearch_zypper_refresh_elasticsearch':
+      }
+      ~> exec { 'elasticsearch_zypper_refresh_elasticsearch':
         command     => 'zypper refresh elasticsearch',
         refreshonly => true,
       }

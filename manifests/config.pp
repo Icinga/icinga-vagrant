@@ -1,26 +1,14 @@
-# == Class: elasticsearch::config
-#
 # This class exists to coordinate all configuration related actions,
 # functionality and logical units in a central place.
-#
-#
-# === Parameters
-#
-# This class does not provide any parameters.
-#
-#
-# === Examples
-#
-# This class may be imported by other classes to use its functionality:
-#   class { 'elasticsearch::config': }
 #
 # It is not intended to be used directly by external resources like node
 # definitions or other modules.
 #
+# @example importing this class into other classes to use its functionality:
+#   class { 'elasticsearch::config': }
 #
-# === Authors
-#
-# * Richard Pijnenburg <mailto:richard.pijnenburg@elasticsearch.com>
+# @author Richard Pijnenburg <richard.pijnenburg@elasticsearch.com>
+# @author Tyler Langlois <tyler.langlois@elastic.co>
 #
 class elasticsearch::config {
 
@@ -126,6 +114,29 @@ class elasticsearch::config {
       content => template("${module_name}/etc/elasticsearch/jvm.options.erb"),
       owner   => $elasticsearch::elasticsearch_user,
       group   => $elasticsearch::elasticsearch_group,
+    }
+
+    if $::elasticsearch::security_plugin != undef and ($::elasticsearch::security_plugin in ['shield', 'x-pack']) {
+      file { "/etc/elasticsearch/${::elasticsearch::security_plugin}" :
+        ensure => 'directory',
+      }
+    }
+
+    # Define logging config file for the in-use security plugin
+    if $::elasticsearch::security_logging_content != undef or $::elasticsearch::security_logging_source != undef {
+      if $::elasticsearch::security_plugin == undef or ! ($::elasticsearch::security_plugin in ['shield', 'x-pack']) {
+        fail("\"${::elasticsearch::security_plugin}\" is not a valid security_plugin parameter value")
+      }
+
+      $_security_logging_file = $::elasticsearch::security_plugin ? {
+        'shield' => 'logging.yml',
+        default => 'log4j2.properties'
+      }
+
+      file { "/etc/elasticsearch/${::elasticsearch::security_plugin}/${_security_logging_file}" :
+        content => $::elasticsearch::security_logging_content,
+        source  => $::elasticsearch::security_logging_source,
+      }
     }
 
   } elsif ( $elasticsearch::ensure == 'absent' ) {

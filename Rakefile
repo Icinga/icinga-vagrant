@@ -1,4 +1,5 @@
 # rubocop:disable Style/FileName
+require 'digest/sha1'
 require 'rubygems'
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet_blacksmith/rake_tasks'
@@ -6,7 +7,8 @@ require 'net/http'
 require 'uri'
 require 'fileutils'
 require 'rspec/core/rake_task'
-require 'puppet-doc-lint/rake_task'
+require 'puppet-strings'
+require 'puppet-strings/tasks'
 require 'yaml'
 require 'json'
 
@@ -34,7 +36,6 @@ PuppetSyntax.future_parser = true if ENV['FUTURE_PARSER'] == 'true'
   80chars
   class_inherits_from_params_class
   class_parameter_defaults
-  documentation
   single_quote_string_with_variable
 ).each do |check|
   PuppetLint.configuration.send("disable_#{check}")
@@ -59,16 +60,6 @@ task :spec_prune do
 end
 task :spec_prep => [:spec_prune]
 
-desc 'Run documentation tests'
-task :spec_docs do
-  results = PuppetDocLint::Runner.new.run(
-    FileList['**/*.pp'].exclude(*exclude_paths)
-  )
-
-  results.each(&:result_report)
-  abort 'Issues found' if results.map(&:percent_documented).any? { |n| n < 100 }
-end
-
 RSpec::Core::RakeTask.new(:spec_verbose) do |t|
   t.pattern = 'spec/{classes,defines,unit,functions,templates}/**/*_spec.rb'
   t.rspec_opts = [
@@ -88,11 +79,20 @@ task :spec_unit => :spec_prep
 
 task :beaker => [:spec_prep, 'artifacts:prep']
 
+desc 'Run all linting/unit tests.'
+task :intake => %i[
+  metadata_lint
+  syntax
+  lint
+  validate
+  spec_unit
+]
+
 desc 'Run integration tests'
 RSpec::Core::RakeTask.new('beaker:integration') do |c|
   c.pattern = 'spec/integration/integration*.rb'
 end
-task 'beaker:integration' => [:spec_prep, 'artifacts:prep']
+task 'beaker:integration' => [:spec_prep, 'artifacts:snapshot:fetch']
 
 desc 'Run acceptance tests'
 RSpec::Core::RakeTask.new('beaker:acceptance') do |c|
@@ -100,56 +100,54 @@ RSpec::Core::RakeTask.new('beaker:acceptance') do |c|
 end
 task 'beaker:acceptance' => [:spec_prep, 'artifacts:prep']
 
-if !ENV['BEAKER_IS_PE'].nil? and ENV['BEAKER_IS_PE'] == 'true'
-  task :beaker => 'artifacts:pe'
-  task 'beaker:integration' => 'artifacts:pe'
-  task 'beaker:acceptance' => 'artifacts:pe'
-end
-
-# rubocop:disable Metrics/BlockLength
 namespace :artifacts do
   desc 'Fetch artifacts for tests'
   task :prep do
     dl_base = 'https://download.elastic.co/elasticsearch/elasticsearch'
     fetch_archives(
       'https://github.com/lmenezes/elasticsearch-kopf/archive/v2.1.1.zip' => \
-        'elasticsearch-kopf.zip',
+      'elasticsearch-kopf.zip',
       "#{dl_base}/elasticsearch-2.3.5.deb" => 'elasticsearch-2.3.5.deb',
       "#{dl_base}/elasticsearch-2.3.5.rpm" => 'elasticsearch-2.3.5.rpm'
     )
   end
 
-  desc 'Retrieve PE archives'
-  task :pe do
-    if !ENV['BEAKER_set'].nil?
-      case ENV['BEAKER_set']
-      when /centos-(?<release>\d)/
-        distro = 'el'
-        version = Regexp.last_match(:release)
-        arch = 'x86_64'
-      when /(?<distro>debian)-(?<release>\d)/
-        distro = Regexp.last_match(:distro)
-        version = Regexp.last_match(:release)
-        arch = 'amd64'
-      when /(?<distro>sles)-(?<release>\d+)/
-        distro = Regexp.last_match(:distro)
-        version = Regexp.last_match(:release)
-        arch = 'x86_64'
-      when /(?<distro>ubuntu)-server-(?<release>12|14)/
-        distro = Regexp.last_match(:distro)
-        version = "#{Regexp.last_match(:release)}.04"
-        arch = 'amd64'
-      else
-        puts "Could not find PE version for #{ENV['BEAKER_set']}"
-        return
+  namespace :snapshot do
+    snapshots = 'https://snapshots.elastic.co/downloads/elasticsearch'
+    artifacts = 'spec/fixtures/artifacts'
+    build = 'elasticsearch-6.0.0-alpha2-SNAPSHOT'
+    %w[deb rpm].each do |ext|
+      package = "#{build}.#{ext}"
+      local = "#{artifacts}/#{package}"
+      checksum = "#{artifacts}/#{package}.sha1"
+      link = "#{artifacts}/elasticsearch-snapshot.#{ext}"
+
+      task :fetch => link
+
+      desc "Symlink #{ext} latest snapshot build."
+      file link => local do
+        unless File.exist?(link) and File.symlink?(link) \
+              and File.readlink(link) == package
+          File.delete link if File.exist? link
+          File.symlink package, link
+        end
       end
-      pe_ver = ENV['BEAKER_PE_VER']
-      file = "puppet-enterprise-#{pe_ver}-#{distro}-#{version}-#{arch}.tar.gz"
-      fetch_archives(
-        "https://s3.amazonaws.com/pe-builds/released/#{pe_ver}/#{file}" => file
-      )
-    else
-      puts 'No nodeset set, skipping PE artifact retrieval'
+
+      desc "Retrieve #{ext} snapshot build."
+      file local => checksum do
+        if File.exist?(local) and \
+           Digest::SHA1.hexdigest(File.read(local)) == File.read(checksum)
+          puts "Artifact #{package} already fetched and up-to-date"
+        else
+          fetch_archives "#{snapshots}/#{package}" => package
+        end
+      end
+
+      desc "Retrieve #{ext} checksums."
+      task checksum do
+        File.delete checksum if File.exist? checksum
+        fetch_archives "#{snapshots}/#{package}.sha1" => "#{package}.sha1"
+      end
     end
   end
 
@@ -160,8 +158,8 @@ namespace :artifacts do
 end
 
 def fetch_archives(archives)
-  archives.each do |url, fp|
-    fp.replace "spec/fixtures/artifacts/#{fp}"
+  archives.each do |url, orig_fp|
+    fp = "spec/fixtures/artifacts/#{orig_fp}"
     if File.exist? fp
       if fp.end_with? 'tar.gz' and !system("tar -tzf #{fp} &>/dev/null")
         puts "Archive #{fp} corrupt, re-fetching..."

@@ -64,11 +64,14 @@ RSpec.configure do |c|
 end
 
 files_dir = ENV['files_dir'] || './spec/fixtures/artifacts'
+RSpec.configuration.test_settings['files_dir'] = files_dir
 
 hosts.each do |host|
   # Fix the Puppet type
   host[:type] = ENV['PUPPET_INSTALL_TYPE'].dup
   host[:type] = 'aio' if host[:type] == 'agent'
+
+  configure_defaults_on hosts, 'foss' unless ENV['PUPPET_INSTALL_TYPE'] == 'agent'
 
   # Install Puppet
   #
@@ -86,16 +89,16 @@ hosts.each do |host|
     on host, 'gem install ruby-augeas --no-ri --no-rdoc'
   end
 
-  package_name = case fact('osfamily')
-                 when 'Debian'
-                   'elasticsearch-2.3.5.deb'
-                 else
-                   'elasticsearch-2.3.5.rpm'
-                 end
+  ext = case fact('osfamily')
+        when 'Debian'
+          'deb'
+        else
+          'rpm'
+        end
 
   snapshot_package = {
-      :src => "#{files_dir}/#{package_name}",
-      :dst => "/tmp/#{package_name}"
+    :src => "#{files_dir}/elasticsearch-2.3.5.#{ext}",
+    :dst => "/tmp/elasticsearch-2.3.5.#{ext}"
   }
 
   scp_to host,
@@ -107,6 +110,12 @@ hosts.each do |host|
 
   RSpec.configuration.test_settings['snapshot_package'] = \
     "file:#{snapshot_package[:dst]}"
+
+  test_settings['integration_package'] = {
+    :src => "#{files_dir}/elasticsearch-snapshot.#{ext}",
+    :dst => "/tmp/elasticsearch-snapshot.#{ext}",
+    :file => "file:/tmp/elasticsearch-snapshot.#{ext}"
+  }
 
   Infrataster::Server.define(:docker) do |server|
     server.address = host[:ip]
@@ -136,12 +145,12 @@ RSpec.configure do |c|
       modules = %w(archive stdlib java datacat java_ks)
 
       dist_module = {
-        'Debian' => 'apt',
-        'Suse'   => 'zypprepo',
-        'RedHat' => 'yum'
+        'Debian' => ['apt'],
+        'Suse'   => ['zypprepo'],
+        'RedHat' => ['yum', 'concat']
       }[fact('osfamily')]
 
-      modules << dist_module unless dist_module.nil?
+      modules += dist_module unless dist_module.nil?
 
       modules.each do |mod|
         copy_module_to host,

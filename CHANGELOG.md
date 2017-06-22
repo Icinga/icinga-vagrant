@@ -6,6 +6,58 @@
 
 #### Fixes
 
+## 5.3.1 (June 14, 2017)
+
+### Summary
+Minor release to fix bugs related to the `elasticsearch_keystore` type and generated docs.
+
+#### Features
+* Moved documentation to Yard for doc auto-generation for all classes/types/etc.
+
+#### Fixes
+* Fixed dependency order bug with the `elasticsearch_keystore` type and augeas defaults resource.
+
+## 5.3.0 (June 5, 2017)
+
+### Summary
+Minor bugfix release with added support for managing Elasticsearch keystores, custom repository URLs, and more.
+
+#### Features
+* Failures are no longer raised when no instances are defined for a plugin and service restarts are not requested.
+* The `datadir` for instances can now be shared among multiple instances by using the `datadir_instance_directories` parameter.
+* `repo_baseurl` is now exposed as a top-level parameter for users who wish to control custom repositories.
+* `elasticsearch-keystore` values can now be managed via native Puppet resources.
+
+#### Fixes
+* log4j template now properly respects deprecation logging settings.
+
+## 5.2.0 (May 5, 2017)
+
+### Summary
+Release supporting several new features and bugfixes for 5.4.0 users and users who need the ability to update plugins.
+
+#### Features
+* Support for Shield/X-Pack logging configuration file added.
+* The `elasticsearch::script` type now supports recursively managing directories of scripts.
+* All module defined types can now be managed as top-level hash parameters to the `elasticsearch` class (primarily for hiera and PE)
+
+#### Fixes
+* Fixed a bug that prevented plugins from being updated properly.
+* Fixed deprecated `default.path` options introduced in Elasticsearch 5.4.0.
+
+## 5.1.1 (April 13, 2017)
+
+### Summary
+
+#### Features
+* Instance configs now have highest precedence when constructing the final yaml
+    config file.
+
+#### Fixes
+This is a hotfix release to support users affected by [an upstream Elasticsearch issue](https://github.com/elastic/elasticsearch/issues/6887).
+See the [associated issue](https://github.com/elastic/puppet-elasticsearch/issues/802#issuecomment-293295930) for details regarding the workaround.
+The change implemented in this release is to place the `elasticsearch::instance` `config` parameter at the highest precedence when merging the final config yaml which permits users manually override `path.data` values.
+
 ## 5.1.0 (February 28, 2017)
 
 ### Summary
