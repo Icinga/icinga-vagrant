@@ -1,4 +1,4 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', '..', '..'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', '..'))
 
 require 'puppet_x/elastic/deep_to_i'
 require 'puppet_x/elastic/deep_implode'
@@ -10,10 +10,7 @@ Puppet::Type.newtype(:elasticsearch_index) do
 
   desc 'Manages Elasticsearch index settings.'
 
-  ensurable do
-    defaultvalues
-    defaultto :present
-  end
+  ensurable
 
   newparam(:name, :namevar => true) do
     desc 'Index name.'

@@ -1,4 +1,4 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', '..', '..'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', '..'))
 
 require 'puppet/file_serving/content'
 require 'puppet/file_serving/metadata'
@@ -13,10 +13,7 @@ Puppet::Type.newtype(:elasticsearch_template) do
 
   desc 'Manages Elasticsearch index templates.'
 
-  ensurable do
-    defaultvalues
-    defaultto :present
-  end
+  ensurable
 
   newparam(:name, :namevar => true) do
     desc 'Template name.'

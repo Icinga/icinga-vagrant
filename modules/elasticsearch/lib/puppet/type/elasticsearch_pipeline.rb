@@ -1,4 +1,4 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', '..', '..'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', '..'))
 
 require 'puppet_x/elastic/deep_to_i'
 require 'puppet_x/elastic/deep_implode'
@@ -9,10 +9,7 @@ Puppet::Type.newtype(:elasticsearch_pipeline) do
 
   desc 'Manages Elasticsearch ingest pipelines.'
 
-  ensurable do
-    defaultvalues
-    defaultto :present
-  end
+  ensurable
 
   newparam(:name, :namevar => true) do
     desc 'Pipeline name.'
