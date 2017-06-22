@@ -24,7 +24,7 @@ nodes = { 'icinga2-graylog' => {
           :memory => '2048',
           :cpus  => '2',
           :mac  => '020027000600',
-          :fowarded => {
+          :forwarded => {
             '443'  => '8443',
             '80'   => '8082',
             '22'   => '2082',

@@ -24,7 +24,7 @@ nodes = { 'icinga2-influxdb' => {
           :memory	=> '2048',
           :cpus	=> '2',
           :mac	=> '020027000199',
-          :fowarded	=> {
+          :forwarded	=> {
             '443'  => '8443',
             '80'   => '8082',
             '22'   => '2082',

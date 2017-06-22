@@ -24,7 +24,7 @@ nodes = { 'icinga2x-awslinux' => {
           :memory	=> '4096',
           :cpus	=> '4',
           :mac	=> '020027001900',
-          :fowarded	=> {
+          :forwarded	=> {
             '443'  => '8443',
             '80'   => '8082',
             '22'   => '2082'
