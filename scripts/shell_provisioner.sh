@@ -53,7 +53,7 @@ elif [ "$OSTYPE" = "Ubuntu" ]; then
         rm -f /tmp/puppetlabs.deb
         apt-get update
     fi
-elif [ "$OSTYPE" = "RedHat" ]; then
+elif [ "$OSTYPE" = "RedHat" ]  || [ "$OSTYPE" = "CentOS" ]; then
     if [ ! -e /etc/yum.repos.d/puppetlabs.repo ]; then
         echo "Installing Puppet 3 release..."
         yum install -y https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
@@ -73,14 +73,14 @@ if [ "$OSTYPE" = "Debian" ]  || [ "$OSTYPE" = "Ubuntu" ]; then
         apt-get update
     fi
 
-elif [ "$OSTYPE" = "RedHat" ]; then
+elif [ "$OSTYPE" = "RedHat" ]  || [ "$OSTYPE" = "CentOS" ]; then
     if ! rpm -q puppet &>/dev/null; then
         echo "Installing puppet..."
         yum install -y puppet
     fi
 fi
 
-if [ "$OSTYPE" = "RedHat" ]; then
+if [ "$OSTYPE" = "RedHat" ]  || [ "$OSTYPE" = "CentOS" ]; then
     if [ `getenforce` = 'Enforcing' ]; then
         echo "Setting selinux to permissive"
         setenforce 0

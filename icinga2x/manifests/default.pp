@@ -375,11 +375,11 @@ exec { 'Icinga Director DB migration':
   require => Package['icingacli'],
 }->
 file { '/etc/icingaweb2/modules/director/kickstart.ini':
-  ensure => file,
-  owner => root,
-  group => icingaweb2,
-  mode => '2770',
-  source => 'puppet:////vagrant/files/etc/icingaweb2/modules/director/kickstart.ini', #TODO use hiera and templates
+  ensure  => file,
+  owner   => root,
+  group   => icingaweb2,
+  mode    => '2770',
+  source  => 'puppet:////vagrant/files/etc/icingaweb2/modules/director/kickstart.ini', #TODO use hiera and templates
   require => File['/etc/icingaweb2/modules/director']
 }->
 exec { 'Icinga Director Kickstart':
