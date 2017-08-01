@@ -402,6 +402,11 @@ icingaweb2::module { 'globe':
   repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-globe'
 }
 
+icingaweb2::module { 'map':
+  builtin => false,
+  repo_url => 'https://github.com/nbuchwitz/icingaweb2-module-map'
+}
+
 ####################################
 # Dashing
 ####################################
