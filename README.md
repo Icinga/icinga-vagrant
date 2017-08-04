@@ -283,7 +283,7 @@ $ vagrant provision
 * 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director), [Grafana](https://github.com/Mikesch-mp/icingaweb2-module-grafana), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts), [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis) modules
+  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director), [Grafana](https://github.com/Mikesch-mp/icingaweb2-module-grafana), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts), [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
 * [NagVis](http://nagvis.org/)
 * [Graphite](https://graphiteapp.org/)
 * [Grafana](https://grafana.com/)
