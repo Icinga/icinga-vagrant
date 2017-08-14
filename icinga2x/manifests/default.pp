@@ -60,6 +60,8 @@ apache::vhost { 'vagrant-demo.icinga.com-ssl':
 include '::php::cli'
 include '::php::mod_php5'
 
+php::module { [ 'mbstring' ]: }
+
 php::ini { '/etc/php.ini':
   display_errors => 'On',
   memory_limit => '256M',
