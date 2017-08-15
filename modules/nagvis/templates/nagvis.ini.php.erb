@@ -10,15 +10,18 @@ logonmodule="LogonIcingaweb2"
 htmlcgi = "/icingaweb2"
 
 [defaults]
+; Select a backend below
 backend="ndomy_1"
+
 urltarget="_top"
 hosturl="[htmlcgi]/monitoring/host/show?host=[host_name]"
 hostgroupurl="[htmlcgi]/monitoring/list/hostgroups?hostgroup_name=[hostgroup_name]"
 serviceurl="[htmlcgi]/monitoring/service/show?host=[host_name]&service=[service_description]"
-servicegroupurl="[htmlcgi]/monitoring/list/servicegroups?servicegroup=[servicegroup_name]"
+servicegroupurl="[htmlcgi]/monitoring/list/servicegroups?servicegroup_name=[servicegroup_name]"
 mapurl="[htmlcgi]/nagvis/show/map?map=[map_name]"
-headermenu="0"
+headermenu=0
 stylesheet="icingaweb-nagvis-integration.css"
+
 
 [backend_ndomy_1]
 backendtype="ndomy"
@@ -30,6 +33,12 @@ dbpass="icinga"
 dbprefix="icinga_"
 dbinstancename="default"
 ;maxtimewithoutupdate=180
+
+[backend_livestatus]
+backendtype="mklivestatus"
+socket="unix:/var/run/icinga2/cmd/livestatus"
+timeout=30
+
 
 [automap]
 [wui]

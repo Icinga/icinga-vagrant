@@ -1,7 +1,7 @@
 
 class nagvis::params (
   $monitoring_type = 'icinga',
-  $nagvis_version = '1.8.5',
+  $nagvis_version = '1.9.2',
   $prefix = '/usr/local/nagvis',
   $http_user = 'apache',
   $http_group = 'apache',

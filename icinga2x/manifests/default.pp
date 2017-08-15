@@ -311,6 +311,8 @@ exec { 'feed-tts-comments-host':
 
 include nagvis
 
+icinga2::feature { 'livestatus': }
+
 icingaweb2::module { 'nagvis':
   builtin => false
 }

@@ -20,6 +20,35 @@ class nagvis::config {
     content => template('nagvis/nagvis.ini.php.erb'),
   }
 
+  file { 'nagvis_geomap_locations':
+    name => '/usr/local/nagvis/etc/geomap/icinga2-locations.csv',
+    owner => apache,
+    group => apache,
+    mode => '0644',
+    content => template('nagvis/geomap/icinga2-locations.csv'),
+  }
+  file { 'nagvis_maps_overview':
+    name => '/usr/local/nagvis/etc/maps/demo-overview.cfg',
+    owner => apache,
+    group => apache,
+    mode => '0644',
+    content => template('nagvis/maps/demo-overview.cfg'),
+  }
+  file { 'nagvis_maps_groups':
+    name => '/usr/local/nagvis/etc/maps/demo-groups.cfg',
+    owner => apache,
+    group => apache,
+    mode => '0644',
+    content => template('nagvis/maps/demo-groups.cfg'),
+  }
+  file { 'nagvis_maps_geomap':
+    name => '/usr/local/nagvis/etc/maps/demo-geomap.cfg',
+    owner => apache,
+    group => apache,
+    mode => '0644',
+    content => template('nagvis/maps/demo-geomap.cfg'),
+  }
+
   # require our own fixed apache config
   file { 'nagvis_httpd_config':
     name => '/etc/httpd/conf.d/nagvis.conf',
