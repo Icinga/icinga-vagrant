@@ -409,6 +409,15 @@ icingaweb2::module { 'globe':
 icingaweb2::module { 'map':
   builtin => false,
   repo_url => 'https://github.com/nbuchwitz/icingaweb2-module-map'
+}->
+file { '/etc/icingaweb2/modules/map':
+  ensure => directory,
+  recurse => true,
+  owner  => root,
+  group  => icingaweb2,
+  mode => '2770',
+  source    => "puppet:////vagrant/files/etc/icingaweb2/modules/map",
+  require => [ Package['icingaweb2'], File['/etc/icingaweb2/modules'] ]
 }
 
 ####################################
