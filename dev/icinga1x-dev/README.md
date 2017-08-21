@@ -50,56 +50,118 @@ http://192.168.33.190/icinga - icingaadmin/icingaadmin
 
 ## Icinga Web 1.x
 
-    ssh -A vagrant@192.168.33.190
-    git clone git@github.com:Icinga/icinga-web.git
-    cd icinga-web
+```
+ssh -A vagrant@192.168.33.190
+git clone git@github.com:Icinga/icinga-web.git
+cd icinga-web
 
-    ./configure
-    sudo make install install-apache-config
+./configure
+sudo make install install-apache-config
+cd ..
 
-    sudo mysql -e "CREATE DATABASE icinga_web;"
-    sudo mysql -e "GRANT ALL ON icinga_web.* TO 'icinga_web'@'localhost' IDENTIFIED BY 'icinga_web';"
-    sudo mysql icinga_web < /home/vagrant/icinga-web/etc/schema/mysql.sql
+sudo mysql -e "CREATE DATABASE icinga_web;"
+sudo mysql -e "GRANT ALL ON icinga_web.* TO 'icinga_web'@'localhost' IDENTIFIED BY 'icinga_web';"
+sudo mysql icinga_web < /home/vagrant/icinga-web/etc/schema/mysql.sql
 
-    sudo systemctl restart httpd
+sudo systemctl restart httpd
+```
 
 http://192.168.33.190/icinga-web - root/password
 
-## Icinga 2 Classic UI Tests
 
-    yum -y install icinga2
-    icinga2 api setup
+### LConf for Icinga Web 1.x
 
-    cat >/etc/icinga2/conf.d/api-users.conf <<EOF
-    object ApiUser "root" {
-      password = "icinga"
-    }
-    EOF
+Passwords used default to `netways`
 
-    icinga2 feature enable statusdata compatlog command
+Backend:
 
-    systemctl restart icinga2
+```
+sudo -i
 
-    yumdownloader icinga2-classicui-config
-    rpm2cpio icinga2-classicui-* | cpio -ivd
-    sudo cp ./etc/icinga/cgi.cfg /usr/local/icinga/etc/cgi-icinga2.cfg
+yum -y install openldap-servers openldap-clients perl-LDAP rsync
 
-    sudo cp /usr/local/icinga/etc/cgi.cfg /usr/local/icinga/etc/cgi-icinga1.cfg
+systemctl start slapd
+cd /etc/openldap/slapd.d/cn=config
 
-    echo >>/usr/local/icinga/etc/cgi.cfg <<EOF
-    standalone_installation=1
-    object_cache_file=/var/cache/icinga2/objects.cache
-    status_file=/var/cache/icinga2/status.dat
-    resource_file=/etc/icinga/resource.cfg
-    command_file=/var/run/icinga2/cmd/icinga2.cmd
-    check_external_commands=1
-    interval_length=60
-    status_update_interval=10
-    log_file=/var/log/icinga2/compat/icinga.log
-    log_rotation_method=h
-    log_archive_path=/var/log/icinga2/compat/archives
-    date_format=us
-    EOF
+sed -e 's/dc=my-domain,dc=com/dc=netways,dc=org/g' olcDatabase\=\{2\}hdb.ldif -i
+sed -e 's/,dc=my-domain,dc=com/,dc=netways,dc=org/g' olcDatabase\=\{1\}monitor.ldif -i
+
+
+slappasswd
+
+New password:
+Re-enter new password:
+{SSHA}HJ+LyxBgqG53FGetFwgTA35MZGQ99VjM
+
+vim olcDatabase\=\{2\}hdb.ldif
+
+olcRootPW: {SSHA}HJ+LyxBgqG53FGetFwgTA35MZGQ99VjM
+
+vim olcDatabase\=\{0\}config.ldif
+
+olcRootPW: {SSHA}HJ+LyxBgqG53FGetFwgTA35MZGQ99VjM
+
+systemctl restart slapd
+
+cat << "EOF" > /tmp/ldap_initialize
+dn: dc=netways,dc=org
+objectClass: dcObject
+objectClass: organization
+dc: netways
+o: netways
+EOF
+
+ldapadd -h 127.0.0.1 -x -D "cn=Manager,dc=netways,dc=org" -W -f /tmp/ldap_initialize
+
+systemctl enable slapd
+
+exit
+```
+
+```
+git clone git@git.netways.org:lconf/lconf.git
+cd lconf
+
+./configure --with-lconf-cli-user=icinga --with-lconf-cli-group=icinga --with-ldap-dn="dc=netways,dc=org" --with-ldap-bind-dn="cn=Manager,dc=netways,dc=org" --with-ldap-bind-password=netways
+make
+sudo make install
+
+sudo ldapadd -Y EXTERNAL -H ldapi:/// -f src/netways.schema.ldif
+sudo ldapadd -h 127.0.0.1 -x -D "cn=Manager,dc=netways,dc=org" -W -f src/base.ldif
+
+cd ..
+```
+
+Cronk:
+
+```
+git clone git@git.netways.org:lconf/icinga-module.git
+cd icinga-module
+./configure
+sudo make install
+sudo mysql icinga_web < etc/sql/lconf_icinga_web_mysql.sq
+sudo mysql icinga_web < etc/sql/credentials.sql
+
+cd ..
+```
+
+Navigate to http://192.168.33.190/icinga-web/ and go to `Admin->Users->select user->Rights->Credentials`.
+
+![LConf Icinga Web Permissions](doc/screenshot/icingaweb1_lconf_user_permissions.png)
+
+Save, logout and login again.
+
+Choose `LConf - Connection Manager`.
+
+- BindDN: `cn=Manager,dc=netways,dc=org`
+- BindPW: `netways`
+- RootDN: `ou=LConf,dc=netways,dc=org`
+
+![Add Connection](doc/screenshot/icingaweb1_lconf_add_connection.png)
+
+Test the connection and save it.
+
+![Tree](doc/screenshot/icingaweb1_lconf_connect_tree.png)
 
 
 # Releases
