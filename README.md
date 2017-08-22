@@ -256,8 +256,9 @@ Documentation for software used inside these boxes.
 
 Project			| URL
 ------------------------|------------------------------
-Icinga 2		| https://docs.icinga.com
-Icinga Web 2		| https://github.com/Icinga/icingaweb2/tree/master/doc
+Icinga 2		| https://www.icinga.com/docs/icinga2/latest/doc/01-about/
+Icinga Web 2		| https://www.icinga.com/docs/icingaweb2/latest/doc/01-About/
+Director 		| https://www.icinga.com/docs/director/latest/doc/01-Introduction/
 NagVis			| https://www.nagvis.org/doc
 Graphite		| https://graphite.readthedocs.io
 InfluxDB		| https://docs.influxdata.com/influxdb/
