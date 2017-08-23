@@ -379,7 +379,7 @@ file { '/etc/icingaweb2/modules/director/kickstart.ini':
   owner   => root,
   group   => icingaweb2,
   mode    => '2770',
-  source  => 'puppet:////vagrant/files/etc/icingaweb2/modules/director/kickstart.ini', #TODO use hiera and templates
+  content => template("icingaweb2/kickstart.ini.erb"),
   require => File['/etc/icingaweb2/modules/director']
 }->
 exec { 'Icinga Director Kickstart':
