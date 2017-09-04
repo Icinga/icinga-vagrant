@@ -256,7 +256,7 @@ class { 'elasticsearch':
 elasticsearch::instance { 'elastic-es':
   config => {
     'cluster.name' => 'elastic',
-    'network.host' => '127.0.0.1'
+    'network.host' => '127.0.0.1,192.168.33.7'
   }
 }->
 class { 'kibana':
