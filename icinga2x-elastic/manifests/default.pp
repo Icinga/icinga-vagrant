@@ -287,10 +287,16 @@ file { "$elasticsearchBasicAuthFile":
 nginx::resource::server { 'elasticsearch.vagrant-demo.icinga.com':
   listen_ip   => '192.168.33.7',
   listen_port => 9200,
+  ssl         => true,
+  ssl_port    => 9200,
+  ssl_cert    => '/etc/icinga2/pki/icinga2-elastic.crt',
+  ssl_key     => '/etc/icinga2/pki/icinga2-elastic.key',
+  ssl_trusted_cert => '/etc/icinga2/pki/ca.crt',
   ipv6_listen_port => 9200,
   proxy       => 'http://localhost:9200',
   auth_basic  => 'Elasticsearch auth',
-  auth_basic_user_file => "$elasticsearchBasicAuthFile"
+  auth_basic_user_file => "$elasticsearchBasicAuthFile",
+  require     => File['/etc/icinga2']
 }->
 class { 'filebeat':
   outputs => {
