@@ -407,6 +407,7 @@ Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-
   Icinga Web 2      | http://192.168.33.7/icingaweb2    | icingaadmin/icinga
   Icinga 2 API      | https://192.168.33.7:5665/v1      | root/icinga
   Kibana            | http://192.168.33.7:5601          | -
+  Elasticsearch/Nginx | https://192.168.33.7:9200	| icinga/icinga
 
 ### <a id="icinga2x-graylog"></a>Icinga 2 and Graylog
 
@@ -491,6 +492,7 @@ Specific projects:
   ----------------------|-------------------------------|-------------------------------
   puppet-graylog	| modules/graylog		| https://github.com/Graylog2/puppet-graylog.git
   puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
+  puppet-nginx  	| modules/nginx			| https://github.com/voxpupuli/puppet-nginx.git (branch `puppet3`)
   puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git
   puppet-kibana		| modules/kibana		| https://github.com/elastic/puppet-kibana.git
   puppet-filebeat       | modules/filebeat		| https://github.com/pcfens/puppet-filebeat.git

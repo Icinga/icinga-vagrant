@@ -229,11 +229,15 @@ $icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
 # keep this in sync with the icingabeat dashboard ids!
 # http://192.168.33.7:5601/app/kibana#/dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426
 $kibanaDefaultAppId = 'dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426'
-
+$elasticsearchBasicAuthFile = '/etc/nginx/elasticsearch.passwd' # defaults to icinga:icinga
 
 class { 'java':
   version => 'latest',
   distribution => 'jdk'
+}
+
+class { 'nginx':
+  confd_purge => true,
 }
 
 file { '/etc/security/limits.d/99-elasticsearch.conf':
@@ -256,7 +260,7 @@ class { 'elasticsearch':
 elasticsearch::instance { 'elastic-es':
   config => {
     'cluster.name' => 'elastic',
-    'network.host' => '127.0.0.1,192.168.33.7'
+    'network.host' => '127.0.0.1'
   }
 }->
 class { 'kibana':
@@ -273,6 +277,26 @@ class { 'kibana':
     'elasticsearch.requestTimeout' => 500000,
   },
   require => Class['java']
+}->
+file { "$elasticsearchBasicAuthFile":
+  owner  => root,
+  group  => root,
+  mode   => '0755',
+  source => "puppet:////vagrant/files/$elasticsearchBasicAuthFile",
+}->
+nginx::resource::server { 'elasticsearch.vagrant-demo.icinga.com':
+  listen_ip   => '192.168.33.7',
+  listen_port => 9200,
+  ssl         => true,
+  ssl_port    => 9200,
+  ssl_cert    => '/etc/icinga2/pki/icinga2-elastic.crt',
+  ssl_key     => '/etc/icinga2/pki/icinga2-elastic.key',
+  ssl_trusted_cert => '/etc/icinga2/pki/ca.crt',
+  ipv6_listen_port => 9200,
+  proxy       => 'http://localhost:9200',
+  auth_basic  => 'Elasticsearch auth',
+  auth_basic_user_file => "$elasticsearchBasicAuthFile",
+  require     => File['/etc/icinga2']
 }->
 class { 'filebeat':
   outputs => {
