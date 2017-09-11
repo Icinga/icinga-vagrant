@@ -229,7 +229,7 @@ $icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
 # keep this in sync with the icingabeat dashboard ids!
 # http://192.168.33.7:5601/app/kibana#/dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426
 $kibanaDefaultAppId = 'dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426'
-
+$elasticsearchBasicAuthFile = '/etc/nginx/elasticsearch.passwd' # defaults to icinga:icinga
 
 class { 'java':
   version => 'latest',
@@ -278,11 +278,19 @@ class { 'kibana':
   },
   require => Class['java']
 }->
+file { "$elasticsearchBasicAuthFile":
+  owner  => root,
+  group  => root,
+  mode   => '0755',
+  source => "puppet:////vagrant/files/$elasticsearchBasicAuthFile",
+}->
 nginx::resource::server { 'elasticsearch.vagrant-demo.icinga.com':
   listen_ip   => '192.168.33.7',
   listen_port => 9200,
   ipv6_listen_port => 9200,
   proxy       => 'http://localhost:9200',
+  auth_basic  => 'Elasticsearch auth',
+  auth_basic_user_file => "$elasticsearchBasicAuthFile"
 }->
 class { 'filebeat':
   outputs => {
