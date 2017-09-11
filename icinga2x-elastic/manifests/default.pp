@@ -236,6 +236,10 @@ class { 'java':
   distribution => 'jdk'
 }
 
+class { 'nginx':
+  confd_purge => true,
+}
+
 file { '/etc/security/limits.d/99-elasticsearch.conf':
   ensure  => present,
   owner   => 'root',
@@ -273,6 +277,12 @@ class { 'kibana':
     'elasticsearch.requestTimeout' => 500000,
   },
   require => Class['java']
+}->
+nginx::resource::server { 'elasticsearch.vagrant-demo.icinga.com':
+  listen_ip   => '192.168.33.7',
+  listen_port => 9200,
+  ipv6_listen_port => 9200,
+  proxy       => 'http://localhost:9200',
 }->
 class { 'filebeat':
   outputs => {
