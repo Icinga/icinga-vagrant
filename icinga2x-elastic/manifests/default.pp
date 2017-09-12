@@ -267,7 +267,7 @@ class { 'kibana':
   ensure => "$kibanaVersion-1",
   config => {
     'server.port'                  => 5601,
-    'server.host'                  => '0.0.0.0',
+    'server.host'                  => '127.0.0.1',
     'kibana.index'                 => '.kibana',
     'kibana.defaultAppId'          => "$kibanaDefaultAppId",
     'logging.silent'               => false,
@@ -295,6 +295,20 @@ nginx::resource::server { 'elasticsearch.vagrant-demo.icinga.com':
   ipv6_listen_port => 9200,
   proxy       => 'http://localhost:9200',
   auth_basic  => 'Elasticsearch auth',
+  auth_basic_user_file => "$elasticsearchBasicAuthFile",
+  require     => File['/etc/icinga2']
+}->
+nginx::resource::server { 'kibana.vagrant-demo.icinga.com':
+  listen_ip   => '192.168.33.7',
+  listen_port => 5601,
+  ssl         => true,
+  ssl_port    => 5601,
+  ssl_cert    => '/etc/icinga2/pki/icinga2-elastic.crt',
+  ssl_key     => '/etc/icinga2/pki/icinga2-elastic.key',
+  ssl_trusted_cert => '/etc/icinga2/pki/ca.crt',
+  ipv6_listen_port => 5601,
+  proxy       => 'http://localhost:5601',
+  auth_basic  => 'Kibana auth',
   auth_basic_user_file => "$elasticsearchBasicAuthFile",
   require     => File['/etc/icinga2']
 }->
