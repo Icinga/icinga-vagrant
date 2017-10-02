@@ -19,4 +19,4 @@ STREAM_ID=$(curl -s -u $USER:$PASS \
   head -1 | \
   sed -re 's/"id" : "(.+)",/\1/')
 
-exec /usr/lib/nagios/plugins/check-graylog2-stream "$@" -stream $STREAM_ID
+exec /usr/lib64/nagios/plugins/check-graylog2-stream "$@" -stream $STREAM_ID
