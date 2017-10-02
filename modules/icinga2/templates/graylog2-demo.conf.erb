@@ -1,12 +1,12 @@
 /*
- * This is our graylog2 & icinga2 OSMC demo.
+ * This is our Graylog & Icinga 2 OSMC demo.
  *
  * Requires:
  *   * 'icinga2 feature enable gelf'
  *   * check-graylog-stream plugin
  */
 
-template Service "graylog2-service" {
+template Service "graylog-service" {
   check_interval = 1s
   retry_interval = 1s
   max_check_attempts = 3
@@ -14,12 +14,13 @@ template Service "graylog2-service" {
   enable_notifications = true
 }
 
-const GraylogApiUrl = "http://<%= @ipaddress %>:12900"
-const GraylogStreamApiUrl = "http://127.0.0.1:12900/streams/"
+const GraylogAddress = "192.168.33.6"
+const GraylogWebUrl = "http://" + GraylogAddress + ":9000"
+const GraylogApiUrl = GraylogWebUrl + "/api"
 const GraylogPluginDir = "/usr/lib/nagios/plugins"
 
 /*
- * 1.) Query graylog2 alert streams
+ * 1.) Query Graylog alert streams
  */
 
 /* generic check command */
@@ -29,7 +30,6 @@ object CheckCommand "graylog2-stream" {
   command = [ GraylogPluginDir + "/check-graylog2-stream-wrapper" ]
 
   arguments = {
-    "-stream" = "$graylog2_stream_id$"
     "-user" = "$graylog2_api_username$"
     "-password" = "$graylog2_api_password$"
     "-url" = "$graylog2_api_url$"
@@ -43,7 +43,7 @@ object CheckCommand "graylog2-stream" {
 
 
 /* a sample host for our demo */
-object Host "graylog2-host" {
+object Host "graylog-host" {
   address = "127.0.0.1"
   check_command = "hostalive"
 
@@ -58,21 +58,21 @@ object Host "graylog2-host" {
 
 
 apply Service "alert-" for (stream => config in host.vars.streams) {
-  import "graylog2-service"
+  import "graylog-service"
 
   check_command = "graylog2-stream"
 
   vars += config
 
-  notes = "Our OSMC " + stream + " graylog2 alert stream checker."
-  notes_url = GraylogStreamApiUrl + stream + "/alerts"
+  notes = "Our " + stream + " Graylog alert stream checker."
+  notes_url = GraylogWebUrl
 
   assign where host.vars.streams
 }
 
 
 /*
- * 2.) Receive graylog2 alert triggers via passive check result
+ * 2.) Receive Graylog alert triggers via passive check result
  */
 
 
@@ -81,8 +81,8 @@ apply Service "alert-" for (stream => config in host.vars.streams) {
  * we can filter on.
  */
 
-apply Service "random-00" for (check in host.vars.random) {
-  import "graylog2-service"
+apply Service "graylog-random-00" for (check in host.vars.random) {
+  import "graylog-service"
 
   check_command = "random"
 
@@ -93,7 +93,7 @@ apply Service "random-00" for (check in host.vars.random) {
  * 4.) Trigger notification events for GelfWriter feature
  */
 
-object User "osmc-graylog2" {
+object User "osmc-graylog" {
   email = "icinga@localhost"
 }
 
@@ -102,9 +102,9 @@ object UserGroup "osmc" {
   assign where match("osmc-*", user.name)
 }
 
-apply Notification "notify-service-graylog2" to Service {
+apply Notification "notify-service-graylog" to Service {
 
-  command = "extended-graylog2-notification"
+  command = "extended-graylog-notification"
 
   //notify more often - only for demo purposes
   interval = 1m
@@ -114,14 +114,14 @@ apply Notification "notify-service-graylog2" to Service {
   //use the groups array defined on the host
   user_groups = host.vars.notification_groups
 
-  assign where host.vars.random
+  assign where host.vars.streams && host.vars.streams.contains("icinga2")
   ignore where host.name == "localhost"
 }
 
-object NotificationCommand "extended-graylog2-notification" {
+object NotificationCommand "extended-graylog-notification" {
   import "plugin-notification-command"
 
-  command = "/bin/echo \"Here comes our fancy graylog2 notification with stream url '$service.notes_url$'\""
+  command = "/bin/echo \"Here comes our fancy graylog notification with stream url '$service.notes_url$'\""
 }
 
 

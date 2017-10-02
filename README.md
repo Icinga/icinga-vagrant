@@ -421,8 +421,6 @@ Run Vagrant:
 $ cd icinga2x-graylog && vagrant up
 ```
 
-Note: Requires an update to Graylog 2 and Elasticsearch 5 in [#44](https://github.com/Icinga/icinga-vagrant/issues/44).
-
 #### Application Interfaces
 
   Application       | Url                             | Credentials

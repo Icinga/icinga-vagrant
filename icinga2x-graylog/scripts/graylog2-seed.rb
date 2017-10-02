@@ -120,7 +120,8 @@ end
 
 ## MAIN
 
-ipaddress = Facter.fact(:ipaddress).value
+#ipaddress = Facter.fact(:ipaddress).value # TODO: Use Hiera
+ipaddress = '192.168.33.6'
 client = HTTPClient.new("http://admin:admin@#{ipaddress}:9000/api/")
 server = Graylog2Server.new(client)
 
