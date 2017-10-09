@@ -119,6 +119,11 @@ C:\Users\michi\Documents> git.exe clone https://github.com/Icinga/icinga-vagrant
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/images/basics/vagrant_windows_icinga_git_clone.png" alt="Windows Git Clone" height="300">
 
+> **Note**
+>
+> If `vagrant up` hangs with Vagrant 2.0.0 on Windows 7, you might need to upgrade your Powershell
+> version. See [this note](https://github.com/hashicorp/vagrant/issues/8783#issuecomment-325411772) for details.
+
 ## Providers
 
 Choose one of the providers below. VirtualBox can be used nearly everwhere. If
