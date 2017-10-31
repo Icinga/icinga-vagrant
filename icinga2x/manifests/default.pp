@@ -424,11 +424,6 @@ file { '/etc/icingaweb2/modules/map':
 # Dashing
 ####################################
 
-# workaround for broken nodejs dependency in EPEL 7
-yum::install { 'http-parser':
-  ensure => present,
-  source => 'https://opensource.enda.eu/packages/http-parser-2.7.1-3.el7.x86_64.rpm'
-}->
 package { [ 'rubygems', 'rubygem-bundler',
             'ruby-devel', 'openssl', 'gcc-c++',
             'make', 'nodejs', 'v8'
