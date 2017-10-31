@@ -15,24 +15,18 @@ else
   Vagrant.require_version ">= " + VAGRANT_REQUIRED_VERSION
 end
 
-nodes = { 'icinga2-graylog' => {
-          :box_virtualbox => 'bento/centos-7.3',
-          :box_parallels  => 'parallels/centos-7.3',
-          :box_libvirt  => 'centos/7',
-          :net  => 'demo.local',
-          :hostonly   => '192.168.33.6',
-          :memory => '2048',
-          :cpus  => '2',
-          :mac  => '020027000600',
-          :forwarded => {
-            '443'  => '8443',
-            '80'   => '8082',
-            '22'   => '2082',
-            '9000' => '9000',
-            '12201' => '12201'
-          }
-        }
-}
+nodes = {}
+if not File.exists?("Vagrantfile.nodes") then
+  puts "ERROR: Vagrantfile.nodes is missing from source tree."
+  exit 1
+end
+
+eval(IO.read("Vagrantfile.nodes"), binding)
+
+# allow to override the configuration
+if File.exists?("Vagrantfile.local") then
+  eval(IO.read("Vagrantfile.local"), binding)
+end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   nodes.each_pair do |name, options|
@@ -43,6 +37,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       if options[:forwarded]
         options[:forwarded].each_pair do |guest, local|
           node_config.vm.network "forwarded_port", guest: guest, host: local
+        end
+      end
+
+      if options[:synced_folders]
+        options[:synced_folders].each_pair do |source, target|
+          node_config.vm.synced_folder source, target
         end
       end
 
