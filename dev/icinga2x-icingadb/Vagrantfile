@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 VAGRANTFILE_API_VERSION = "2"
-VAGRANT_REQUIRED_VERSION = "1.6.5"
+VAGRANT_REQUIRED_VERSION = "1.8.0"
 
 # Require 1.6.5 at least
 if ! defined? Vagrant.require_version

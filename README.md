@@ -3,29 +3,33 @@
 #### Table of Contents
 
 1. [About](#about)
-2. [Support](#support)
-3. [Requirements](#requirements)
-4. [Providers](#providers)
-5. [Run](#run)
-6. [Boxes](#boxes)
-7. [Development](#development)
+2. [License](#license)
+3. [Support](#support)
+4. [Requirements](#requirements)
+5. [Installation](#installation)
+6. [Configuration](#configuration)
+7. [FAQ](#faq)
+8. [Thanks](#thanks)
+9. [Contributing](#contributing)
 
 
-## About
+# About <a id="about"></a>
 
 The Icinga Vagrant boxes allow you to run Icinga 2, Icinga Web 2 and integrations
 (Graphite, InfluxDB, Grafana, Elastic Stack, Graylog) in various scenarios.
 
 A simple `vagrant up` fully installs these VMs and you are ready to explore
-the Icinga ecosystem. You can use these boxes for your own local demos, or
-to learn how to install and configure Icinga.
+the Icinga ecosystem and possible integrations.
 
-* [Icinga 2 Standalone](README.md#icinga2x), [Icinga 2 Cluster](README.md#icinga2x-cluster), [Icinga 2 HA Cluster](README.md#icinga2x-ha-cluster)
-* [Icinga 2 and InfluxDB](README.md#icinga2x-influxdb)
-* [Icinga 2 and Elastic](README.md#icinga2x-elastic)
-* [Icinga 2 and Graylog](README.md#icinga2x-graylog)
+You can use these boxes for your own local demos, or to learn how to use Icinga
+in your environment.
 
-### Icinga Web 2
+* [Icinga 2 Standalone](README.md#boxes-icinga2x), [Icinga 2 Cluster](README.md#boxes-icinga2x-cluster), [Icinga 2 HA Cluster](README.md#boxes-icinga2x-ha-cluster)
+* [Icinga 2 and InfluxDB](README.md#boxes-icinga2x-influxdb)
+* [Icinga 2 and Elastic](README.md#boxes-icinga2x-elastic)
+* [Icinga 2 and Graylog](README.md#boxes-icinga2x-graylog)
+
+## Icinga Web 2 <a id="about-icingaweb2"></a>
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_dashboard.png" alt="Icinga Web 2 Dashboard" height="300">
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x-influxdb/vagrant_icinga2_icingaweb2_grafana_module_influxdb.png" alt="Icinga Web 2 Detail View with Grafana" height="300">
@@ -33,48 +37,58 @@ to learn how to install and configure Icinga.
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_businessprocess.png" alt="Icinga Web 2 Business Process" height="300">
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_director.png" alt="Icinga Web 2 Director" height="300">
 
-### Dashing
+## Dashing <a id="about-dashing"></a>
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_dashing.png" alt="Dashing" height="300">
 
-### Elastic & Icingabeat
+## Elastic & Icingabeat <a id="about-elastic"></a>
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x-elastic/vagrant_icinga2_elastic_kibana_icingabeat.png" alt="Elastic Stack and Icingabeat" height="300">
 
-### Grafana
+## Grafana <a id="about-grafana"></a>
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_grafana.png" alt="Icinga 2 Grafana with Graphite" height="300">
 
-## Support
+# License <a id="license"></a>
 
-Please note that these boxes are built for demos and development tests only. Several
-boxes will run snapshot builds and unstable code to test the latest and the greatest.
+Box specific code is licensed under the terms of the GNU General Public License Version 2, you will find a copy of this license in the LICENSE file included in the source package.
 
-You can also use them to test Icinga packages prior to the next release.
+Included Puppet modules in the `modules` directory provide their own license details.
+
+# Support <a id="support"></a>
+
+These boxes are built for demos and development tests only. Team members and partners
+may use these for their Icinga Camp presentations or any other event too.
+
+Join the [Icinga community channels](https://www.icinga.com/about/get-involved/) for questions.
+
+> **Note**
+>
+> Boxes can run snapshot builds and unstable code to test the latest and the greatest.
+>
+> You can also use them to test Icinga packages prior to the next release.
 
 In case you've found a problem or want to submit a patch, please open an issue
 on GitHub and/or create a PR.
 
 
-## Requirements
+# Requirements <a id="requirements"></a>
 
 * [Vagrant](https://www.vagrantup.com) >= 1.8.x
-
-Note: If you are on Windows, 1.9.4 is [broken](https://github.com/mitchellh/vagrant/issues/8520).
 
 One of these virtualization providers:
 
 * [Virtualbox](https://www.virtualbox.org/) >= 5.x
-* [Parallels Desktop Pro/Business](https://www.parallels.com/de/products/desktop/) >= 11
+* [Parallels Desktop Pro/Business](https://www.parallels.com/de/products/desktop/) >= 12
 * [libvirt](https://libvirt.org/)
 
 Each Vagrant box setup requires at least 2 Cores and 2 GB RAM.
 The required resources are automatically configured during the
 `vagrant up` run.
 
-### Linux
+## Linux <a id="requirements-linux"></a>
 
-#### VirtualBox
+### VirtualBox <a id="requirements-linux-virtualbox"></a>
 
 Example on Fedora (needs RPMFusion repository for VirtualBox):
 
@@ -93,7 +107,11 @@ $ sudo apt-get install vagrant
 $ sudo apt-get install virtualbox
 ```
 
-### Windows
+## macOS <a id="requirements-macOS"></a>
+
+macOS runs best with the Parallels provider, VirtualBox works as well.
+
+## Windows <a id="requirements-windows"></a>
 
 Windows requires VirtualBox as provider. You'll also need the [Git package](https://git-for-windows.github.io/) which includes SSH.
 
@@ -111,30 +129,24 @@ Set the Windows command line as default:
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/images/basics/git_windows_default_shell_cmd.png" alt="Windows Git Command Line" height="300">
 
-Then clone this repository:
-
-```
-C:\Users\michi\Documents> git.exe clone https://github.com/Icinga/icinga-vagrant
-```
-
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/images/basics/vagrant_windows_icinga_git_clone.png" alt="Windows Git Clone" height="300">
-
 > **Note**
 >
 > If `vagrant up` hangs with Vagrant 2.0.0 on Windows 7, you might need to upgrade your Powershell
 > version. See [this note](https://github.com/hashicorp/vagrant/issues/8783#issuecomment-325411772) for details.
 
-## Providers
+## Providers <a id="requirements-providers"></a>
 
 Choose one of the providers below. VirtualBox can be used nearly everwhere. If
 you have a Parallels Pro license on macOS, or prefer to use libvirt, that's possible
 too.
 
-### Virtualbox Provider
+### Virtualbox <a id="requirements-providers-virtualbox"></a>
 
 If Virtualbox is installed, this will be enabled by default.
 
-### Parallels Provider
+The Virtualbox provider uses the [bento](https://app.vagrantup.com/bento/) base box.
+
+### Parallels <a id="requirements-providers-virtualbox"></a>
 
 You'll need to install the [vagrant-parallels](http://parallels.github.io/vagrant-parallels/docs/)
 plugin first:
@@ -143,9 +155,9 @@ plugin first:
 $ vagrant plugin install vagrant-parallels
 ```
 
-The Parallels provider uses the [Parallels CentOS base box](https://github.com/Parallels/vagrant-parallels/wiki/Available-Vagrant-Boxes).
+The Parallels provider uses the [bento](https://app.vagrantup.com/bento/) base box.
 
-### Libvirt Provider
+### Libvirt <a id="requirements-providers-libvirt"></a>
 
 You should have `qemu` and `libvirt installed if you plan to run Vagrant
 on your local system. Then install the `vagrant-libvirt` plugin:
@@ -156,135 +168,43 @@ $ vagrant plugin install vagrant-libvirt
 
 The libvirt provider uses the official CentOS base boxes.
 
-Note: Full libvirt support is pending. Please help test and send in patches for [#52](https://github.com/Icinga/icinga-vagrant/issues/52).
 
-### Additional Plugins
+# Installation <a id="installation"></a>
 
-#### Behind a proxy
-
-If you are working behind a proxy, you can use the [proxyconf plugin](https://github.com/tmatilai/vagrant-proxyconf).
-
-Install the plugin:
+## Linux <a id="installation-linux"></a>
 
 ```
-$ vagrant plugin install vagrant-proxyconf
+$ git clone https://github.com/Icinga/icinga-vagrant && cd icinga-vagrant
 ```
 
-Export the proxy variables into your environment:
-
-```
-$ export VAGRANT_HTTP_PROXY=http://proxy:8080
-$ export VAGRANT_HTTPS_PROXY=http://proxy:8080
-```
-
-Vagrant exports the proxy settings into the VM and provisioning
-will then work.
-
-## Run
-
-Change the directory to the box you want to start.
-
-Example icinga2x:
+Change into the directory of the scenario and start the box(es).
 
 ```
 $ cd icinga2x
-```
-
-You can only do `vagrant up` in a box directory. Verify that
-by checking for the existance of the `Vagrantfile` file in the current
-directory.
-
-### Vagrant Commands
-
-#### Start
-
-Start all VMs:
-
-Linux:
-
-```
 $ vagrant up
 ```
 
-Windows:
+Proceed here for an overview about all available [boxes](#boxes).
+
+## Windows <a id="installation-windows"></a>
+
+Clone this repository:
+
+```
+C:\Users\michi\Documents> git.exe clone https://github.com/Icinga/icinga-vagrant
+```
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/images/basics/vagrant_windows_icinga_git_clone.png" alt="Windows Git Clone" height="300">
+
+Change into the directory of the scenario and start the box(es).
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/images/basics/vagrant_windows_icinga_list_up.png" alt="Windows Vagrant Up" height="300">
 
-Depending on the provider you have chosen above, you might want to set
-it explicitely:
+Proceed here for an overview about all available [boxes](#boxes).
 
-```
-$ vagrant up --provider=virtualbox
-```
+## Boxes <a id="boxes"></a>
 
-#### SSH
-
-SSH into the box as local `vagrant` user (**Tip**: Use `sudo -i` to become `root`):
-
-```
-$ vagrant ssh
-```
-
-> **Note**
->
-> Multi-VM boxes require the hostname for `vagrant ssh` like so: `vagrant ssh icinga2b`.
-> That works in a similar fashion for other sub commands.
-
-#### Stop
-
-Stop all VMs:
-
-```
-$ vagrant halt
-```
-
-#### Update/Soft Reset
-
-Update packages/reset configuration for all VMs:
-
-```
-$ vagrant provision
-```
-
-#### Destroy
-
-Destroy the VM (add `-f` to avoid the safety question)
-
-```
-$ vagrant destroy
-```
-
-
-### More Usability Hints
-
-Documentation for software used inside these boxes.
-
-Project			| URL
-------------------------|------------------------------
-Icinga 2		| https://www.icinga.com/docs/icinga2/latest/doc/01-about/
-Icinga Web 2		| https://www.icinga.com/docs/icingaweb2/latest/doc/01-About/
-Director 		| https://www.icinga.com/docs/director/latest/doc/01-Introduction/
-NagVis			| https://www.nagvis.org/doc
-Graphite		| https://graphite.readthedocs.io
-InfluxDB		| https://docs.influxdata.com/influxdb/
-Grafana			| https://docs.grafana.org
-Elastic			| https://www.elastic.co/guide/
-Graylog			| http://docs.graylog.org
-
-#### Vagrant update
-
-On local config change (git pull for this repository).
-
-```
-$ pwd
-$ git pull
-$ git log
-$ vagrant provision
-```
-
-## Boxes
-
-### <a id="icinga2x"></a>Icinga 2 Standalone
+### Icinga 2 Standalone <a id="boxes-icinga2x"></a>
 
 * 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
@@ -318,7 +238,7 @@ $ vagrant ssh -c "sudo systemctl start dashing-icinga2"
 ```
 
 
-### <a id="icinga2x-cluster"></a>Icinga 2 Cluster
+### Icinga 2 Cluster <a id="boxes-icinga2x-cluster"></a>
 
 * 2 VMs as Icinga 2 Master/Checker Cluster
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
@@ -340,7 +260,7 @@ $ cd icinga2x-cluster && vagrant up
   Icinga 2 API      | https://192.168.33.20:5665/v1         | root/icinga
 
 
-### <a id="icinga2x-ha-cluster"></a>Icinga 2 HA Cluster
+### Icinga 2 HA Cluster <a id="boxes-icinga2x-ha-cluster"></a>
 
 * 2 Master VMs, 1 Satellite VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
@@ -364,7 +284,7 @@ $ cd icinga2x-ha-cluster && vagrant up
   Icinga 2 API      | https://192.168.33.103:5665/v1        | root/icinga
 
 
-### <a id="icinga2x-influxdb"></a>Icinga 2 InfluxDB
+### Icinga 2 InfluxDB <a id="boxes-icinga2x-influxdb"></a>
 
 * 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
@@ -388,7 +308,7 @@ $ cd icinga2x-influxdb && vagrant up
   Grafana           | http://192.168.33.8:8004          | admin/admin
 
 
-### <a id="icinga2x-elastic"></a>Icinga 2 and Elastic Stack
+### Icinga 2 and Elastic Stack <a id="boxes-icinga2x-elastic"></a>
 
 * [Elastic Stack](https://www.elastic.co/products)
   * [Elasticsearch](https://www.elastic.co/products/elasticsearch)
@@ -414,7 +334,7 @@ Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-
   Kibana            | https://192.168.33.7:5601         | icinga/icinga
   Elasticsearch/Nginx | https://192.168.33.7:9200	| icinga/icinga
 
-### <a id="icinga2x-graylog"></a>Icinga 2 and Graylog
+### Icinga 2 and Graylog <a id="boxes-icinga2x-graylog"></a>
 
 * [Graylog](https://www.graylog.org)
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
@@ -435,16 +355,190 @@ $ cd icinga2x-graylog && vagrant up
   Graylog           | http://192.168.33.6:9000        | admin/admin
 
 
+# Configuration <a id="configuration"></a>
 
-## Development
+The default configuration for specific scenarios is stored in the `Vagrantfile.nodes` file.
+In case you want to modify its content to e.g. add synced folders or change the host-only IP address
+you can copy its content into the `Vagrantfile.local` file and modify it there.
 
-### Base Boxes
+`Vagrantfile.local` is not tracked by Git.
+
+If you change the base box, keep in mind that provisioning only has been tested and developed
+with CentOS 7, no other distributions are currently supported.
+
+Example for additional synced folders:
+
+```
+$ vim icinga2x/Vagrantfile.local
+
+nodes = {
+  'icinga2' => {
+    :box_virtualbox => 'bento/centos-7.4',
+    :box_parallels  => 'bento/centos-7.4',
+    :box_libvirt    => 'centos/7',
+    :net            => 'demo.local',
+    :hostonly       => '192.168.33.5',
+    :memory         => '2048',
+    :cpus           => '2',
+    :mac            => '020027000500',
+    :forwarded      => {
+      '443'  => '8443',
+      '80'   => '8082',
+      '22'   => '2082',
+      '8003' => '8082'
+    },
+    :synced_folders => {
+      '../../icingaweb2-module-graphite' => '/usr/share/icingaweb2-modules/graphite'
+    }
+  }
+}
+```
+
+
+# FAQ <a id="faq"></a>
+
+## Vagrant Commands <a id="faq-vagrant-commands"></a>
+
+### Up <a id="faq-vagrant-commands-up"></a>
+
+Start all VMs:
+
+```
+$ vagrant up
+```
+
+Depending on the provider you have chosen above, you might want to set
+it explicitely:
+
+```
+$ vagrant up --provider=virtualbox
+```
+
+### SSH <a id="faq-vagrant-commands-ssh"></a>
+
+SSH into the box as local `vagrant` user (**Tip**: Use `sudo -i` to become `root`):
+
+```
+$ vagrant ssh
+```
+
+> **Note**
+>
+> Multi-VM boxes require the hostname for `vagrant ssh` like so: `vagrant ssh icinga2b`.
+> That works in a similar fashion for other sub commands.
+
+### Halt <a id="faq-vagrant-commands-halt"></a>
+
+Stop all VMs:
+
+```
+$ vagrant halt
+```
+
+### Provision <a id="faq-vagrant-commands-provision"></a>
+
+Update packages/reset configuration for all VMs:
+
+```
+$ vagrant provision
+```
+
+### Destroy <a id="faq-vagrant-commands-destroy"></a>
+
+Destroy the VM (add `-f` to avoid the safety question)
+
+```
+$ vagrant destroy
+```
+
+
+## Documentation Reference <a id="faq-documentation-reference"></a>
+
+Documentation for software used inside these boxes.
+
+Project			| URL
+------------------------|------------------------------
+Icinga 2		| https://www.icinga.com/docs/icinga2/latest/doc/01-about/
+Icinga Web 2		| https://www.icinga.com/docs/icingaweb2/latest/doc/01-About/
+Director 		| https://www.icinga.com/docs/director/latest/doc/01-Introduction/
+NagVis			| https://www.nagvis.org/doc
+Graphite		| https://graphite.readthedocs.io
+InfluxDB		| https://docs.influxdata.com/influxdb/
+Grafana			| https://docs.grafana.org
+Elastic			| https://www.elastic.co/guide/
+Graylog			| http://docs.graylog.org
+
+## Vagrant update <a id="faq-vagrant-update"></a>
+
+On local config change (git pull for this repository).
+
+```
+$ pwd
+$ git pull
+$ git log
+$ vagrant provision
+```
+
+## Behind a proxy <a id="faq-behind-proxy"></a>
+
+If you are working behind a proxy, you can use the [proxyconf plugin](https://github.com/tmatilai/vagrant-proxyconf).
+
+Install the plugin:
+
+```
+$ vagrant plugin install vagrant-proxyconf
+```
+
+Export the proxy variables into your environment:
+
+```
+$ export VAGRANT_HTTP_PROXY=http://proxy:8080
+$ export VAGRANT_HTTPS_PROXY=http://proxy:8080
+```
+
+Vagrant exports the proxy settings into the VM and provisioning
+will then work.
+
+# Thanks <a id="thanks"></a>
+
+* [lippserd](https://github.com/lippserd) for the initial Vagrant box idea from Icinga Web 2.
+* [gunnarbeutner](https://github.com/gunnarbeutner) for the base setup with Icinga 2.
+* [NETWAYS](https://github.com/NETWAYS) for sponsoring the initial Icinga 2 Cluster setup.
+* [bernd](https://github.com/bernd) for the Graylog box.
+* [nbuchwitz](https://github.com/nbuchwitz) for fixes and workarounds on broken packages.
+* [kornm](https://github.com/KornM) for the Vagrant HTTP proxy FAQ.
+* [ruzickap](https://github.com/ruzickap) for the libvirt provider.
+* [mightydok](https://github.com/mightydok) for fixes on Virtualbox provider.
+* [joonas](https://github.com/joonas) for Puppet provisioner fixes.
+* [tomdc](https://github.com/tomdc) for his contributions to Icinga 1.x/Jasper.
+
+# Contributing <a id="contributing"></a>
+
+## Overview <a id="contributing-overview"></a>
+
+Each box uses a generic Vagrantfile to set the required resources for initial VM
+startup. The `Vagrantfile` includes the `Vagrantfile.nodes` file which defines
+VM specific settings.
+
+The generic `shell_provisioner.sh` script ensures that all VM requirements are fulfilled
+and also takes care about installing Puppet which will be used as provisioner in the next
+step.
+
+The main entry point is the Puppet provisioner which calls the `manifest/default.pp`.
+Anything compiled into this catalog will be installed into the VM.
+
+> **Note**
+>
+> The provisioner still uses Puppet 3. A migration to Puppet 5 is planned, see the GitHub issues.
+> This requires major refactoring into roles/profiles too.
+
+## Base Boxes <a id="contributing-base-boxes"></a>
 
 Provider        | Base Box
 ----------------|----------------
-VirtualBox      | [Bento](https://atlas.hashicorp.com/bento/).
-Parallels       | [Parallels](https://atlas.hashicorp.com/parallels/)
-libvirt         | [libvirt](https://atlas.hashicorp.com/centos/)
+VirtualBox      | [Bento](https://app.vagrantup.com/bento/)
+Parallels       | [Bento](https://app.vagrantup.com/bento/)
+libvirt         | [libvirt](https://app.vagrantup.com/centos/)
 
 Pull updates.
 
@@ -452,9 +546,9 @@ Pull updates.
 vagrant box update
 ```
 
-### Tools
+## Tools <a id="contributing-tools"></a>
 
-#### InfluxDB
+### InfluxDB <a id="contributing-tools-influxdb"></a>
 
 Current version via HTTP API:
 ```
@@ -462,10 +556,11 @@ curl -sl -I 192.168.33.8:8086/ping
 ```
 
 
-### Puppet Module Overview
+## Puppet Module Overview <a id="contributing-puppet-modules"></a>
 
 The Vagrant boxes use these imported puppet modules for provisioning. The modules are
-pulled into this repository as git subtree.
+pulled into this repository as git subtree. The main reason for not using submodules is
+that the upstream source may be gone if this project does not catch with updating/migrating.
 
 General:
 
@@ -506,7 +601,7 @@ Specific projects:
   graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
 
 
-#### Puppet Module Git Subtree
+### Puppet Module Git Subtree <a id="contributing-puppet-module-git-subtree"></a>
 
 **Notes for developers only.**
 
