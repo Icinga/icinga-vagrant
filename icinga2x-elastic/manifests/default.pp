@@ -417,17 +417,17 @@ filebeat::prospector { 'icinga2logs':
   doc_type => 'syslog-beat'
 }
 
-# icinga2 logstash writer - TODO
-#icinga2::feature { 'logstash': }
+# icinga2 elasticsearch writer - TODO
+#icinga2::feature { 'elasticsearch': }
 #->
 #file { '/etc/icinga2/features-available':
 #  ensure  => 'directory',
 #  require => Package['icinga2']
 #}->
-#file { '/etc/icinga2/features-available/logstash.conf':
+#file { '/etc/icinga2/features-available/elasticsearch.conf':
 #  owner  => icinga,
 #  group  => icinga,
-#  source    => 'puppet:////vagrant/files/etc/icinga2/features-available/logstash.conf',
+#  source    => 'puppet:////vagrant/files/etc/icinga2/features-available/elasticsearch.conf',
 #  require   => Package['icinga2'],
 #  notify    => Service['icinga2']
 #}
