@@ -583,6 +583,7 @@ General:
   puppet-lib-file\_contact | modules/file\_contact      | https://github.com/electrical/puppet-lib-file_concat.git
   puppet-sysctl		| modules/sysctl		| https://github.com/thias/puppet-sysctl.git
   puppet-datacat        | modules/datacat               | https://github.com/richardc/puppet-datacat.git
+  puppet-inifile        | modules/inifile               | https://github.com/puppetlabs/puppetlabs-inifile.git (commit 88bf9868b532ddf556bdb617f67eda9de0b8dc0f, 1.6.0)
 
 Specific projects:
 
