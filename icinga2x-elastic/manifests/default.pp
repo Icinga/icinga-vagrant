@@ -92,7 +92,9 @@ class { '::php::globals':
 class { '::php':
   package_prefix => 'rh-php56-php-', # most important
   config_root_ini => '/etc/opt/rh/rh-php56',
-  #config_root_inifile => '/etc/opt/rh/rh-php56/php.ini',
+  config_root_inifile => '/etc/opt/rh/rh-php56/php.ini',
+# ==> icinga2-elastic: Notice: /Stage[main]/Php::Global/Php::Config[global]/Php::Config::Setting[/etc/opt/rh/rh-php56/php.ini: Date/date.timezone]/Ini_setting[/etc/opt/rh/rh-php56/php.ini: Date/date.timezone]/ensure: created
+
 #  cli_inifile => '/etc/opt/rh/rh-php56/php.ini',
 #  fpm_config_file => '/etc/opt/rh/rh-php56/php-fpm.conf',
 #  fpm_error_log => '/var/opt/rh/rh-php56/log/php-fpm/error.log',
@@ -112,8 +114,8 @@ class { '::php':
   pear => true,
   phpunit => true,
   settings => {
-    'PHP/memory_limit' => '256M',
-    'Date/date.timezone'      => 'Europe/Berlin',
+    'PHP/memory_limit'    => '256M',
+    'Date/date.timezone' => 'Europe/Berlin',
   },
   extensions => {
     pdo => {},
