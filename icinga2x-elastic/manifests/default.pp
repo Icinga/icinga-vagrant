@@ -26,46 +26,104 @@ class { '::mysql::server':
 # Webserver
 ####################################
 
-class {'apache':
-  # don't purge php, icingaweb2, etc configs
-  purge_configs => false,
-  default_vhost => false
+class { 'nginx':
+  confd_purge => true,
 }
 
-class {'::apache::mod::php': }
+$icingaweb2_fqdn = 'icingaweb2.vagrant-demo.icinga.com'
+$icingaweb2_php_fpm_port = 9000
 
-apache::vhost { 'vagrant-demo.icinga.com':
-  priority        => 5,
-  port            => '80',
-  docroot         => '/var/www/html',
-  rewrites => [
-    {
-      rewrite_rule => ['^/$ /icingaweb2 [NE,L,R=301]'],
-    },
-  ],
+nginx::resource::server { $icingaweb2_fqdn:
+  listen_ip           => '192.168.33.7',
+  listen_port         => 80,
+  ssl                 => false,
+  ipv6_listen_port    => 80,
+  www_root            => '/usr/share/icingaweb2/public',
+  location_cfg_append => {
+    'rewrite'             => '^/$ /icingaweb2'
+  },
+  index_files         => [ 'index.php' ],
+}
+nginx::resource::location { "${icingaweb2_fqdn}-fastcgi":
+  ensure              => present,
+  server              => $icingaweb2_fqdn,
+  location            => '~ ^/icingaweb2/index\.php(.*)$',
+  fastcgi_index       => 'index.php',
+  include             => [ '/etc/nginx/fastcgi_params' ],
+  fastcgi_split_path  => '^(.+\.php)(/.+)$',
+  fastcgi             => "127.0.0.1:${icingaweb2_php_fpm_port}",
+  fastcgi_param       => {
+    'SCRIPT_FILENAME'     => '/usr/share/icingaweb2/public/index.php',
+    'ICINGAWEB_CONFIGDIR' => '/etc/icingaweb2',
+    'REMOTE_USER'         => '$remote_user'
+  }
+}
+nginx::resource::location { "${icingaweb2_fqdn}-public":
+  ensure              => present,
+  server              => $icingaweb2_fqdn,
+  www_root            => '/usr/share/icingaweb2/public',
+  location            => '~ ^/icingaweb2(.+)?',
+  index_files         => [ 'index.php' ],
+  location_cfg_append => {
+    'try_files'           => '$1 $uri $uri/ /icingaweb2/index.php$is_args$args'
+  }
+}
+# Avoid favicon.ico not found error messages
+# https://nichteinschalten.de/de/icingaweb2-unter-nginx-betreiben/
+nginx::resource::location { "${icingaweb2_fqdn}-favicon":
+  ensure              => present,
+  server              => $icingaweb2_fqdn,
+  www_root            => '/usr/share/icingaweb2/public',
+  location            => '/favicon.ico',
+  location_cfg_append => {
+    'log_not_found' => 'off',
+    'access_log'    => 'off',
+    'expires'       => 'max'
+  }
 }
 
-apache::vhost { 'vagrant-demo.icinga.com-ssl':
-  priority        => 5,
-  port            => '443',
-  docroot         => '/var/www/html',
-  ssl		  => true,
-  add_listen      => false, #prevent duplicate listen entries
-  rewrites => [
-    {
-      rewrite_rule => ['^/$ /icingaweb2 [NE,L,R=301]'],
-    },
-  ],
-}
-include '::php::cli'
-include '::php::mod_php5'
 
-php::ini { '/etc/php.ini':
-  display_errors => 'On',
-  memory_limit => '256M',
-  date_timezone => 'Europe/Berlin',
-  session_save_path => '/var/lib/php/session'
+package { [ 'scl-utils', 'centos-release-scl' ]:
+  ensure => present,
+}->
+class { '::php::globals':
+  config_root => '/etc/opt/rh/rh-php56',
+  fpm_pid_file => '/var/opt/rh/rh-php56/run/php-fpm/php-fpm.pid'
+}->
+class { '::php':
+  package_prefix => 'rh-php56-php-', # most important
+  config_root_ini => '/etc/opt/rh/rh-php56',
+  #config_root_inifile => '/etc/opt/rh/rh-php56/php.ini',
+#  cli_inifile => '/etc/opt/rh/rh-php56/php.ini',
+#  fpm_config_file => '/etc/opt/rh/rh-php56/php-fpm.conf',
+#  fpm_error_log => '/var/opt/rh/rh-php56/log/php-fpm/error.log',
+#  fpm_pool_dir => '/etc/opt/rh/rh-php56/php-fpm.d',
+#  fpm_service_name => 'rh-php56-php-fpm',
+
+  manage_repos => false,
+  fpm => true,
+  fpm_package => 'rh-php56-php-fpm',
+  fpm_service_name => 'rh-php56-php-fpm',
+  fpm_service_enable => true,
+  fpm_service_ensure => 'running',
+  #fpm_user => 'nginx', #requires nginx
+  #fpm_group => 'nginx',
+  dev => true,
+  composer => true,
+  pear => true,
+  phpunit => true,
+  settings => {
+    'PHP/memory_limit' => '256M',
+    'Date/date.timezone'      => 'Europe/Berlin',
+  },
+  extensions => {
+    imagick => {
+      provider => pecl,
+    }
+  },
+  require => Class['nginx']
 }
+
 
 ####################################
 # Misc
@@ -236,10 +294,6 @@ class { 'java':
   distribution => 'jdk'
 }
 
-class { 'nginx':
-  confd_purge => true,
-}
-
 file { '/etc/security/limits.d/99-elasticsearch.conf':
   ensure  => present,
   owner   => 'root',
@@ -289,9 +343,9 @@ nginx::resource::server { 'elasticsearch.vagrant-demo.icinga.com':
   listen_port => 9200,
   ssl         => true,
   ssl_port    => 9200,
-  ssl_cert    => '/etc/icinga2/pki/icinga2-elastic.crt',
-  ssl_key     => '/etc/icinga2/pki/icinga2-elastic.key',
-  ssl_trusted_cert => '/etc/icinga2/pki/ca.crt',
+  ssl_cert    => '/var/lib/icinga2/certs/icinga2-elastic.crt',
+  ssl_key     => '/var/lib/icinga2/certs/icinga2-elastic.key',
+  ssl_trusted_cert => '/var/lib/icinga2/certs/ca.crt',
   ipv6_listen_port => 9200,
   proxy       => 'http://localhost:9200',
   auth_basic  => 'Elasticsearch auth',
@@ -303,9 +357,9 @@ nginx::resource::server { 'kibana.vagrant-demo.icinga.com':
   listen_port => 5601,
   ssl         => true,
   ssl_port    => 5601,
-  ssl_cert    => '/etc/icinga2/pki/icinga2-elastic.crt',
-  ssl_key     => '/etc/icinga2/pki/icinga2-elastic.key',
-  ssl_trusted_cert => '/etc/icinga2/pki/ca.crt',
+  ssl_cert    => '/var/lib/icinga2/certs/icinga2-elastic.crt',
+  ssl_key     => '/var/lib/icinga2/certs/icinga2-elastic.key',
+  ssl_trusted_cert => '/var/lib/icinga2/certs/ca.crt',
   ipv6_listen_port => 5601,
   proxy       => 'http://localhost:5601',
   auth_basic  => 'Kibana auth',
