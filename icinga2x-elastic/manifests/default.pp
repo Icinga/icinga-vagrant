@@ -49,7 +49,6 @@ nginx::resource::location { "${icingaweb2_fqdn}-fastcgi":
   server              => $icingaweb2_fqdn,
   location            => '~ ^/icingaweb2/index\.php(.*)$',
   fastcgi_index       => 'index.php',
-  include             => [ '/etc/nginx/fastcgi_params' ],
   fastcgi_split_path  => '^(.+\.php)(/.+)$',
   fastcgi             => "127.0.0.1:${icingaweb2_php_fpm_port}",
   fastcgi_param       => {
@@ -106,7 +105,7 @@ class { '::php':
   fpm_service_name => 'rh-php56-php-fpm',
   fpm_service_enable => true,
   fpm_service_ensure => 'running',
-  #fpm_user => 'nginx', #requires nginx
+  #fpm_user => 'nginx', #requires to change package permissions, rh-php56 prefers apache
   #fpm_group => 'nginx',
   dev => true,
   composer => true,
@@ -117,6 +116,8 @@ class { '::php':
     'Date/date.timezone'      => 'Europe/Berlin',
   },
   extensions => {
+    pdo => {},
+    mysqlnd => {},
     imagick => {
       provider => pecl,
     }
