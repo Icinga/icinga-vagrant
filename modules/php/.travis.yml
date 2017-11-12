@@ -1,0 +1,54 @@
+---
+sudo: false
+language: ruby
+cache: bundler
+bundler_args: --without system_tests development
+before_install:
+  - bundle -v
+  - rm Gemfile.lock || true
+  - gem update --system
+  - gem install bundler -v '~>1.13.0'
+  - gem --version
+  - bundle -v
+script:
+  - 'bundle exec rake $CHECK'
+matrix:
+  fast_finish: true
+  include:
+  - rvm: 1.9.3
+    env: PUPPET_VERSION="~> 3.0" STRICT_VARIABLES="yes" CHECK=test
+  - rvm: 1.9.3
+    env: PUPPET_VERSION="~> 3.0" STRICT_VARIABLES="yes" FUTURE_PARSER="yes" CHECK=test
+  - rvm: 2.1.9
+    env: PUPPET_VERSION="~> 3.0" STRICT_VARIABLES="yes" CHECK=test
+  - rvm: 2.1.9
+    env: PUPPET_VERSION="~> 4.0" CHECK=test
+  - rvm: 2.2.6
+    env: PUPPET_VERSION="~> 4.0" CHECK=test
+  - rvm: 2.3.3
+    env: PUPPET_VERSION="~> 4.0" CHECK=build DEPLOY_TO_FORGE=yes
+  - rvm: 2.3.3
+    env: PUPPET_VERSION="~> 4.0" CHECK=rubocop
+  - rvm: 2.3.3
+    env: PUPPET_VERSION="~> 4.0" CHECK=test
+  - rvm: 2.4.0
+    env: PUPPET_VERSION="~> 4.0" CHECK=test
+  allow_failures:
+    - rvm: 2.4.0
+branches:
+  only:
+  - master
+  - /^v\d/
+notifications:
+  email: false
+deploy:
+  provider: puppetforge
+  user: puppet
+  password:
+    secure: "GOhttACuJt+3s38m4WnW5RuTgwqaAoeEQnNT+X1Ukn7KdcIk4KV8NzYU/CC0VIm8lUOnBWYJKEC4ixX/J/4Wbxox2RAoKMQrO++L0DB1zTCJnq9SfoUBMaQhXvLu+PbxAR0p3P47ozra0C+pOWDpOaxT9ecufrPQt9W9Z4aY/bs="
+  on:
+    tags: true
+    # all_branches is required to use tags
+    all_branches: true
+    # Only publish the build marked with "DEPLOY_TO_FORGE"
+    condition: "$DEPLOY_TO_FORGE = yes"
