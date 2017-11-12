@@ -573,7 +573,7 @@ General:
   puppetlabs-postgresql	| modules/postgresql		| https://github.com/puppetlabs/puppetlabs-postgresql.git
   puppetlabs-vcsrepo	| modules/vcsrepo		| https://github.com/puppetlabs/puppetlabs-vcsrepo.git
   puppet-module-epel	| modules/epel			| https://github.com/stahnma/puppet-module-epel.git
-  puppet-php		| modules/php			| https://github.com/thias/puppet-php.git
+  puppet-php		| modules/php			| https://github.com/voxpupuli/puppet-php.git (branch `puppet3`)
   puppet-selinux	| modules/selinux		| https://github.com/voxpupuli/puppet-selinux.git (branch `puppet3`)
   puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
   puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
