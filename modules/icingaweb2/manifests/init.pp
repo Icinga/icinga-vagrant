@@ -12,9 +12,8 @@ class icingaweb2 (
 
   package { 'icingaweb2':
     ensure 	=> latest,
-    require 	=> [ Package['httpd'], Class['icinga_rpm'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
-    alias 	=> 'icingaweb2',
-    notify 	=> Class['Apache::Service']
+    require 	=> [ Class['icinga_rpm'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
+    alias 	=> 'icingaweb2'
   }
 
   package { 'php-Icinga':
