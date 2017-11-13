@@ -8,15 +8,11 @@ class profiles::nginx::icingaweb2 (
   }
 
   nginx::resource::server { $icingaweb2_fqdn:
-    listen_ip           => $icingaweb2_listen_ip,
-    listen_port         => 80,
-    ssl                 => false,
-    ipv6_listen_port    => 80,
+    ensure              => present,
     www_root            => '/usr/share/icingaweb2/public',
     location_cfg_append => {
-      'rewrite'             => '^/$ /icingaweb2'
-    },
-    index_files         => [ 'index.php' ],
+      'rewrite'             => '^/$ /icingaweb2 redirect'
+    }
   }
   nginx::resource::location { "${icingaweb2_fqdn}-fastcgi":
     ensure              => present,
