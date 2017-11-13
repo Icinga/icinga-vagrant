@@ -1,11 +1,9 @@
-class profiles::nginx::icingaweb2 (
+class profiles::icingaweb2::webserver (
   $icingaweb2_listen_ip = '192.168.33.5',
   $icingaweb2_fqdn = 'icingaweb2.vagrant-demo.icinga.com'
 ) {
 
-  class { 'nginx':
-    confd_purge => true,
-  }
+  include '::profiles::nginx::base'
 
   nginx::resource::server { $icingaweb2_fqdn:
     ensure              => present,
@@ -63,13 +61,6 @@ class profiles::nginx::icingaweb2 (
     package_prefix => 'rh-php56-php-', # most important
     config_root_ini => '/etc/opt/rh/rh-php56',
     config_root_inifile => '/etc/opt/rh/rh-php56/php.ini',
-  # ==> icinga2-elastic: Notice: /Stage[main]/Php::Global/Php::Config[global]/Php::Config::Setting[/etc/opt/rh/rh-php56/php.ini: Date/date.timezone]/Ini_setting[/etc/opt/rh/rh-php56/php.ini: Date/date.timezone]/ensure: created
-
-  #  cli_inifile => '/etc/opt/rh/rh-php56/php.ini',
-  #  fpm_config_file => '/etc/opt/rh/rh-php56/php-fpm.conf',
-  #  fpm_error_log => '/var/opt/rh/rh-php56/log/php-fpm/error.log',
-  #  fpm_pool_dir => '/etc/opt/rh/rh-php56/php-fpm.d',
-  #  fpm_service_name => 'rh-php56-php-fpm',
 
     manage_repos => false,
     fpm => true,
@@ -78,7 +69,7 @@ class profiles::nginx::icingaweb2 (
     fpm_service_enable => true,
     fpm_service_ensure => 'running',
     #fpm_user => 'nginx', #requires to change package permissions, rh-php56 prefers apache
-    #fpm_group => 'nginx',
+    #fpm_group => 'nginx', #not supported by puppet3 branch of puppet-php
     dev => true,
     composer => true,
     pear => true,
