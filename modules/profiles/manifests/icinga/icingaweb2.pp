@@ -5,6 +5,19 @@ class profiles::icinga::icingaweb2 (
 
   include '::profiles::nginx::base'
  
+  class { '::icingaweb2': # TODO: Replace with official module with Puppet 5 support
+    require => [ Class['nginx'], Class['::php'] ]
+  }
+  ->
+  class { '::icingaweb2_internal_db_mysql': # TODO: Move this into a specific profile
+
+  }
+  ->
+  # icingaweb2 package pulls in httpd which we don't want
+  service { 'httpd':
+    ensure => stopped,
+  }
+
   nginx::resource::server { $icingaweb2_fqdn:
     ensure              => present,
     www_root            => '/usr/share/icingaweb2/public',
@@ -81,19 +94,9 @@ class profiles::icinga::icingaweb2 (
     extensions => {
       pdo => {},
       mysqlnd => {},
-      imagick => {
-        provider => pecl,
-      }
     },
-    require => Class['nginx']
-  }
-
-
-  class { '::icingaweb2': # TODO: Replace with official module with Puppet 5 support
-    require => [ Class['nginx'], Class['::php'] ]
-  }
-  ->
-  class { '::icingaweb2_internal_db_mysql': # TODO: Move this into a specific profile
-
+    # NOTE for future reference: DO NOT build imagick with PECL. That fails heavily, either with pear not in PATH and then configure & make on missing imagick-devel packages.
+    # I'll rather shoot myself before doing so. We'll wait for SCL packages.
+    require => [ Class['profiles::base::system'], Class['nginx'] ]
   }
 }
