@@ -3,8 +3,6 @@ class profiles::icinga::icingaweb2 (
   $icingaweb2_fqdn = 'icingaweb2.vagrant-demo.icinga.com'
 ) {
 
-  include '::profiles::base::mysql'
-
   class { 'nginx':
     confd_purge => true,
   }
@@ -92,22 +90,24 @@ class profiles::icinga::icingaweb2 (
   }
 
   # Icinga Web itself
+  include '::profiles::base::mysql'
+
   class { '::icingaweb2': # TODO: Replace with official module with Puppet 5 support
     require => [ Class['nginx'], Class['::php'] ]
   }
-  ->
-  exec { 'create-mysql-icingaweb2-db':
-    path 	=> '/bin:/usr/bin:/sbin:/usr/sbin',
-    unless  	=> 'mysql -uicingaweb2 -picingaweb2 icingaweb2',
-    command 	=> 'mysql -uroot -e "CREATE DATABASE icingaweb2; GRANT ALL ON icingaweb2.* TO icingaweb2@localhost IDENTIFIED BY \'icingaweb2\';"',
-    require 	=> Class['profiles::base::mysql']
+
+  mysql::db { 'icingaweb2':
+    user      => 'icingaweb2',
+    password  => 'icingaweb2',
+    host      => 'localhost',
+    grant     => [ 'ALL' ]
   }
-  ->
+
   exec { 'populate-icingaweb2-mysql-db':
     path 	=> '/bin:/usr/bin:/sbin:/usr/sbin',
     unless  	=> 'mysql -uicingaweb2 -picingaweb2 icingaweb2 -e "SELECT * FROM icingaweb_user;" &> /dev/null',
     command 	=> 'mysql -uicingaweb2 -picingaweb2 icingaweb2 < /usr/share/doc/icingaweb2/schema/mysql.schema.sql; mysql -uicingaweb2 -picingaweb2 icingaweb2 -e "INSERT INTO icingaweb_user (name, active, password_hash) VALUES (\'icingaadmin\', 1, \'\$1\$iQSrnmO9\$T3NVTu0zBkfuim4lWNRmH.\');"',
-    require 	=> [ Exec['create-mysql-icingaweb2-db'], Package['icingaweb2'] ]
+    require => Mysql::Db['icingaweb2']
   }
   ->
   # icingaweb2 package pulls in httpd which we don't want
