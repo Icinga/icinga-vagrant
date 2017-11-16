@@ -1,4 +1,4 @@
-class profiles::icinga2::install {
+class profiles::icinga::icinga2 {
   include icinga2 # TODO: Use official module with Puppet 5 support
   include icinga2_ido_mysql # TODO: Refactor module
   include monitoring_plugins # TODO: Refactor module
@@ -26,7 +26,7 @@ class profiles::icinga2::install {
   file { '/etc/icinga2/conf.d/api-users.conf':
     owner  => icinga,
     group  => icinga,
-    content   => template("profiles/api-users.conf.erb"),
+    content   => template("profiles/icinga/icinga2/api-users.conf.erb"),
     require   => [ Package['icinga2'], Exec['enable-icinga2-api'] ],
     notify    => Service['icinga2']
   }

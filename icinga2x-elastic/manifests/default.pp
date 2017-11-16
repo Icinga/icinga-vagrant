@@ -16,20 +16,18 @@ $kibanaDefaultAppId = 'dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426'
 # Setup
 ####################################
 
-class { '::profiles::base::centos': }
+class { '::profiles::base::system': }
 ->
 class { '::profiles::base::mysql': }
 ->
 class { '::profiles::base::java': }
 ->
-class { '::profiles::icinga2::install': }
+class { '::profiles::icinga::icinga2': }
 ->
-class { 'profiles::icingaweb2::webserver':
+class { '::profiles::icinga::icingaweb2':
   icingaweb2_listen_ip => $hostOnlyIp,
   icingaweb2_fqdn => $hostOnlyFQDN
 }
-->
-class { 'profiles::icingaweb2::install': }
 ->
 class { '::profiles::elastic::elasticsearch':
   repo_version => '5.x',
@@ -112,7 +110,7 @@ icinga2::feature { 'elasticsearch': }
 icingaweb2::module { 'elasticsearch':
   builtin => false,
   repo_revision => 'next',
-  require => [ Class['profiles::icingaweb2::install'], Class['profiles::elastic::elasticsearch'] ]
+  require => [ Class['profiles::icinga::icingaweb2'], Class['profiles::elastic::elasticsearch'] ]
 }
 
 ####################################

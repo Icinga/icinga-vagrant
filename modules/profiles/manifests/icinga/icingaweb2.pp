@@ -1,10 +1,10 @@
-class profiles::icingaweb2::webserver (
+class profiles::icinga::icingaweb2 (
   $icingaweb2_listen_ip = '192.168.33.5',
   $icingaweb2_fqdn = 'icingaweb2.vagrant-demo.icinga.com'
 ) {
 
   include '::profiles::nginx::base'
-
+ 
   nginx::resource::server { $icingaweb2_fqdn:
     ensure              => present,
     www_root            => '/usr/share/icingaweb2/public',
@@ -88,4 +88,12 @@ class profiles::icingaweb2::webserver (
     require => Class['nginx']
   }
 
+
+  class { '::icingaweb2': # TODO: Replace with official module with Puppet 5 support
+    require => [ Class['nginx'], Class['::php'] ]
+  }
+  ->
+  class { '::icingaweb2_internal_db_mysql': # TODO: Move this into a specific profile
+
+  }
 }

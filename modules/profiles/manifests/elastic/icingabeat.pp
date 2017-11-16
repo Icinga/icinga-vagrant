@@ -5,7 +5,6 @@ class profiles::elastic::icingabeat (
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200
 ) {
-  include '::profiles::base::centos'
   include '::profiles::elastic::elasticsearch'
 
   yum::install { 'icingabeat':

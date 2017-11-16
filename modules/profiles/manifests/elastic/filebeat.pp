@@ -3,7 +3,7 @@ class profiles::elastic::filebeat (
   $elasticsearch_port = 9200
 ){
 
-  include '::profiles::icinga2::install'
+  include '::profiles::icinga::icinga2'
   include '::profiles::elastic::elasticsearch'
 
   class { 'filebeat':
