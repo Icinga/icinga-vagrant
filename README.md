@@ -327,12 +327,14 @@ Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-
 
 #### Application Interfaces
 
-  Application       | Url                               | Credentials
-  ------------------|-----------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.7/icingaweb2    | icingaadmin/icinga
-  Icinga 2 API      | https://192.168.33.7:5665/v1      | root/icinga
-  Kibana            | https://192.168.33.7:5601         | icinga/icinga
-  Elasticsearch/Nginx | https://192.168.33.7:9200	| icinga/icinga
+  Application               | Url                               | Credentials
+  --------------------------|-----------------------------------|----------------
+  Icinga Web 2              | http://192.168.33.7/icingaweb2    | icingaadmin/icinga
+  Icinga 2 API              | https://192.168.33.7:5665/v1      | root/icinga
+  Kibana                    | http://192.168.33.7:5601          | icinga/icinga
+  Elasticsearch/Nginx       | http://192.168.33.7:9200	        | icinga/icinga
+  Kibana (TLS)              | https://192.168.33.7:5602         | icinga/icinga
+  Elasticsearch/Nginx (TLS) | https://192.168.33.7:9202	        | icinga/icinga
 
 ### Icinga 2 and Graylog <a id="boxes-icinga2x-graylog"></a>
 
