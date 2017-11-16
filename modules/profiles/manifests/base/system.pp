@@ -8,11 +8,6 @@ class profiles::base::system {
     }
   }
 
-  # disable SELinux everywhere, even it may be already in the used Vagrant box
-  class { 'selinux':
-    mode => 'disabled'
-  }
-  ->
   # EPEL repository is needed everywhere
   class { 'epel': }
   ->
