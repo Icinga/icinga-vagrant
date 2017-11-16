@@ -54,28 +54,28 @@ class profiles::icingaweb2::webserver (
     ensure => present,
   }->
   class { '::php::globals':
-    config_root => '/etc/opt/rh/rh-php56',
-    fpm_pid_file => '/var/opt/rh/rh-php56/run/php-fpm/php-fpm.pid'
+    config_root => '/etc/opt/rh/rh-php71',
+    fpm_pid_file => '/var/opt/rh/rh-php71/run/php-fpm/php-fpm.pid'
   }->
   class { '::php':
-    package_prefix => 'rh-php56-php-', # most important
-    config_root_ini => '/etc/opt/rh/rh-php56',
-    config_root_inifile => '/etc/opt/rh/rh-php56/php.ini',
+    package_prefix => 'rh-php71-php-', # most important
+    config_root_ini => '/etc/opt/rh/rh-php71',
+    config_root_inifile => '/etc/opt/rh/rh-php71/php.ini',
 
     manage_repos => false,
     fpm => true,
-    fpm_package => 'rh-php56-php-fpm',
-    fpm_service_name => 'rh-php56-php-fpm',
+    fpm_package => 'rh-php71-php-fpm',
+    fpm_service_name => 'rh-php71-php-fpm',
     fpm_service_enable => true,
     fpm_service_ensure => 'running',
-    #fpm_user => 'nginx', #requires to change package permissions, rh-php56 prefers apache
+    #fpm_user => 'nginx', #requires to change package permissions, rh-php71 prefers apache
     #fpm_group => 'nginx', #not supported by puppet3 branch of puppet-php
     dev => true,
     composer => true,
     pear => true,
     phpunit => true,
     settings => {
-      'PHP/memory_limit'    => '256M',
+      'PHP/memory_limit'    => '271M',
       'Date/date.timezone' => 'Europe/Berlin',
     },
     extensions => {
