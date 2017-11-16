@@ -2,6 +2,8 @@
 # Global configuration
 ####################################
 
+$hostOnlyIP = '192.168.33.7'
+$hostOnlyFQDN = 'icinga2x-elastic.vagrant.demo.icinga.com'
 $kibanaVersion = '5.3.1'
 $icingabeatVersion = '1.1.0'
 $icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
@@ -23,8 +25,8 @@ class { '::profiles::base::java': }
 class { '::profiles::icinga2::install': }
 ->
 class { 'profiles::icingaweb2::webserver':
-  icingaweb2_listen_ip => '192.168.33.7',
-  icingaweb2_fqdn => 'icingaweb2.elastic.vagrant-demo.icinga.com'
+  icingaweb2_listen_ip => $hostOnlyIp,
+  icingaweb2_fqdn => $hostOnlyFQDN
 }
 ->
 class { 'profiles::icingaweb2::install': }
@@ -41,7 +43,7 @@ class { '::profiles::elastic::kibana':
 }
 ->
 class { '::profiles::elastic::httpproxy':
-  listen_ip => '192.168.33.7'
+  listen_ip => $hostOnlyIp
 }
 ->
 class { '::profiles::elastic::filebeat':
