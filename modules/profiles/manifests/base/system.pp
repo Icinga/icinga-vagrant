@@ -42,4 +42,11 @@ class profiles::base::system {
   file { '/etc/profile.d/env.sh':
     content => template("profiles/base/env.sh.erb")
   }
+  ->
+  exec { 'update-path':
+    provider    => shell,
+    command     => '. /etc/profile',
+    subscribe   => File['/etc/profile.d/env.sh'],
+    refreshonly => true
+  }
 }
