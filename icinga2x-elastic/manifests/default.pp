@@ -25,7 +25,7 @@ class { '::profiles::base::java': }
 class { '::profiles::icinga::icinga2': }
 ->
 class { '::profiles::icinga::icingaweb2':
-  icingaweb2_listen_ip => $hostOnlyIp,
+  icingaweb2_listen_ip => $hostOnlyIP,
   icingaweb2_fqdn => $hostOnlyFQDN
 }
 ->
@@ -41,7 +41,7 @@ class { '::profiles::elastic::kibana':
 }
 ->
 class { '::profiles::elastic::httpproxy':
-  listen_ip => $hostOnlyIp
+  listen_ip => $hostOnlyIP
 }
 ->
 class { '::profiles::elastic::filebeat':
