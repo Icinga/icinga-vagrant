@@ -53,13 +53,6 @@ class { '::profiles::elastic::icingabeat':
   kibana_version => $kibanaVersion
 }
 
-# TODO: Move this into a specific role
-icingaweb2::module { 'elasticsearch':
-  builtin => false,
-  repo_revision => 'next',
-  require => [ Class['profiles::icingaweb2::install'], Class['profiles::elastic::elasticsearch'] ]
-}
-
 ####################################
 # Icinga 2 configuration
 ####################################
@@ -102,6 +95,23 @@ file { '/etc/icinga2/conf.d/additional_services.conf':
   notify    => Service['icinga2']
 }
 
+file { "/etc/icinga2/features-available/elasticsearch.conf":
+  owner  => icinga,
+  group  => icinga,
+  source    => "puppet:////vagrant/files/etc/icinga2/features-available/elasticsearch.conf",
+  require   => Package['icinga2'],
+  notify    => Service['icinga2']
+}
+->
+# TODO: Index pattern
+icinga2::feature { 'elasticsearch': }
+->
+# TODO: Move this into a specific role
+icingaweb2::module { 'elasticsearch':
+  builtin => false,
+  repo_revision => 'next',
+  require => [ Class['profiles::icingaweb2::install'], Class['profiles::elastic::elasticsearch'] ]
+}
 
 ####################################
 # Icinga Web 2 configuration
