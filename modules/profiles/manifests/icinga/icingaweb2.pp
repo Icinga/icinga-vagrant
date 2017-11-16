@@ -89,11 +89,16 @@ class profiles::icinga::icingaweb2 (
     require => [ Class['profiles::base::system'], Class['nginx'] ]
   }
 
+  @user { nginx: ensure => present }
+  User<| title == nginx |>{
+    groups +> ['icingaweb2']
+  }
+
   # Icinga Web itself
   include '::profiles::base::mysql'
 
   class { '::icingaweb2': # TODO: Replace with official module with Puppet 5 support
-    require => [ Class['nginx'], Class['::php'] ]
+    require => Class['::php']
   }
 
   mysql::db { 'icingaweb2':
@@ -107,7 +112,7 @@ class profiles::icinga::icingaweb2 (
     path 	=> '/bin:/usr/bin:/sbin:/usr/sbin',
     unless  	=> 'mysql -uicingaweb2 -picingaweb2 icingaweb2 -e "SELECT * FROM icingaweb_user;" &> /dev/null',
     command 	=> 'mysql -uicingaweb2 -picingaweb2 icingaweb2 < /usr/share/doc/icingaweb2/schema/mysql.schema.sql; mysql -uicingaweb2 -picingaweb2 icingaweb2 -e "INSERT INTO icingaweb_user (name, active, password_hash) VALUES (\'icingaadmin\', 1, \'\$1\$iQSrnmO9\$T3NVTu0zBkfuim4lWNRmH.\');"',
-    require => Mysql::Db['icingaweb2']
+    require => [ Mysql::Db['icingaweb2'], Package['icingaweb2'] ]
   }
   ->
   # icingaweb2 package pulls in httpd which we don't want
