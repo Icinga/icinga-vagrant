@@ -62,11 +62,92 @@ class profiles::icinga::icinga2 {
     notify    => Service['icinga2']
   }
 
-  # TODO: Split demo based on parameters
+  # TODO: Split demo based on parameters; standalone vs cluster
+  file { '/etc/icinga2/icinga2.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/icinga2_standalone.conf.erb"),
+    require => Package['icinga2'],
+    notify    => Service['icinga2']
+  }
+  ->
   file { '/etc/icinga2/demo':
     ensure => directory,
     owner  => icinga,
     group  => icinga,
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/hosts.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/hosts.conf.erb"),
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/services.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/services.conf.erb"),
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/templates.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/templates.conf.erb"),
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/groups.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/groups.conf.erb"),
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/notifications.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/notifications.conf.erb"),
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/commands.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/commands.conf.erb"),
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/timeperiods.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/timeperiods.conf.erb"),
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/users.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/users.conf.erb"),
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/additional_services.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/additional_services.conf.erb"),
     notify    => Service['icinga2']
   }
   ->
