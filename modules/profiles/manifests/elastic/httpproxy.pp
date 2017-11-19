@@ -5,9 +5,10 @@ class profiles::elastic::httpproxy (
   # defaults to icinga:icinga
   $elastic_basic_auth_file = '/etc/nginx/elastic.passwd'
 
-  include '::profiles::icinga::icinga2'
-  include '::profiles::elastic::elasticsearch'
-  include '::profiles::elastic::kibana'
+  # TODO: Remove this when profiles::base::nginx is used
+  class { 'nginx':
+    confd_purge => true,
+  }
 
   file { "$elastic_basic_auth_file":
     owner  => root,
@@ -27,7 +28,6 @@ class profiles::elastic::httpproxy (
     proxy       => 'http://localhost:9200',
     auth_basic  => 'Elasticsearch auth',
     auth_basic_user_file => "$elastic_basic_auth_file",
-    require     => Class['::profiles::icinga::icinga2']
   }->
   nginx::resource::server { 'kibana.vagrant-demo.icinga.com':
     listen_ip   => $listen_ip,
@@ -41,6 +41,5 @@ class profiles::elastic::httpproxy (
     proxy       => 'http://localhost:5601',
     auth_basic  => 'Kibana auth',
     auth_basic_user_file => "$elastic_basic_auth_file",
-    require     => Class['::profiles::icinga::icinga2']
   }
 }

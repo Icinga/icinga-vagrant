@@ -3,9 +3,6 @@ class profiles::graylog::elasticsearch (
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200
 ) {
-
-  include '::profiles::base::java'
-
   file { '/etc/security/limits.d/99-elasticsearch.conf':
     ensure  => present,
     owner   => 'root',

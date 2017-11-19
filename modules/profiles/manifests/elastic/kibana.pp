@@ -4,9 +4,6 @@ class profiles::elastic::kibana (
   $kibana_host = '127.0.0.1',
   $kibana_default_app_id = 'dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426'
 ) {
-
-  include '::profiles::base::java'
-
   class { 'kibana':
     ensure => $kibana_revision,
     config => {
@@ -20,7 +17,6 @@ class profiles::elastic::kibana (
       'logging.events'               => "{ log: ['info', 'warning', 'error', 'fatal'], response: '*', error: '*' }",
       'elasticsearch.requestTimeout' => 500000,
     },
-    require => Class['java']
   }
 
 }

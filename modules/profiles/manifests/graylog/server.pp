@@ -3,9 +3,6 @@ class profiles::graylog::server (
   $listen_ip = '192.169.33.6',
   $listen_port = 9000
 ) {
-
-  include '::profiles::base::java'
-
   class { 'graylog::repository':
     version => $repo_version
   }->

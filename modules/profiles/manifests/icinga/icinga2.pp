@@ -2,8 +2,6 @@ class profiles::icinga::icinga2 {
   include icinga2 # TODO: Use official module with Puppet 5 support
   include monitoring_plugins # TODO: Refactor module
 
-  include '::profiles::base::system'
-
   package { 'icinga2-ido-mysql':
     ensure => latest,
     require => Class['icinga_rpm'],
@@ -57,7 +55,6 @@ class profiles::icinga::icinga2 {
     owner  => icinga,
     group  => icinga,
     content   => template("profiles/icinga/icinga2/api-users.conf.erb"),
-    require   => [ Package['icinga2'], Exec['enable-icinga2-api'] ],
     notify    => Service['icinga2']
   }
 }

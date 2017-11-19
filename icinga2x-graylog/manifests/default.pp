@@ -14,11 +14,13 @@ class { '::profiles::base::system': }
 ->
 class { '::profiles::base::mysql': }
 ->
+class { '::profiles::base::apache': }
+->
 class { '::profiles::base::java': }
 ->
 class { '::profiles::icinga::icinga2': }
 ->
-class { 'profiles::icinga::icingaweb2':
+class { '::profiles::icinga::icingaweb2':
   icingaweb2_listen_ip => $hostOnlyIP,
   icingaweb2_fqdn => $hostOnlyFQDN
 }

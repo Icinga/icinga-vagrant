@@ -5,8 +5,6 @@ class profiles::elastic::icingabeat (
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200
 ) {
-  include '::profiles::elastic::elasticsearch'
-
   yum::install { 'icingabeat':
     ensure => present,
     source => "https://github.com/Icinga/icingabeat/releases/download/v${icingabeat_version}/icingabeat-${icingabeat_version}-x86_64.rpm"

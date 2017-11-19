@@ -2,10 +2,6 @@ class profiles::elastic::filebeat (
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200
 ){
-
-  include '::profiles::icinga::icinga2'
-  include '::profiles::elastic::elasticsearch'
-
   class { 'filebeat':
     outputs => {
       'elasticsearch' => {
@@ -19,7 +15,7 @@ class profiles::elastic::filebeat (
       'level' => 'debug' #TODO reset after finishing the box
     }
   }
-
+  ->
   exec { 'filebeat-default-index-pattern':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     command => "curl -XPUT http://${elasticsearch_host}:${elasticsearch_port}/index-pattern/filebeat -d '{ \"title\":\"filebeat\", \"timeFieldName\":\"@timestamp\" }'",
@@ -38,5 +34,4 @@ class profiles::elastic::filebeat (
     ],
     doc_type => 'syslog-beat'
   }
-
 }
