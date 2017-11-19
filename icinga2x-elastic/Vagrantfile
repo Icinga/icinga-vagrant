@@ -99,7 +99,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node_config.vm.provision "shell", inline: "service network restart", run: "always"
 
       # provisioner: install requirements
-      node_config.vm.provision :shell, :path => "../scripts/shell_provisioner.sh"
+      node_config.vm.provision :shell, :path => "../scripts/shell_provisioner_pre.sh"
 
       # provisioner: install box using puppet manifest
       node_config.vm.provision :puppet do |puppet|
@@ -109,6 +109,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         #puppet.options = "--verbose --debug --parser=future"
         puppet.options = "--parser=future"
       end
+
+      # provisioner: post script
+      node_config.vm.provision :shell, :path => "../scripts/shell_provisioner_post.sh", run: "always"
 
       # print a friendly message
       node_config.vm.provision "shell", inline: <<-SHELL
