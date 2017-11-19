@@ -12,25 +12,24 @@ class icingaweb2 (
 
   package { 'icingaweb2':
     ensure 	=> latest,
-    require 	=> [ Class['icinga_rpm'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
+    require 	=> [ Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
     alias 	=> 'icingaweb2'
   }
 
   package { 'php-Icinga':
     ensure 	=> latest,
-    require 	=> [ Class['icinga_rpm'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
+    require 	=> [ Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
     alias 	=> 'php-Icinga'
   }
 
   package { 'icingacli':
     ensure 	=> latest,
-    require 	=> [ Class['icinga_rpm'], Class['epel'], Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
+    require 	=> [ Package['php-ZendFramework'], Package['php-ZendFramework-Db-Adapter-Pdo-Mysql'] ],
     alias 	=> 'icingacli'
   }
 
   package { ['php-ZendFramework', 'php-ZendFramework-Db-Adapter-Pdo-Mysql']:
     ensure 	=> latest,
-    require 	=> Class['icinga_rpm']
   }
 
   file {

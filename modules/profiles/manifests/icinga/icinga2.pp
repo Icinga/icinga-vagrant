@@ -1,13 +1,22 @@
 class profiles::icinga::icinga2 {
-  include icinga2 # TODO: Use official module with Puppet 5 support
-  include monitoring_plugins # TODO: Refactor module
+  class { '::icinga2': } # TODO: Use official module with Puppet 5 support
+  ->
+  class { '::monitoring_plugins': } # TODO: Refactor module
+  ->
+  file { 'check_mysql_health':
+    name => '/usr/lib64/nagios/plugins/check_mysql_health',
+    owner => root,
+    group => root,
+    mode => '0755',
+    content => template("profiles/icinga/check_mysql_health.erb")
+  }
 
   package { 'icinga2-ido-mysql':
     ensure => latest,
     require => Class['icinga_rpm'],
     alias => 'icinga2-ido-mysql'
   }
-
+  ->
   # TODO: remove hardcoded names
   mysql::db { 'icinga':
     user      => 'icinga',
@@ -17,7 +26,7 @@ class profiles::icinga::icinga2 {
     collate   => 'latin1_general_ci',
     grant     => [ 'ALL' ]
   }
-
+  ->
   exec { 'populate-icinga2-ido-mysql-db':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     unless => "mysql -uicinga -picinga icinga -e \"SELECT * FROM icinga_dbversion;\" &> /dev/null",
@@ -26,7 +35,7 @@ class profiles::icinga::icinga2 {
     environment => [ "HOME=/root" ],
     require => [ Mysql::Db['icinga'], Package['icinga2-ido-mysql'] ]
   }
-
+  ->
   icinga2::feature { 'ido-mysql':
     require => Exec['populate-icinga2-ido-mysql-db']
   }
@@ -35,12 +44,6 @@ class profiles::icinga::icinga2 {
     ensure => 'latest',
     require => [ Class['icinga_rpm'], Class['vim'] ],
     alias => 'vim-icinga2'
-  }
-
-  @user { vagrant: ensure => present }
-  User<| title == vagrant |>{
-    groups +> ['icinga', 'icingacmd'],
-    require => Package['icinga2']
   }
 
   # api
@@ -52,10 +55,51 @@ class profiles::icinga::icinga2 {
   }
   ->
   file { '/etc/icinga2/conf.d/api-users.conf':
-    owner  => icinga,
-    group  => icinga,
+    owner  => root,
+    group  => root,
+    mode   => '0644',
     content   => template("profiles/icinga/icinga2/api-users.conf.erb"),
     notify    => Service['icinga2']
   }
+
+  # TODO: Split demo based on parameters
+  file { '/etc/icinga2/demo':
+    ensure => directory,
+    owner  => icinga,
+    group  => icinga,
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/bp.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/bp.conf.erb"),
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/cube.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/cube.conf.erb"),
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/maps.conf':
+    ensure => present,
+    owner  => icinga,
+    group  => icinga,
+    content => template("profiles/icinga/icinga2/config/demo/maps.conf.erb"),
+    notify    => Service['icinga2']
+  }
+
+
+#  @user { vagrant: ensure => present }
+#  User<| title == vagrant |>{
+#    groups +> ['icinga', 'icingacmd'],
+#    require => ['icinga2']
+#  }
+
 }
 

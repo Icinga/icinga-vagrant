@@ -72,3 +72,65 @@ object Host "c2-web-1" {
   address = "1.2.3.9" //fail
   vars.webserver_type = "nginx"
 }
+
+# generate business process config services
+apply Service "bp-" for (bpname => config in host.vars.bp_config) {
+  display_name = bpname
+
+  if (config.contains("bpcommand")) {
+    check_command = config.bpcommand
+  } else {
+    check_command = "ping4"
+  }
+
+  check_interval = 30s
+  retry_interval = 15s
+
+  vars += config
+}
+
+# groups
+object HostGroup "bp-hosts-mysql" {
+  display_name = "BP Hosts MySQL"
+  assign where "bp-host-mysql" in host.templates
+}
+object HostGroup "bp-hosts-web" {
+  display_name = "BP Hosts Web"
+  assign where "bp-host-web" in host.templates
+}
+
+# cluster checks
+
+# icingacli businessprocess process check --config mysql "MySQL Server"
+object Host "bp-cluster" {
+  check_command = "dummy"
+  vars.dummy_state = 0
+
+  display_name = "Business Process Cluster"
+
+  vars.bp_cluster["mysql"] = {
+    icingacli_businessprocess_process = "MySQL Server"
+    //icingacli_businessprocess_config = "mysql"
+    icingacli_businessprocess_details = true
+  }
+  vars.bp_cluster["web"] = {
+    icingacli_businessprocess_process = "Web Server"
+    //icingacli_businessprocess_config = "web"
+    icingacli_businessprocess_details = true
+  }
+  vars.bp_cluster["all"] = {
+    icingacli_businessprocess_process = "All Services"
+    //icingacli_businessprocess_config = "all"
+    icingacli_businessprocess_details = true
+  }
+}
+
+apply Service "bp-cluster-" for (bp_name => config in host.vars.bp_cluster) {
+  check_command = "icingacli-businessprocess"
+
+  display_name = config.icingacli_businessprocess_process
+
+  vars += config
+
+  assign where host.name == "bp-cluster"
+}
