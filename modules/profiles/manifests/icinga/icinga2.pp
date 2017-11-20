@@ -55,14 +55,6 @@ class profiles::icinga::icinga2 (
     require => Package['icinga2'],
     notify  => Service['icinga2']
   }
-  ->
-  file { '/etc/icinga2/conf.d/api-users.conf':
-    owner  => root,
-    group  => root,
-    mode   => '0644',
-    content   => template("profiles/icinga/icinga2/api-users.conf.erb"),
-    notify    => Service['icinga2']
-  }
 
   # TODO: Split demo based on parameters; standalone vs cluster
   file { '/etc/icinga2/icinga2.conf':
@@ -78,6 +70,14 @@ class profiles::icinga::icinga2 (
     ensure => directory,
     owner  => icinga,
     group  => icinga,
+    notify    => Service['icinga2']
+  }
+  ->
+  file { '/etc/icinga2/demo/api-users.conf':
+    owner  => root,
+    group  => root,
+    mode   => '0644',
+    content   => template("profiles/icinga/icinga2/config/demo/api-users.conf.erb"),
     notify    => Service['icinga2']
   }
   ->

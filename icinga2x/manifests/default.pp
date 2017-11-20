@@ -43,8 +43,8 @@ class { '::profiles::grafana::server':
   version => '4.2.0-1',
   backend => "graphite"
 }
-#->
-#class { '::profiles::dashing::icinga2': }
+->
+class { '::profiles::dashing::icinga2': }
 
 
 #->
