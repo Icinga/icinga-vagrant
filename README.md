@@ -24,7 +24,7 @@ the Icinga ecosystem and possible integrations.
 You can use these boxes for your own local demos, or to learn how to use Icinga
 in your environment.
 
-* [Icinga 2 Standalone](README.md#boxes-icinga2x), [Icinga 2 Cluster](README.md#boxes-icinga2x-cluster), [Icinga 2 HA Cluster](README.md#boxes-icinga2x-ha-cluster)
+* [Icinga 2 Standalone](README.md#boxes-icinga2x), [Icinga 2 Cluster](README.md#boxes-icinga2x-cluster)
 * [Icinga 2 and InfluxDB](README.md#boxes-icinga2x-influxdb)
 * [Icinga 2 and Elastic](README.md#boxes-icinga2x-elastic)
 * [Icinga 2 and Graylog](README.md#boxes-icinga2x-graylog)
@@ -260,30 +260,6 @@ $ cd icinga2x-cluster && vagrant up
   Icinga 2 API      | https://192.168.33.20:5665/v1         | root/icinga
 
 
-### Icinga 2 HA Cluster <a id="boxes-icinga2x-ha-cluster"></a>
-
-* 2 Master VMs, 1 Satellite VM
-* [Icinga 2](https://www.icinga.com/products/icinga-2/)
-* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-
-Run Vagrant:
-
-```
-$ cd icinga2x-ha-cluster && vagrant up
-```
-
-#### Application Interfaces
-
-  Application       | Url                                   | Credentials
-  ------------------|---------------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.101/icingaweb2      | icingaadmin/icinga
-  Icinga Web 2      | http://192.168.33.102/icingaweb2      | icingaadmin/icinga
-  Icinga Web 2      | http://192.168.33.103/icingaweb2      | icingaadmin/icinga
-  Icinga 2 API      | https://192.168.33.101:5665/v1        | root/icinga
-  Icinga 2 API      | https://192.168.33.102:5665/v1        | root/icinga
-  Icinga 2 API      | https://192.168.33.103:5665/v1        | root/icinga
-
-
 ### Icinga 2 InfluxDB <a id="boxes-icinga2x-influxdb"></a>
 
 * 1 VM
@@ -327,12 +303,14 @@ Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-
 
 #### Application Interfaces
 
-  Application       | Url                               | Credentials
-  ------------------|-----------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.7/icingaweb2    | icingaadmin/icinga
-  Icinga 2 API      | https://192.168.33.7:5665/v1      | root/icinga
-  Kibana            | https://192.168.33.7:5601         | icinga/icinga
-  Elasticsearch/Nginx | https://192.168.33.7:9200	| icinga/icinga
+  Application               | Url                               | Credentials
+  --------------------------|-----------------------------------|----------------
+  Icinga Web 2              | http://192.168.33.7/icingaweb2    | icingaadmin/icinga
+  Icinga 2 API              | https://192.168.33.7:5665/v1      | root/icinga
+  Kibana                    | http://192.168.33.7:5601          | icinga/icinga
+  Elasticsearch/Nginx       | http://192.168.33.7:9200	        | icinga/icinga
+  Kibana (TLS)              | https://192.168.33.7:5602         | icinga/icinga
+  Elasticsearch/Nginx (TLS) | https://192.168.33.7:9202	        | icinga/icinga
 
 ### Icinga 2 and Graylog <a id="boxes-icinga2x-graylog"></a>
 
@@ -573,7 +551,7 @@ General:
   puppetlabs-postgresql	| modules/postgresql		| https://github.com/puppetlabs/puppetlabs-postgresql.git
   puppetlabs-vcsrepo	| modules/vcsrepo		| https://github.com/puppetlabs/puppetlabs-vcsrepo.git
   puppet-module-epel	| modules/epel			| https://github.com/stahnma/puppet-module-epel.git
-  puppet-php		| modules/php			| https://github.com/thias/puppet-php.git
+  puppet-php		| modules/php			| https://github.com/voxpupuli/puppet-php.git (branch `puppet3`)
   puppet-selinux	| modules/selinux		| https://github.com/voxpupuli/puppet-selinux.git (branch `puppet3`)
   puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
   puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
@@ -583,6 +561,7 @@ General:
   puppet-lib-file\_contact | modules/file\_contact      | https://github.com/electrical/puppet-lib-file_concat.git
   puppet-sysctl		| modules/sysctl		| https://github.com/thias/puppet-sysctl.git
   puppet-datacat        | modules/datacat               | https://github.com/richardc/puppet-datacat.git
+  puppet-inifile        | modules/inifile               | https://github.com/puppetlabs/puppetlabs-inifile.git (commit 88bf9868b532ddf556bdb617f67eda9de0b8dc0f, 1.6.0)
 
 Specific projects:
 

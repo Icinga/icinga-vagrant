@@ -1,19 +1,29 @@
-# Class: php::cli
+# Install and configure php CLI
 #
-# Command Line Interface PHP. Useful for console scripts, cron jobs etc.
-# To customize the behavior of the php binary, see php::ini.
+# === Parameters
 #
-# Sample Usage:
-#  include php::cli
+# [*inifile*]
+#   The path to the ini php5-cli ini file
 #
-class php::cli (
-  $ensure           = 'installed',
-  $inifile          = $php::params::cli_inifile,
-  $cli_package_name = $::php::params::cli_package_name,
+# [*settings*]
+#   Hash with nested hash of key => value to set in inifile
+#
+class php::cli(
+  $inifile  = $::php::params::cli_inifile,
+  $settings = {}
 ) inherits ::php::params {
-  package { $cli_package_name:
-    ensure  => $ensure,
-    require => File[$inifile],
+
+  if $caller_module_name != $module_name {
+    warning('php::cli is private')
+  }
+
+  validate_absolute_path($inifile)
+  validate_hash($settings)
+
+  $real_settings = deep_merge($settings, hiera_hash('php::cli::settings', {}))
+
+  ::php::config { 'cli':
+    file   => $inifile,
+    config => $real_settings,
   }
 }
-

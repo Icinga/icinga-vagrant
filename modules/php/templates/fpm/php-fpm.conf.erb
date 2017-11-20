@@ -3,12 +3,16 @@
 ;;;;;;;;;;;;;;;;;;;;;
 
 ; All relative paths in this configuration file are relative to PHP's install
-; prefix.
+; prefix (/usr). This prefix can be dynamically changed by using the
+; '-p' argument from the command line.
 
 ; Include one or more files. If glob(3) exists, it is used to include a bunch of
 ; files from a glob(3) pattern. This directive can be used everywhere in the
 ; file.
-include=<%= @fpm_pool_dir %>/*.conf
+; Relative path can also be used. They will be prefixed by:
+;  - the global prefix if it's been set (-p argument)
+;  - /usr otherwise
+;include=/etc/php5/fpm/*.conf
 
 ;;;;;;;;;;;;;;;;;;
 ; Global Options ;
@@ -16,13 +20,15 @@ include=<%= @fpm_pool_dir %>/*.conf
 
 [global]
 ; Pid file
+; Note: the default prefix is /var
 ; Default Value: none
-pid = <%= @pid %>
+pid = <%= @pid_file %>
 
 ; Error log file
 ; If it's set to "syslog", log is sent to syslogd instead of being written
 ; in a local file.
-; Default Value: /var/log/php-fpm.log
+; Note: the default prefix is /var
+; Default Value: log/php-fpm.log
 error_log = <%= @error_log %>
 
 ; syslog_facility is used to specify what type of program is logging the
@@ -49,7 +55,7 @@ log_level = <%= @log_level %>
 ; Default Value: 0
 emergency_restart_threshold = <%= @emergency_restart_threshold %>
 
-; Interval of time used by emergency_restart_interval to determine when 
+; Interval of time used by emergency_restart_interval to determine when
 ; a graceful restart will be initiated.  This can be useful to work around
 ; accidental corruptions in an accelerator's shared memory.
 ; Available Units: s(econds), m(inutes), h(ours), or d(ays)
@@ -68,11 +74,7 @@ process_control_timeout = <%= @process_control_timeout %>
 ; Use it with caution.
 ; Note: A value of 0 indicates no limit
 ; Default Value: 0
-<% if @process_max -%>
 process.max = <%= @process_max %>
-<% else -%>
-;process.max = 128
-<% end -%>
 
 ; Specify the nice(2) priority to apply to the master process (only if set)
 ; The value can vary from -19 (highest priority) to 20 (lower priority)
@@ -80,15 +82,11 @@ process.max = <%= @process_max %>
 ;       - The pool process will inherit the master process priority
 ;         unless it specified otherwise
 ; Default Value: no set
-<% if @process_priority -%>
-process.priority = <%= @process_priority %>
-<% else -%>
-;process.priority = -19
-<% end -%>
+; process.priority = -19
 
 ; Send FPM to background. Set to 'no' to keep FPM in foreground for debugging.
 ; Default Value: yes
-daemonize = yes
+;daemonize = yes
 
 ; Set open file descriptor rlimit for the master process.
 ; Default Value: system defined value
@@ -101,16 +99,15 @@ rlimit_files = <%= @rlimit_files %>
 ; Set max core size rlimit for the master process.
 ; Possible Values: 'unlimited' or an integer greater or equal to 0
 ; Default Value: system defined value
-<% if @rlimit_core -%>
-rlimit_core = <%= @rlimit_core %>
-<% else -%>
 ;rlimit_core = 0
-<% end -%>
 
 ; Specify the event mechanism FPM will use. The following is available:
 ; - select     (any POSIX os)
 ; - poll       (any POSIX os)
 ; - epoll      (linux >= 2.5.44)
+; - kqueue     (FreeBSD >= 4.1, OpenBSD >= 2.9, NetBSD >= 2.0)
+; - /dev/poll  (Solaris >= 7)
+; - port       (Solaris >= 10)
 ; Default Value: not set (auto detection)
 ;events.mechanism = epoll
 
@@ -120,11 +117,21 @@ rlimit_core = <%= @rlimit_core %>
 ; Available Units: s(econds), m(inutes), h(ours)
 ; Default Unit: seconds
 ; Default value: 10
+<% if @systemd_interval -%>
+systemd_interval = <%= @systemd_interval %>
+<% else -%>
 ;systemd_interval = 10
+<% end -%>
 
 ;;;;;;;;;;;;;;;;;;;;
-; Pool Definitions ; 
+; Pool Definitions ;
 ;;;;;;;;;;;;;;;;;;;;
 
-; See <%= @fpm_pool_dir %>/*.conf
+; Multiple pools of child processes may be started with different listening
+; ports and different management options.  The name of the pool will be
+; used in logs and stats. There is no limitation on the number of pools which
+; FPM can handle. Your system will tell you anyway :)
 
+; To configure the pools it is recommended to have one .conf file per
+; pool in the following directory:
+include=<%= @pool_base_dir %>/*.conf

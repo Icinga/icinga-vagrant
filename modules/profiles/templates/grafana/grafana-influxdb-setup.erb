@@ -1,0 +1,92 @@
+#!/bin/bash
+
+GRAFANA_URL="http://admin:admin@localhost:8004"
+GRAFANA_DATASOURCES_URL="$GRAFANA_URL/api/datasources"
+GRAFANA_DASHBOARDS_URL="$GRAFANA_URL/api/dashboards/db"
+TIMEOUT=30
+
+START=$(date +%s)
+
+# wait until grafana-server is started
+echo -e "Checking whether Grafana server is listening at $GRAFANA_DATASOURCES_URL"
+until $(curl --output /dev/null --silent $GRAFANA_DATASOURCES_URL); do
+  NOW=$(date +%s)
+  REAL_TIMEOUT=$(( START + TIMEOUT ))
+  if [[ "$NOW" -gt "$REAL_TIMEOUT" ]]; then
+    echo "Cannot reach Grafana server at $GRAFANA_URL. Timeout reached."
+    exit 1
+  fi
+  printf '.'
+  sleep 1
+done
+
+# add datasource
+echo -e "Adding InfluxDB datasource"
+curl "$GRAFANA_DATASOURCES_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary <<DATASOURCE \
+  '{
+    "name": "icinga2-influxdb",
+    "type": "influxdb",
+    "url": "http://192.168.33.8:8086",
+    "access": "direct",
+    "isDefault": true,
+    "database": "icinga2",
+    "user": "icinga2",
+    "password": "icinga2"
+   }'
+DATASOURCE
+
+# add default dashboards
+# exported dashboards require the 'dashboard' key including the payload in the http json body request
+# https://github.com/grafana/grafana/issues/2816
+# furthermore the 'id' field must be null in order to create a new dashboard
+# for influxdb we need to patch 'datasource' with a static value ('name' from the datasource above)
+# file is already patched
+echo -e "Adding Icinga 2 dashboard"
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/influxdb-dashboard-vagrant-grafana-demo.json
+
+echo -e "Adding Icinga Web 2 Grafana Module Dashboards"
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/influxdb-base-metrics-grafana-web-module.json
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/influxdb-icinga2-default-grafana-web-module.json
+
+# diff for future reference
+
+#--- a/icinga2x-influxdb/files/etc/icinga2/grafana-dashboard-icinga2-influxdb.json
+#+++ b/icinga2x-influxdb/files/etc/icinga2/grafana-dashboard-icinga2-influxdb.json
+#@@ -1,7 +1,9 @@
+#+{ "dashboard":
+#+
+# {
+#   "__inputs": [
+#     {
+#-      "name": "DS_INFLUXDB",
+#+      "name": "influxdb",
+#       "label": "influxdb",
+#       "description": "",
+#       "type": "datasource",
+#@@ -46,7 +48,7 @@
+#         {
+#           "aliasColors": {},
+#           "bars": false,
+#-          "datasource": "${DS_INFLUXDB}",
+#+          "datasource": "influxdb",
+#           "editable": true,
+#           "error": false,
+#           "fill": 1,
+#@@ -261,7 +263,7 @@
+#         {
+#           "aliasColors": {},
+#           "bars": false,
+#-          "datasource": "${DS_INFLUXDB}",
+#+          "datasource": "influxdb",
+#           "editable": true,
+#           "error": false,
+#           "fill": 1,
+#@@ -395,4 +397,7 @@
+#   "version": 1,
+#   "links": [],
+#   "gnetId": null
+#+},
+#+
+#+"overwrite": true
+# }
+

@@ -1,0 +1,45 @@
+const countHosts = 0;
+const countServices = 3;
+
+for (i in range(countHosts)) {
+  object Host "many-test-" + i use (i) {
+    check_command = "random"
+    address = "127.0.0.1"
+
+    if (i == 2000) {
+      vars.test = "abc"
+    }
+  }
+}
+
+for (j in range(countServices)) {
+  apply Service "many-test-" + j {
+    check_command = "random"
+
+    check_interval = 30s
+    retry_interval = 30s
+
+    vars.http_uri = "/"
+
+    for (k in range(5)) {
+      vars["key" + k] = k
+    }
+
+    assign where match("many*", host.name)
+  }
+}
+
+object NotificationCommand "many-dummy" {
+  command = [ "/usr/bin/true" ]
+}
+object User "many-dummy" { }
+apply Notification "many-dummy" to Host {
+  command = "many-dummy"
+  users = [ "many-dummy" ]
+  assign where match("many*", host.name)
+}
+apply Notification "many-dummy" to Service {
+  command = "many-dummy"
+  users = [ "many-dummy" ]
+  assign where match("many*", host.name)
+}

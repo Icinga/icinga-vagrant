@@ -1,0 +1,136 @@
+# TODO: put these constants into constants.conf
+const MySQLIcingaUsername = "icinga"
+const MySQLIcingaPassword = "icinga"
+
+# templates
+template Host "bp-host-mysql" {
+  vars.mysql_health_username = MySQLIcingaUsername
+  vars.mysql_health_password = MySQLIcingaPassword
+
+  vars.bp_config["mysql-uptime"] = {
+    bpcommand = "mysql_health"
+    mysql_health_mode = "uptime"
+    mysql_health_database = "icinga"
+  }
+  vars.bp_config["mysql-connection-time"] = {
+    bpcommand = "mysql_health"
+    mysql_health_mode = "connection-time"
+    mysql_health_database = "icinga"
+  }
+  vars.bp_config["mysql-open-files"] = {
+    bpcommand = "mysql_health"
+    mysql_health_mode = "open-files"
+    mysql_health_database = "icinga"
+  }
+  vars.os = "Linux"
+}
+
+template Host "bp-host-web" {
+  vars.bp_config["http-response"] = {
+    bpcommand = "http"
+    http_uri = "/icingaweb2"
+  }
+  vars.bp_config["lx-load"] = {
+    bpcommand = "load"
+    load_wload1 = 50
+    load_wload5 = 40
+    load_wload15 = 30
+    load_cload1 = 90
+    load_cload5 = 96
+    load_cload15 = 94
+  }
+  vars.os = "Windows"
+}
+
+# mysql
+object Host "c1-mysql-1" {
+  import "bp-host-mysql"
+  check_command = "hostalive"
+  address = "127.0.0.1"
+  vars.db_type = "mysql"
+}
+
+object Host "c2-mysql-2" {
+  import "bp-host-mysql"
+  check_command = "hostalive"
+  address = "1.2.3.4" //fail
+  vars.db_type = "mysql"
+}
+
+# web
+object Host "c1-web-1" {
+  import "bp-host-web"
+  import "bp-host-mysql"
+  check_command = "hostalive"
+  address = "127.0.0.1"
+  vars.webserver_type = "apache"
+}
+
+object Host "c2-web-1" {
+  import "bp-host-web"
+  check_command = "hostalive"
+  address = "1.2.3.9" //fail
+  vars.webserver_type = "nginx"
+}
+
+# generate business process config services
+apply Service "bp-" for (bpname => config in host.vars.bp_config) {
+  display_name = bpname
+
+  if (config.contains("bpcommand")) {
+    check_command = config.bpcommand
+  } else {
+    check_command = "ping4"
+  }
+
+  check_interval = 30s
+  retry_interval = 15s
+
+  vars += config
+}
+
+# groups
+object HostGroup "bp-hosts-mysql" {
+  display_name = "BP Hosts MySQL"
+  assign where "bp-host-mysql" in host.templates
+}
+object HostGroup "bp-hosts-web" {
+  display_name = "BP Hosts Web"
+  assign where "bp-host-web" in host.templates
+}
+
+# cluster checks
+
+# icingacli businessprocess process check --config mysql "MySQL Server"
+object Host "bp-cluster" {
+  check_command = "dummy"
+  vars.dummy_state = 0
+
+  display_name = "Business Process Cluster"
+
+  vars.bp_cluster["mysql"] = {
+    icingacli_businessprocess_process = "MySQL Server"
+    //icingacli_businessprocess_config = "mysql"
+    icingacli_businessprocess_details = true
+  }
+  vars.bp_cluster["web"] = {
+    icingacli_businessprocess_process = "Web Server"
+    //icingacli_businessprocess_config = "web"
+    icingacli_businessprocess_details = true
+  }
+  vars.bp_cluster["all"] = {
+    icingacli_businessprocess_process = "All Services"
+    //icingacli_businessprocess_config = "all"
+    icingacli_businessprocess_details = true
+  }
+}
+
+apply Service "bp-cluster-" for (bp_name => config in host.vars.bp_cluster) {
+  check_command = "icingacli-businessprocess"
+
+  display_name = config.icingacli_businessprocess_process
+
+  vars += config
+
+  assign where host.name == "bp-cluster"
+}

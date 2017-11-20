@@ -1,112 +1,193 @@
-#### 2016-02-02 - 1.2.0
-* Set owner for php-fpm log dir to undef to avoid ping-pong with rpm update.
-* Update php_conf_dir to be compatible with Debian (#69, @heskymatic).
-* Do not notify FPM if fpm daemon ensure is absent (#72, @kronos-pbrideau).
-* Fix project URL (#75, @Vincent--).
-* Add session_cookie_secure parameter (#71, @kronos-pbrideau).
-* Add pcre_* parameters (#70, @crashcover).
-* Add realpath_cache_* parameters (#63, @wwhurley).
-* Include facts reporting php_version, php_majversion and php_minversion.
+# Changelog
 
-#### 2015-04-01 - 1.1.1
-* Fix php-fpm notification for php::module::ini when prefix was set.
+## 2017-02-11 Release 4.0.0
 
-#### 2015-03-09 - 1.1.0
-* Rebase php-fpm.conf and pool.conf with files from 5.5.22.
-* Add syslog and rlimit related parameters to fpm.
-* Fix security_limit_extensions being disabled even when set.
-* Add session php_values to fpm pool template.
-* Remove clear_env, no longer included in the original fpm pool file.
-* Allow overriding fpm error_log (useful for syslog).
-* Allow override of php_package_name in mod_php5 class (#35, @jeffsheltren).
-* Notify fpm service on conf and module changes (#41, @khaefeli).
-* Add cgi_fix_pathinfo parameter (#43, @mark0n).
-* Rename fpm_package parameter to just package in fpm::conf for consistency.
-* Allow fpm_service name override in fpm::conf (#49).
-* Fix php.ini CLI default location for Debian (#50, @joshuaspence).
-* Add always_populate_raw_post_data parameter (#58, @nomoresecrets).
-* Default to full fpm restart on Debian OS family (#55).
+This is the last release with Puppet3 support!
+* Fix a bug turning `manage_repos` off on wheezy
+* Fix a deprecation warning on `apt::key` when using `manage_repos` on wheezy (#110). This change requires puppetlabs/apt at >= 1.8.0
+* Allow removal of config values (#124)
+* Add `phpversion` fact, for querying through PuppetDB or Foreman (#119)
+* Allow configuring the fpm pid file (#123)
+* Add embedded SAPI support (#115)
+* Add options to fpm config and pool configs (#139)
+* Add parameter logic for PHP 7 on Ubuntu/Debian (#180)
+* add SLES PHP 7.0 Support (#220)
+* allow packaged extensions to be loaded as zend extensions
+* Fix command to enable php extensions (#226)
+* Fix many rucocop warnings
+* Update module Ubuntu 14.04 default to official repository setup
+* Fix dependency for extentions with no package source
+* Allow packaged extensions to be loaded as Zend extensions
+* Support using an http proxy for downloading composer
+* Refactor classes php::fpm and php::fpm:service
+* Manage apache/PHP configurations on Debian and RHEL systems
+* use voxpupuli/archive to download composer
+* respect $manage_repos, do not include ::apt if set to false
+* Bump min version_requirement for Puppet + deps
+* allow pipe param for pecl extensions
+* Fix: composer auto_update: exec's environment must be array
 
-#### 2014-09-09 - 1.0.0
-* Allow override of package names (#29, #30, #31, @jeffsheltren).
-* Support prefix in module ini files, for recent Fedora/EL packages.
-* Support $zend = true for module::ini, for PHP 5.6.
-* Fix user_ini.cache_ttl which was always disabled (#39, @3flex).
+### Breaking Changes
+ * Deep merge `php::extensions` the same way as `php::settings`. This technically is a
+   breaking change but should not affect many people.
+ * PHP 5.6 is the default version on all systems now (except Ubuntu 16.04, where 7.0 is the default).
+ * There's a php::globals class now, where global paramters (like the PHP version) are set. (#132)
+ * Removal of php::repo::ubuntu::ppa (#218)
 
-#### 2014-04-14 - 0.3.12
-* Fix process_priority fpm parameter (#26, @Nyholm).
+## 3.4.2
+ * Fix a bug that changed the default of `php::manage_repos` to `false` on
+   Debian-based operating systems except wheezy. It should be turned on by
+   default. (#116)
+ * Fix a bug that prevented reloading php-fpm on Ubuntu in some cases.
+   (#117, #107)
 
-#### 2014-04-01 - 0.3.11
-* Add process_priority fpm parameter (#25, @Nyholm).
-* Add process_max fpm parameter.
-* Update the fpm templates with upstream changes.
-* Add priority and process_idle_timeout parameters for fpm pools.
-* Add clear_env and security_limit_extensions parameters for fpm pools.
-* Allow specifying full package name for module::ini (#21, @jeffsheltren).
-* Allow overriding cli_package_name (#20, @jeffsheltren).
+## 3.4.1
+ * Fix reloading php-fpm on Ubuntu trusty & utopic (#107)
 
-#### 2014-03-14 - 0.3.10
-* Ensure /var/log/php-fpm directory exists (#24, @stevenyeung).
-* Add support for listen_allowed_clients == 'any' (#22, @damonconway).
+## 3.4.0
+ * New parameter `ppa` for class `php::repo::ubuntu` to specify the ppa
+   name to use. We default to `ondrej/php5-oldstable` for precise and
+   `ondrej/php5` otherwise.
+ * New parameter `include` for `php::fpm::pool` resources to specify
+   custom configuration files.
 
-#### 2014-01-20 - 0.3.9
-* Update the el6 ini to add max_input_vars and max_file_uploads.
-* Allow specifying php version as the 'ensure' parameter (#17, MasonM).
-* Cosmetic updates and fixes in the manifests.
+## 3.3.1
+ * Make `systemd_interval` parameter for class `php::fpm::config` optional
 
-#### 2013-12-20 - 0.3.8
-* Fix the package name for APC on RHEL (Pan Luo).
-* Fix the regsubst flag for 'pecl-' prefix removal (Pan Luo).
+## 3.3.0
+ * `php::extension` resources:
+   * New boolean parameter `settings_prefix` to automatically prefix all
+     settings keys with the extensions names. Defaults to false to ensurre
+     the current behaviour.
+   * New string parameter `so_name` to set the DSO name of an extension if
+     it doesn't match the package name.
+   * New string parameter `php_api_version` to set a custom api version. If
+     not `undef`, the `so_name` is prefixed with the full module path in the
+     ini file. Defaults to `undef`.
+ * The default of the parameter `listen_allowed_clients` of `php::fpm::pool`
+   resources is now `undef` instead of `'127.0.0.1'`. This way it is more
+   intuitive to change the default tcp listening socket at `127.0.0.1:9000`
+   to a unix socket by only setting the `listen` parameter instead of
+   additionally needing to unset `listen_allowed_clients`. This has no
+   security implications.
+ * New parameters for the `php::fpm::config` class:
+   * `error_log`
+   * `syslog_facility`
+   * `syslog_ident`
+   * `systemd_interval`
+ * A bug that prevented merging the global `php::settings` parameter into
+   SAPI configs for `php::cli` and `php::fpm` was fixed.
+ * The dotdeb repos are now only installed for Debian wheezy as Debian jessie
+   has a sufficiently recent PHP version.
 
-#### 2013-10-01 - 0.3.7
-* Manage the incorrectly named php-apc package under Debian (Jeroen Moors).
+## 3.2.2
+ * Fix a typo in hiera keys `php::settings` & `php::fpm::settings` (#83)
 
-#### 2013-09-30 - 0.3.6
-* Enable using a custom template for php.ini (Nick Schuch).
+## 3.2.1
+ * Fixed default `yum_repo` key in `php::repo::redhat`
+ * On Ubuntu precise we now use the ondrej/php5-oldstable ppa. This can be
+   manually enabled with by setting `$php::repo::ubuntu::oldstable` to
+   `true`.
+ * `$php::ensure` now defaults to `present` instead of `latest`. Though,
+   strictly speaking, this represents a functional change, we consider this
+   to be a bugfix because automatic updates should be enabled explicitely.
+ * `$php::ensure` is not anymore passed to `php::extension` resources as
+   default ensure parameter because this doesn't make sense.
 
-#### 2013-09-05 - 0.3.5
-* Add upload_tmp_dir php.ini option support (Andy Shinn).
-* Add soap related php.ini options support (Flavien Binet).
+## 3.2.0
+ * Support for FreeBSD added by Frank Wall
+ * RedHat now uses remi-php56 yum repo by default
+ * The resource `php::fpm::pool` is now public, you can use it in your
+   manifests without using `$php::fpm::pools`
+ * We now have autogenerated documentation using `puppetlabs/strings`
 
-#### 2013-08-30 - 0.3.3
-* Use @varname syntax in fpm templates too.
-* Fix php::module::ini when ensure is absent.
-* Fix directory create for FPM (Erik Webb).
-* Fix conf.d directory location for Debian (Erik Webb).
+## 3.1.0
+ * New parameter `pool_purge` for `php::extension` to remove files not
+   managed by puppet from the pool directory.
+ * The `pecl_source` parameter for `php::extension` was renamend to
+   `source` because it is also useful for PEAR extensions.
+   `pecl_source` can still be used but is deprecated and will be
+   removed in the next major release.
+ * Parameters referring to time in `php::fpm::config` can now be
+   specified with units (i.e. `'60s'`, `'1d'`):
+   * `emergency_restart_threshold`
+   * `emergency_restart_interval`
+   * `process_control_timeout`
+ * The PEAR version is not independant of `$php::ensure` and can be
+   configured with `$php::pear_ensure`
+ * Give special thanks to the contributors of this release:
+   * Petr Sedlacek
+   * Sherlan Moriah
 
-#### 2013-06-13 - 0.3.2
-* Add phar.readonly php.ini option support.
-* Use undef for parameter defaults when not being used in php.ini.
-* Remove the commented out defaults in php.ini for parameters being set.
+## 3.0.1
+ * Fix typo in package suffix for php-fpm on RHEL in params.pp
 
-#### 2013-05-30 - 0.3.1
-* Update mod_php support to also work with Debian OS family.
+## 3.0.0
+ * Removes `$php::fpm::pool::error_log`. Use the `php_admin_flag` and
+   `php_admin_value` parameters to set the php settings `log_errors` and
+   `error_log` instead.
+ * Removes support for PHP 5.3 on Debian-based systems. See the notes in the
+   README for more information.
+ * Removes the `php_version` fact which had only worked on the later puppet runs.
+ * Moves CLI-package handling to `php::packages`
+ * Allows changing the package prefix via `php::package_prefix`.
+ * Moves FPM-package handling from `php::fpm::package` to `php::fpm`
+ * Changes `php::packages`, so that `php::packages::packages` becomes
+   `php::packages::names` and are installed and `php::packages::names_to_prefix`
+   are installed prefixed by `php::package_prefix`.
+ * PHPUnit is now installed as phar in the same way composer is installed,
+   causing all parameters to change
+ * The `php::extension` resource has a new parameter: `zend`. If set to true,
+   exenstions that were installed with pecl are loaded with `zend_extension`.
 
-#### 2013-05-30 - 0.3.0
-* Add support for Debian OS family (Scott Lewis).
+## 2.0.4
+ * Style fixes all over the place
+ * Module dependencies are now bound to the current major version
 
-#### 2013-04-19 - 0.2.5
-* Stop ugly group/mode thing for php-fpm log, use $log_dir_mode instead.
-* Use @varname syntax in templates to silence puppet 3.2 warnings.
+## 2.0.3
+ * Some issues & bugs with extensions were fixed
+ * If you set the `provider` parameter of an extension to `"none"`, no
+   extension packages will be installed
+ * The EPEL yum repo has been added for RedHat systems
 
-#### 2013-03-06 - 0.2.4
-* Minor clean ups.
-* Make /var/log/php-fpm group read-only when group is different from owner.
+## 2.0.2
+ * Adds support for `header_packages` on all extensions
+ * Adds `install_options` to pear package provider
 
-#### 2012-12-18 - 0.2.3
-* Add support for zend extensions.
+## 2.0.1
+ * This is a pure bug fix release
+   * Fix for CVE 2014-0185 (https://bugs.php.net/bug.php?id=67060)
 
-#### 2012-09-19 - 0.2.2
-* Fix session_auto_start in the php.ini template.
-* Fix ASP-style tags being processed as ERB in the php.ini template.
-* Allow passing a file path for each fpm pool error_log.
-* Add php_value/php_flag and php_admin_value/php_admin_flag in fpm pools.
+## 2.0.0
+ * Remove augeas and switch to puppetlabs/inifile for configs
+   * Old: `settings => [‘set PHP/short_open_tag On‘]`
+   * New: `settings => {‘PHP/short_open_tag’ => ‘On‘}`
+ * Settings parmeter cleanups
+   * The parameter `config` of `php::extension` resources is now called `settings`
+   * The parameters `user` and `group` of `php::fpm` have been moved to `php::fpm::config`
+   * New parameter `php::settings` for global settings (i.e. CLI & FPM)
+ * New parameter `php::cli` to disable CLI if supported
 
-#### 2012-04-26 - 0.2.1
-* Force sorting of module ini option hash to fix template with puppet 2.7+.
+## 1.1.2
+ * SLES: PHP 5.5 will now be installed
+ * Pecl extensions now autoload the .so based on $name instead of $title
 
-#### 2012-04-26 - 0.2.0
-* Clean up the module to match current puppetlabs guidelines.
-* Fix all broken smoke tests.
-* Major documentation update, adding more useful examples.
+## 1.1.1
+ * some nasty bugs with the pecl php::extension provider were fixed
+ * php::extension now has a new pecl_source parameter for specifying custom
+   source channels for the pecl provider
+
+## 1.1.0
+ * add phpunit to main class
+ * fix variable access for augeas
+
+## 1.0.2
+ * use correct suse apache service name
+ * fix anchoring of augeas
+
+## 1.0.1
+ * fixes #9 undefined pool_base_dir
+
+## 1.0.0
+Initial release
 

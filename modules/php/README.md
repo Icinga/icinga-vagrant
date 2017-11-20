@@ -1,113 +1,267 @@
-# puppet-php
+[![Puppet Forge](http://img.shields.io/puppetforge/v/voxpupuli/php.svg)](https://forge.puppetlabs.com/voxpupuli/php)
+[![Build Status](https://travis-ci.org/voxpupuli/puppet-php.svg?branch=master)](https://travis-ci.org/voxpupuli/puppet-php)
 
-## Overview
+## Current Status
+As the original creators of `puppet-php` are no longer maintaining the module, it has been handed over into the care of Vox Pupuli.
+Please be sure to update all your links to the new location.
 
-Install PHP packages and configure PHP INI files, for using PHP from the CLI,
-the Apache httpd module or FastCGI.
+# voxpupuli/php Puppet Module
 
-The module is very Red Hat Enterprise Linux focused, as the defaults try to
-change everything in ways which are typical for RHEL, but it also works on
-Debian based distributions (such as Ubuntu), and support for others should
-be easy to add.
+voxpupuli/php is a Puppet module for managing PHP with a strong focus
+on php-fpm. The module aims to use sane defaults for the supported
+architectures. We strive to support all recent versions of Debian,
+Ubuntu, RedHat/CentOS, openSUSE/SLES and FreeBSD. Managing Apache
+with `mod_php` is not supported.
 
-* `php::cli` : Simple class to install PHP's Command Line Interface
-* `php::fpm::daemon` : Simple class to install PHP's FastCGI Process Manager
-* `php::fpm::conf` : PHP FPM pool configuration definition
-* `php::ini` : Definition to create php.ini files
-* `php::mod_php5` : Simple class to install PHP's Apache httpd module
-* `php::module` : Definition to manage separately packaged PHP modules
-* `php::module::ini` : Definition to manage the ini files of separate modules
+This originally was a fork of [jippi/puppet-php](https://github.com/jippi/puppet-php)
+(nodes-php on Puppet Forge) but has since been rewritten in large parts.
 
-## Examples
+## Usage
 
-Create `php.ini` files for different uses, but based on the same template :
+Quickest way to get started is simply `include`'ing the _`php` class_.
 
 ```puppet
-php::ini { '/etc/php.ini':
-  display_errors => 'On',
-  memory_limit   => '256M',
+include '::php'
+```
+
+Or, you can override defaults and specify additional custom
+configurations by declaring `class { '::php': }` with parameters:
+
+```puppet
+class { '::php':
+  ensure       => latest,
+  manage_repos => true,
+  fpm          => true,
+  dev          => true,
+  composer     => true,
+  pear         => true,
+  phpunit      => false,
 }
-php::ini { '/etc/httpd/conf/php.ini':
-  mail_add_x_header => 'Off',
-  # For the parent directory
-  require           => Package['httpd'],
+```
+
+Optionally the PHP version or configuration root directory can be changed also:
+
+```puppet
+class { '::php::globals':
+  php_version => '7.0',
+  config_root => '/etc/php/7.0',
+}->
+class { '::php':
+  manage_repos => true
 }
 ```
 
-Install the latest version of the PHP command line interface in your OS's
-package manager (e.g. Yum for RHEL):
+There are more configuration options available. Please refer to the
+auto-generated documentation at http://php.puppet.mayflower.de/.
+
+### Defining `php.ini` settings
+
+PHP configuration parameters in `php.ini` files can be defined as parameter
+`settings` on the main `php` class, or `php::fpm` / `php::cli` classes,
+or `php::extension` resources for each component independently.
+
+These settings are written into their respective `php.ini` file. Global
+settings in `php::settings` are merged with the settings of all components.
+Please note that settings of extensions are always independent.
+
+In the following example the PHP options and timezone will be set in
+all PHP configurations, i.e. the PHP cli application and all php-fpm pools.
 
 ```puppet
-include '::php::cli'
-```
-
-Install version 5.3.3 of the PHP command line interface :
-
-```puppet
-class { 'php::cli': ensure => '5.3.3' }
-```
-
-Install the PHP Apache httpd module, using its own php configuration file
-(you will need mod_env in apache for this to work) :
-
-```puppet
-class { 'php::mod_php5': inifile => '/etc/httpd/conf/php.ini' }
-```
-
-Install PHP modules which don't have any configuration :
-
-```puppet
-php::module { [ 'ldap', 'mcrypt' ]: }
-```
-
-Configure PHP modules, which must be installed with php::module first :
-
-```puppet
-php::module { [ 'pecl-apc', 'xml' ]: }
-php::module::ini { 'pecl-apc':
-  settings => {
-    'apc.enabled'      => '1',
-    'apc.shm_segments' => '1',
-    'apc.shm_size'     => '64',
+  class { '::php':
+    settings   => {
+      'PHP/max_execution_time'  => '90',
+      'PHP/max_input_time'      => '300',
+      'PHP/memory_limit'        => '64M',
+      'PHP/post_max_size'       => '32M',
+      'PHP/upload_max_filesize' => '32M',
+      'Date/date.timezone'      => 'Europe/Berlin',
+    },
   }
-}
-php::module::ini { 'xmlreader': pkgname => 'xml' }
-php::module::ini { 'xmlwriter': ensure => 'absent' }
 ```
 
-Install PHP FastCGI Process Manager with a single pool to be used with nginx.
-Note that we reuse the 'www' name to overwrite the example configuration :
+### Installing extensions
+
+PHP configuration parameters in `php.ini` files can be defined
+as parameter `extensions` on the main `php` class. They are
+activated for all activated SAPIs.
 
 ```puppet
-include '::php::fpm::daemon'
-php::fpm::conf { 'www':
-  listen  => '127.0.0.1:9001',
-  user    => 'nginx',
-  # For the user to exist
-  require => Package['nginx'],
-}
+  class { '::php':
+    extensions => {
+      bcmath    => { },
+      imagick   => {
+        provider => pecl,
+      },
+      xmlrpc    => { },
+      memcached => {
+        provider        => 'pecl',
+        header_packages => [ 'libmemcached-devel', ],
+      },
+      apc       => {
+        provider => 'pecl',
+        settings => {
+          'apc/stat'       => '1',
+          'apc/stat_ctime' => '1',
+        },
+        sapi     => 'fpm',
+      },
+    },
+  }
 ```
 
-Then from the nginx configuration :
+See [the documentation](http://php.puppet.mayflower.de/php/extension.html)
+of the `php::extension` resource for all available parameters and default
+values.
 
-```
-# PHP FastCGI backend
-upstream wwwbackend {
-  server 127.0.0.1:9001;
-}
-# Proxy PHP requests to the FastCGI backend
-location ~ \.php$ {
-  # Don't bother PHP if the file doesn't exist, return the built in
-  # 404 page (this also avoids "No input file specified" error pages)
-  if (!-f $request_filename) { return 404; }
-  include /etc/nginx/fastcgi.conf;
-  fastcgi_pass wwwbackend;
-}
-# Try to send all non-existing files to the main /index.php
-# (typically if you have a PHP framework requiring this)
-location @indexphp {
-  if (-f $document_root/index.php) { rewrite .* /index.php last; }
-}
-try_files $uri @indexphp;
+### Defining php-fpm pools
+
+If different php-fpm pools are required, you can use `php::fpm::pool`
+defined resource type. A single pool called `www` will be configured
+by default. Specify additional pools like so:
+
+```puppet
+  php::fpm::pool { 'www2':
+    listen => '127.0.1.1:9000',
+  }
 ```
 
+For an overview of all possible parameters for `php::fpm::pool` resources
+please see [its documention](http://php.puppet.mayflower.de/php/fpm/pool.html).
+
+### Alternative examples using Hiera
+Alternative to the Puppet DSL code examples above, you may optionally define your PHP configuration using Hiera.
+
+Below are all the examples you see above, but defined in YAML format for use with Hiera.
+
+```yaml
+---
+php::ensure: latest
+php::manage_repos: true
+php::fpm: true
+php::dev: true
+php::composer: true
+php::pear: true
+php::phpunit: false
+php::settings:
+  'PHP/max_execution_time': '90'
+  'PHP/max_input_time': '300'
+  'PHP/memory_limit': '64M'
+  'PHP/post_max_size': '32M'
+  'PHP/upload_max_filesize': '32M'
+  'Date/date.timezone': 'Europe/Berlin'
+php::extensions:
+  bcmath: {}
+  xmlrpc: {}
+  imagick:
+    provider: pecl
+  memcached:
+    provider: pecl
+    header_packages:
+      - libmemcached-dev
+  apc:
+    provider: pecl
+    settings:
+      'apc/stat': 1
+      'apc/stat_ctime': 1
+    sapi: 'fpm'
+php::fpm::pools:
+  www2:
+    listen: '127.0.1.1:9000'
+```
+
+## Notes
+
+### Debian squeeze & Ubuntu precise come with PHP 5.3
+
+On Debian-based systems, we use `php5enmod` to enable extension-specific
+configuration. This script is only present in `php5` packages beginning with
+version 5.4. Furthermore, PHP 5.3 is not supported by upstream anymore.
+
+We strongly suggest you use a recent PHP version, even if you're using an
+older though still supported distribution release. Our default is to have
+`php::manage_repos` enabled to add apt sources for
+[Dotdeb](http://www.dotdeb.org/) on Debian and
+[ppa:ondrej/php5](https://launchpad.net/~ondrej/+archive/ubuntu/php5/) on
+Ubuntu with packages for the current stable PHP version closely tracking
+upstream.
+
+### Ubuntu systems and Ondřej's PPA
+
+The older Ubuntu PPAs run by Ondřej have been deprecated (ondrej/php5, ondrej/php5.6)
+in favor of a new PPA: ondrej/php which contains all 3 versions of PHP: 5.5, 5.6, and 7.0
+Here's an example in hiera of getting PHP 5.6 installed with php-fpm, pear/pecl, and composer:
+
+```
+php::globals::php_version: '5.6'
+php::fpm: true
+php::dev: true
+php::composer: true
+php::pear: true
+php::phpunit: false
+```
+
+If you do not specify a php version, in Ubuntu the default will be 7.0 if you are
+running Xenial (16.04), otherwise PHP 5.6 will be installed (for other versions)
+
+### Apache support
+
+Apache with `mod_php` is not supported by this module. Please use
+[puppetlabs/apache](https://forge.puppetlabs.com/puppetlabs/apache) instead.
+
+We prefer using php-fpm. You can find an example Apache vhost in
+`manifests/apache_vhost.pp` that shows you how to use `mod_proxy_fcgi` to
+connect to php-fpm.
+
+### Facts
+
+We deliver a `phpversion` fact with this module. This is explicitly **NOT** intended
+to be used within your puppet manifests as it will only work on your second puppet
+run. Its intention is to make querying PHP versions per server easy via PuppetDB or Foreman.
+
+### FreeBSD support
+
+On FreeBSD systems we purge the system-wide `extensions.ini` in favour of
+per-module configuration files.
+
+Please also note that support for Composer and PHPUnit on FreeBSD is untested
+and thus likely incomplete.
+
+### Running the test suite
+
+To run the tests install the ruby dependencies with `bundler` and execute
+`rake`:
+
+```
+bundle install --path vendor/bundle
+bundle exec rake
+```
+
+## Bugs & New Features
+
+If you happen to stumble upon a bug, please feel free to create a pull request
+with a fix (optionally with a test), and a description of the bug and how it
+was resolved.
+
+Or if you're not into coding, simply create an issue adding steps to let us
+reproduce the bug and we will happily fix it.
+
+If you have a good idea for a feature or how to improve this module in general,
+please create an issue to discuss it. We are very open to feedback. Pull
+requests are always welcome.
+
+We hate orphaned and unmaintained Puppet modules as much as you do and
+therefore promise that we will continue to maintain this module and keep
+response times to issues short. If we happen to lose interest, we will write
+a big fat warning into this README to let you know.
+
+## License
+
+The project is released under the permissive MIT license.
+
+The source can be found at
+[github.com/voxpupuli/puppet-php](https://github.com/voxpupuli/puppet-php/).
+
+This Puppet module was originally maintained by some fellow puppeteers at
+[Mayflower GmbH](https://mayflower.de) and is now maintained by
+[Vox Pupuli](https://voxpupuli.org/).

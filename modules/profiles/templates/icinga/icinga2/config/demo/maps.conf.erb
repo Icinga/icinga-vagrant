@@ -1,0 +1,126 @@
+/*
+ * Generate demo config for map and globe module.
+ * Latitude values can be fetched from http://www.latlong.net
+ */
+
+/* Specify some readable locations */
+const GeoLocation = {
+  "amsterdam" = "52.370216,4.895168",
+  "bangalore" = "12.971599,77.594563",
+  "bangkok" = "13.756331,100.501765",
+  "beijing" = "39.904200,116.407396",
+  "berlin" = "52.524372,13.389856",
+  "buenos aires" = "-34.603684,-58.381559",
+  "kapstadt" = "-33.924869,18.424055"
+  "new york" = "40.712784,-74.005941",
+  "nuremberg" = "49.425409,11.079655",
+  "london" = "51.507351,-0.127758",
+  "los angeles" = "34.052234,-118.243685",
+  "montreal" = "45.501689,-73.567256",
+  "moscow" = "55.755826,37.617300",
+  "new york" = "40.712784,-74.005941",
+  "paris" = "48.856614,2.352222",
+  "prague" = "50.075538,14.437800",
+  "rio de janeiro" = "-22.906847,-43.172896",
+  "san francisco" = "37.774929,-122.419416",
+  "sydney" = "-33.865143,151.209900",
+  "stockholm" = "59.329323,18.068581",
+  "tokyo" = "35.689487,139.691706",
+  "vienna" = "48.208174,16.373819",
+  "zurich" = "47.376887,8.541694",
+}
+
+/* Provide a lookup dictionary for short values in host names (you won't need it, but it is more readable) */
+const GeoLocationShort = {
+  "sf" = "san francisco"
+  "la" = "los angeles"
+}
+
+/*
+ * Extract host location from the hostname itself, "sf" is the location
+ * "sf" is short for "san francisco", perform a lookup in GeoLocationShort first
+ * "san francisco" should be located inside GeoLocation
+ */
+
+globals.getHostGeoLocation = function(hostName) {
+  /* XXX: Use your own name pattern and extract the location */
+  var loc = hostName.substr(1,2)
+
+  /* Better error handling needed */
+  if (!GeoLocationShort.contains(loc)) {
+    log(LogWarning, "globals.getHostGeoLocation", "Cannot find '" + loc + "' in GeoLocationShort")
+    return null
+  }
+
+  var loc_idx = GeoLocationShort[loc]
+  log(LogDebug, "globals.getHostGeoLocation", "Evaluating host " + hostName + " and location " + loc + " (" + loc_idx + ") ")
+
+  /* Better error handling needed */
+  if (!GeoLocation.contains(loc_idx)) {
+    log(LogWarning, "globals.getHostGeoLocation", "Cannot find '" + loc_idx + "' in GeoLocation")
+    return null
+  }
+
+  return GeoLocation[loc_idx]
+}
+
+/*
+ * Use the function inside a host template (hides the logic)
+ */
+
+template Host "geo-host" {
+  var loc = getHostGeoLocation(name)
+
+  if (loc) {
+    vars.geolocation = loc
+  }
+}
+
+/* This host will match and retrieve geolocation */
+object Host "esfapp01" {
+  import "geo-host"
+  check_command = "dummy"
+}
+
+/* This host does not match a geolocation */
+object Host "ebeapp01" {
+  import "geo-host"
+  check_command = "dummy"
+}
+
+
+/* Generate demo hosts based on global GeoLocation dictionary */
+for (location => lat_long in globals.GeoLocation) {
+
+  /* Generate a random number of hosts, at least 1 for each location */
+  var count = Math.floor(Math.random() * 10);
+  if (count == 0) {
+    count = 1
+  } else if (count > 2) {
+    count = 2
+  }
+
+  for (c in range(count)) {
+    /* Avoid white spaces in object names, I just don't like them with auto-completion */
+    var location_str = location.replace(" ", "-")
+
+    /* Bind location, lat_long via use into the object scope and assign them to notes/custom attr */
+    object Host "map-server-" + location_str + "-" + c use (location, lat_long) {
+      check_command = "random"
+
+      notes = "map host in " + location
+      vars.geolocation = lat_long
+    }
+  }
+}
+
+/* Add some demo services which are shown on the map */
+for (c in range(2)) {
+  apply Service "map-" + c {
+    check_command = "random"
+    check_interval = 1m
+    retry_interval = 1m
+    vars.geolocation = host.vars.geolocation
+    assign where host.vars.geolocation
+  }
+}
