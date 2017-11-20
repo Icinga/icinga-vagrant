@@ -96,6 +96,8 @@ for (location => lat_long in globals.GeoLocation) {
   var count = Math.floor(Math.random() * 10);
   if (count == 0) {
     count = 1
+  } else if (count > 2) {
+    count = 2
   }
 
   for (c in range(count)) {
@@ -113,7 +115,7 @@ for (location => lat_long in globals.GeoLocation) {
 }
 
 /* Add some demo services which are shown on the map */
-for (c in range(5)) {
+for (c in range(2)) {
   apply Service "map-" + c {
     check_command = "random"
     check_interval = 1m

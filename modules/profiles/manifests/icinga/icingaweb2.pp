@@ -156,6 +156,30 @@ class profiles::icinga::icingaweb2 (
   #  ensure => stopped,
   #}
 
+  if ('map' in $modules) {
+    # TODO: generic layout
+    $module = 'map'
+    icingaweb2::module { "${module}":
+      builtin => false,
+      repo_url => "https://github.com/nbuchwitz/icingaweb2-module-${module}"
+    }
+    ->
+    file { "/etc/icingaweb2/modules/${module}":
+      ensure => directory,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '2770'
+    }
+    ->
+    file { "/etc/icingaweb2/modules/${module}/config.ini":
+      ensure => present,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '0660',
+      content => template("profiles/icinga/icingaweb2/modules/${module}/config.ini.erb")
+    }
+
+  }
 
   if ('grafana' in $modules) {
     $datasource = $modules['grafana']['datasource']

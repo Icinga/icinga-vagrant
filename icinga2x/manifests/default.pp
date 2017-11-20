@@ -29,7 +29,8 @@ class { '::profiles::icinga::icingaweb2':
       "datasource"  => "graphite",
       "listen_ip"   => $hostOnlyIP,
       "listen_port" => $grafanaListenPort
-    }
+    },
+    "map" => {}
   }
 }
 ->
