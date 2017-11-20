@@ -18,11 +18,14 @@ class { '::profiles::base::apache': }
 ->
 class { '::profiles::base::java': }
 ->
-class { '::profiles::icinga::icinga2': }
+class { '::profiles::icinga::icinga2':
+  features => [ "gelf" ]
+}
 ->
 class { '::profiles::icinga::icingaweb2':
   icingaweb2_listen_ip => $hostOnlyIP,
-  icingaweb2_fqdn => $hostOnlyFQDN
+  icingaweb2_fqdn => $hostOnlyFQDN,
+  modules => {}
 }
 ->
 class { '::profiles::graylog::elasticsearch':

@@ -199,6 +199,9 @@ class profiles::icinga::icinga2 (
    if ('influxdb' in $features) {
      icinga2::feature { 'influxdb': }
    }
+   if ('gelf' in $features) {
+     icinga2::feature { 'gelf': }
+   }
 
 }
 
