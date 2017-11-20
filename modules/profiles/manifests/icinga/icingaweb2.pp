@@ -181,6 +181,63 @@ class profiles::icinga::icingaweb2 (
 
   }
 
+  if ('cube' in $modules) {
+    icingaweb2::module { 'cube':
+      builtin => false
+    }
+  }
+
+  if ('globe' in $modules) {
+    icingaweb2::module { 'globe':
+      builtin => false,
+      repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-globe'
+    }
+  }
+
+  if ('businessprocess' in $modules) {
+    icingaweb2::module { 'businessprocess':
+      builtin => false
+    }
+    ->
+    file { '/etc/icingaweb2/modules/businessprocess':
+      ensure => directory,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '2770'
+    }
+    ->
+    file { '/etc/icingaweb2/modules/businessprocess/processes':
+      ensure => directory,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '2770'
+    }
+    ->
+    file { '/etc/icingaweb2/modules/businessprocess/processes/all.conf':
+      ensure => present,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '0660',
+      content => template("profiles/icinga/icingaweb2/modules/businessprocess/processes/all.conf.erb")
+    }
+    ->
+    file { '/etc/icingaweb2/modules/businessprocess/processes/web.conf':
+      ensure => present,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '0660',
+      content => template("profiles/icinga/icingaweb2/modules/businessprocess/processes/web.conf.erb")
+    }
+    ->
+    file { '/etc/icingaweb2/modules/businessprocess/processes/mysql.conf':
+      ensure => present,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '0660',
+      content => template("profiles/icinga/icingaweb2/modules/businessprocess/processes/mysql.conf.erb")
+    }
+  }
+
   if ('grafana' in $modules) {
     $datasource = $modules['grafana']['datasource']
     $listen_ip = $modules['grafana']['listen_ip']

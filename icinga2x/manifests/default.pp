@@ -30,6 +30,8 @@ class { '::profiles::icinga::icingaweb2':
       "listen_ip"   => $hostOnlyIP,
       "listen_port" => $grafanaListenPort
     },
+    "businessprocess" => {},
+    "cube" => {},
     "map" => {}
   }
 }
@@ -168,28 +170,3 @@ class { '::profiles::dashing::icinga2': }
 #}
 #->
 
-####################################
-# More Icinga Web 2 modules
-####################################
-
-#icingaweb2::module { 'cube':
-#  builtin => false
-#}
-#->
-#icingaweb2::module { 'globe':
-#  builtin => false,
-#  repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-globe'
-#}
-#->
-#icingaweb2::module { 'map':
-#  builtin => false,
-#  repo_url => 'https://github.com/nbuchwitz/icingaweb2-module-map'
-#}->
-#file { '/etc/icingaweb2/modules/map':
-#  ensure => directory,
-#  recurse => true,
-#  owner  => root,
-#  group  => icingaweb2,
-#  mode => '2770',
-#  source    => "puppet:////vagrant/files/etc/icingaweb2/modules/map",
-#}
