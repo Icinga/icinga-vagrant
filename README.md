@@ -24,7 +24,7 @@ the Icinga ecosystem and possible integrations.
 You can use these boxes for your own local demos, or to learn how to use Icinga
 in your environment.
 
-* [Icinga 2 Standalone](README.md#boxes-icinga2x), [Icinga 2 Cluster](README.md#boxes-icinga2x-cluster), [Icinga 2 HA Cluster](README.md#boxes-icinga2x-ha-cluster)
+* [Icinga 2 Standalone](README.md#boxes-icinga2x), [Icinga 2 Cluster](README.md#boxes-icinga2x-cluster)
 * [Icinga 2 and InfluxDB](README.md#boxes-icinga2x-influxdb)
 * [Icinga 2 and Elastic](README.md#boxes-icinga2x-elastic)
 * [Icinga 2 and Graylog](README.md#boxes-icinga2x-graylog)
@@ -258,30 +258,6 @@ $ cd icinga2x-cluster && vagrant up
   Icinga Web 2      | http://192.168.33.20/icingaweb2       | icingaadmin/icinga
   Icinga 2 API      | https://192.168.33.10:5665/v1         | root/icinga
   Icinga 2 API      | https://192.168.33.20:5665/v1         | root/icinga
-
-
-### Icinga 2 HA Cluster <a id="boxes-icinga2x-ha-cluster"></a>
-
-* 2 Master VMs, 1 Satellite VM
-* [Icinga 2](https://www.icinga.com/products/icinga-2/)
-* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-
-Run Vagrant:
-
-```
-$ cd icinga2x-ha-cluster && vagrant up
-```
-
-#### Application Interfaces
-
-  Application       | Url                                   | Credentials
-  ------------------|---------------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.101/icingaweb2      | icingaadmin/icinga
-  Icinga Web 2      | http://192.168.33.102/icingaweb2      | icingaadmin/icinga
-  Icinga Web 2      | http://192.168.33.103/icingaweb2      | icingaadmin/icinga
-  Icinga 2 API      | https://192.168.33.101:5665/v1        | root/icinga
-  Icinga 2 API      | https://192.168.33.102:5665/v1        | root/icinga
-  Icinga 2 API      | https://192.168.33.103:5665/v1        | root/icinga
 
 
 ### Icinga 2 InfluxDB <a id="boxes-icinga2x-influxdb"></a>
