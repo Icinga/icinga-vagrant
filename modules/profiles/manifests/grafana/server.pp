@@ -22,49 +22,44 @@ class profiles::grafana::server (
   }
 
 
-  if ($backend == 'graphite') {
-
-  } elsif ($backend == 'influxdb') {
-    # there are no static config files for data sources in grafana2
-    # https://github.com/grafana/grafana/issues/1789
-    file { 'grafana-influxdb-setup':
-      name => '/usr/local/bin/grafana-influxdb-setup',
-      owner => root,
-      group => root,
-      mode => '0755',
-      content => template('profiles/grafana/grafana-influxdb-setup.erb')
-    }
-    ->
-    file { 'influxdb-dashboard-vagrant-grafana-demo':
-      name => '/etc/grafana/influxdb-dashboard-vagrant-grafana-demo.json',
-      owner => root,
-      group => root,
-      mode => '0644',
-      content => template('profiles/grafana/templates/influxdb-dashboard-vagrant-grafana-demo.json.erb')
-    }
-    ->
-    file { 'influxdb-base-metrics_grafana-web-module':
-      name => '/etc/grafana/influxdb-base-metrics_grafana-web-module.json',
-      owner => root,
-      group => root,
-      mode => '0644',
-      content => template('profiles/grafana/templates/influxdb-base-metrics_grafana-web-module.json.erb')
-    }
-    ->
-    file { 'influxdb-icinga2-default-grafana-web-module':
-      name => '/etc/grafana/influxdb-icinga2-default-grafana-web-module.json',
-      owner => root,
-      group => root,
-      mode => '0644',
-      content => template('profiles/grafana/templates/influxdb-icinga2-default-grafana-web-module.json.erb')
-    }
-    ->
-    exec { 'finish-grafana-influxdb-setup':
-      path => '/bin:/usr/bin:/sbin:/usr/sbin',
-      command => "/usr/local/bin/grafana-influxdb-setup",
-      require => [ Class['grafana::service'], Class['influxdb::server::service'] ]
-    }
-
+  # there are no static config files for data sources in grafana2
+  # https://github.com/grafana/grafana/issues/1789
+  file { "grafana-${backend}-setup":
+    name => "/usr/local/bin/grafana-${backend}-setup",
+    owner => root,
+    group => root,
+    mode => "0755",
+    content => template("profiles/grafana/grafana-${backend}-setup.erb")
+  }
+  ->
+  file { "${backend}-dashboard-vagrant-grafana-demo":
+    name => "/etc/grafana/${backend}-dashboard-vagrant-grafana-demo.json",
+    owner => root,
+    group => root,
+    mode => "0644",
+    content => template("profiles/grafana/templates/${backend}-dashboard-vagrant-grafana-demo.json.erb")
+  }
+  ->
+  file { "${backend}-base-metrics-grafana-web-module":
+    name => "/etc/grafana/${backend}-base-metrics-grafana-web-module.json",
+    owner => root,
+    group => root,
+    mode => "0644",
+    content => template("profiles/grafana/templates/${backend}-base-metrics-grafana-web-module.json.erb")
+  }
+  ->
+  file { "${backend}-icinga2-default-grafana-web-module":
+    name => "/etc/grafana/${backend}-icinga2-default-grafana-web-module.json",
+    owner => root,
+    group => root,
+    mode => "0644",
+    content => template("profiles/grafana/templates/${backend}-icinga2-default-grafana-web-module.json.erb")
+  }
+  ->
+  exec { "finish-grafana-${backend}-setup":
+    path => "/bin:/usr/bin:/sbin:/usr/sbin",
+    command => "/usr/local/bin/grafana-${backend}-setup",
+    require => Class["grafana::service"]
   }
 
 }

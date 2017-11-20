@@ -28,6 +28,12 @@ class profiles::base::system {
     content => template("profiles/base/env.sh.erb")
   }
   ->
+  file { '/etc/gemrc':
+    owner => root,
+    group => root,
+    content => template("profiles/base/gemrc.erb")
+  }
+  ->
   exec { 'update-path':
     provider    => shell,
     command     => '. /etc/profile',

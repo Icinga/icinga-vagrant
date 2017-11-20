@@ -1,4 +1,4 @@
-class profiles::graphite::icinga2 (
+class profiles::graphite::server (
   $listen_ip = '192.168.33.5',
   $listen_port = 8003,
   $graphite_fqdn = 'graphite.vagrant.demo.icinga.com'

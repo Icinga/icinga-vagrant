@@ -4,7 +4,8 @@
 
 $hostOnlyIP = '192.168.33.5'
 $hostOnlyFQDN = 'icinga2x.vagrant.demo.icinga.com'
-$graphitePort = 8003
+$graphiteListenPort = 8003
+$grafanaListenPort = 8004
 
 ####################################
 # Setup
@@ -16,49 +17,36 @@ class { '::profiles::base::mysql': }
 ->
 class { '::profiles::base::apache': }
 ->
-class { '::profiles::icinga::icinga2': }
+class { '::profiles::icinga::icinga2':
+  features => [ "graphite" ]
+}
 ->
 class { '::profiles::icinga::icingaweb2':
   icingaweb2_listen_ip => $hostOnlyIP,
-  icingaweb2_fqdn => $hostOnlyFQDN
+  icingaweb2_fqdn => $hostOnlyFQDN,
+  modules => {
+    "grafana" => {
+      "datasource"  => "graphite",
+      "listen_ip"   => $hostOnlyIP,
+      "listen_port" => $grafanaListenPort
+    }
+  }
 }
 ->
-class { '::profiles::graphite::icinga2':
-  listen_port => $graphitePort
+class { '::profiles::graphite::server':
+  listen_ip   => $hostOnlyIP,
+  listen_port => $graphiteListenPort
 }
-
-icinga2::feature { 'graphite': }
+->
+class { '::profiles::grafana::server':
+  listen_port => $grafanaListenPort,
+  version => '4.2.0-1',
+  backend => "graphite"
+}
 #->
 #class { '::profiles::dashing::icinga2': }
 
 
-#file { '/etc/icinga2/icinga2.conf':
-#  owner  => icinga,
-#  group  => icinga,
-#  source    => "puppet:////vagrant/files/etc/icinga2/icinga2.conf",
-#  notify    => Service['icinga2']
-#}
-#->
-#file { "/etc/icinga2/zones.conf":
-#  owner  => icinga,
-#  group  => icinga,
-#  source    => "puppet:////vagrant/files/etc/icinga2/zones.conf",
-#  notify    => Service['icinga2']
-#}
-#->
-#file { '/etc/icinga2/conf.d/hosts.conf':
-#  owner  => icinga,
-#  group  => icinga,
-#  source    => 'puppet:////vagrant/files/etc/icinga2/conf.d/hosts.conf',
-#  notify    => Service['icinga2']
-#}
-#->
-#file { '/etc/icinga2/conf.d/additional_services.conf':
-#  owner  => icinga,
-#  group  => icinga,
-#  source    => 'puppet:////vagrant/files/etc/icinga2/conf.d/additional_services.conf',
-#  notify    => Service['icinga2']
-#}
 #->
 ## user-defined preferences (using the iframe module)
 #file { '/etc/icingaweb2/preferences':
@@ -204,93 +192,3 @@ icinga2::feature { 'graphite': }
 #  mode => '2770',
 #  source    => "puppet:////vagrant/files/etc/icingaweb2/modules/map",
 #}
-####################################
-# Grafana
-####################################
-
-# https://github.com/bfraser/puppet-grafana
-class { 'grafana':
-  package_source => 'https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-4.2.0-1.x86_64.rpm',
-  cfg => {
-    app_mode => 'production',
-    server   => {
-      http_port     => 8004,
-    },
-    users    => {
-      allow_sign_up => false,
-    },
-    security => {
-      admin_user => 'admin',
-      admin_password => 'admin',
-    },
-  },
-}
-->
-# there are no static config files for data sources in grafana2
-# https://github.com/grafana/grafana/issues/1789
-file { 'grafana-setup':
-  name => '/usr/local/bin/grafana-setup',
-  owner => root,
-  group => root,
-  mode => '0755',
-  source => "puppet:////vagrant/files/usr/local/bin/grafana-setup",
-}
-->
-file { 'grafana-dashboard-icinga2':
-  name => '/etc/icinga2/grafana-dashboard-icinga2.json',
-  owner => root,
-  group => root,
-  mode => '0644',
-  source => "puppet:////vagrant/files/etc/icinga2/grafana-dashboard-icinga2.json",
-}
-->
-file { 'grafana-dashboard-graphite-base-metrics':
-  name => '/etc/icinga2/graphite-base-metrics.json',
-  owner => root,
-  group => root,
-  mode => '0644',
-  source => "puppet:////vagrant/files/etc/icinga2/graphite-base-metrics.json",
-}->
-file { 'grafana-dashboard-graphite-icinga2-default':
-  name => '/etc/icinga2/graphite-icinga2-default.json',
-  owner => root,
-  group => root,
-  mode => '0644',
-  source => "puppet:////vagrant/files/etc/icinga2/graphite-icinga2-default.json",
-}
-->
-exec { 'finish-grafana-setup':
-  path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => "/usr/local/bin/grafana-setup",
-  notify => Class['apache::service']
-}
-
-####################################
-# Icinga Web 2 Grafana Module
-####################################
-#->
-#icingaweb2::module { 'grafana':
-#  builtin => false,
-#  repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-grafana'
-#}->
-#file { '/etc/icingaweb2/modules/grafana':
-#  ensure => directory,
-#  recurse => true,
-#  owner  => root,
-#  group  => icingaweb2,
-#  mode => '2770',
-#  source    => "puppet:////vagrant/files/etc/icingaweb2/modules/grafana",
-#}
-#
-####################################
-# Clippy.js
-####################################
-vcsrepo { '/var/www/html/icinga2-api-examples':
-  ensure   => 'present',
-  path     => '/var/www/html/icinga2-api-examples',
-  provider => 'git',
-  revision => 'master',
-  source   => 'https://github.com/Icinga/icinga2-api-examples.git',
-  force    => true,
-  require  => Package['git']
-}

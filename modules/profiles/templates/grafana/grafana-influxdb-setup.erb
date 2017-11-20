@@ -45,7 +45,7 @@ echo -e "Adding Icinga 2 dashboard"
 curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/influxdb-dashboard-vagrant-grafana-demo.json
 
 echo -e "Adding Icinga Web 2 Grafana Module Dashboards"
-curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/influxdb-base-metrics_grafana-web-module.json
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/influxdb-base-metrics-grafana-web-module.json
 curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/influxdb-icinga2-default-grafana-web-module.json
 
 # diff for future reference
