@@ -1,6 +1,7 @@
 class profiles::icinga::icingaweb2 (
   $icingaweb2_listen_ip = '192.168.33.5',
-  $icingaweb2_fqdn = 'icingaweb2.vagrant-demo.icinga.com'
+  $icingaweb2_fqdn = 'icingaweb2.vagrant-demo.icinga.com',
+  $modules = {}
 ) {
 
   # TODO: Replace Apache with Nginx
@@ -155,4 +156,54 @@ class profiles::icinga::icingaweb2 (
   #  ensure => stopped,
   #}
 
+
+  if ('grafana' in $modules) {
+    $datasource = $modules['grafana']['datasource']
+    $listen_ip = $modules['grafana']['listen_ip']
+    $listen_port = $modules['grafana']['listen_port']
+
+    icingaweb2::module { 'grafana':
+      builtin => false,
+      repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-grafana'
+    }
+    ->
+    file { '/etc/icingaweb2/modules/grafana':
+      ensure => directory,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '2770',
+      require => Package['icingaweb2']
+    }
+    ->
+    file { '/etc/icingaweb2/modules/grafana/config.ini':
+      ensure => present,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '0660',
+      content => template("profiles/icinga/icingaweb2/modules/grafana/config.ini.erb")
+    }
+    ->
+    file { '/etc/icingaweb2/preferences':
+      ensure => directory,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '2770',
+      require => Package['icingaweb2']
+    }
+    ->
+    file { '/etc/icingaweb2/preferences/icingaadmin':
+      ensure => directory,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '2770',
+    }
+    ->
+    file { '/etc/icingaweb2/preferences/icingaadmin/menu.ini': #TODO: Use Concat::Fragment and do not override it
+      ensure => present,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '0660',
+      content => template("profiles/icinga/icingaweb2/preferences/icingaadmin/menu_grafana.ini.erb")
+    }
+  }
 }

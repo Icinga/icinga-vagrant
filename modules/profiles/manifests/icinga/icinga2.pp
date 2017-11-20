@@ -1,4 +1,6 @@
-class profiles::icinga::icinga2 {
+class profiles::icinga::icinga2 (
+  $features = []
+){
   class { '::icinga2': } # TODO: Use official module with Puppet 5 support
   ->
   class { '::monitoring_plugins': } # TODO: Refactor module
@@ -181,6 +183,13 @@ class profiles::icinga::icinga2 {
 #    groups +> ['icinga', 'icingacmd'],
 #    require => ['icinga2']
 #  }
+
+   if ('graphite' in $features) {
+     icinga2::feature { 'graphite': }
+   }
+   if ('influxdb' in $features) {
+     icinga2::feature { 'influxdb': }
+   }
 
 }
 

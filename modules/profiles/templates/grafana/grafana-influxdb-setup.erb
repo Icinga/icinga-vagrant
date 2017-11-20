@@ -42,11 +42,11 @@ DATASOURCE
 # for influxdb we need to patch 'datasource' with a static value ('name' from the datasource above)
 # file is already patched
 echo -e "Adding Icinga 2 dashboard"
-curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/grafana-dashboard-icinga2-influxdb.json
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/influxdb-dashboard-vagrant-grafana-demo.json
 
 echo -e "Adding Icinga Web 2 Grafana Module Dashboards"
-curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/influxdb-base-metrics.json
-curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/icinga2/influxdb-icinga2-default.json
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/influxdb-base-metrics_grafana-web-module.json
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/influxdb-icinga2-default-grafana-web-module.json
 
 # diff for future reference
 
