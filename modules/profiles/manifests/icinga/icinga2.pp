@@ -203,5 +203,16 @@ class profiles::icinga::icinga2 (
      icinga2::feature { 'gelf': }
    }
 
+   if ('elasticsearch' in $features) {
+     file { "/etc/icinga2/features-available/elasticsearch.conf":
+       owner  => icinga,
+       group  => icinga,
+       content => template("profiles/icinga/icinga2/config/elasticsearch.conf.erb"),
+       notify    => Service['icinga2']
+     }
+     ->
+     icinga2::feature { 'elasticsearch': }
+   }
+
 }
 

@@ -287,4 +287,12 @@ class profiles::icinga::icingaweb2 (
       content => template("profiles/icinga/icingaweb2/preferences/icingaadmin/menu_grafana.ini.erb")
     }
   }
+
+  # TODO: configuration
+  if ('elasticsearch' in $modules) {
+    icingaweb2::module { 'elasticsearch':
+      builtin => false,
+      repo_revision => 'next',
+    }
+  }
 }
