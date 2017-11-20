@@ -1,133 +1,36 @@
-include icinga_rpm
-include epel
-include icinga2
-include icinga2_ido_mysql
-#include icinga2_classicui
-#include icinga2_icinga_web
-include icingaweb2
-include icingaweb2_internal_db_mysql
-include monitoring_plugins
+####################################
+# Global configuration
+####################################
 
-class { 'selinux':
-  mode => 'disabled'
-}
+$hostOnlyFQDN = "${hostname}.icinga2x-cluster.vagrant.demo.icinga.com"
 
-icingaweb2::module { [ 'businessprocess', 'pnp' ]:
-  builtin => false
+case $hostname {
+  'icinga2a': {
+     $hostOnlyIP = '192.168.33.10'
+   }
+  'icinga2b': {
+     $hostOnlyIP = '192.168.33.20'
+   }
 }
 
 ####################################
-# Database
-####################################
-$mysql_server_override_options = {}
-
-class { '::mysql::server':
-  root_password => 'icingar0xx',
-  remove_default_accounts => true,
-  override_options => $mysql_server_override_options
-}
-
-####################################
-# Webserver
+# Setup
 ####################################
 
-class {'apache':
-  # don't purge php, icingaweb2, etc configs
-  purge_configs => false,
-  default_vhost => false
+class { '::profiles::base::system': }
+->
+class { '::profiles::base::mysql': }
+->
+class { '::profiles::base::apache': }
+->
+class { '::profiles::icinga::icinga2':
+  features => [ "graphite" ]
 }
-
-class {'::apache::mod::php': }
-
-
-apache::vhost { 'vagrant-demo.icinga.com':
-  priority        => 5,
-  port            => '80',
-  docroot         => '/var/www/html',
-  rewrites => [
-    {
-      rewrite_rule => ['^/$ /icingaweb2 [NE,L,R=301]'],
-    },
-  ],
+->
+class { '::profiles::icinga::icingaweb2':
+  icingaweb2_listen_ip => $hostOnlyIP,
+  icingaweb2_fqdn => $hostOnlyFQDN,
 }
-
-include '::php::cli'
-include '::php::mod_php5'
-
-php::ini { '/etc/php.ini':
-  display_errors => 'On',
-  memory_limit => '256M',
-  date_timezone => 'Europe/Berlin',
-  session_save_path => '/var/lib/php/session'
-}
-
-# leftover, purge them
-file { [ '/var/www/html/index.html', '/var/www/html/icinga_wall.png' ]:
-  ensure => 'absent'
-}
-
-####################################
-# Basic stuff
-####################################
-# fix puppet warning.
-# https://ask.puppetlabs.com/question/6640/warning-the-package-types-allow_virtual-parameter-will-be-changing-its-default-value-from-false-to-true-in-a-future-release/
-if versioncmp($::puppetversion,'3.6.1') >= 0 {
-  $allow_virtual_packages = hiera('allow_virtual_packages',false)
-  Package {
-    allow_virtual => $allow_virtual_packages,
-  }
-}
-
-package { [ 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion' ]:
-  ensure => 'installed',
-  require => Class['epel']
-}
-
-@user { vagrant: ensure => present }
-User<| title == vagrant |>{
-  groups +> ['icinga', 'icingacmd'],
-  require => Package['icinga2']
-}
-
-file { '/etc/motd':
-  source => 'puppet:////vagrant/files/etc/motd',
-  owner => root,
-  group => root
-}
-
-file { '/etc/profile.d/env.sh':
-  source => 'puppet:////vagrant/files/etc/profile.d/env.sh'
-}
-
-# Required by vim-icinga2
-class { 'vim':
-  opt_bg_shading => 'light',
-}
-
-####################################
-# Icinga 2 General
-####################################
-
-# present icinga2 in icingaweb2's module documentation
-file { '/usr/share/icingaweb2/modules/icinga2':
-  ensure => 'directory',
-  require => Package['icingaweb2']
-}
-
-file { '/usr/share/icingaweb2/modules/icinga2/doc':
-  ensure => 'link',
-  target => '/usr/share/doc/icinga2/markdown',
-  require => [ Package['icinga2'], Package['icingaweb2'], File['/usr/share/icingaweb2/modules/icinga2'] ],
-}
-
-file { '/etc/icingaweb2/enabledModules/icinga2':
-  ensure => 'link',
-  target => '/usr/share/icingaweb2/modules/icinga2',
-  require => File['/etc/icingaweb2/enabledModules'],
-}
-
-# enable the command pipe
-icinga2::feature { 'command': }
 
 # override constants conf and set NodeName
 file { "/etc/icinga2/constants.conf":
@@ -145,62 +48,40 @@ file { '/etc/icinga2':
   require => Package['icinga2']
 }
 
-file { '/etc/icinga2/icinga2.conf':
-  owner  => icinga,
-  group  => icinga,
-  source    => "puppet:////vagrant/files/etc/icinga2/icinga2.conf",
-  require   => File['/etc/icinga2']
-}
-
-file { '/etc/icinga2/pki':
+file { '/var/lib/icinga2/certs':
   owner  => icinga,
   group  => icinga,
   ensure    => 'directory',
   require => Package['icinga2']
 }
 
-file { '/etc/icinga2/pki/ca.crt':
+file { '/var/lib/icinga2/certs/ca.crt':
   owner  => icinga,
   group  => icinga,
   source    => 'puppet:////vagrant/files/etc/icinga2/pki/ca.crt',
-  require   => File['/etc/icinga2/pki']
+  require   => File['/var/lib/icinga2/certs']
 }
 
-file { "/etc/icinga2/pki/$hostname.crt":
+file { "/var/lib/icinga2/certs/$hostname.crt":
   owner  => icinga,
   group  => icinga,
   source    => "puppet:////vagrant/files/etc/icinga2/pki/$hostname.crt",
-  require   => File['/etc/icinga2/pki']
+  require   => File['/var/lib/icinga2/certs']
 }
 
-file { "/etc/icinga2/pki/$hostname.key":
+file { "/var/lib/icinga2/certs/$hostname.key":
   owner  => icinga,
   group  => icinga,
   source    => "puppet:////vagrant/files/etc/icinga2/pki/$hostname.key",
-  require   => File['/etc/icinga2/pki']
+  require   => File['/var/lib/icinga2/certs']
 }
 
-
-exec { 'icinga2-enable-feature-api':
-  path => '/bin:/usr/bin:/sbin:/usr/sbin',
-  command => 'icinga2 feature enable api',
-  require => File['/etc/icinga2/features-available/api.conf'],
-  notify => Service['icinga2']
-}
 
 # required for icinga2-enable-feature-api
 file { "/etc/icinga2/features-available/api.conf":
   owner  => icinga,
   group  => icinga,
   source    => "puppet:////vagrant/files/etc/icinga2/features-available/api.conf",
-  require   => Package['icinga2'],
-  notify    => Service['icinga2']
-}
-
-file { '/etc/icinga2/cluster/api-users.conf':
-  owner  => icinga,
-  group  => icinga,
-  content   => template("icinga2/api-users.conf.erb"),
   require   => Package['icinga2'],
   notify    => Service['icinga2']
 }
@@ -213,17 +94,12 @@ file { '/etc/icinga2/cluster':
   require => Package['icinga2']
 }
 
-file { "/etc/icinga2/cluster/$hostname.conf":
+file { "/etc/icinga2/demo/$hostname.conf":
   owner  => icinga,
   group  => icinga,
   source    => "puppet:////vagrant/files/etc/icinga2/cluster/$hostname.conf",
-  require   => [ File['/etc/icinga2/cluster'], Exec['icinga2-enable-feature-api'] ],
+  require   => File['/etc/icinga2/demo'],
   notify    => Service['icinga2']
-}
-
-# keep it removed from previous installations (replaced by zones.conf #7184)
-file { "/etc/icinga2/cluster/cluster.conf":
-  ensure    => absent,
 }
 
 # remote client
@@ -267,11 +143,11 @@ file { [ '/var/lib/icinga2/api/zones/master', '/var/lib/icinga2/api/zones/checke
 case $hostname {
   'icinga2a': {
     # remote client
-    file { '/etc/icinga2/remote/demo.conf':
+    file { '/etc/icinga2/demo/remote_client.conf':
       owner  => icinga,
       group  => icinga,
       source    => 'puppet:////vagrant/files/etc/icinga2/remote/demo.conf',
-      require   => File['/etc/icinga2/remote'],
+      require   => File['/etc/icinga2/demo'],
       notify    => Service['icinga2']
     }
 
@@ -282,11 +158,6 @@ case $hostname {
       ensure => directory,
       require   => File['/etc/icinga2/zones.d'],
       notify    => Service['icinga2']
-    }
-
-    # move health checks to local cluster/ dir #7240
-    file { [ '/etc/icinga2/zones.d/master/health.conf', '/etc/icinga2/zones.d/checker/demo.conf', '/etc/icinga2/zones.d/checker/2.3.conf' ]:
-      ensure => absent
     }
 
     # checker zone hosts config
@@ -301,7 +172,7 @@ case $hostname {
     }
 
     # global template zone
-    ['commands', 'downtimes', 'groups', 'notifications', 'satellite', 'templates', 'timeperiods', 'users'].each |String $cfgfile| {
+    ['templates'].each |String $cfgfile| {
       file { "/etc/icinga2/zones.d/global-templates/${cfgfile}.conf":
         owner  => icinga,
         group  => icinga,
