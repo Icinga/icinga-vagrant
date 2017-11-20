@@ -1,0 +1,10 @@
+require 'puppet-lint/tasks/puppet-lint'
+
+PuppetLint.configuration.fail_on_warnings = true
+PuppetLint.configuration.send('relative')
+PuppetLint.configuration.send('disable_80chars')
+PuppetLint.configuration.send('disable_class_inherits_from_params_class')
+PuppetLint.configuration.send('disable_documentation')
+
+# Make sure we puppet lint all the puppet code that this example can touch
+PuppetLint.configuration.pattern = ['./manifests/*.pp', '../modules/profiles/manifests/**/*.pp']
