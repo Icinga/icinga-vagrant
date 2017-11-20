@@ -5,8 +5,7 @@ class profiles::elastic::filebeat (
   class { 'filebeat':
     outputs => {
       'elasticsearch' => {
-        'hosts' => [
-          'http://${elasticsearch_host}:${elasticsearch_port}'
+        'hosts' => [ "http://${elasticsearch_host}:${elasticsearch_port}"
         ],
         'index' => 'filebeat'
       }
@@ -15,21 +14,21 @@ class profiles::elastic::filebeat (
       'level' => 'debug' #TODO reset after finishing the box
     }
   }
-  ->
-  exec { 'filebeat-default-index-pattern':
-    path => '/bin:/usr/bin:/sbin:/usr/sbin',
+
+  -> exec { 'filebeat-default-index-pattern':
+    path    => '/bin:/usr/bin:/sbin:/usr/sbin',
     command => "curl -XPUT http://${elasticsearch_host}:${elasticsearch_port}/index-pattern/filebeat -d '{ \"title\":\"filebeat\", \"timeFieldName\":\"@timestamp\" }'",
     require => Es_Instance_Conn_Validator['elastic-es']
   }
 
   filebeat::prospector { 'syslogs':
-    paths => [
+    paths    => [
       '/var/log/messages'
     ],
     doc_type => 'syslog-beat'
   }
   filebeat::prospector { 'icinga2logs':
-    paths => [
+    paths    => [
       '/var/log/icinga2/icinga2.log'
     ],
     doc_type => 'syslog-beat'

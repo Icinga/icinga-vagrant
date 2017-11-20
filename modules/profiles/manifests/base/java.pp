@@ -1,7 +1,7 @@
 class profiles::base::java {
 
   class { 'java':
-    version => 'latest',
+    version      => 'latest',
     distribution => 'jdk'
   }
 

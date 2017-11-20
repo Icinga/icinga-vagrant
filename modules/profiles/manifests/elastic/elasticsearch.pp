@@ -1,5 +1,5 @@
 class profiles::elastic::elasticsearch (
-  $repo_version = '5.x',
+  $repo_version       = '5.x',
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200
 ) {
@@ -10,27 +10,27 @@ class profiles::elastic::elasticsearch (
     mode    => '0644',
     content => "elasticsearch soft nofile 64000\nelasticsearch hard nofile 64000\n",
   }
-  ->
-  class { 'elasticsearch':
+
+  -> class { 'elasticsearch':
     manage_repo  => true,
     repo_version => $repo_version,
     java_install => false,
-    jvm_options => [
+    jvm_options  => [
       '-Xms256m',
       '-Xmx256m'
     ],
   }
-  ->
-  elasticsearch::instance { 'elastic-es':
+
+  -> elasticsearch::instance { 'elastic-es':
     config => {
       'cluster.name' => 'elastic',
       'network.host' => $elasticsearch_host
     }
   }
-  ->
-  es_instance_conn_validator { 'elastic-es':
-    server => $elasticsearch_host,
-    port   => $elasticsearch_port,
+
+  -> es_instance_conn_validator { 'elastic-es':
+    server  => $elasticsearch_host,
+    port    => $elasticsearch_port,
     timeout => 1800
   }
 
