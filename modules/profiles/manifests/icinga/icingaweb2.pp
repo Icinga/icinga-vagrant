@@ -292,7 +292,7 @@ class profiles::icinga::icingaweb2 (
   if ('elasticsearch' in $modules) {
     icingaweb2::module { 'elasticsearch':
       builtin => false,
-      repo_revision => 'next',
+      repo_revision => 'master',
     }
   }
 }
