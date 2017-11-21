@@ -2,9 +2,13 @@
 #
 class profiles::elastic::logstash {
   class { 'logstash':
-    manage_repo => true,
-    require     => Package['java']
+    manage_repo => true
   }
+
+  # Logstash needs java in order to succesfully install, but this is managed by
+  # the profile::base::java profile. We put the hard dependency here to make
+  # 100% sure Java will be installed prior to attempting to use logstash
+  Package['java'] -> Exec['logstash-system-install']
 
   logstash::configfile { '00_input_beats':
     content => epp('profiles/elastic/input_beats.epp', {}),
