@@ -9,7 +9,7 @@ class profiles::elastic::config (
     mode   => '0755',
     source => '/vagrant/files/usr/local/bin/kibana-setup',
   }
-  
+
   -> exec { 'finish-kibana-setup':
     path    => '/bin:/usr/bin:/sbin:/usr/sbin',
     command => '/usr/local/bin/kibana-setup',

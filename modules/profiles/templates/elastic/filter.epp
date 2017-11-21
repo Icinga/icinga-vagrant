@@ -1,0 +1,62 @@
+filter {
+
+  if [type] == "nginx-access" {
+    grok {
+      match => ["message","%{IPORHOST:clientip} - - \[%{HTTPDATE:timestamp}\] \"(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})\" %{NUMBER:response} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent}"]
+    }
+    date{
+      match => ["timestamp","dd/MMM/YYYY:HH:mm:ss Z"]
+      target => "@timestamp"
+      remove_field => ["timestamp"]
+      add_tag => [ "date-filter-applied" ]
+    }
+  }
+
+  if [type] == "yumlogs" {
+    grok {
+      match => { "message" => "%{SYSLOGTIMESTAMP:timestamp} %{DATA:yum_event}\: %{GREEDYDATA:yum_package}" }
+      add_tag => [ "yum_events" ]
+    }
+  }
+
+  if [type] == "syslog" {
+		grok {
+			match => { "message" => "%{SYSLOGTIMESTAMP:syslog_timestamp} %{SYSLOGHOST:syslog_hostname} %{DATA:syslog_program}(?:\[%{POSINT:syslog_pid}\])?: %{GREEDYDATA:pam_message} %{USER:pam_username} from %{SYSLOGHOST:syslog_hostname}" }
+      remove_tag => [ "_jsonparsefailure", "_grokparsefailure", "_jsonparsefailure_grokparsefailure" ]
+		}
+    grok {
+      match => { "message" => "%{SYSLOGTIMESTAMP:syslog_timestamp} %{SYSLOGHOST:syslog_hostname} %{DATA:syslog_program}(?:\[%{POSINT:syslog_pid}\])?: %{GREEDYDATA:syslog_message}" }
+      remove_tag => [ "_jsonparsefailure", "_grokparsefailure", "_jsonparsefailure_grokparsefailure" ]
+    }
+    syslog_pri {
+    }
+    date {
+      match => [ "syslog_timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss" ]
+      add_tag => [ "date-filter-applied" ]
+    }
+	}
+
+  if [type] == "mysql-error" {
+    grok {
+      match => { "message" => "%{TIMESTAMP_ISO8601:date} %{POSINT:pid} \[%{WORD:severity}\] %{GREEDYDATA:message}" }
+      add_tag => [ "mysql-error" ]
+    }
+    date{
+      match => ["date","yyyy-MM-dd HH:mm:ss,SSS"]
+      target => "@timestamp"
+      remove_field => ["date"]
+      add_tag => [ "date-filter-applied" ]
+    }
+  }
+
+  if [type] == "audit-log" {
+    grok {
+      match => { "message" => "type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_counter}\): auid=%{NUMBER:audit_audid} uid=%{NUMBER:audit_uid} gid=%{NUMBER:audit_gid} ses=%{NUMBER:ses} pid=%{NUMBER:audit_pid} comm=%{QUOTEDSTRING:audit_comm} sig=%{NUMBER:audit_sig}" }
+      match => { "message" => "type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_counter}\): user pid=%{NUMBER:audit_pid} uid=%{NUMBER:audit_uid} auid=%{NUMBER:audit_audid} ses=%{NUMBER:ses} msg='op=%{DATA:audit_op} kind=%{WORD:audit_kind} fp=%{DATA:audit_fp} direction=%{DATA:audit_direction} spid=%{DATA:audit_spid} suid=%{DATA:audit_suid} exe=%{QUOTEDSTRING:audit_exe} hostname=%{DATA:src_ip} addr=%{DATA:src_ip} terminal=%{DATA:audit_terminal} res=%{DATA:audit_result}'" }
+      match => { "message" => "type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_counter}\): user pid=%{NUMBER:audit_pid} uid=%{NUMBER:audit_uid} auid=%{NUMBER:audit_audid} ses=%{NUMBER:ses} msg='op=%{DATA:audit_op} acct=%{QUOTEDSTRING:pam_username} exe=%{QUOTEDSTRING:audit_exe} hostname=%{DATA:src_ip} addr=%{DATA:src_ip} terminal=%{DATA:audit_terminal} res=%{DATA:audit_result}'" }
+      match => { "message" => "type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_counter}\): pid=%{NUMBER:audit_pid} uid=%{NUMBER:audit_uid} old auid=%{NUMBER:old_auid} new auid=%{NUMBER:new_auid} old ses=%{NUMBER:old_ses} new ses=%{NUMBER:new_ses}" }
+      add_tag => [ "audit_log" ]
+    }
+  }
+
+}

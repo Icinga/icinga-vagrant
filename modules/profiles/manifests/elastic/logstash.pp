@@ -1,0 +1,28 @@
+# == Class: profiles::elastic::logstash
+#
+class profiles::elastic::logstash {
+  class { 'logstash':
+    manage_repo => true,
+    require     => Package['java']
+  }
+
+  logstash::configfile { '00_input_beats':
+    content => epp('profiles/elastic/input_beats.epp', {}),
+  }
+
+  logstash::configfile { '10_filter':
+    content => epp('profiles/elastic/filter.epp', {}),
+  }
+
+  logstash::configfile { '20_output_header':
+    content => epp('profiles/elastic/output_header.epp', {}),
+  }
+
+  logstash::configfile { '21_output_elasticsearch':
+    content => epp('profiles/elastic/output_elasticsearch.epp', {}),
+  }
+
+  logstash::configfile { '99_output_footer':
+    content => epp('profiles/elastic/output_footer.epp', {}),
+  }
+}

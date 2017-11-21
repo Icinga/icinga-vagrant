@@ -1,0 +1,7 @@
+
+
+  elasticsearch {
+
+    # no special config needed, this will send to localhost:9200 by default
+
+  }

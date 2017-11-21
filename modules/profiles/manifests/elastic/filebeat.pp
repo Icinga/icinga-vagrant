@@ -1,13 +1,12 @@
 class profiles::elastic::filebeat (
-  $elasticsearch_host = '127.0.0.1',
-  $elasticsearch_port = 9200
+  $logstash_host = '127.0.0.1',
+  $logstash_port = 9200
 ){
   class { 'filebeat':
     outputs => {
-      'elasticsearch' => {
-        'hosts' => [ "http://${elasticsearch_host}:${elasticsearch_port}"
+      'logstash' => {
+        'hosts' => [ "http://${logstash_host}:${logstash_port}"
         ],
-        'index' => 'filebeat'
       }
     },
     logging => {
@@ -15,22 +14,16 @@ class profiles::elastic::filebeat (
     }
   }
 
-  -> exec { 'filebeat-default-index-pattern':
-    path    => '/bin:/usr/bin:/sbin:/usr/sbin',
-    command => "curl -XPUT http://${elasticsearch_host}:${elasticsearch_port}/index-pattern/filebeat -d '{ \"title\":\"filebeat\", \"timeFieldName\":\"@timestamp\" }'",
-    require => Es_Instance_Conn_Validator['elastic-es']
-  }
-
   filebeat::prospector { 'syslogs':
     paths    => [
       '/var/log/messages'
     ],
-    doc_type => 'syslog-beat'
+    doc_type => 'syslog'
   }
   filebeat::prospector { 'icinga2logs':
     paths    => [
       '/var/log/icinga2/icinga2.log'
     ],
-    doc_type => 'syslog-beat'
+    doc_type => 'icinga2logs'
   }
 }
