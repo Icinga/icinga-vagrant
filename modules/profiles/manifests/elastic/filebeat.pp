@@ -5,7 +5,7 @@ class profiles::elastic::filebeat (
   class { 'filebeat':
     outputs => {
       'logstash' => {
-        'hosts' => [ "http://${logstash_host}:${logstash_port}"
+        'hosts' => [ "${logstash_host}:${logstash_port}"
         ],
       }
     },
