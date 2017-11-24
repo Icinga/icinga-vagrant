@@ -22,6 +22,8 @@ class icinga_rpm (
   $pkg_repo_snapshot_url = $::icinga_rpm::params::pkg_repo_snapshot_url,
 ) inherits icinga_rpm::params {
 
+  include software_collections
+
   if $pkg_repo_release_metadata_expire {
     validate_string($pkg_repo_release_metadata_expire)
   }
