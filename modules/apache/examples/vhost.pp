@@ -5,7 +5,7 @@
 # Base class. Declares default vhost on port 80 and default ssl
 # vhost on port 443 listening on all interfaces and serving
 # $apache::docroot
-class { 'apache': }
+class { '::apache': }
 
 # Most basic vhost
 apache::vhost { 'first.example.com':
@@ -153,7 +153,7 @@ apache::vhost { 'sixteenth.example.com non-ssl':
       rewrite_cond => ['%{HTTPS} off'],
       rewrite_rule => ['(.*) https://%{HTTP_HOST}%{REQUEST_URI}'],
     }
-  ]
+  ],
 }
 
 # Rewrite a URL to lower case
@@ -165,9 +165,9 @@ apache::vhost { 'sixteenth.example.com non-ssl':
     { comment      => 'Rewrite to lower case',
       rewrite_cond => ['%{REQUEST_URI} [A-Z]'],
       rewrite_map  => ['lc int:tolower'],
-      rewrite_rule => ['(.*) ${lc:$1} [R=301,L]'],
+      rewrite_rule => ["(.*) \${lc:\$1} [R=301,L]"],
     }
-  ]
+  ],
 }
 
 apache::vhost { 'sixteenth.example.com ssl':
