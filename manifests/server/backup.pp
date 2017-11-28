@@ -21,10 +21,11 @@ class mysql::server::backup (
   $execpath           = '/usr/bin:/usr/sbin:/bin:/sbin',
   $provider           = 'mysqldump',
   $maxallowedpacket   = '1M',
+  $optional_args      = [],
 ) {
 
   if $prescript and $provider =~ /(mysqldump|mysqlbackup)/ {
-    warning("The \$prescript option is not currently implemented for the ${provider} backup provider.")
+    warning(translate("The 'prescript' option is not currently implemented for the %{provider} backup provider.", {'provider' => $provider}))
   }
 
   create_resources('class', {
@@ -49,6 +50,7 @@ class mysql::server::backup (
       'postscript'         => $postscript,
       'execpath'           => $execpath,
       'maxallowedpacket'   => $maxallowedpacket,
+      'optional_args'      => $optional_args,
     }
   })
 
