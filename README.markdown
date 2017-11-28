@@ -1,6 +1,6 @@
-#java
+# java
 
-####Table of Contents
+#### Table of Contents
 
 1. [Overview](#overview)
 2. [Module Description - What the module does and why it is useful](#module-description)
@@ -11,40 +11,41 @@
 6. [Limitations - OS compatibility, etc.](#limitations)
 7. [Development - Guide for contributing to the module](#development)
 
-##Overview
+## Overview
 
-Installs the correct Java package on various platforms. 
+Installs the correct Java package on various platforms.
 
-##Module Description
+## Module Description
 
 The java module can automatically install Java jdk or jre on a wide variety of systems. Java is a base component for many software platforms, but Java system packages don't always follow packaging conventions. The java module simplifies the Java installation process.
 
-##Setup
+## Setup
 
-###Beginning with the java module
+### Beginning with the java module
+
 To install the correct Java package on your system, include the `java` class: `include java`.
 
-##Usage
+## Usage
 
 The java module installs the correct jdk or jre package on a wide variety of systems. By default, the module installs the jdk package, but you can set different installation parameters as needed. For example, to install jre instead of jdk, you would set the distribution parameter:
 
-~~~
+```puppet
 class { 'java':
   distribution => 'jre',
 }
-~~~
+```
 
-To install the latest patch version of Java 8 on CentOS 
+To install the latest patch version of Java 8 on CentOS
 
-~~~
+```puppet
 class { 'java' :
   package => 'java-1.8.0-openjdk-devel',
 }
-~~~
+```
 
 The defined type `java::oracle` installs one or more versions of Oracle Java SE. `java::oracle` depends on [puppet/archive](https://github.com/voxpupuli/puppet-archive).  By using `java::oracle` you agree to Oracle's licensing terms for Java SE.
 
-~~~
+```puppet
 java::oracle { 'jdk6' :
   ensure  => 'present',
   version => '6',
@@ -56,67 +57,111 @@ java::oracle { 'jdk8' :
   version => '8',
   java_se => 'jdk',
 }
-~~~
+```
 
-##Reference
+To install a specific release of a Java version, e.g. 8u101-b13, provide both parameters `version_major` and `version_minor` as follows:
 
-###Classes
+```puppet
+java::oracle { 'jdk8' :
+  ensure  => 'present',
+  version_major => '8u101',
+  version_minor => 'b13',
+  java_se => 'jdk',
+}
+```
 
-####Public classes
+## Reference
+
+### Classes
+
+#### Public classes
 
 * `java`: Installs and manages the Java package.
 
-####Private classes
+#### Private classes
 
 * `java::config`: Configures the Java alternatives.
 
 * `java::params`: Builds a hash of jdk/jre packages for all compatible operating systems.
 
 
-####Parameters
+#### Parameters
+
 The following parameters are available in `java`:
 
 ##### `distribution`
-Specifies the Java distribution to install.  
+
+Specifies the Java distribution to install.
 Valid options:  'jdk', 'jre', or, where the platform supports alternative packages, 'sun-jdk', 'sun-jre', 'oracle-jdk', 'oracle-jre'. Default: 'jdk'.
 
-#####`java_alternative`
-Specifies the name of the Java alternative to use. If you set this parameter, *you must also set the `java_alternative_path`.*  
+##### `java_alternative`
+
+Specifies the name of the Java alternative to use. If you set this parameter, *you must also set the `java_alternative_path`.*
 Valid options: Run command `update-java-alternatives -l` for a list of available choices. Default: OS and distribution dependent defaults on *deb systems, undef on others.
 
-#####`java_alternative_path`  
-*Required when `java_alternative` is specified.* Defines the path to the `java` command.  
+##### `java_alternative_path`
+
+*Required when `java_alternative` is specified.* Defines the path to the `java` command.
 Valid option: String. Default: OS and distribution dependent defaults on *deb systems, undef on others.
 
-#####`package`
-Specifies the name of the Java package. This is configurable in case you want to install a non-standard Java package. If not set, the module installs the appropriate package for the `distribution` parameter and target platform. If you set `package`, the `distribution` parameter does nothing.  
-Valid option: String. Default: undef. 
+##### `package`
 
-#####`version`
-Sets the version of Java to install, if you want to ensure a particular version.  
+Specifies the name of the Java package. This is configurable in case you want to install a non-standard Java package. If not set, the module installs the appropriate package for the `distribution` parameter and target platform. If you set `package`, the `distribution` parameter does nothing.
+Valid option: String. Default: undef.
+
+##### `version`
+
+Sets the version of Java to install, if you want to ensure a particular version.
 Valid options: 'present', 'installed', 'latest', or a string matching `/^[.+_0-9a-zA-Z:-]+$/`. Default: 'present'.
 
-####Public defined types
+#### Public defined types
 
 * `java::oracle`: Installs specified version of Oracle Java SE.  You may install multiple versions of Oracle Jave SE on the same node using this defined type.
 
-####Parameters
+#### Parameters
 
 The following parameters are available in `java::oracle`:
 
-######`version`
+##### `version`
 Version of Java Standard Edition (SE) to install. 6, 7 or 8.
 
-#####`java_se`
+##### `version_major`
+
+Major version of the Java Standard Edition (SE) to install. Must be used together with `version_minor`. For example, '8u101'.
+
+##### `version_minor`
+
+Minor version (or build version) of the Java Standard Edition (SE) to install. Must be used together with `version_major`. For example, 'b13'.
+
+##### `java_se`
+
 Type of Java SE to install, jdk or jre.
 
-#####`ensure`
+##### `ensure`
+
 Install or remove the package.
 
-#####`oracle_url`
+##### `oracle_url`
+
 Official Oracle URL to download the binaries from.
 
-###Facts
+##### `proxy_server`
+
+Specify a proxy server, with port number if needed. ie: https://example.com:8080. (passed to archive)
+
+##### `proxy_type`
+
+Proxy server type (none|http|https|ftp). (passed to archive)
+
+##### `url`
+
+Pass an entire URL to download the installer from rather than building the complete URL from other parameters. This will allow the module to be used even if the URLs are changed by Oracle. If this parameter is used, matching `version_major` and `version_minor` parameters must also be passed to the class.
+
+##### `url_hash`
+
+Directory hash used by the download.oracle.com site. This value is a 32 character string which is part of the file URL returned by the JDK download site.
+
+### Facts
 
 The java module includes a few facts to describe the version of Java installed on the system:
 
@@ -128,9 +173,9 @@ The java module includes a few facts to describe the version of Java installed o
 
 **Note:** The facts return `nil` if Java is not installed on the system.
 
-##Limitations
+## Limitations
 
-This module cannot guarantee installation of Java versions that are not available on  platform repositories. 
+This module cannot guarantee installation of Java versions that are not available on  platform repositories.
 
 This module only manages a singular installation of Java, meaning it is not possible to manage e.g. OpenJDK 7, Oracle Java 7 and Oracle Java 8 in parallel on the same system.
 
@@ -138,7 +183,7 @@ Oracle Java packages are not included in Debian 7 and Ubuntu 12.04/14.04 reposit
 
 This module is officially [supported](https://forge.puppetlabs.com/supported) for the following Java versions and platforms:
 
-OpenJDK is supported on:  
+OpenJDK is supported on:
 
 * Red Hat Enterprise Linux (RHEL) 5, 6, 7
 * CentOS 5, 6, 7
@@ -147,24 +192,33 @@ OpenJDK is supported on:
 * Debian 6, 7
 * Ubuntu 10.04, 12.04, 14.04
 * Solaris 11
-* SLES 11 SP1, 12 
+* SLES 11 SP1, SP2, SP3, SP4; SLES 12, SP1, SP2
 * OpenBSD 5.6, 5.7
 
-Sun Java is supported on:  
+Sun Java is supported on:
 
 * Debian 6
 
 Oracle Java is supported on:
-* CentOS 6
 
-### A note about OpenBSD
+* CentOS 6
+* CentOS 7
+* Red Hat Enterprise Linux (RHEL) 7
+
+### Known issues
+
+Where Oracle change the format of the URLs to different installer packages, the curl to fetch the package may fail with a HTTP/404 error. In this case, passing a full known good URL using the `url` parameter will allow the module to still be able to install specific versions of the JRE/JDK. Note the `version_major` and `version_minor` parameters must be passed and must match the version downloaded using the known URL in the `url` parameter. 
+
+#### OpenBSD
+
 OpenBSD packages install Java JRE/JDK in a unique directory structure, not linking
 the binaries to a standard directory. Because of that, the path to this location
-is hardcoded in the java_version fact. Whenever a Java upgrade to a newer
-version/path will be done on OpenBSD, it has to be adapted there.
+is hardcoded in the `java_version` fact. Whenever you upgrade Java to a newer
+version, you have to update the path in this fact.
 
-### A note about FreeBSD
-By default on FreeBSD Puppet < 4.0, you will see an error as `pkgng` is not the default provider. To fix this, you can install the [zleslie/pkgng module](https://forge.puppetlabs.com/zleslie/pkgng) and set it as the default package provider like so:
+#### FreeBSD
+
+By default on FreeBSD, Puppet versions prior to 4.0 throw an error saying `pkgng` is not the default provider. To fix this, install the [zleslie/pkgng module](https://forge.puppetlabs.com/zleslie/pkgng) and set it as the default package provider:
 
 ```puppet
 Package {
@@ -172,12 +226,12 @@ Package {
 }
 ```
 
-On Puppet > 4.0 (ie. using the sysutils/puppet4 port), `pkgng` is included within Puppet and it's the default package provider.
+On Puppet 4.0 and later, `pkgng` is included within Puppet and is the default package provider.
 
-##Development
+## Development
 
-Puppet Labs modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can’t access the huge number of platforms and myriad hardware, software, and deployment configurations that Puppet is intended to serve. We want to keep it as easy as possible to contribute changes so that our modules work in your environment. There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things. For more information, see our [module contribution guide.](https://docs.puppetlabs.com/forge/contributing.html)
+Puppet modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. To contribute to Puppet projects, see our [module contribution guide.](https://docs.puppetlabs.com/forge/contributing.html)
 
-##Contributors
+## Contributors
 
-The list of contributors can be found at: [https://github.com/puppetlabs/puppetlabs-java/graphs/contributors](https://github.com/puppetlabs/puppetlabs-java/graphs/contributors).
+The list of contributors can be found at [https://github.com/puppetlabs/puppetlabs-java/graphs/contributors](https://github.com/puppetlabs/puppetlabs-java/graphs/contributors).
