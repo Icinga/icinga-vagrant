@@ -9,7 +9,6 @@ class Specinfra::Command::Windows::Base::File < Specinfra::Command::Windows::Bas
   end
 end
 
-
 class Specinfra::Command::Base::File < Specinfra::Command::Base
   class << self
     def get_content(file)

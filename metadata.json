@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-concat",
-  "version": "2.1.0",
+  "version": "4.1.1",
   "author": "Puppet Labs",
   "summary": "Construct files from multiple fragments.",
   "license": "Apache-2.0",
@@ -8,7 +8,7 @@
   "project_page": "https://github.com/puppetlabs/puppetlabs-concat",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
   "dependencies": [
-    {"name":"puppetlabs/stdlib","version_requirement":">= 4.2.0 < 5.0.0"}
+    {"name":"puppetlabs/stdlib","version_requirement":">= 4.13.1 < 5.0.0"}
   ],
   "data_provider": null,
   "operatingsystem_support": [
@@ -47,7 +47,6 @@
     {
       "operatingsystem": "SLES",
       "operatingsystemrelease": [
-        "10 SP4",
         "11 SP1",
         "12"
       ]
@@ -55,17 +54,16 @@
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
-        "6",
         "7",
-        "8"
+        "8",
+        "9"
       ]
     },
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "10.04",
-        "12.04",
-        "14.04"
+        "14.04",
+        "16.04"
       ]
     },
     {
@@ -78,7 +76,6 @@
     {
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
-        "Server 2003 R2",
         "Server 2008 R2",
         "Server 2012",
         "Server 2012 R2"
@@ -95,18 +92,15 @@
     {
       "operatingsystem": "OSX",
       "operatingsystemrelease": [
-        "10.9"
+        "10.10",
+        "10.11"
       ]
     }
   ],
   "requirements": [
     {
-      "name": "pe",
-      "version_requirement": ">= 3.7.0 < 2015.4.0"
-    },
-    {
       "name": "puppet",
-      "version_requirement": ">= 3.0.0 < 5.0.0"
+      "version_requirement": ">= 4.7.0 < 6.0.0"
     }
   ]
 }

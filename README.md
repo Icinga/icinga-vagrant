@@ -1,6 +1,6 @@
-#concat
+# concat
 
-####Table of Contents
+#### Table of Contents
 
 1. [Overview](#overview)
 2. [Module Description - What the module does and why it is useful](#module-description)
@@ -15,15 +15,15 @@
 6. [Limitations - OS compatibility, etc.](#limitations)
 7. [Development - Guide for contributing to the module](#development)
 
-##Overview
+## Overview
 
 The concat module lets you construct files from multiple ordered fragments of text.
 
-##Module Description
+## Module Description
 
 The concat module lets you gather `concat::fragment` resources from your other modules and order them into a coherent file through a single `concat` resource.
 
-###Beginning with concat
+### Beginning with concat
 
 To start using concat you need to create:
 
@@ -44,9 +44,9 @@ concat::fragment { 'tmpfile':
 }
 ~~~
 
-##Usage
+## Usage
 
-###Maintain a list of the major modules on a node
+### Maintain a list of the major modules on a node
 
 To maintain an motd file that lists the modules on one of your nodes, first create a class to frame up the file:
 
@@ -114,81 +114,127 @@ When you're finished, the motd file will look something like this:
   <contents of /etc/motd.local>
 ~~~
 
-##Reference
+## Reference
 
-###Defines
+### Defines
 * `concat`: Manages a file, compiled from one or more text fragments.
 * `concat::fragment`: Manages a fragment of text to be compiled into a file.
 
-###Types
+### Types
 * `concat_file`: Generates a file with content from fragments sharing a common unique tag.
 * `concat_fragment`: Manages the fragment.
 
-###Parameters
+### Parameters
 
-####Define: `concat`
+#### Define: `concat`
 
 All the parameters listed below are optional.
 
-#####`backup`
+##### `backup`
 
-Specifies whether (and how) to back up the destination file before overwriting it. Your value gets passed on to Puppet's [native `file` resource](https://docs.puppetlabs.com/references/latest/type.html#file-attribute-backup) for execution. Valid options: 'true', 'false', or a string representing either a target filebucket or a filename extension beginning with ".". Default value: 'puppet'.
+Data type: Boolean, String.
 
-#####`backup_fragments`
+Specifies whether (and how) to back up the destination file before overwriting it. Your value gets passed on to Puppet's [native `file` resource](https://docs.puppetlabs.com/references/latest/type.html#file-attribute-backup) for execution. Valid options: `true`, `false`, or a string representing either a target filebucket or a filename extension beginning with ".".
 
-Specifies whether to backup concat fragments using the backup setting of the target concat file. Valid options: 'true' and 'false'. Default value: 'false'.
+Default value: 'puppet'.
 
-#####`ensure`
+##### `ensure`
 
-Specifies whether the destination file should exist. Setting to 'absent' tells Puppet to delete the destination file if it exists, and negates the effect of any other parameters. Valid options: 'present' and 'absent'. Default value: 'present'.
+Data type: String.
 
-#####`ensure_newline`
+Specifies whether the destination file should exist. Setting to 'absent' tells Puppet to delete the destination file if it exists, and negates the effect of any other parameters. Valid options: 'present' and 'absent'. 
 
-Specifies whether to add a line break at the end of each fragment that doesn't already end in one. Valid options: 'true' and 'false'. Default value: 'false'.
+Default value: 'present'.
 
-#####`force`
+##### `ensure_newline`
 
-Deprecated as of concat v2.0.0. Has no effect.
+Data type: Boolean.
 
-#####`group`
+Specifies whether to add a line break at the end of each fragment that doesn't already end in one. Valid options: `true` and `false`.
 
-Specifies a permissions group for the destination file. Valid options: a string containing a group name. Default value: undefined.
+Default value: `false`.
 
-#####`mode`
+##### `group`
 
-Specifies the permissions mode of the destination file. Valid options: a string containing a permission mode value in octal notation. Default value: '0644'.
+Optional.
 
-#####`order`
+Data type: String, Integer.
 
-Specifies a method for sorting your fragments by name within the destination file. Valid options: 'alpha' (e.g., '1, 10, 2') or 'numeric' (e.g., '1, 2, 10'). Default value: 'alpha'.
+Specifies a permissions group for the destination file. Valid options: a string containing a group name. 
+
+Default value: `undef`.
+
+##### `mode`
+
+Data type: String.
+
+Specifies the permissions mode of the destination file. Valid options: a string containing a permission mode value in octal notation. 
+
+Default value: '0644'.
+
+##### `order`
+
+Data type: String.
+
+Specifies a method for sorting your fragments by name within the destination file. Valid options: 'alpha' (e.g., '1, 10, 2') or 'numeric' (e.g., '1, 2, 10'). 
 
 You can override this setting for individual fragments by adjusting the `order` parameter in their `concat::fragment` declarations.
 
-#####`owner`
+Default value: 'alpha'.
 
-Specifies the owner of the destination file. Valid options: a string containing a username. Default value: undefined.
+##### `owner`
 
-#####`path`
+Optional.
 
-Specifies a destination file for the combined fragments. Valid options: a string containing an absolute path. Default value: the title of your declared resource.
+Data type: String, Integer.
+ 
+Specifies the owner of the destination file. Valid options: a string containing a username. 
 
-#####`replace`
+Default value: `undef`.
 
-Specifies whether to overwrite the destination file if it already exists. Valid options: 'true' and 'false'. Default value: 'true'.
+##### `path`
 
-#####`show_diff`
+Data type: Stdlib::AbsolutePath.
 
-Specifies whether to set the show_diff parameter for the file resource. Useful for hiding secrets stored in hiera from insecure reporting methods. Valid options: 'true'.
+Specifies a destination file for the combined fragments. Valid options: a string containing an absolute path. 
 
-#####`validate_cmd`
+Default value: `namevar`
 
-Specifies a validation command to apply to the destination file. Requires Puppet version 3.5 or newer. Valid options: a string to be passed to a file resource. Default value: undefined.
+##### `replace`
 
-#####`warn`
+Data type: Boolean.
 
-Specifies whether to add a header message at the top of the destination file. Valid options: the booleans 'true' and 'false', or a string to serve as the header. Default value: 'false'.
+Specifies whether to overwrite the destination file if it already exists. Valid options: `true` and `false`.
 
-If you set 'warn' to 'true', `concat` adds the following line with an `order` of `0`:
+Default value: `true`.
+
+##### `show_diff`
+
+Data type: Boolean.
+
+Specifies whether to set the show_diff parameter for the file resource. Useful for hiding secrets stored in hiera from insecure reporting methods. Valid options: `true`.
+
+Default value: `true`.
+
+##### `validate_cmd`
+
+Optional.
+
+Data type: String.
+
+Specifies a validation command to apply to the destination file. Requires Puppet version 3.5 or newer. Valid options: a string to be passed to a file resource. 
+
+Default value: `undef`.
+
+##### `warn`
+
+Data type: Boolean, String.
+
+Specifies whether to add a header message at the top of the destination file. Valid options: the booleans `true` and `false`, or a string to serve as the header.
+
+If you set 'warn' to `true`, `concat` adds the following line with an `order` of `0`:
+
+Default value: `false`.
 
 ~~~
 # This file is managed by Puppet. DO NOT EDIT.
@@ -198,133 +244,219 @@ Before 2.0.0, this parameter would add a newline at the end of the warn
 message. To improve flexibilty, this was removed. Please add it explicitly if
 you need it.
 
-#####`selinux_ignore_defaults`
+##### `selinux_ignore_defaults`
 
 See the `file` type's
 [`selinux_ignore_defaults`](https://docs.puppetlabs.com/references/latest/type.html#file-attribute-selinux_ignore_defaults)
 documentention.
 
-#####`selrange`
+##### `selrange`
 
 See the `file` type's
 [`selrange`](https://docs.puppetlabs.com/references/latest/type.html#file-attribute-selrange)
 documentention.
 
-#####`selrole`
+##### `selrole`
 
 See the `file` type's
 [`selrole`](https://docs.puppetlabs.com/references/latest/type.html#file-attribute-selrole)
 documentention.
 
-#####`seltype`
+##### `seltype`
 
 See the `file` type's
 [`seltype`](https://docs.puppetlabs.com/references/latest/type.html#file-attribute-seltype)
 documentention.
 
-#####`seluser`
+##### `seluser`
 
 See the `file` type's
 [`seluser`](https://docs.puppetlabs.com/references/latest/type.html#file-attribute-seluser)
 documentention.
 
 
-####Define: `concat::fragment`
+#### Define: `concat::fragment`
 
 Except where noted, all the below parameters are optional.
 
-#####`content`
+##### `content`
 
-Supplies the content of the fragment. **Note**: You must supply either a `content` parameter or a `source` parameter. Valid options: a string. Default value: undef.
+Data type: String.
 
-#####`ensure`
+Supplies the content of the fragment. **Note**: You must supply either a `content` parameter or a `source` parameter. Valid options: a string. 
 
-Deprecated as of concat v2.0.0. Has no effect.
+Default value: `undef`.
 
-#####`order`
+##### `order`
 
-Reorders your fragments within the destination file. Fragments that share the same order number are ordered by name. Valid options: a string (recommended) or an integer. Default value: '10'.
+Data type: String, Integer.
 
-#####`source`
+Reorders your fragments within the destination file. Fragments that share the same order number are ordered by name. Valid options: a string (recommended) or an integer. 
 
-Specifies a file to read into the content of the fragment. **Note**: You must supply either a `content` parameter or a `source` parameter. Valid options: a string or an array, containing one or more Puppet URLs. Default value: undefined.
+Default value: '10'.
 
-#####`target`
+##### `source`
 
-*Required.* Specifies the destination file of the fragment. Valid options: a string containing the path or title of the parent `concat` resource.
+Data type: String, Array.
+
+Specifies a file to read into the content of the fragment. **Note**: You must supply either a `content` parameter or a `source` parameter. Valid options: a string or an array, containing one or more Puppet URLs. 
+
+Default value: `undef`.
+
+##### `target`
+
+*Required.*
+
+Data type: String.
+
+Specifies the destination file of the fragment. Valid options: a string containing the path or title of the parent `concat` resource.
 
 
-####Type: `concat_file`
+#### Type: `concat_file`
 
-#####`backup`
+##### `backup`
 
-Specifies whether (and how) to back up the destination file before overwriting it. Your value gets passed on to Puppet's [native `file` resource](https://docs.puppetlabs.com/references/latest/type.html#file-attribute-backup) for execution. Valid options: 'true', 'false', or a string representing either a target filebucket or a filename extension beginning with ".". Default value: 'puppet'.
+Data type: String, Boolean. 
 
-#####`ensure`
+Specifies whether (and how) to back up the destination file before overwriting it. Your value gets passed on to Puppet's [native `file` resource](https://docs.puppetlabs.com/references/latest/type.html#file-attribute-backup) for execution. Valid options: `true`, `false`, or a string representing either a target filebucket or a filename extension beginning with ".".
 
-Specifies whether the destination file should exist. Setting to 'absent' tells Puppet to delete the destination file if it exists, and negates the effect of any other parameters. Valid options: 'present' and 'absent'. Default value: 'present'.
+Default value: 'puppet'.
 
-#####`ensure_newline`
+##### `ensure`
 
-Specifies whether to add a line break at the end of each fragment that doesn't already end in one. Valid options: 'true' and 'false'. Default value: 'false'.
+Data type: String.
 
-#####`group`
+Specifies whether the destination file should exist. Setting to 'absent' tells Puppet to delete the destination file if it exists, and negates the effect of any other parameters. Valid options: 'present' and 'absent'. 
 
-Specifies a permissions group for the destination file. Valid options: a string containing a group name. Default value: undefined.
+Default value: 'present'.
 
-#####`mode`
+##### `ensure_newline`
 
-Specifies the permissions mode of the destination file. Valid options: a string containing a permission mode value in octal notation. Default value: '0644'.
+Data type: Boolean.
 
-#####`order`
+Specifies whether to add a line break at the end of each fragment that doesn't already end in one. Valid options: `true` and `false`.
 
-Specifies a method for sorting your fragments by name within the destination file. Valid options: 'alpha' (e.g., '1, 10, 2') or 'numeric' (e.g., '1, 2, 10'). Default value: 'numeric'.
+Default value: `false`.
+
+##### `group`
+
+Data type: String, Integer.
+
+Specifies a permissions group for the destination file. Valid options: a string containing a group name. 
+
+Default value: `undef`.
+
+##### `mode`
+
+Data type: String.
+
+Specifies the permissions mode of the destination file. Valid options: a string containing a permission mode value in octal notation. 
+
+Default value: '0644'.
+
+##### `order`
+
+Data type: String.
+
+Specifies a method for sorting your fragments by name within the destination file. Valid options: 'alpha' (e.g., '1, 10, 2') or 'numeric' (e.g., '1, 2, 10'). 
 
 You can override this setting for individual fragments by adjusting the `order` parameter in their `concat::fragment` declarations.
 
-#####`owner`
+Default value: 'numeric'.
 
-Specifies the owner of the destination file. Valid options: a string containing a username. Default value: undefined.
+##### `owner`
 
-#####`path`
+Data type: String, Integer.
+
+Specifies the owner of the destination file. Valid options: a string containing a username. 
+
+Default value: `undef`.
+
+##### `path`
+
+Data type: String.
 
 Specifies a destination file for the combined fragments. Valid options: a string containing an absolute path. Default value: the title of your declared resource.
 
-#####`replace`
+Default value: `namevar`.
 
-Specifies whether to overwrite the destination file if it already exists. Valid options: 'true' and 'false'. Default value: 'true'.
+##### `replace`
 
-####`tag`
+Data type: Boolean.
+
+Specifies whether to overwrite the destination file if it already exists. Valid options: `true` and `false`.
+
+Default value: `true`.
+
+##### `tag`
+
+Data type: String.
 
 *Required.* Specifies a unique tag reference to collect all concat_fragments with the same tag.
 
-#####`validate_cmd`
+##### `validate_cmd`
 
-Specifies a validation command to apply to the destination file. Requires Puppet version 3.5 or newer. Valid options: a string to be passed to a file resource. Default value: undefined.
+Data type: String
 
-####Type: `concat_fragment`
+Specifies a validation command to apply to the destination file. Requires Puppet version 3.5 or newer. Valid options: a string to be passed to a file resource. 
 
-#####`content`
+Default value: `undef`.
 
-Supplies the content of the fragment. **Note**: You must supply either a `content` parameter or a `source` parameter. Valid options: a string. Default value: undef.
+##### `format`
 
-#####`order`
+Data type: String
 
-Reorders your fragments within the destination file. Fragments that share the same order number are ordered by name. Valid options: a string (recommended) or an integer. Default value: '10'.
+Specify what data type to merge the fragments as. Valid options: 'plain', 'yaml', 'json', 'json-pretty'.
 
-#####`source`
+Default value: `plain`.
 
-Specifies a file to read into the content of the fragment. **Note**: You must supply either a `content` parameter or a `source` parameter. Valid options: a string or an array, containing one or more Puppet URLs. Default value: undefined.
+##### `force`
 
-#####`tag`
+Data type: Boolean
+
+Specifies whether to merge data structures, keeping the values with higher order. Valid options: `true` and `false`.
+
+Default value: `false`.
+
+#### Type: `concat_fragment`
+
+##### `content`
+
+Data type: String.
+
+Supplies the content of the fragment. **Note**: You must supply either a `content` parameter or a `source` parameter. Valid options: a string. 
+
+Default value: `undef`.
+
+##### `order`
+
+Data type: String, Integer.
+
+Reorders your fragments within the destination file. Fragments that share the same order number are ordered by name. Valid options: a string (recommended) or an integer. 
+
+Default value: '10'.
+
+##### `source`
+
+Data type: String.
+
+Specifies a file to read into the content of the fragment. **Note**: You must supply either a `content` parameter or a `source` parameter. Valid options: a string or an array, containing one or more Puppet URLs. 
+
+Default value: `undef`.
+
+##### `tag`
+
+Data type: String.
 
 *Required.* Specifies a unique tag to be used by concat_file to reference and collect content.
 
-#####`target`
+##### `target`
+
+Data type: String.
 
 *Required.* Specifies the destination file of the fragment. Valid options: a string containing the path or title of the parent `concat_file` resource.
 
-###Removed functionality
+### Removed functionality
 
 The following functionality existed in previous versions of the concat module, but was removed in version 2.0.0:
 
@@ -337,21 +469,21 @@ Parameters removed from `concat::fragment`:
 
 The `concat::setup` class has also been removed.
 
-Prior to concat version 2.0.0, if you set the `warn` parameter to a string value of 'true', 'false', 'yes', 'no', 'on', or 'off', the module translated the string to the corresponding boolean value. In concat version 2.0.0 and newer, the `warn_header` parameter treats those values the same as other strings and uses them as the content of your header message. To avoid that, pass the 'true' and 'false' values as booleans instead of strings.
+Prior to concat version 2.0.0, if you set the `warn` parameter to a string value of `true`, `false`, 'yes', 'no', 'on', or 'off', the module translated the string to the corresponding boolean value. In concat version 2.0.0 and newer, the `warn_header` parameter treats those values the same as other strings and uses them as the content of your header message. To avoid that, pass the `true` and `false` values as booleans instead of strings.
 
-##Limitations
+## Limitations
 
 This module has been tested on [all PE-supported platforms](https://forge.puppetlabs.com/supported#compat-matrix), and no issues have been identified.
 
-##Development
+## Development
 
-Puppet Labs modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can't access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.
+Puppet modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can't access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.
 
 We want to keep it as easy as possible to contribute changes so that our modules work in your environment. There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
 
 For more information, see our [module contribution guide.](https://docs.puppetlabs.com/forge/contributing.html)
 
-###Contributors
+### Contributors
 
 Richard Pijnenburg ([@Richardp82](http://twitter.com/richardp82))
 
