@@ -1,47 +1,24 @@
 sudo: false
 cache: bundler
 language: ruby
-bundler_args: --without development
+bundler_args: --without system_tests development
 script: "bundle exec rake spec"
 rvm:
-  - 1.9.3
-  - 2.0.0
   - 2.1.0
+  - 2.3.1
 env:
-  - PUPPET_GEM_VERSION="~> 3.0.0"
-  - PUPPET_GEM_VERSION="~> 3.1.0"
-  - PUPPET_GEM_VERSION="~> 3.2.0"
-  - PUPPET_GEM_VERSION="~> 3.3.0"
-  - PUPPET_GEM_VERSION="~> 3.4.0"
-  - PUPPET_GEM_VERSION="~> 3.5.0" STRICT_VARIABLES=yes
-  - PUPPET_GEM_VERSION="~> 3.6.0" STRICT_VARIABLES=yes
-  - PUPPET_GEM_VERSION="~> 3.7.0" STRICT_VARIABLES=yes
-  - PUPPET_GEM_VERSION="~> 3.7.0" STRICT_VARIABLES=yes FUTURE_PARSER=yes
-  - PUPPET_GEM_VERSION="~> 4.0.0" STRICT_VARIABLES=yes
-  - PUPPET_GEM_VERSION="~> 4.1.0" STRICT_VARIABLES=yes
-  - PUPPET_GEM_VERSION="~> 4.2.0" STRICT_VARIABLES=yes
-  - PUPPET_GEM_VERSION="~> 4.3.0" STRICT_VARIABLES=yes
+  - PUPPET_GEM_VERSION="~> 3.0" STRICT_VARIABLES=yes
+  - PUPPET_GEM_VERSION="~> 3.0" STRICT_VARIABLES=yes FUTURE_PARSER=yes
+  - PUPPET_GEM_VERSION="~> 4.0" STRICT_VARIABLES=yes
 matrix:
-  allow_failures:
-    - env: PUPPET_GEM_VERSION="~> 3.7.0" STRICT_VARIABLES=yes FUTURE_PARSER=yes
-    - env: PUPPET_GEM_VERSION="~> 4.0.0" STRICT_VARIABLES=yes
-    - env: PUPPET_GEM_VERSION="~> 4.1.0" STRICT_VARIABLES=yes
-    - env: PUPPET_GEM_VERSION="~> 4.2.0" STRICT_VARIABLES=yes
-    - env: PUPPET_GEM_VERSION="~> 4.3.0" STRICT_VARIABLES=yes
   exclude:
-    - rvm: 2.0.0
-      env: PUPPET_GEM_VERSION="~> 3.1.0"
-    - rvm: 2.0.0
-      env: PUPPET_GEM_VERSION="~> 3.0.0"
-    - rvm: 2.1.0
-      env: PUPPET_GEM_VERSION="~> 3.0.0"
-    - rvm: 2.1.0
-      env: PUPPET_GEM_VERSION="~> 3.1.0"
-    - rvm: 2.1.0
-      env: PUPPET_GEM_VERSION="~> 3.2.0"
-    - rvm: 2.1.0
-      env: PUPPET_GEM_VERSION="~> 3.3.0"
-    - rvm: 2.1.0
-      env: PUPPET_GEM_VERSION="~> 3.4.0"
+    - rvm: 2.3.1
+      env: PUPPET_GEM_VERSION="~> 3.0" STRICT_VARIABLES=yes
+    - rvm: 2.3.1
+      env: PUPPET_GEM_VERSION="~> 3.0" STRICT_VARIABLES=yes FUTURE_PARSER=yes
 notifications:
   email: false
+branches:
+  only:
+  - master
+  - /^v\d/
