@@ -14,10 +14,10 @@ $grafanaListenPort = 8004
 class { '::profiles::base::system': }
 ->
 class { '::profiles::base::mysql': }
-#->
-#class { '::profiles::base::apache': }
-#->
-#class { '::profiles::base::java': }
+->
+class { '::profiles::base::apache': }
+->
+class { '::profiles::base::java': }
 #->
 #class { '::profiles::icinga::icinga2':
 #  features => [ "gelf", "influxdb" ]
