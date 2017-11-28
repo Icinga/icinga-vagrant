@@ -4,8 +4,9 @@ describe 'graphite::install', :type => 'class' do
 
   # Convenience variable for 'hack' file checks
   hack_defaults = {
-    :ensure  => 'link',
-    :require => ['Package[carbon]','Package[graphite-web]','Package[whisper]'],
+    :refreshonly => true,
+    :provider    => 'shell',
+    :subscribe   => ['Package[carbon]','Package[graphite-web]','Package[whisper]'],
   }
 
   shared_context 'supported platforms' do
@@ -20,8 +21,8 @@ describe 'graphite::install', :type => 'class' do
         'Package[python-ldap]').that_requires(
         'Package[python-psycopg2]') }
     end
-    it { is_expected.to contain_file('carbon_hack').with(hack_defaults) }
-    it { is_expected.to contain_file('gweb_hack').with(hack_defaults) }
+    it { is_expected.to contain_exec('carbon_hack').with(hack_defaults) }
+    it { is_expected.to contain_exec('gweb_hack').with(hack_defaults) }
   end
 
   shared_context 'no pip' do
@@ -33,8 +34,8 @@ describe 'graphite::install', :type => 'class' do
     it { is_expected.not_to contain_package('python-pip') }
     it { is_expected.not_to contain_package('python-dev') }
     it { is_expected.not_to contain_package('python-devel') }
-    it { is_expected.not_to contain_file('carbon_hack') }
-    it { is_expected.not_to contain_file('gweb_hack')   }
+    it { is_expected.not_to contain_exec('carbon_hack') }
+    it { is_expected.not_to contain_exec('gweb_hack')   }
   end
 
   shared_context 'no django' do
@@ -64,17 +65,16 @@ describe 'graphite::install', :type => 'class' do
     it { is_expected.to contain_package('bitmap-fonts-compat').with_provider(nil) }
     it { is_expected.to contain_package('python-crypto').with_provider(nil) }
 
-    it { is_expected.to contain_file('carbon_hack').only_with(hack_defaults.merge({
-      :target => '/opt/graphite/lib/carbon-0.9.15-py2.6.egg-info',
-      :path   => '/usr/lib/python2.6/site-packages/carbon-0.9.15-py2.6.egg-info',
+    it { is_expected.to contain_exec('carbon_hack').only_with(hack_defaults.merge({
+      :command => 'ln -s "/opt/graphite/lib/""carbon-"*"-py2.6.egg-info" "/usr/lib/python2.6/site-packages/"',
     })) }
-    it { should contain_file('gweb_hack').only_with(hack_defaults.merge({
-      :target => '/opt/graphite/webapp/graphite_web-0.9.15-py2.6.egg-info',
-      :path   => '/usr/lib/python2.6/site-packages/graphite_web-0.9.15-py2.6.egg-info',
+    it { should contain_exec('gweb_hack').only_with(hack_defaults.merge({
+      :command => 'ln -s "/opt/graphite/webapp/""graphite_web-"*"-py2.6.egg-info" "/usr/lib/python2.6/site-packages/"',
     })) }
   end
 
   shared_context 'RedHat 7 platforms' do
+    it { is_expected.to contain_package('python2-pip').with_provider(nil) }
     it { is_expected.to contain_package('python-cairocffi').with_provider(nil) }
     it { is_expected.to contain_package('Django').with_provider('pip') }
     it { is_expected.to contain_package('python-sqlite3dbm').with_provider(nil) }
@@ -82,13 +82,11 @@ describe 'graphite::install', :type => 'class' do
     it { is_expected.to contain_package('dejavu-sans-fonts').with_provider(nil) }
     it { is_expected.to contain_package('python2-crypto').with_provider(nil) }
 
-    it { is_expected.to contain_file('carbon_hack').only_with(hack_defaults.merge({
-      :target => '/opt/graphite/lib/carbon-0.9.15-py2.7.egg-info',
-      :path   => '/usr/lib/python2.7/site-packages/carbon-0.9.15-py2.7.egg-info',
+    it { is_expected.to contain_exec('carbon_hack').only_with(hack_defaults.merge({
+      :command => 'ln -s "/opt/graphite/lib/""carbon-"*"-py2.7.egg-info" "/usr/lib/python2.7/site-packages/"',
     })) }
-    it { is_expected.to contain_file('gweb_hack').only_with(hack_defaults.merge({
-      :target => '/opt/graphite/webapp/graphite_web-0.9.15-py2.7.egg-info',
-      :path   => '/usr/lib/python2.7/site-packages/graphite_web-0.9.15-py2.7.egg-info',
+    it { is_expected.to contain_exec('gweb_hack').only_with(hack_defaults.merge({
+      :command => 'ln -s "/opt/graphite/webapp/""graphite_web-"*"-py2.7.egg-info" "/usr/lib/python2.7/site-packages/"',
     })) }
   end
 
@@ -112,8 +110,8 @@ describe 'graphite::install', :type => 'class' do
       let(:facts) do
         facts
       end
-      let :pre_condition do 
-        'include ::graphite' 
+      let :pre_condition do
+        'include ::graphite'
       end
 
       case facts[:osfamily]
@@ -131,11 +129,12 @@ describe 'graphite::install', :type => 'class' do
           it_behaves_like 'no django'
         end
       when 'RedHat' then
-        it_behaves_like 'supported platforms'
+        #it_behaves_like 'supported platforms'
         it_behaves_like 'RedHat supported platforms'
 
         case facts[:operatingsystemrelease]
         when /^6/ then
+          it_behaves_like 'supported platforms'
           it_behaves_like 'RedHat 6 platforms'
         when /^7/ then
           it_behaves_like 'RedHat 7 platforms'

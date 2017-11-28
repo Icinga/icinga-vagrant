@@ -12,7 +12,7 @@
 # Description: Enables Graphites carbon-aggregator data aggregation engine
 ### END INIT INFO
 
-PYTHON_CMD='python -W ignore'
+PYTHON_CMD='<%= scope.lookupvar('graphite::gr_python_binary') %> -W ignore'
 CARBON_DAEMON="aggregator"
 GRAPHITE_DIR="<%= scope.lookupvar('graphite::base_dir_REAL') %>"
 STOP_COUNTER=12 # 12 times 5s -> 60 secs

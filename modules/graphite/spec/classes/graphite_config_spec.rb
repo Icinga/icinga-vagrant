@@ -32,9 +32,9 @@ describe 'graphite::config', :type => 'class' do
 
   shared_context 'RedHat supported platforms' do
     it { is_expected.to contain_file('/opt/graphite/storage/whisper').with({
-        'ensure' => 'directory', 'owner' => 'apache', 'group' => 'apache', 'mode' => '0755', }) }
+        'ensure' => 'directory', 'seltype' => 'httpd_sys_rw_content_t', 'owner' => 'apache', 'group' => 'apache', 'mode' => '0755', }) }
     it { is_expected.to contain_file('/opt/graphite/storage/log/carbon-cache').with({
-        'ensure' => 'directory', 'owner' => 'apache', 'group' => 'apache', 'mode' => '0755', }) }
+        'ensure' => 'directory', 'seltype' => 'httpd_sys_rw_content_t', 'owner' => 'apache', 'group' => 'apache', 'mode' => '0755', }) }
     it { is_expected.to contain_file('/opt/graphite/storage/graphite.db').with({
         'ensure' => 'file', 'owner' => 'apache', 'group' => 'apache', 'mode' => '0644', }) }
     it { is_expected.to contain_file('/opt/graphite/webapp/graphite/local_settings.py').with({
@@ -42,6 +42,7 @@ describe 'graphite::config', :type => 'class' do
         'owner'   => 'apache',
         'group'   => 'apache',
         'mode'    => '0644',
+        'seltype' => 'httpd_sys_content_t',
         'content' => /^CONF_DIR = '\/opt\/graphite\/conf'$/,
         'notify'  => 'Service[httpd]'}).that_requires('Package[httpd]') }
     it { is_expected.to contain_file('/opt/graphite/conf/graphite_wsgi.py').with({
@@ -50,6 +51,7 @@ describe 'graphite::config', :type => 'class' do
         'owner'   => 'apache',
         'group'   => 'apache',
         'mode'    => '0644',
+        'seltype' => 'httpd_sys_content_t',
         'notify'  => 'Service[httpd]'}).that_requires('Package[httpd]') }
     it { is_expected.to contain_file('/opt/graphite/webapp/graphite/graphite_wsgi.py').with({
         'ensure'  => 'link',
@@ -57,7 +59,14 @@ describe 'graphite::config', :type => 'class' do
         'require' => 'File[/opt/graphite/conf/graphite_wsgi.py]',
         'notify'  => 'Service[httpd]' }) }
 
-    $attributes_redhat = {'ensure' => 'directory', 'group' => 'apache', 'mode' => '0755', 'owner' => 'apache', 'subscribe' => 'Exec[Initial django db creation]'}
+    it { is_expected.to contain_file('/opt/graphite').with({
+        'ensure'  => 'directory',
+        'group'   => 'apache',
+        'mode'    => '0755',
+        'owner'   => 'apache',
+        'seltype' => 'httpd_sys_rw_content_t' }) }
+
+    $attributes_redhat = {'ensure' => 'directory', 'seltype' => 'httpd_sys_rw_content_t', 'group' => 'apache', 'mode' => '0755', 'owner' => 'apache', 'subscribe' => 'Exec[Initial django db creation]'}
     ['/opt/graphite/storage',
       '/opt/graphite/storage/rrd',
       '/opt/graphite/storage/lists',
@@ -128,7 +137,14 @@ describe 'graphite::config', :type => 'class' do
         'require' => 'File[/opt/graphite/conf/graphite_wsgi.py]',
         'notify'  => 'Service[apache2]'}) }
 
-    $attributes_debian = {'ensure' => 'directory', 'group' => 'www-data', 'mode' => '0755', 'owner' => 'www-data', 'subscribe' => 'Exec[Initial django db creation]'}
+    it { is_expected.to contain_file('/opt/graphite').with({
+        'ensure'  => 'directory',
+        'group'   => 'www-data',
+        'mode'    => '0755',
+        'owner'   => 'www-data',
+        'seltype' => 'httpd_sys_rw_content_t' }) }
+
+    $attributes_debian = {'ensure' => 'directory', 'seltype' => 'httpd_sys_rw_content_t', 'group' => 'www-data', 'mode' => '0755', 'owner' => 'www-data', 'subscribe' => 'Exec[Initial django db creation]'}
     ['/opt/graphite/storage',
       '/opt/graphite/storage/rrd',
       '/opt/graphite/storage/lists',
@@ -136,6 +152,7 @@ describe 'graphite::config', :type => 'class' do
       '/var/lib/graphite-web'].each { |f|
       it { is_expected.to contain_file(f).with($attributes_debian)}
     }
+
   end
 
   shared_context 'Debian sysv platforms' do
@@ -193,7 +210,7 @@ describe 'graphite::config', :type => 'class' do
         case facts[:lsbdistcodename]
         when /squeeze|wheezy|precise|trusty|utopic|vivid/ then
           it_behaves_like 'Debian sysv platforms'
-        when /jessie|wily/ then
+        when /jessie|wily|xenial/ then
           it_behaves_like 'Debian systemd platforms'
         else
           it { is_expected.to raise_error(Puppet::Error,/unsupported os,.+\./ )}
