@@ -1,0 +1,8 @@
+---
+osfamily: RedHat
+operatingsystem: RedHat
+operatingsystemmajrelease: '7'
+# concat facts
+id: 0
+path: /tmp
+puppet_vardir: /var/lib/puppet

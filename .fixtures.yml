@@ -1,0 +1,7 @@
+fixtures:
+  repositories:
+    concat: https://github.com/puppetlabs/puppetlabs-concat.git
+    stdlib: https://github.com/puppetlabs/puppetlabs-stdlib.git
+  symlinks:
+    selinux: "#{source_dir}"
+
