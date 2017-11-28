@@ -43,7 +43,7 @@ Puppet::Type.newtype(:ini_setting) do
   newparam(:path) do
     desc 'The ini file Puppet will ensure contains the specified setting.'
     validate do |value|
-      unless (Puppet.features.posix? and value =~ /^\//) or (Puppet.features.microsoft_windows? and (value =~ /^.:\// or value =~ /^\/\/[^\/]+\/[^\/]+/))
+      unless Puppet::Util.absolute_path?(value)
         raise(Puppet::Error, "File paths must be fully qualified, not '#{value}'")
       end
     end
@@ -111,6 +111,17 @@ Puppet::Type.newtype(:ini_setting) do
     defaultto(']')
   end
 
+  newparam(:indent_char) do
+    desc 'The character to indent new settings with.' +
+      'Defaults to \' \'.'
+    defaultto(' ')
+  end
+
+  newparam(:indent_width) do
+    desc 'The number of indent_chars to use to indent a new setting.' +
+      'Defaults to undef (autodetect).'
+  end
+
   newparam(:refreshonly) do
     desc 'A flag indicating whether or not the ini_setting should be updated '+
          'only when called as part of a refresh event'
@@ -124,5 +135,4 @@ Puppet::Type.newtype(:ini_setting) do
       provider.value = self[:value]
     end
   end
-
 end

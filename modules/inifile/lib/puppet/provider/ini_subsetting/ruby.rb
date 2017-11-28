@@ -12,7 +12,7 @@ Puppet::Type.type(:ini_subsetting).provide(:ruby) do
         subsetting, resource[:value], resource[:use_exact_match],
         resource[:insert_type], resource[:insert_value]
     )
-    ini_file.set_value(section, setting, setting_value.get_value)
+    ini_file.set_value(section, setting, key_val_separator, setting_value.get_value)
     ini_file.save
     @ini_file = nil
     @setting_value = nil
@@ -20,7 +20,7 @@ Puppet::Type.type(:ini_subsetting).provide(:ruby) do
 
   def destroy
     setting_value.remove_subsetting(subsetting, resource[:use_exact_match])
-    ini_file.set_value(section, setting, setting_value.get_value)
+    ini_file.set_value(section, setting, key_val_separator, setting_value.get_value)
     ini_file.save
     @ini_file = nil
     @setting_value = nil
@@ -35,7 +35,7 @@ Puppet::Type.type(:ini_subsetting).provide(:ruby) do
         subsetting, value, resource[:use_exact_match],
         resource[:insert_type], resource[:insert_value]
     )
-    ini_file.set_value(section, setting, setting_value.get_value)
+    ini_file.set_value(section, setting, key_val_separator, setting_value.get_value)
     ini_file.save
   end
 

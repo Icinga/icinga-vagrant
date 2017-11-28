@@ -10,7 +10,7 @@ describe provider_class do
   let(:tmpfile) { tmpfilename('inherit_ini_setting_test') }
 
   def validate_file(expected_content, tmpfile)
-    File.read(tmpfile).should == expected_content
+    expect(File.read(tmpfile)).to eq(expected_content)
   end
 
 
@@ -25,7 +25,7 @@ describe provider_class do
 
     it 'should parse nothing when the file is empty' do
       provider_class.stubs(:file_path).returns(tmpfile)
-      provider_class.instances.should == []
+      expect(provider_class.instances).to eq([])
     end
 
     context 'when the file has contents' do
@@ -40,12 +40,12 @@ green = purple
       it 'should parse the results' do
         provider_class.stubs(:file_path).returns(tmpfile)
         instances = provider_class.instances
-        instances.size.should == 2
+        expect(instances.size).to eq(2)
         # inherited version of namevar flattens the names
         names = instances.map do |instance|
           instance.instance_variable_get(:@property_hash)[:name]
         end
-        names.sort.should == [ 'green', 'red' ]
+        expect(names.sort).to eq([ 'green', 'red' ])
       end
     end
   end
