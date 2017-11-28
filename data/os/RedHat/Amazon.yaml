@@ -1,0 +1,224 @@
+# Amazon Linux default repos
+---
+yum::os_default_repos:
+  - 'amzn-main'
+  - 'amzn-main-debuginfo'
+  - 'amzn-main-source'
+  - 'amzn-nosrc'
+  - 'amzn-preview'
+  - 'amzn-preview-debuginfo'
+  - 'amzn-preview-source'
+  - 'amzn-updates'
+  - 'amzn-updates-debuginfo'
+  - 'amzn-updates-source'
+  - 'epel'
+  - 'epel-debuginfo'
+  - 'epel-source'
+  - 'epel-testing'
+  - 'epel-testing-debuginfo'
+  - 'epel-testing-source'
+yum::repos:
+  amzn-main:
+    descr: "amzn-main-Base"
+    mirrorlist: "http://repo.$awsregion.$awsdomain/$releasever/main/mirror.list"
+    mirrorlist_expire: 300
+    metadata_expire: 300
+    priority: 10
+    failovermethod: "priority"
+    fastestmirror_enabled: false
+    gpgcheck: true
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga"
+    enabled: true
+    retries: 3
+    timeout: 5
+    report_instanceid: true
+    target: "/etc/yum.repos.d/amzn-main.repo"
+  amzn-main-debuginfo:
+    descr: "amzn-main-debuginfo"
+    mirrorlist: "http://repo.$awsregion.$awsdomain/$releasever/main/debuginfo/mirror.list"
+    mirrorlist_expire: 300
+    metadata_expire: 300
+    priority: 10
+    failovermethod: "priority"
+    fastestmirror_enabled: false
+    gpgcheck: true
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga"
+    enabled: false
+    retries: 3
+    timeout: 5
+    report_instanceid: true
+    target: "/etc/yum.repos.d/amzn-main.repo"
+  amzn-main-source:
+    descr: "amzn-main-source"
+    mirrorlist: "http://repo.$awsregion.$awsdomain/$releasever/main/SRPMS/mirror.list"
+    mirrorlist_expire: 300
+    metadata_expire: 300
+    priority: 10
+    failovermethod: "priority"
+    fastestmirror_enabled: false
+    gpgcheck: true
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga"
+    enabled: false
+    retries: 3
+    timeout: 5
+    report_instanceid: true
+    target: "/etc/yum.repos.d/amzn-main.repo"
+  amzn-nosrc:
+    descr: "amzn-nosrc-Base"
+    mirrorlist: "http://repo.$awsregion.$awsdomain/$releasever/nosrc/mirror.list"
+    mirrorlist_expire: 300
+    metadata_expire: 300
+    priority: 10
+    failovermethod: "priority"
+    fastestmirror_enabled: false
+    gpgcheck: false
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga"
+    enabled: false
+    retries: 3
+    timeout: 5
+    report_instanceid: true
+    target: "/etc/yum.repos.d/amzn-nosrc.repo"
+  amzn-preview:
+    descr: "amzn-preview-Base"
+    mirrorlist: "http://repo.$awsregion.$awsdomain/$releasever/preview/mirror.list"
+    mirrorlist_expire: 300
+    metadata_expire: 300
+    priority: 10
+    failovermethod: "priority"
+    fastestmirror_enabled: false
+    gpgcheck: true
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga"
+    enabled: false
+    retries: 3
+    timeout: 5
+    report_instanceid: true
+    target: "/etc/yum.repos.d/amzn-preview.repo"
+  amzn-preview-debuginfo:
+    descr: "amzn-preview-debuginfo"
+    mirrorlist: "http://repo.$awsregion.$awsdomain/$releasever/preview/debuginfo/mirror.list"
+    mirrorlist_expire: 300
+    metadata_expire: 300
+    priority: 10
+    failovermethod: "priority"
+    fastestmirror_enabled: false
+    gpgcheck: true
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga"
+    enabled: false
+    retries: 3
+    timeout: 5
+    report_instanceid: true
+    target: "/etc/yum.repos.d/amzn-preview.repo"
+  amzn-preview-source:
+    descr: "amzn-preview-source"
+    mirrorlist: "http://repo.$awsregion.$awsdomain/$releasever/preview/SRPMS/mirror.list"
+    mirrorlist_expire: 300
+    metadata_expire: 300
+    priority: 10
+    failovermethod: "priority"
+    fastestmirror_enabled: false
+    gpgcheck: true
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga"
+    enabled: false
+    retries: 3
+    timeout: 5
+    report_instanceid: true
+    target: "/etc/yum.repos.d/amzn-preview.repo"
+  amzn-updates:
+    descr: "amzn-updates-Base"
+    mirrorlist: "http://repo.$awsregion.$awsdomain/$releasever/updates/mirror.list"
+    mirrorlist_expire: 300
+    metadata_expire: 300
+    priority: 10
+    failovermethod: "priority"
+    fastestmirror_enabled: false
+    gpgcheck: true
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga"
+    enabled: true
+    retries: 3
+    timeout: 5
+    report_instanceid: true
+    target: "/etc/yum.repos.d/amzn-updates.repo"
+  amzn-updates-debuginfo:
+    descr: "amzn-updates-debuginfo"
+    mirrorlist: "http://repo.$awsregion.$awsdomain/$releasever/updates/debuginfo/mirror.list"
+    mirrorlist_expire: 300
+    metadata_expire: 300
+    priority: 10
+    failovermethod: "priority"
+    fastestmirror_enabled: false
+    gpgcheck: true
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga"
+    enabled: false
+    retries: 3
+    timeout: 5
+    report_instanceid: true
+    target: "/etc/yum.repos.d/amzn-updates.repo"
+  amzn-updates-source:
+    descr: "amzn-updates-source"
+    mirrorlist: "http://repo.$awsregion.$awsdomain/$releasever/updates/SRPMS/mirror.list"
+    mirrorlist_expire: 300
+    metadata_expire: 300
+    priority: 10
+    failovermethod: "priority"
+    fastestmirror_enabled: false
+    gpgcheck: true
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-ga"
+    enabled: false
+    retries: 3
+    timeout: 5
+    report_instanceid: true
+    target: "/etc/yum.repos.d/amzn-updates.repo"
+  epel:
+    descr: "Extra Packages for Enterprise Linux 6 - $basearch"
+    #baseurl: "http://download.fedoraproject.org/pub/epel/6/$basearch"
+    mirrorlist: "https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch"
+    failovermethod: "priority"
+    enabled: false
+    gpgcheck: true
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6"
+    target: "/etc/yum.repos.d/epel.repo"
+  epel-debuginfo:
+    descr: "Extra Packages for Enterprise Linux 6 - $basearch - Debug"
+    #baseurl: "http://download.fedoraproject.org/pub/epel/6/$basearch/debug"
+    mirrorlist: "https://mirrors.fedoraproject.org/metalink?repo=epel-debug-6&arch=$basearch"
+    failovermethod: "priority"
+    enabled: false
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6"
+    gpgcheck: true
+    target: "/etc/yum.repos.d/epel.repo"
+  epel-source:
+    descr: "Extra Packages for Enterprise Linux 6 - $basearch - Source"
+    #baseurl: "http://download.fedoraproject.org/pub/epel/6/SRPMS"
+    mirrorlist: "https://mirrors.fedoraproject.org/metalink?repo=epel-source-6&arch=$basearch"
+    failovermethod: "priority"
+    enabled: false
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6"
+    gpgcheck: true
+    target: "/etc/yum.repos.d/epel.repo"
+  epel-testing:
+    descr: "Extra Packages for Enterprise Linux 6 - Testing - $basearch"
+    #baseurl: "http://download.fedoraproject.org/pub/epel/testing/6/$basearch"
+    mirrorlist: "https://mirrors.fedoraproject.org/metalink?repo=testing-epel6&arch=$basearch"
+    failovermethod: "priority"
+    enabled: false
+    gpgcheck: true
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6"
+    target: "/etc/yum.repos.d/epel-testing.repo"
+  epel-testing-debuginfo:
+    descr: "Extra Packages for Enterprise Linux 6 - Testing - $basearch - Debug"
+    #baseurl: "http://download.fedoraproject.org/pub/epel/testing/6/$basearch/debug"
+    mirrorlist: "https://mirrors.fedoraproject.org/metalink?repo=testing-debug-epel6&arch=$basearch"
+    failovermethod: "priority"
+    enabled: false
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6"
+    gpgcheck: true
+    target: "/etc/yum.repos.d/epel-testing.repo"
+  epel-testing-source:
+    descr: "Extra Packages for Enterprise Linux 6 - Testing - $basearch - Source"
+    #baseurl: "http://download.fedoraproject.org/pub/epel/testing/6/SRPMS"
+    mirrorlist: "https://mirrors.fedoraproject.org/metalink?repo=testing-source-epel6&arch=$basearch"
+    failovermethod: "priority"
+    enabled: false
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6"
+    gpgcheck: true
+    target: "/etc/yum.repos.d/epel-testing.repo"
