@@ -1,8 +1,11 @@
 class profiles::influxdb::server (
-
+  $repo_version = undef
 ) {
 
-  class {'influxdb::server':
+  class { '::influxdb':
+    manage_repos   => true,
+    manage_service => true,
+    version        => $repo_version
   }->
   file { 'influxdb-setup':
     name => '/usr/local/bin/influxdb-setup',
@@ -15,7 +18,7 @@ class profiles::influxdb::server (
   exec { 'finish-influxdb-setup':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     command => "/usr/local/bin/influxdb-setup",
-    require => [ Class['influxdb::server::service'] ]
+    require => [ Class['influxdb::service'] ]
   }
 
 }
