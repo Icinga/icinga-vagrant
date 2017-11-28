@@ -1,16 +1,18 @@
-# rubocop:disable Style/FileName
 require 'digest/sha1'
 require 'rubygems'
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet_blacksmith/rake_tasks'
 require 'net/http'
+require 'nokogiri'
 require 'uri'
 require 'fileutils'
 require 'rspec/core/rake_task'
+require 'open-uri'
 require 'puppet-strings'
 require 'puppet-strings/tasks'
 require 'yaml'
 require 'json'
+require_relative 'spec/spec_utilities'
 
 # Workaround for certain rspec/beaker versions
 module TempFixForRakeLastComment
@@ -32,18 +34,24 @@ require 'puppet-syntax/tasks/puppet-syntax'
 PuppetSyntax.exclude_paths = exclude_paths
 PuppetSyntax.future_parser = true if ENV['FUTURE_PARSER'] == 'true'
 
-%w(
+%w[
   80chars
   class_inherits_from_params_class
   class_parameter_defaults
   single_quote_string_with_variable
-).each do |check|
+].each do |check|
   PuppetLint.configuration.send("disable_#{check}")
 end
 
 PuppetLint.configuration.ignore_paths = exclude_paths
 PuppetLint.configuration.log_format = \
   '%{path}:%{line}:%{check}:%{KIND}:%{message}'
+
+# Append custom cleanup tasks to :clean
+task :clean => %i[
+  artifacts:clean
+  spec_clean
+]
 
 desc 'remove outdated module fixtures'
 task :spec_prune do
@@ -71,8 +79,14 @@ RSpec::Core::RakeTask.new(:spec_verbose) do |t|
 end
 task :spec_verbose => :spec_prep
 
+RSpec::Core::RakeTask.new(:spec_puppet) do |t|
+  t.pattern = 'spec/{classes,defines,functions,templates,unit/facter}/**/*_spec.rb'
+  t.rspec_opts = ['--color']
+end
+task :spec_puppet => :spec_prep
+
 RSpec::Core::RakeTask.new(:spec_unit) do |t|
-  t.pattern = 'spec/{classes,defines,unit,functions,templates}/**/*_spec.rb'
+  t.pattern = 'spec/unit/{type,provider}/**/*_spec.rb'
   t.rspec_opts = ['--color']
 end
 task :spec_unit => :spec_prep
@@ -81,24 +95,40 @@ task :beaker => [:spec_prep, 'artifacts:prep']
 
 desc 'Run all linting/unit tests.'
 task :intake => %i[
-  metadata_lint
   syntax
   lint
   validate
   spec_unit
+  spec_puppet
 ]
 
-desc 'Run integration tests'
-RSpec::Core::RakeTask.new('beaker:integration') do |c|
-  c.pattern = 'spec/integration/integration*.rb'
+desc 'Run snapshot tests'
+RSpec::Core::RakeTask.new('beaker:snapshot') do |c|
+  c.pattern = 'spec/acceptance/snapshot.rb'
+  if Rake::Task.task_defined? 'artifacts:snapshot:not_found'
+    puts 'No snapshot artifacts found, skipping snapshot tests.'
+    exit(0)
+  end
 end
-task 'beaker:integration' => [:spec_prep, 'artifacts:snapshot:fetch']
+task 'beaker:snapshot' => [
+  'artifacts:prep',
+  'artifacts:snapshot:deb',
+  'artifacts:snapshot:rpm',
+  :spec_prep
+]
 
 desc 'Run acceptance tests'
 RSpec::Core::RakeTask.new('beaker:acceptance') do |c|
   c.pattern = 'spec/acceptance/0*_spec.rb'
 end
 task 'beaker:acceptance' => [:spec_prep, 'artifacts:prep']
+
+desc 'Setup a dummy host only, do not run any tests'
+RSpec::Core::RakeTask.new('beaker:noop') do |c|
+  ENV['BEAKER_destroy'] = 'no'
+  c.pattern = 'spec/acceptance/*basic_spec.rb'
+end
+task 'beaker:noop' => [:spec_prep]
 
 namespace :artifacts do
   desc 'Fetch artifacts for tests'
@@ -113,40 +143,39 @@ namespace :artifacts do
   end
 
   namespace :snapshot do
-    snapshots = 'https://snapshots.elastic.co/downloads/elasticsearch'
-    artifacts = 'spec/fixtures/artifacts'
-    build = 'elasticsearch-6.0.0-alpha2-SNAPSHOT'
-    %w[deb rpm].each do |ext|
-      package = "#{build}.#{ext}"
-      local = "#{artifacts}/#{package}"
-      checksum = "#{artifacts}/#{package}.sha1"
-      link = "#{artifacts}/elasticsearch-snapshot.#{ext}"
+    dls = Nokogiri::HTML(open('https://www.elastic.co/downloads/elasticsearch'))
+    div = dls.at_css('#preview-release-id')
 
-      task :fetch => link
+    if div.nil?
+      puts 'No preview release available; skipping snapshot download'
+      %w[deb rpm].each { |ext| task ext }
+      task 'not_found'
+    else
+      div
+        .at_css('.downloads')
+        .xpath('li/a[contains(text(), "rpm") or contains(text(), "deb")]')
+        .each do |anchor|
+        filename = artifact(anchor.attr('href'))
+        link = artifact("elasticsearch-snapshot.#{anchor.text.split(' ').first.downcase}")
+        checksum = filename + '.sha1'
 
-      desc "Symlink #{ext} latest snapshot build."
-      file link => local do
-        unless File.exist?(link) and File.symlink?(link) \
-              and File.readlink(link) == package
-          File.delete link if File.exist? link
-          File.symlink package, link
+        task anchor.text.split(' ').first.downcase => link
+        file link => filename do
+          unless File.exist?(link) and File.symlink?(link) \
+              and File.readlink(link) == filename
+            File.delete link if File.exist? link
+            File.symlink File.basename(filename), link
+          end
         end
-      end
 
-      desc "Retrieve #{ext} snapshot build."
-      file local => checksum do
-        if File.exist?(local) and \
-           Digest::SHA1.hexdigest(File.read(local)) == File.read(checksum)
-          puts "Artifact #{package} already fetched and up-to-date"
-        else
-          fetch_archives "#{snapshots}/#{package}" => package
+        file filename => checksum do
+          get anchor.attr('href'), filename
         end
-      end
 
-      desc "Retrieve #{ext} checksums."
-      task checksum do
-        File.delete checksum if File.exist? checksum
-        fetch_archives "#{snapshots}/#{package}.sha1" => "#{package}.sha1"
+        task checksum do
+          File.delete checksum if File.exist? checksum
+          get "#{anchor.attr('href')}.sha1", checksum
+        end
       end
     end
   end
@@ -171,21 +200,4 @@ def fetch_archives(archives)
     end
     get url, fp
   end
-end
-
-def get(url, file_path)
-  puts "Fetching #{url}..."
-  found = false
-  until found
-    uri = URI.parse(url)
-    conn = Net::HTTP.new(uri.host, uri.port)
-    conn.use_ssl = true
-    res = conn.get(uri.path)
-    if res.header['location']
-      url = res.header['location']
-    else
-      found = true
-    end
-  end
-  File.open(file_path, 'w+') { |fh| fh.write res.body }
 end
