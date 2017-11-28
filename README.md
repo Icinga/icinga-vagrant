@@ -1,5 +1,9 @@
 # Configure EPEL (Extra Repository for Enterprise Linux)
 
+# Note
+
+This is the last release that will support anything before Puppet 4.
+
 # About
 This module basically just mimics the epel-release rpm. The same repos are
 enabled/disabled and the GPG key is imported.  In the end you will end up with
@@ -20,9 +24,9 @@ Other repositories that will setup but disabled (as per the epel-release setup)
 # Usage
 
 In nearly all cases, you can simply _include epel_ or classify your nodes with
-the epel class. There are quite a few paramters available if you need to modify
-the default settings for the epel repository such having your own mirror, an
-http proxy, disable gpg checking.
+the epel class. There are quite a few parameters available if you need to modify
+the default settings for the epel repository such as having your own mirror, an
+http proxy, or disable gpg checking.
 
 You can also use a puppet one-liner to get epel onto a system.
 
@@ -49,7 +53,7 @@ URL and just setup the package mirrors.
 This does mean that if you are looking for RPM macros that are normally
 included with EPEL release, this will not have them.
 
-# Futher Information
+# Further Information
 
 * [EPEL Wiki](http://fedoraproject.org/wiki/EPEL)
 * [epel-release package information](http://mirrors.servercentral.net/fedora/epel/6/i386/repoview/epel-release.html)
@@ -58,6 +62,11 @@ included with EPEL release, this will not have them.
 
 =======
 
+1.3.0
+ * Add ability to disable and not define any resources from this module. This is useful if another module pulls in this module, but you already have epel managed another way.
+ * Ability to specify your own TLS certs
+ * repo files are now templated instead of sourced.
+ * properly use metalink vs mirrorlist
 
  1.2.2
  * Add dep on stdlib for getvar function call
@@ -122,24 +131,31 @@ Available RSPEC_SET options are in .nodeset.yml
 Apache Software License 2.0
 
 # Author/Contributors
-  *  Aaron <slapula@users.noreply.github.com>
-  *  Chad Metcalf <metcalfc@gmail.com>
-  *  Ewoud Kohl van Wijngaarden <e.kohlvanwijngaarden@oxilion.nl>
-  *  Joseph Swick <joseph.swick@meltwater.com>
-  *  Mickaël Canévet <mickael.canevet@camptocamp.com>
-  *  Matthaus Owens <mlitteken@gmail.com>
-  *  Michael Stahnke <stahnma@puppetlabs.com>
-  *  Michael Stahnke <stahnma@websages.com>
-  *  Nick Le Mouton <nick@noodles.net.nz>
-  *  Pro Cabales <proletaryo@gmail.com>
-  *  Proletaryo Cabales <proletaryo@gmail.com>
-  *  Rob Nelson <rnelson0@gmail.com>
-  *  Robert Story <rstory@localhost>
-  *  Stefan Goethals <stefan@zipkid.eu>
-  *  Tim Rupp <caphrim007@gmail.com>
-  *  Trey Dockendorf <treydock@gmail.com>
-  *  Troy Bollinger <troy@us.ibm.com>
-  *  Vlastimil Holer <holer@ics.muni.cz>
+ * Aaron <slapula@users.noreply.github.com>
+ * Alex Harvey <Alex_Harvey@amp.com.au>
+ * Chad Metcalf <metcalfc@gmail.com>
+ * Ewoud Kohl van Wijngaarden <e.kohlvanwijngaarden@oxilion.nl>
+ * Jeffrey Clark <jclark@nmi.com>
+ * Joseph Swick <joseph.swick@meltwater.com>
+ * Matthaus Owens <mlitteken@gmail.com>
+ * Michael Hanselmann <hansmi@vshn.ch>
+ * Michael Stahnke <stahnma@fedoraproject.org>
+ * Michael Stahnke <stahnma@puppet.com>
+ * Michael Stahnke <stahnma@puppetlabs.com>
+ * Michael Stahnke <stahnma@websages.com>
+ * Mickaël Canévet <mickael.canevet@camptocamp.com>
+ * Nick Le Mouton <nick@noodles.net.nz>
+ * Pro Cabales <proletaryo@gmail.com>
+ * Proletaryo Cabales <proletaryo@gmail.com>
+ * Riccardo Calixte <rcalixte@broadinstitute.org>
+ * Robert Story <rstory@localhost>
+ * Rob Nelson <rnelson0@gmail.com>
+ * Stefan Goethals <stefan@zipkid.eu>
+ * Tim Rupp <caphrim007@gmail.com>
+ * Toni Schmidbauer <toni@stderr.at>
+ * Trey Dockendorf <treydock@gmail.com>
+ * Troy Bollinger <troy@us.ibm.com>
+ * Vlastimil Holer <holer@ics.muni.cz>
 
 # Alternatives
 If you're on CentOS 7, you can just `yum install epel-release` as it's in centos-extras.
