@@ -31,18 +31,20 @@ describe 'concat::fragment replace' do
     EOS
 
     it 'applies the manifest twice with no stderr' do
-      apply_manifest(pp1, :catch_failures => true)
-      apply_manifest(pp1, :catch_changes => true)
-      apply_manifest(pp2, :catch_failures => true)
-      apply_manifest(pp2, :catch_changes => true)
+      apply_manifest(pp1, catch_failures: true)
+      apply_manifest(pp1, catch_changes: true)
+      apply_manifest(pp2, catch_failures: true)
+      apply_manifest(pp2, catch_changes: true)
     end
 
     describe file("#{basedir}/foo") do
-      it { should be_file }
-      its(:content) {
-        should_not match 'caller has replace unset run 1'
-        should match 'caller has replace unset run 2'
-      }
+      it { is_expected.to be_file }
+      its(:content) do
+        is_expected.not_to match 'caller has replace unset run 1'
+      end
+      its(:content) do
+        is_expected.to match 'caller has replace unset run 2'
+      end
     end
   end # should create fragment files
 
@@ -76,18 +78,20 @@ describe 'concat::fragment replace' do
     EOS
 
     it 'applies the manifest twice with no stderr' do
-      apply_manifest(pp1, :catch_failures => true)
-      apply_manifest(pp1, :catch_changes => true)
-      apply_manifest(pp2, :catch_failures => true)
-      apply_manifest(pp2, :catch_changes => true)
+      apply_manifest(pp1, catch_failures: true)
+      apply_manifest(pp1, catch_changes: true)
+      apply_manifest(pp2, catch_failures: true)
+      apply_manifest(pp2, catch_changes: true)
     end
 
     describe file("#{basedir}/foo") do
-      it { should be_file }
-      its(:content) {
-        should_not match 'caller has replace true set run 1'
-        should match 'caller has replace true set run 2'
-      }
+      it { is_expected.to be_file }
+      its(:content) do
+        is_expected.not_to match 'caller has replace true set run 1'
+      end
+      its(:content) do
+        is_expected.to match 'caller has replace true set run 2'
+      end
     end
   end # should replace its own fragment files when caller has File(replace=>true) set
 
@@ -121,19 +125,20 @@ describe 'concat::fragment replace' do
     EOS
 
     it 'applies the manifest twice with no stderr' do
-      apply_manifest(pp1, :catch_failures => true)
-      apply_manifest(pp1, :catch_changes => true)
-      apply_manifest(pp2, :catch_failures => true)
-      apply_manifest(pp2, :catch_changes => true)
+      apply_manifest(pp1, catch_failures: true)
+      apply_manifest(pp1, catch_changes: true)
+      apply_manifest(pp2, catch_failures: true)
+      apply_manifest(pp2, catch_changes: true)
     end
 
     describe file("#{basedir}/foo") do
-      it { should be_file }
-      its(:content) {
-        should_not match 'caller has replace false set run 1'
-        should match 'caller has replace false set run 2'
-      }
+      it { is_expected.to be_file }
+      its(:content) do
+        is_expected.not_to match 'caller has replace false set run 1'
+      end
+      its(:content) do
+        is_expected.to match 'caller has replace false set run 2'
+      end
     end
   end # should replace its own fragment files even when caller has File(replace=>false) set
-
 end

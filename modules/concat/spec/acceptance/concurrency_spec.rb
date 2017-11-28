@@ -22,16 +22,15 @@ describe 'with file recursive purge' do
     EOS
 
     it 'applies the manifest twice with no stderr' do
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{basedir}/bar/foobar") do
-      it { should be_file }
-      its(:content) {
-        should match 'foo'
-      }
+      it { is_expected.to be_file }
+      its(:content) do
+        is_expected.to match 'foo'
+      end
     end
   end
 end
-

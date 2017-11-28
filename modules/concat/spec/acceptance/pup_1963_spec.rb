@@ -1,11 +1,11 @@
 require 'spec_helper_acceptance'
 
-case fact('osfamily')
-  when 'Windows'
-    command = 'cmd.exe /c echo triggered'
-  else
-    command = 'echo triggered'
-end
+command = case fact('osfamily')
+          when 'Windows'
+            'cmd.exe /c echo triggered'
+          else
+            'echo triggered'
+          end
 
 describe 'with metaparameters' do
   describe 'with subscribed resources' do
@@ -31,9 +31,11 @@ describe 'with metaparameters' do
         }
       EOS
 
-      it 'applies the manifest twice with stdout regex' do
-        expect(apply_manifest(pp, :catch_failures => true).stdout).to match(/Triggered 'refresh'/)
-        expect(apply_manifest(pp, :catch_changes => true).stdout).to_not match(/Triggered 'refresh'/)
+      it 'applies the manifest twice with stdout regex first' do
+        expect(apply_manifest(pp, catch_failures: true).stdout).to match(%r{Triggered 'refresh'})
+      end
+      it 'applies the manifest twice with stdout regex second' do
+        expect(apply_manifest(pp, catch_changes: true).stdout).not_to match(%r{Triggered 'refresh'})
       end
     end
   end
@@ -60,9 +62,11 @@ describe 'with metaparameters' do
         }
       EOS
 
-      it 'applies the manifest twice with stdout regex' do
-        expect(apply_manifest(pp, :catch_failures => true).stdout).to match(/Triggered 'refresh'/)
-        expect(apply_manifest(pp, :catch_changes => true).stdout).to_not match(/Triggered 'refresh'/)
+      it 'applies the manifest twice with stdout regex first' do
+        expect(apply_manifest(pp, catch_failures: true).stdout).to match(%r{Triggered 'refresh'})
+      end
+      it 'applies the manifest twice with stdout regex second' do
+        expect(apply_manifest(pp, catch_changes: true).stdout).not_to match(%r{Triggered 'refresh'})
       end
     end
   end
