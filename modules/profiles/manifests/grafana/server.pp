@@ -1,7 +1,9 @@
 class profiles::grafana::server (
   $version = '4.2.0-1',
+  $listen_ip = '192.168.33.5',
   $listen_port = 8004,
-  $backend = 'graphite'
+  $backend = 'graphite',
+  $backend_port = 8003
 ) {
   # https://github.com/bfraser/puppet-grafana
   class { 'grafana':

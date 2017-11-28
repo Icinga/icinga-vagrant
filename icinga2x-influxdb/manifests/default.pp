@@ -6,6 +6,7 @@
 $hostOnlyIP = '192.168.33.8'
 $hostOnlyFQDN = 'icinga2x-influxdb.vagrant.demo.icinga.com'
 $grafanaListenPort = 8004
+$influxdbListenPort = 8086
 
 ####################################
 # Setup
@@ -37,9 +38,11 @@ class { '::profiles::influxdb::server':
 }
 ->
 class { '::profiles::grafana::server':
+  listen_ip => $hostOnlyIP,
   listen_port => $grafanaListenPort,
   version => '4.2.0-1',
-  backend => "influxdb"
+  backend => "influxdb",
+  backend_port => $influxdbListenPort
 }
 
 
