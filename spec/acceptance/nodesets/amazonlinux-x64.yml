@@ -1,12 +1,13 @@
 HOSTS:
-  amazonlinux-2016.09-x64:
+  amazonlinux-x64:
     roles:
       - master
     platform: el-6-x86_64
-    image: amazonlinux:2016.09
+    image: amazonlinux:2017.03
     hypervisor: docker
     docker_cmd: ["/sbin/init"]
-    docker_container_name: amazonlinux-2016.09-x64
+    docker_container_name: amazonlinux-x64
     docker_preserve_image: true
     docker_image_commands:
       - rm /etc/init/tty.conf
+      - yum install -y rubygems20

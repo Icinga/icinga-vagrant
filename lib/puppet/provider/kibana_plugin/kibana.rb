@@ -3,7 +3,8 @@ require 'puppet/provider/elastic_kibana'
 Puppet::Type.type(:kibana_plugin).provide(
   :kibana,
   :parent => Puppet::Provider::ElasticKibana,
-  :home_path => File.absolute_path(File.join(%w(/ opt kibana))),
+  :format_url => lambda { |url, b| [b.eval('resource[:name]'), '--url', url] },
+  :home_path => File.join(%w(/ opt kibana)),
   :install_args => ['plugin', '--install'],
   :plugin_directory => 'installedPlugins',
   :remove_args => ['plugin', '--remove']

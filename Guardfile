@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 notification :tmux, display_message: true
 
 guard :bundler do
