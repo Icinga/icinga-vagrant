@@ -18,18 +18,13 @@ server {
   listen unix:<%= @listen_unix_socket %><% if @listen_unix_socket_options %> <%= @listen_unix_socket_options %><% end %>;
     <%- end -%>
   <%- end -%>
-<%# check to see if ipv6 support exists in the kernel before applying -%>
-  <%- if @ipv6_enable && (defined? @ipaddress6) -%>
-    <%- if @ipv6_listen_ip.is_a?(Array) then -%>
-      <%- @ipv6_listen_ip.each do |ipv6| -%>
-  listen [<%= ipv6 %>]:<%= @ipv6_listen_port %> <% if @ipv6_listen_options %><%= @ipv6_listen_options %><% end %>;
-      <%- end -%>
-    <%- else -%>
-  listen [<%= @ipv6_listen_ip %>]:<%= @ipv6_listen_port %> <% if @ipv6_listen_options %><%= @ipv6_listen_options %><% end %>;
-    <%- end -%>
-  <%- end -%>
+<%= scope.function_template(["nginx/server/server_ipv6_listen.erb"]) %>
   server_name  www.<%= s.gsub(/^www\./, '') %>;
+  <%- if @ssl_redirect or @ssl_only -%>
+  return       301 https://<%= s.gsub(/^www\./, '') %><% if @_ssl_redirect_port.to_i != 443 %>:<%= @_ssl_redirect_port %><% end %>$request_uri;
+  <%- else -%>
   return       301 http://<%= s.gsub(/^www\./, '') %>$request_uri;
+  <%- end -%>
 }
 
 <% end -%>
@@ -51,16 +46,7 @@ server {
   listen unix:<%= @listen_unix_socket %><% if @listen_unix_socket_options %> <%= @listen_unix_socket_options %><% end %>;
   <%- end -%>
 <%- end -%>
-<%# check to see if ipv6 support exists in the kernel before applying -%>
-<%- if @ipv6_enable && (defined? @ipaddress6) -%>
-  <%- if @ipv6_listen_ip.is_a?(Array) then -%>
-    <%- @ipv6_listen_ip.each do |ipv6| -%>
-  listen [<%= ipv6 %>]:<%= @ipv6_listen_port %> <% if @ipv6_listen_options %><%= @ipv6_listen_options %><% end %>;
-    <%- end -%>
-  <%- else -%>
-  listen [<%= @ipv6_listen_ip %>]:<%= @ipv6_listen_port %> <% if @ipv6_listen_options %><%= @ipv6_listen_options %><% end %>;
-  <%- end -%>
-<%- end -%>
+<%= scope.function_template(["nginx/server/server_ipv6_listen.erb"]) %>
   server_name           <%= @rewrite_www_to_non_www ? @server_name.join("  ").gsub(/(^| )(www\.)?(?=[a-z0-9])/, '') : @server_name.join(" ") %>;
 <%- if instance_variables.any? { |iv| iv.to_s.include? 'auth_basic' } -%>
   <%- if defined? @auth_basic -%>
@@ -131,7 +117,7 @@ server {
 <% end -%>
 <% if @add_header -%>
   <%- @add_header.keys.sort.each do |key| -%>
-  add_header              '<%= key %>' '<%= @add_header[key] %>';
+  add_header              "<%= key %>" "<%= @add_header[key] %>";
   <%- end -%>
 <% end -%>
 <% if @maintenance -%>
@@ -140,7 +126,7 @@ server {
 <% if @ssl_redirect -%>
   return 301 https://$host<% if @_ssl_redirect_port.to_i != 443 %>:<%= @_ssl_redirect_port %><% end %>$request_uri;
 <% end -%>
-<% if @index_files.count > 0 and not @ssl_only -%>
+<% if @index_files and @index_files.count > 0 and not @ssl_only -%>
   index <% Array(@index_files).each do |i| %> <%= i %><% end %>;
 
 <% end -%>

@@ -23,6 +23,7 @@ class nginx::config {
   $conf_dir                       = $::nginx::conf_dir
   $daemon                         = $::nginx::daemon
   $daemon_user                    = $::nginx::daemon_user
+  $daemon_group                   = $::nginx::daemon_group
   $global_owner                   = $::nginx::global_owner
   $global_group                   = $::nginx::global_group
   $global_mode                    = $::nginx::global_mode
@@ -67,6 +68,8 @@ class nginx::config {
   $gzip_proxied                   = $::nginx::gzip_proxied
   $gzip_types                     = $::nginx::gzip_types
   $gzip_vary                      = $::nginx::gzip_vary
+  $http_raw_prepend               = $::nginx::http_raw_prepend
+  $http_raw_append                = $::nginx::http_raw_append
   $http_cfg_prepend               = $::nginx::http_cfg_prepend
   $http_cfg_append                = $::nginx::http_cfg_append
   $http_tcp_nodelay               = $::nginx::http_tcp_nodelay
@@ -110,6 +113,7 @@ class nginx::config {
   $worker_connections             = $::nginx::worker_connections
   $worker_processes               = $::nginx::worker_processes
   $worker_rlimit_nofile           = $::nginx::worker_rlimit_nofile
+  $ssl_prefer_server_ciphers      = $::nginx::ssl_prefer_server_ciphers
   $ssl_protocols                  = $::nginx::ssl_protocols
   $ssl_ciphers                    = $::nginx::ssl_ciphers
 
@@ -178,9 +182,6 @@ class nginx::config {
     owner  => $daemon_user,
   }
 
-  if ($daemon) {
-    validate_re($daemon, '^(on|off)$')
-  }
 
   file {$proxy_temp_path:
     ensure => directory,

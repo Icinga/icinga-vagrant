@@ -7,7 +7,7 @@
 [![Puppet Forge - endorsement](https://img.shields.io/puppetforge/e/puppet/nginx.svg)](https://forge.puppetlabs.com/puppet/nginx)
 [![Puppet Forge - scores](https://img.shields.io/puppetforge/f/puppet/nginx.svg)](https://forge.puppetlabs.com/puppet/nginx)
 
-This module got migrated from James Fryman <james@frymanet.com> and
+This module was migrated from James Fryman <james@frymanet.com> and
 Matthew Haughton <matt@3flex.com.au> to Vox Pupuli.
 
 ## INSTALLING OR UPGRADING
@@ -19,7 +19,8 @@ This module manages NGINX configuration.
 
 ### Requirements
 
-* Puppet 3.8.7 or later
+* Puppet 4.6.1 or later.  Puppet 3 was supported up until release 0.6.0.
+* apt is now a soft dependency. If your system uses apt, you'll need to configure an appropriate version of the apt module.
 
 ### Additional Documentation
 
@@ -161,6 +162,33 @@ nginx::nginx_mailhosts:
     listen_port: 587
     ssl_port: 465
     starttls: only
+```
+
+### A stream syslog UDP proxy
+
+```yaml
+nginx::nginx_cfg_prepend:
+  include:
+    - '/etc/nginx/modules-enabled/*.conf'
+
+nginx::nginx_streamhosts:
+  'syslog':
+    ensure:                 'present'
+    listen_port:            '514'
+    listen_options:         'udp'
+    proxy:                  'syslog'
+    proxy_read_timeout:     '1'
+    proxy_connect_timeout:  '1'
+    raw_append:
+      - 'error_log off;'
+
+nginx::nginx_upstreams:
+  'syslog':
+    upstream_context: 'stream'
+    members:
+      - '10.0.0.1:514'
+      - '10.0.0.2:514'
+      - '10.0.0.3:514'
 ```
 
 ## Nginx with precompiled Passenger
