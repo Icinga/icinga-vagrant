@@ -26,7 +26,26 @@ such as databases, users, and privileges.
 
 ## Deprecation Warning
 
-Notes for version 3.1.1+:
+Notes for version 5.0.0+:
+
+This module was a refactor of the 4.x version to handle influxdb >= 1.x.
+Due to the changes in influxdb 1.x, this module should now support
+future change more easily due to thew way the configuration files are
+now managed.
+
+Highlights
+==========
+
+* The module layout out has changed significantly from previous versions.
+* A new fact was added `influxdb_version`.
+* The influxdb.conf.erb file was refactored.
+* Added and fixed a lot of rspec puppet tests.
+* Fixed all the beaker tests, they work now.
+* This module now supports influxdb >= 1.x < 2.x
+* Major change to the original class parameters now hashes vs individual items.
+
+
+Notes for version 4.0.0+:
 
 influxdb 1.0.0 contains [breaking changes](https://github.com/influxdata/influxdb/blob/master/CHANGELOG.md#v100-2016-09-08)
 which require changing the `data_logging_enabled` config attribute to `trace_logging_enabled`.
@@ -58,7 +77,7 @@ however I will try my best to avoid it.
 ### Beginning with InfluxDB
 
 If you just want a server installed with the default options you can
-run include `'::influxdb::server'`.
+run include `'::influxdb'`.
 
 ## Usage
 
@@ -67,103 +86,129 @@ All interaction for the server is done via `influxdb::server`.
 Install influxdb
 
 ```puppet
-class {'influxdb::server':}
+class {'influxdb':}
 ```
 
-Join a cluster
 ```puppet
-class {'influxdb::server':
-  meta_bind_address      => "${::fqdn}:8088",
-  meta_http_bind_address => "${::fqdn}:8091",
-  http_bind_address      => "${::fqdn}:8086",
-  influxd_opts           => "-join my.other.node1:8091,my.other.node2:8091"
+
+# These are defaults, but demonstrates how you can change sections of data
+$global_config => {
+  'bind-address'       => ':8088',
+  'reporting-disabled' => false,
+}
+
+class {'influxdb':
+  global_config  => $global_config,
+  manage_repos   => true,
+  manage_service => true,
+  version        => '1.2.0',
 }
 ```
-For more info on setting up a raft cluster, see the [InfluxDB docs](https://docs.influxdata.com/influxdb/v0.10/guides/clustering/)
-
 
 Enable Graphite plugin with one database
 
 ```puppet
-class {'influxdb::server':
-  graphite_options => {
-    enabled           => true,
-    database          => graphite,
-    bind-address      => ':2003',
-    protocol          => tcp,
-    consistency-level => 'one',
-    name-separator    => '.',
-    batch-size        => 1000,
-    batch-pending     => 5,
-    batch-timeout     => '1s',
-    udp-read-buffer   => 0,
-    name-schema       => 'type.host.measurement.device',
-    templates         => [ "*.app env.service.resource.measurement" ],
-    tags              => [ "region=us-east", "zone=1c"],
-  },
+
+# Most of these will be defaults, unless otherwise noted.
+$graphite_config = {
+  'default' => {
+    'enabled'           => true, # not default
+    'database'          => "graphite",
+    'retention-policy'  => '',
+    'bind-address'      => ':2003',
+    'protocol'          => 'tcp',
+    'consistency-level' => 'one',
+    'batch-size'        => 5000,
+    'batch-pending'     => 10,
+    'batch-timeout'     => '1s',
+    'udp-read-buffer'   => 0,
+    'separator'         => '.',
+    'tags'              => [ "region=us-east", "zone=1c"],
+    'templates'         => [ "*.app env.service.resource.measurement" ],
+  }
+}
+
+class { 'influxdb':
+  manage_repos    => true,
+  graphite_config => $graphite_config,
 }
 ```
 
 Enable Collectd plugin
 
 ```puppet
-class {'influxdb::server':
-  collectd_options => {
-    enabled => true,
-    bind-address => ':25826',
-    database => 'foo',
-    typesdb => '/usr/share/collectd/types.db',
-    batch-size => 1000,
-    batch-pending => 5,
-    batch-timeout => '1s',
-    read-buffer => 0,
-  },
+
+# most of these are defaults, unless otherwise noted
+$collectd_config = {
+  'default' => {
+    'enabled'          => true, # not default
+    'bind-address'     => ':25826',
+    'database'         => 'collectd',
+    'retention-policy' => '',
+    'typesdb'          => '/usr/share/collectd/types.db',
+    'batch-size'       => 5000,
+    'batch-pending'    => 10,
+    'batch-timeout'    => '10s',
+    'read-buffer'      => 0,
+  }
+}
+
+class {'influxdb':
+  manage_repos    => true,
+  collectd_config => $collectd_config,
 }
 ```
 
 Enable UDP listener
 
 ```puppet
-$udp_options = [
-    { 'enabled'       => true,
-      'bind-address'  => '":8089"',
-      'database'      => '"udp_db1"',
-      'batch-size'    => 10000,
-      'batch-timeout' => '"1s"',
-      'batch-pending' => 5,
-    },
-    { 'enabled'       => true,
-      'bind-address'  => '":8090"',
-      'database'      => '"udp_db2"',
-      'batch-size'    => 10000,
-      'batch-timeout' => '"1s"',
-      'batch-pending' => 5,
-    },
-]
 
-class {'influxdb::server':
-	reporting_disabled    => true,
-	http_auth_enabled     => true,
-	shard_writer_timeout  => '10s',
-	cluster_write_timeout => '10s',
-	udp_options           => $udp_options,
+
+# most of these are defaults unless otherwise noted.
+$udp_config = {
+  'default' => {
+    'enabled'          => true, # not default
+    'bind-address'     => ':8089',
+    'database'         => 'udp',
+    'retention-policy' => '',
+    'batch-size'       => 5000,
+    'batch-pending'    => 10,
+    'batch-timeout'    => '1s',
+    'read-buffer'      => 0,
+  }
+}
+
+class {'influxdb':
+  manage_repos => true,
+  udp_config   => $udp_config
 }
 ```
 
 Enable opentsdb
 
 ```puppet
-class {'influxdb::server':
-  opentsdb_options => {
-    enabled => true,
-    bind-address => ':4242',
-    database => 'foo',
-    typesdb => '/usr/share/collectd/types.db',
-    batch-size => 1000,
-    batch-pending => 5,
-    batch-timeout => '1s',
-    read-buffer => 0,
-  },
+
+# most of these are defaults unless otherwise noted
+$opentsdb_config = {
+  'default' => {
+    'enabled'           => true, # not default
+    'bind-address'      => ':4242',
+    'database'          => 'opentsdb',
+    'retention-policy'  => '',
+    'consistency-level' => 'one',
+    'tls-enabled'       => false,
+    'certificate'       => '/etc/ssl/influxdb.pem',
+    'log-point-errors'  => true,
+    'batch-size'        => 1000,
+    'batch-pending'     => 5,
+    'batch-timeout'     => '1s'
+  }
+}
+
+
+class {'influxdb':
+  manage_repos    => true,
+  opentsdb_config => $opentsdb_config,
 }
 ```
 
@@ -173,17 +218,18 @@ class {'influxdb::server':
 
 #### Public classes
 
-*   `influxdb::server`: Installs and configures InfluxDB.
+*   `influxdb`: Installs and configures InfluxDB.
 
 #### Private classes
 
-*   `influxdb::server::install`: Installs packages.
-*   `influxdb::server::config`: Configures InfluxDB.
-*   `influxdb::server::service`: Manages service.
+*   `influxdb::install`: Installs packages.
+*   `influxdb::config`: Configures InfluxDB.
+*   `influxdb::repo`: Manages install repo.
+*   `influxdb::service`: Manages service.
 
 ### Parameters
 
-#### influxdb::server
+#### influxdb
 
 ##### `ensure`
 
@@ -192,323 +238,238 @@ Allows you to install or remove InfluxDB. Can be 'present' or 'absent'.
 ##### `version`
 
 Version of InfluxDB.
-Default: 0.9.3
-*NOTE*: Unfortunately, the latest link available on the influxdb website
-is pointing to an old version.
-For more info, check [ISSUE 3533](https://github.com/influxdb/influxdb/issues/3533)
+Default: installed
+
+*NOTE*: installed (will install the latest version if the package repo if not already installed).
+        It is highly recommended that you manage this param with a specific version.
 
 ##### `config_file`
 
 Path to the config file.
-Default: OS specific
+Default: /etc/influxdb/influxdb.conf
 
-##### `service_provider`
+##### `conf_template`
 
-The provider to use to manage the service.
-Default: OS specific
+The path to the template file that puppet uses to generate the influxdb.conf
+Default: influxdb/influxdb.conf.erb
+
+##### `startup_conf_template`
+
+The path to the template file that puppet uses to generate the start config.
+Default: influxdb/influxdb_default.erb
 
 ##### `service_enabled`
 
 Boolean to decide if the service should be enabled.
-
-##### `package_provider`
-
-What provider should be used to install the package.
-
-##### `meta_bind_address`
-
-This setting can be used to configure InfluxDB to bind to and listen for 
-cluster connections on this address, default is `":8088"`
-
-For clustering this must be set to `<fqdn>:<port>` (usually 8088)
-
-##### `meta_http_bind_address`
-
-This setting can be used to configure InfluxDB to bind to and listen for
-cluster connections on this address, default is `":8091"`
-
-For clustering this must be set to `<fqdn>:<port>` (usually 8091)
-
-##### `reporting_disabled`
-
-If enabled once every 24 hours InfluxDB will report anonymous data
-to m.influxdb.com.
-Default: false
-
-##### `retention_autocreate`
-
 Default: true
 
-##### `election_timeout`
+##### `service_ensure`
 
-Default: 1s
+String to decide if the service should be running|stopped.
+Default: running
 
-##### `heartbeat_timeout`
+##### `manage_service`
 
-Default: 1s
-
-##### `leader_lease_timeout`
-
-Default: 500ms
-
-##### `commit_timeout`
-
-Default: 50ms
-
-##### `data_dir`
-
-Controls where the actual shard data for InfluxDB lives.
-Default: OS distro
-
-##### `wal_dir`
-
-Wal dir for the storage engine 0.9.3+
-Default: /var/lib/influxdb/wal
-
-##### `meta_dir`
-
-Location of the meta dir
-Default: /var/lib/influxdb/meta
-
-##### `wal_enable_logging`
-
-Enable WAL logging.
-NEW in 0.9.3+
-Default: true
-
-##### `wal_ready_series_size`
-
-When a series in the WAL in-memory cache reaches this size in bytes it is
-marked as ready to flush to the index.
-NEW in 0.9.3+
-Default: 25600
-
-##### `wal_compaction_threshold`
-
-Flush and compact a partition once this ratio of series are over the ready size.
-NEW in 0.9.3+
-Default: 0.6
-
-##### `wal_max_series_size`
-
-Force a flush and compaction if any series in a partition
-gets above this size in bytes.
-NEW in 0.9.3+
-Default: 2097152
-
-##### `wal_flush_cold_interval`
-
-Force a flush of all series and full compaction if there have been
-no writes in this amount of time.
-This is useful for ensuring that shards that are cold for writes
-don't keep a bunch of data cached in memory and in the WAL.
-NEW in 0.9.3+
-Default: 10m
-
-##### `wal_partition_size_threshold`
-
-Force a partition to flush its largest series if it reaches
-this approximate size in bytes.
-Remember there are 5 partitions so you'll need at least
-5x this amount of memory. The more memory you have, the bigger this can be.
-NEW in 0.9.3+Default: 20971520
-
-##### `max_wal_size`
-
-Maximum size the WAL can reach before a flush.
-*DEPRECATED* since version 0.9.3.
-Default: 100MB
-
-##### `wal_flush_interval`
-
-Maximum time data can sit in WAL before a flush.
-*DEPRECATED* since version 0.9.3.
-Default: 10m
-
-##### `wal_partition_flush_delay`
-
-The delay time between each WAL partition being flushed.
-*DEPRECATED* since version 0.9.3.
-Default: 2s
-
-##### `shard_writer_timeout`
-
-The time within which a shard must respond to write.
-Default: 5s
-
-##### `cluster_write_timeout`
-
-The time within which a write operation must complete on the cluster.
-Default: 5s
-
-##### `retention_enabled`
-
-Controls the enforcement of retention policies for evicting old data.
-Default: true
-
-##### `retention_check_interval`
-
-Default: 10m
-
-##### `admin_enabled`
-
-Controls the availability of the built-in, web-based, admin interface.
-Default: true
-
-##### `admin_bind_address`
-
-Default: :8083
-
-##### `admin_https_enabled`
-
-If HTTPS is enabled for the admin interface,
-HTTPS must also be enabled on the \[http\] service.
-Default: false
-
-##### `admin_https_certificate`
-
-Default: undef
-
-##### `http_enabled`
-
-Controls how the HTTP endpoints are configured.
-These are the primary mechanism for getting data into and out of InfluxDB.
-Default: true
-
-##### `http_bind_address`
-
-Default: :8086
-
-##### `http_auth_enabled`
-
-Default: false
-
-##### `http_log_enabled`
-
-Default: true
-
-##### `http_write_tracing`
-
-Default: false
-
-##### `http_pprof_enabled`
-
-Default: false
-
-##### `http_https_enabled`
-
-Default: false
-
-##### `http_https_certificate`
-
-Default: undef
-
-##### `graphite_options`
-
-Controls the listener for InfluxDB line protocol data via Graphite.
-Default: undef
-
-##### `collectd_options`
-
-Controls the listener for InfluxDB line protocol data via Collectd.
-Default: undef
-
-##### `opentsdb_options`
-
-Controls the listener for InfluxDB line protocol data via OpenTSDB.
-Default: undef
-
-##### `udp_options`
-
-Controls the listener for InfluxDB line protocol data via UDP.
-Default: undef
-
-##### `monitoring_enabled`
-
-Default: true
-
-##### `monitoring_write_interval`
-
-Default: 24h
-
-##### `monitoring_database`
-
-Default: _internal
-
-##### `continuous_queries_enabled`
-
-Controls how continuous queries are run within InfluxDB.
-Default: true
-
-##### `continuous_queries_log_enabled`
-
-Default true
-
-##### `continuous_queries_run_interval`
-
-Default: 1s
-
-##### `hinted_handoff_enabled`
-
-Controls the hinted handoff feature, which allows nodes to temporarily
-store queued data when one node of a cluster is down for a short period of time.
-Default: true
-
-##### `hinted_handoff_dir`
-
-Default: /var/lib/influxdb/hh
-
-##### `hinted_handoff_max_size`
-
-Default: 1073741824
-
-##### `hinted_handoff_max_age`
-
-Default: 168h
-
-##### `hinted_handoff_retry_rate_limit`
-
-Default: 0
-
-##### `hinted_handoff_retry_interval`
-
-Default: 1s
-
-##### `conf_template`
-
-If needed, you can add a custom template.
-Default: influxdb/influxdb.conf.erb
-
-##### `influxdb_user`
-
-Default: OS specific
-
-##### `influxdb_group`
-
-Default: OS specific
-
-##### `influxdb_stderr_log`
-
-Default: /var/log/influxdb/influxd.log
-
-##### `influxdb_stdout_log`
-
-Default: /dev/null
-
-##### `manage_install`
-
-enable/disable installation of the influxdb packages from the yum/apt repo
+Boolean to decide if the service should be managed with puppet or not.
 Default: true
 
 ##### `manage_repos`
 
-enable/disable repository installation
+Boolean to decide if the package repos should be managed by puppet.
+Default: false
+
+##### `manage_install`
+
+Boolean to decide if puppet should manage the install of packages.
 Default: true
+
+##### `influxdb_stderr_log`
+
+Where influx will log stderr messages
+Default: /var/log/influxdb/influxd.log
+
+
+##### `influxdb_stdout_log`
+
+Where influx will log stdout messages
+Default: /var/log/influxdb/influxd.log
+
 
 ##### `influxd_opts`
 
-Additional influxd options used for setting up raft clusters.
+String of startup config options that need to be present.
 Default: undef
+
+
+##### `global_config`
+
+A hash of global configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs.
+
+[Influx Global Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#global-options)
+
+[params.pp](manifests/params.pp#L21)
+
+
+##### `meta_config`
+
+A hash of meta configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Meta Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#meta)
+
+[params.pp](manifests/params.pp#26)
+
+
+##### `data_config`
+
+A hash of data configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Data Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#data)
+
+[params.pp](manifests/params.pp#32)
+
+
+##### `coordinator_config`
+
+A hash of coordinator configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Coordinator Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#coordinator)
+
+[params.pp](manifests/params.pp#45)
+
+
+##### `retention_config`
+
+A hash of retention configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Retention Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#retention)
+
+[params.pp](manifests/params.pp#55)
+
+
+##### `shard_precreation_config`
+
+A hash of shard_precreation configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Shard Precreation Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#shard-precreation)
+
+[params.pp](manifests/params.pp#60)
+
+
+##### `monitor_config`
+
+A hash of monitor configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Monitor Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#monitor)
+
+[params.pp](manifests/params.pp#66)
+
+
+##### `admin_config`
+
+A hash of admin configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Admin Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#admin)
+
+[params.pp](manifests/params.pp#74)
+
+
+##### `http_config`
+
+A hash of http configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx HTTP Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#http)
+
+[params.pp](manifests/params.pp#81)
+
+
+##### `subscriber_config`
+
+A hash of subscriber configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Subscriber Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#subscriber)
+
+[params.pp](manifests/params.pp#99)
+
+
+##### `graphite_config`
+
+A hash of graphite configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Graphite Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#graphite)
+
+[params.pp](manifests/params.pp#108)
+
+
+##### `collectd_config`
+
+A hash of collectd configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Collectd Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#collectd)
+
+[params.pp](manifests/params.pp#126)
+
+
+##### `opentsdb_config`
+
+A hash of opentsdb configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Opentsdb Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#opentsdb)
+
+[params.pp](manifests/params.pp#140)
+
+
+##### `udp_config`
+
+A hash of udp configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Udp Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#udp)
+
+[params.pp](manifests/params.pp#156)
+
+
+##### `continuous_queries_config`
+
+A hash of continuous queries configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.2.0 of the influx docs
+
+[Influx Continuous Queries Options](https://docs.influxdata.com/influxdb/v1.2/administration/config/#continuous-queries)
+
+[params.pp](manifests/params.pp#169)
+
+
+##### `hinted_handoff_config`
+
+This is depcreated as of influxdb >= 1.0
+Default: {}
 
 ## Limitations
 
@@ -519,6 +480,14 @@ This module has been tested on:
 *   CentOS 6/7
 
 ## Development
+
+In order to better facilitate beaker testing, the Gemfile was modified to
+support environment variables.  You must set this enviroment variable
+before running `bundle exec *`.  The Gemfile will automatically set this
+for you but you can also override it.
+```
+export BEAKER_VERSION=3.10.0 # assumes ruby >= 2.2.5
+```
 
 Please see CONTRIBUTING.md
 
