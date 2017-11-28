@@ -1,7 +1,7 @@
 #	opensuse-121 \
 #       sles-11sp3 \
 
-default: deps lint test-unit docs
+default: deps lint docs
 
 distros = \
 	centos-6 \

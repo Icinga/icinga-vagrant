@@ -74,12 +74,11 @@
 # @param [Array] jvm_options
 #   A collection of settings to be defined in `jvm.options`.
 #
+# @param [Array] pipelines
+#   A collection of settings to be defined in `pipelines.yml`.
+#
 # @param [Boolean] manage_repo
 #   Enable repository management. Configure the official repositories.
-#
-# @param [String] repo_version
-#   Logstash repositories are defined by major version. Defines the major
-#   version to manage.
 #
 # @param [String] config_dir
 #   Path containing the Logstash configuration.
@@ -119,52 +118,55 @@
 #     ]
 #   }
 #
+# @example Configure multiple pipelines.
+#   class { 'logstash':
+#     pipelines => [
+#       {
+#         "pipeline.id" => "my-pipeline_1",
+#         "path.config" =>  "/etc/path/to/p1.config",
+#       },
+#       {
+#         "pipeline.id" => "my-other-pipeline",
+#         "path.config" =>  "/etc/different/path/p2.cfg",
+#       }
+#     ]
+#   }
+#
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
 class logstash(
   $ensure            = 'present',
   $status            = 'enabled',
-  $restart_on_change = true,
-  $auto_upgrade       = false,
+  Boolean $restart_on_change = true,
+  Boolean $auto_upgrade       = false,
   $version           = undef,
   $package_url       = undef,
   $package_name      = 'logstash',
-  $download_timeout  = 600,
+  Integer $download_timeout  = 600,
   $logstash_user     = 'logstash',
   $logstash_group    = 'logstash',
   $config_dir         = '/etc/logstash',
-  $purge_config      = true,
+  Boolean $purge_config = true,
   $service_provider  = undef,
   $settings          = {},
   $startup_options   = {},
   $jvm_options       = [],
-  $manage_repo       = true,
-  $repo_version      = '5.x',
+  Array $pipelines   = [],
+  Boolean $manage_repo   = true,
 )
 {
   $home_dir = '/usr/share/logstash'
 
-  validate_bool($auto_upgrade)
-  validate_bool($restart_on_change)
-  validate_bool($purge_config)
-  validate_bool($manage_repo)
-
   if ! ($ensure in [ 'present', 'absent' ]) {
     fail("\"${ensure}\" is not a valid ensure parameter value")
-  }
-
-  if ! is_integer($download_timeout) {
-    fail("\"${download_timeout}\" is not a valid number for 'download_timeout' parameter")
   }
 
   if ! ($status in [ 'enabled', 'disabled', 'running', 'unmanaged' ]) {
     fail("\"${status}\" is not a valid status parameter value")
   }
 
-
   if ($manage_repo == true) {
-    validate_string($repo_version)
-    include logstash::repo
+    include elastic_stack::repo
   }
   include logstash::package
   include logstash::config

@@ -53,4 +53,25 @@ describe 'define logstash::configfile' do
       expect(result).to include('Test output configuration with null output.')
     end
   end
+
+  context 'with an explicit path parameter' do
+    logstash_config = 'input { heartbeat { message => "right here"} }'
+    path = '/tmp/explicit-path.cfg'
+
+    manifest = <<-END
+    logstash::configfile { 'heartbeat-input':
+      content => '#{logstash_config}',
+      path    => '#{path}',
+    }
+    END
+
+    before(:context) do
+      apply_manifest(manifest, catch_failures: true)
+    end
+
+    it 'creates a file with the given content at the correct path' do
+      result = shell("cat #{path}").stdout
+      expect(result).to eq(logstash_config)
+    end
+  end
 end

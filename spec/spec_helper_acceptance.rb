@@ -14,12 +14,19 @@ PUPPET_VERSION = ENV['PUPPET_VERSION'] || '3.8.6'
 PE_VERSION = ENV['BEAKER_PE_VER'] || ENV['PE_VERSION'] || '3.8.3'
 PE_DIR = ENV['BEAKER_PE_DIR']
 
-REPO_VERSION = LS_VERSION[0] + ".x" # "5.0.1" -> "5.x"
+if LS_VERSION =~ /(alpha|beta|rc)/
+  IS_PRERELEASE = true
+else
+  IS_PRERELEASE = false
+end
 
 def agent_version_for_puppet_version(puppet_version)
   # REF: https://docs.puppet.com/puppet/latest/reference/about_agent.html
   version_map = {
     # Puppet => Agent
+    '4.9.4' => '1.9.3',
+    '4.8.2' => '1.8.3',
+    '4.7.1' => '1.7.2',
     '4.7.0' => '1.7.1',
     '4.6.2' => '1.6.2',
     '4.5.3' => '1.5.3',
@@ -72,11 +79,17 @@ def logstash_package_filename
 end
 
 def logstash_package_version
+  if LS_VERSION =~ /(alpha|beta|rc)/
+    package_version = LS_VERSION.gsub('-', '~')
+  else
+    package_version = LS_VERSION
+  end
+
   case fact('osfamily') # FIXME: Put this logic in the module, not the tests.
   when 'RedHat'
-    "#{LS_VERSION}-1"
+    "#{package_version}-1"
   when 'Debian', 'Suse'
-    "1:#{LS_VERSION}-1"
+    "1:#{package_version}-1"
   end
 end
 
@@ -90,12 +103,28 @@ end
 
 def install_logstash_manifest(extra_args = nil)
   <<-END
+  class { 'elastic_stack::repo':
+    version    => #{LS_VERSION[0]},
+    prerelease => #{IS_PRERELEASE.to_s},
+  }
   class { 'logstash':
     manage_repo  => true,
-    repo_version => '#{REPO_VERSION}',
     version      => '#{logstash_package_version}',
     #{extra_args if extra_args}
   }
+
+  #{logstash_config_manifest}
+  END
+end
+
+def include_logstash_manifest()
+  <<-END
+  class { 'elastic_stack::repo':
+    version    => #{LS_VERSION[0]},
+    prerelease => #{IS_PRERELEASE.to_s},
+  }
+
+  include logstash
 
   #{logstash_config_manifest}
   END
@@ -131,7 +160,7 @@ def install_logstash(extra_args = nil)
 end
 
 def include_logstash
-  apply_manifest('include logstash', catch_failures: true, debug: true)
+  apply_manifest(include_logstash_manifest, catch_failures: true, debug: true)
   sleep 5 # FIXME: This is horrible.
 end
 
@@ -167,6 +196,10 @@ end
 
 def expect_setting(setting, value)
   expect(logstash_settings[setting]).to eq(value)
+end
+
+def pipelines_from_yaml
+  YAML.load(shell('cat /etc/logstash/pipelines.yml').stdout)
 end
 
 def pe_package_url
@@ -244,6 +277,9 @@ hosts.each do |host|
   # ...and another plugin that can be fetched from Puppet with "puppet://"
   FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowthink-5.0.0.gem', './files/')
 
+  # ...and yet another plugin, this time packaged as an offline installer
+  FileUtils.cp('./spec/fixtures/plugins/logstash-output-cowsay-5.0.0.zip', './files/')
+
   # Provide a config file template.
   FileUtils.cp('./spec/fixtures/templates/configfile-template.erb', './templates/')
 
@@ -254,6 +290,7 @@ hosts.each do |host|
   # Also install any other modules we need on the test system.
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-stdlib')
   install_puppet_module_via_pmt_on(host, module_name: 'puppetlabs-apt')
+  install_puppet_module_via_pmt_on(host, module_name: 'elastic-elastic_stack')
   install_puppet_module_via_pmt_on(host, module_name: 'darin-zypprepo')
 end
 

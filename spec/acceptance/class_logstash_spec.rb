@@ -113,7 +113,7 @@ describe 'class logstash' do
   end
 
   describe 'settings parameter' do
-    context "with a flat key'" do
+    context 'with a flat key' do
       before(:context) do
         settings = "{ 'http.port' => '9999' }"
         install_logstash_from_local_file("settings => #{settings}")
@@ -213,6 +213,35 @@ describe 'class logstash' do
         expert_flags.each do |flag|
           expect(logstash_process_list.pop).to include(flag)
         end
+      end
+    end
+  end
+
+  describe 'pipelines_parameter' do
+    context "with pipelines declared" do
+      before(:context) do
+        pipelines_puppet = <<-END
+        [
+          {
+            "pipeline.id" => "pipeline_one",
+            "path.config" =>  "/etc/path/to/p1.config",
+          },
+          {
+            "pipeline.id" => "pipeline_two",
+            "path.config" =>  "/etc/different/path/p2.cfg",
+          }
+        ]
+        END
+        install_logstash_from_local_file("pipelines => #{pipelines_puppet}")
+      end
+
+      it 'should render them to pipelines.yml' do
+        expect(pipelines_from_yaml[0]['pipeline.id']).to eq('pipeline_one')
+        expect(pipelines_from_yaml[1]['pipeline.id']).to eq('pipeline_two')
+      end
+
+      it 'should remove "path.config" from "logstash.yml"' do
+        expect(logstash_settings['path.config']).to be_nil
       end
     end
   end
