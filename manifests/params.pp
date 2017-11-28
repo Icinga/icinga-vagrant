@@ -1,3 +1,8 @@
+# Class: nginx::params
+# ====================
+#
+# nginx default settings and according to operating system
+#
 class nginx::params {
   ### Operating System Configuration
   ## This is my hacky... no hiera system. Oh well. :)
@@ -35,7 +40,7 @@ class nginx::params {
         }
       }
     }
-    'FreeBSD': {
+    'DragonFly', 'FreeBSD': {
       $_module_os_overrides = {
         'conf_dir'    => '/usr/local/etc/nginx',
         'daemon_user' => 'www',
@@ -49,7 +54,7 @@ class nginx::params {
       }
     }
     'RedHat': {
-      if ($::operatingsystem in ['RedHat', 'CentOS'] and $::operatingsystemmajrelease in ['5', '6', '7']) {
+      if ($::operatingsystem in ['RedHat', 'CentOS', 'Oracle'] and $::operatingsystemmajrelease in ['6', '7']) {
         $_module_os_overrides = {
           'manage_repo' => true,
           'log_group'   => 'nginx',
