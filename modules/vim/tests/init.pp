@@ -1,1 +1,1 @@
-include vim
+include ::vim
