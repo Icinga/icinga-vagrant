@@ -2,4 +2,6 @@
 
 set -e
 
-systemctl restart rh-php71-php-fpm.service
+if rpm -q "rh-php71-php-fpm" &>/dev/null; then
+  systemctl restart rh-php71-php-fpm.service
+fi
