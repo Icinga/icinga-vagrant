@@ -1,32 +1,29 @@
 #
 # grep.rb
 #
-
 module Puppet::Parser::Functions
-  newfunction(:grep, :type => :rvalue, :doc => <<-EOS
-This function searches through an array and returns any elements that match
-the provided regular expression.
+  newfunction(:grep, type: :rvalue, doc: <<-EOS
+    This function searches through an array and returns any elements that match
+    the provided regular expression.
 
-*Examples:*
+    *Examples:*
 
-    grep(['aaa','bbb','ccc','aaaddd'], 'aaa')
+        grep(['aaa','bbb','ccc','aaaddd'], 'aaa')
 
-Would return:
+    Would return:
 
-    ['aaa','aaaddd']
+        ['aaa','aaaddd']
     EOS
-  ) do |arguments|
+             ) do |arguments|
 
-    if (arguments.size != 2) then
-      raise(Puppet::ParseError, "grep(): Wrong number of arguments "+
-        "given #{arguments.size} for 2")
+    if arguments.size != 2
+      raise(Puppet::ParseError, "grep(): Wrong number of arguments given #{arguments.size} for 2")
     end
 
     a = arguments[0]
     pattern = Regexp.new(arguments[1])
 
     a.grep(pattern)
-
   end
 end
 
