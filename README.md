@@ -548,7 +548,6 @@ General:
   puppetlabs-concat        | >= 4.7.0       | modules/concat            | https://github.com/puppetlabs/puppetlabs-concat.git
   puppetlabs-apache        | >= 4.7.0       | modules/apache            | https://github.com/puppetlabs/puppetlabs-apache.git
   puppetlabs-mysql         | >= 4.7.0       | modules/mysql             | https://github.com/puppetlabs/puppetlabs-mysql.git
-  puppetlabs-postgresql    | >= 4.7.0       | modules/postgresql        | https://github.com/puppetlabs/puppetlabs-postgresql.git
   puppetlabs-vcsrepo       | >= 4.7.0       | modules/vcsrepo           | https://github.com/puppetlabs/puppetlabs-vcsrepo.git
   puppet-module-epel       | >= 3.0.0       | modules/epel              | https://github.com/stahnma/puppet-module-epel.git
   puppet-php               | >= 4.7.0<5.0.0 | modules/php               | https://github.com/voxpupuli/puppet-php.git
