@@ -564,7 +564,7 @@ Specific projects:
 
   Name                     | Puppet Version | Path                      | Url
   -------------------------|----------------|---------------------------|-------------------------------
-  puppet-elastic-stack     | >= 4.6.1       | modules/elastic\_stack    | [ ] TO BE ADDED, repo management in v6: https://github.com/elastic/puppet-elastic-stack
+  puppet-elastic-stack     | >= 4.6.1       | modules/elastic\_stack    | https://github.com/elastic/puppet-elastic-stack
   puppet-icinga2           | 4.x            | modules/icinga2           | [ ] TO BE ADDED
   puppet-icingaweb2        | >= 4.7.0       | modules/icingaweb2        | [ ] TO BE ADDED
   puppet-graylog           | ???            | modules/graylog           | [ ] NEEDS v4 SUPPORT https://github.com/Graylog2/puppet-graylog.git
