@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rubygems'
 require 'bundler/setup'
 
@@ -10,10 +11,15 @@ require 'metadata-json-lint/rake_task'
 require 'rubocop/rake_task'
 require 'puppet-strings'
 require 'puppet-strings/tasks'
+require_relative 'spec/spec_utilities'
+require 'nokogiri'
+require 'open-uri'
 
-if Puppet.version.to_f >= 4.9
+def v(ver) ; Gem::Version.new(ver) ; end
+
+if v(Puppet.version) >= v('4.9')
   require 'semantic_puppet'
-elsif Puppet.version.to_f >= 3.6 && Puppet.version.to_f < 4.9
+elsif v(Puppet.version) >= v('3.6') && v(Puppet.version) < v('4.9')
   require 'puppet/vendor/semantic/lib/semantic'
 end
 
@@ -49,30 +55,19 @@ end
 PuppetSyntax.exclude_paths = exclude_paths
 
 task :beaker => :spec_prep
-task :spec_standalone => :spec_prep
 
-namespace :docs do
-  desc 'Evaluation documentation coverage'
-  task :coverage do
-    require 'puppet-strings/yard'
-
-    PuppetStrings::Yard.setup!
-    YARD::CLI::Yardoc.run(
-      %w(
-        manifests/**/*.pp
-      )
-    )
-  end
+desc 'Run all non-acceptance rspec tests.'
+RSpec::Core::RakeTask.new(:spec_unit) do |t|
+  t.pattern = 'spec/{classes,templates,unit}/**/*_spec.rb'
 end
+task :spec_unit => :spec_prep
 
 desc 'Run syntax, lint, and spec tests.'
-task :test => [
-  :metadata_lint,
-  :syntax,
-  :lint,
-  :rubocop,
-  :spec_standalone,
-  'docs:coverage'
+task :test => %i[
+  lint
+  rubocop
+  validate
+  spec_unit
 ]
 
 desc 'remove outdated module fixtures'
@@ -89,3 +84,60 @@ task :spec_prune do
   end
 end
 task :spec_prep => [:spec_prune]
+
+# Plumbing for snapshot tests
+desc 'Run the snapshot tests'
+RSpec::Core::RakeTask.new("beaker:snapshot") do |task|
+  task.rspec_opts = ['--color']
+  task.pattern = 'spec/acceptance/tests/snapshot.rb'
+
+  if Rake::Task.task_defined? 'artifact:snapshot:not_found'
+    puts 'No snapshot artifacts found, skipping snapshot tests.'
+    exit(0)
+  end
+end
+
+beaker_node_sets.each do |node|
+  desc "Run the snapshot tests against the #{node} nodeset"
+  task "beaker:#{node}:snapshot" => %w[
+    spec_prep
+    artifact:snapshot:deb
+    artifact:snapshot:rpm
+  ] do
+    ENV['BEAKER_set'] = node
+    Rake::Task['beaker:snapshot'].reenable
+    Rake::Task['beaker:snapshot'].invoke
+  end
+end
+
+namespace :artifact do
+  namespace :snapshot do
+    dls = Nokogiri::HTML(open('https://www.elastic.co/downloads/kibana'))
+    div = dls.at_css('#preview-release-id')
+
+    if div.nil?
+      puts 'No preview release available; skipping snapshot download'
+      %w[deb rpm].each { |ext| task ext }
+      task 'not_found'
+    else
+      div
+        .at_css('.downloads')
+        .xpath('li/a[contains(text(), "RPM") or contains(text(), "DEB")]')
+        .each do |anchor|
+          filename = artifact(anchor.attr('href'))
+          link = artifact("kibana-snapshot.#{anchor.text.split(' ').first.downcase}")
+          task anchor.text.split(' ').first.downcase => link
+          file link => filename do
+            unless File.exist?(link) and File.symlink?(link) \
+                and File.readlink(link) == filename
+              File.delete link if File.exist? link
+              File.symlink File.basename(filename), link
+            end
+          end
+          file filename do
+            get anchor.attr('href'), filename
+          end
+      end
+    end
+  end
+end

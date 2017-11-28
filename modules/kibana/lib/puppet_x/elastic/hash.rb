@@ -7,7 +7,6 @@ module Puppet_X
       # Upon extension, modify the hash appropriately to render
       # sorted yaml dependent upon whichever way is supported for
       # this version of Puppet/Ruby's yaml implementation.
-      # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/PerceivedComplexity
       def self.extended(base)
         if RUBY_VERSION >= '1.9'
