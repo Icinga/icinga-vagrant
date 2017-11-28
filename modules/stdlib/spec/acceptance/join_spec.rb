@@ -1,10 +1,9 @@
 #! /usr/bin/env ruby -S rspec
 require 'spec_helper_acceptance'
 
-describe 'join function', :unless => UNSUPPORTED_PLATFORMS.include?(fact('operatingsystem')) do
+describe 'join function' do
   describe 'success' do
-    it 'joins arrays' do
-      pp = <<-EOS
+    pp = <<-EOS
       $a = ['aaa','bbb','ccc']
       $b = ':'
       $c = 'aaa:bbb:ccc'
@@ -12,10 +11,10 @@ describe 'join function', :unless => UNSUPPORTED_PLATFORMS.include?(fact('operat
       if $o == $c {
         notify { 'output correct': }
       }
-      EOS
-
-      apply_manifest(pp, :catch_failures => true) do |r|
-        expect(r.stdout).to match(/Notice: output correct/)
+    EOS
+    it 'joins arrays' do
+      apply_manifest(pp, catch_failures: true) do |r|
+        expect(r.stdout).to match(%r{Notice: output correct})
       end
     end
     it 'handles non arrays'
