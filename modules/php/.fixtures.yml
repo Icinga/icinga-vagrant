@@ -1,9 +1,0 @@
-fixtures:
-  repositories:
-    stdlib: "git://github.com/puppetlabs/puppetlabs-stdlib.git"
-    apt: "git://github.com/puppetlabs/puppetlabs-apt.git"
-    zypprepo: "git://github.com/deadpoint/puppet-zypprepo.git"
-    inifile: "git://github.com/puppetlabs/puppetlabs-inifile.git"
-    archive: "git://github.com/voxpupuli/puppet-archive.git"
-  symlinks:
-    php: "#{source_dir}"
