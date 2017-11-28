@@ -87,8 +87,8 @@ class { 'mongodb::server':
 }
 
 class { 'elasticsearch':
-  version      => '2.3.2',
-  repo_version => '2.x',
+  version      => '5.5.1',
+  repo_version => '5.x',
   manage_repo  => true,
 }->
 elasticsearch::instance { 'graylog':
@@ -99,10 +99,10 @@ elasticsearch::instance { 'graylog':
 }
 
 class { 'graylog::repository':
-  version => '2.2'
+  version => '2.3'
 }->
 class { 'graylog::server':
-  package_version => '2.2.2-1',
+  package_version => '2.3.0-7',
   config          => {
     'password_secret' => '...',    # Fill in your password secret
     'root_password_sha2' => '...', # Fill in your root password hash
@@ -114,7 +114,7 @@ class { 'graylog::server':
 
 ```puppet
 class { '::graylog::repository':
-  version => '2.2'
+  version => '2.3'
 }->
 class { '::graylog::server':
   config  => {
@@ -145,10 +145,7 @@ class { '::graylog::server':
     elasticsearch_shards                               => '4',
     elasticsearch_replicas                             => '1',
     elasticsearch_index_prefix                         => 'graylog',
-    elasticsearch_cluster_name                         => 'graylogcluster',
-    elasticsearch_network_host                         => $::fqdn,
-    elasticsearch_discovery_zen_ping_multicast_enabled => false,
-    elasticsearch_discovery_zen_ping_unicast_hosts     => 'elasticsearch01.domain.local:9300, elasticsearch02.domain.local:9300, elasticsearch03.domain.local:9300',
+    elasticsearch_hosts                                => 'http://elasticsearch01.domain.local:9200,http://elasticsearch02.domain.local:9200',
     mongodb_uri                                        => 'mongodb://mongouser:mongopass@mongodb01.domain.local:27017,mongodb02.domain.local:27017,mongodb03.domain.local:27017/graylog',
   },
   require => Class[
@@ -183,7 +180,7 @@ version.
 
 It defaults to `$graylog::params::major_version`.
 
-Example: `version => '2.2'`
+Example: `version => '2.3'`
 
 ##### `url`
 
@@ -210,7 +207,7 @@ This setting is used to choose the Graylog package version. It defaults to
 install time. You can also use `latest` so it will always update to the latest
 stable version if a new one is available.
 
-Example: `package_version => '2.2.2-1'`
+Example: `package_version => '2.3.0-7'`
 
 ##### `config`
 
@@ -295,8 +292,8 @@ Example:
 
 ```
 elasticsearch => {
-  version      => '2.3.2',
-  repo_version => '2.x',
+  version      => '5.5.1',
+  repo_version => '5.x',
 }
 ```
 
@@ -309,7 +306,7 @@ Example:
 
 ```
 graylog => {
-  major_version => '2.2',
+  major_version => '2.3',
   config        => {
     # ... see graylog::server description for details
   },
@@ -347,8 +344,9 @@ files for further details.
 
 1. Update and commit CHANGELOG
 1. Bump version via `bundle exec rake module:bump:minor` (or major/patch)
-1. Commit `module.json`
+1. Commit `metadata.json`
 1. Test build with `bundle exec rake build`
 1. Tag release with `bundle exec rake module:tag`
 1. Push release to PuppetForge with `bundle exec rake module:push`
-1. Push commits to GitHub
+1. Push commits to GitHub with `git push`
+1. Push tags to GitHub with `git push --tags`
