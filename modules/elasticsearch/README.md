@@ -21,7 +21,7 @@
 
 This module sets up [Elasticsearch](https://www.elastic.co/overview/elasticsearch/) instances with additional resource for plugins, templates, and more.
 
-This module is actively tested against Elasticsearch 2.x and 5.x.
+This module is actively tested against Elasticsearch 2.x, 5.x, and 6.x.
 
 ## Setup
 
@@ -41,11 +41,12 @@ This module is actively tested against Elasticsearch 2.x and 5.x.
 ### Requirements
 
 * The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) Puppet library.
-* [puppet/yum](https://forge.puppetlabs.com/puppet/yum) For yum version lock.
 * [richardc/datacat](https://forge.puppetlabs.com/richardc/datacat)
 * [Augeas](http://augeas.net/)
-* [puppetlabs-java](https://forge.puppetlabs.com/puppetlabs/java) for Java installation (optional).
 * [puppetlabs-java_ks](https://forge.puppetlabs.com/puppetlabs/java_ks) for Shield/X-Pack certificate management (optional).
+
+In addition, remember that Elasticsearch requires Java to be installed.
+We recommend managing your Java installation with the [puppetlabs-java](https://forge.puppetlabs.com/puppetlabs/java) module.
 
 #### Repository management
 
@@ -59,18 +60,13 @@ When using the repository management, the following module dependencies are requ
 Declare the top-level `elasticsearch` class (managing repositories) and set up an instance:
 
 ```puppet
-class { 'elasticsearch':
-  java_install => true,
-  manage_repo  => true,
-  repo_version => '5.x',
-}
+include ::java
 
+class { 'elasticsearch': }
 elasticsearch::instance { 'es-01': }
 ```
 
-**Note**: Elasticsearch 5.x requires a recent version of the JVM.
-If you are on a recent version of your distribution of choice (such as Ubuntu 16.04 or CentOS 7), setting `java_install => true` will work out-of-the-box.
-If you are on an earlier distribution, you may need to take additional measures to install Java 1.8.
+**Note**: Elasticsearch 6.x requires a recent version of the JVM.
 
 ## Usage
 
@@ -83,7 +79,7 @@ The following are some parameters that may be useful to override:
 
 ```puppet
 class { 'elasticsearch':
-  version => '1.4.2'
+  version => '6.0.0'
 }
 ```
 
@@ -208,7 +204,7 @@ Note that `module_dir` is where the plugin will install itself to and must match
 #### From an official repository
 
 ```puppet
-elasticsearch::plugin { 'lmenezes/elasticsearch-kopf':
+elasticsearch::plugin { 'x-pack':
   instances => 'instance_name'
 }
 ```
@@ -257,7 +253,7 @@ elasticsearch::plugin { 'elasticsearch/elasticsearch-cloud-aws/2.4.1': }
 
 Please note that this does not work when you specify 'latest' as a version number.
 
-#### ES 2.x official plugins
+#### ES 2.x, 5.x, and 6.x official plugins
 For the Elasticsearch commercial plugins you can refer them to the simple name.
 
 See [Plugin installation](https://www.elastic.co/guide/en/elasticsearch/plugins/current/installation.html) for more details.
@@ -410,22 +406,6 @@ elasticsearch::index { 'foo':
 }
 ```
 
-### Bindings/Clients
-
-Install a variety of [clients/bindings](http://www.elasticsearch.org/guide/en/elasticsearch/client/community/current/clients.html):
-
-#### Python
-
-```puppet
-elasticsearch::python { 'rawes': }
-```
-
-#### Ruby
-
-```puppet
-elasticsearch::ruby { 'elasticsearch': }
-```
-
 ### Connection Validator
 
 This module offers a way to make sure an instance has been started and is up and running before
@@ -461,12 +441,13 @@ class { 'elasticsearch':
 }
 ```
 
-For 2.x versions of Elasticsearch, use `repo_version => '2.x'`.
+For 2.x versions of Elasticsearch onward, use the major version of Elasticsearch suffixed by an `x`.
+For example:
 
 ```puppet
 class { 'elasticsearch':
   manage_repo  => true,
-  repo_version => '2.x',
+  repo_version => '6.x',
 }
 ```
 
@@ -513,30 +494,23 @@ class { 'elasticsearch':
 }
 ```
 
-### Java installation
-
-Most sites will manage Java separately; however, this module can attempt to install Java as well.
-This is done by using the [puppetlabs-java](https://forge.puppetlabs.com/puppetlabs/java) module.
-
-```puppet
-class { 'elasticsearch':
-  java_install => true
-}
-```
-
-Specify a particular Java package/version to be installed:
-
-```puppet
-class { 'elasticsearch':
-  java_install => true,
-  java_package => 'packagename'
-}
-```
+### JVM Configuration
 
 When configuring Elasticsearch's memory usage, you can do so by either changing init defaults for Elasticsearch 1.x/2.x (see the [following example](#hash-representation)), or modify it globally in 5.x using `jvm.options`:
 
 ```puppet
 class { 'elasticsearch':
+  jvm_options => [
+    '-Xms4g',
+    '-Xmx4g'
+  ]
+}
+```
+
+`jvm.options` can also be controlled per-instance:
+
+```puppet
+elasticsearch::instance { 'es-01':
   jvm_options => [
     '-Xms4g',
     '-Xmx4g'
@@ -589,9 +563,8 @@ For example, the following manifest will install Elasticseach with a single inst
 
 ```puppet
 class { 'elasticsearch':
-  java_install    => true,
   manage_repo     => true,
-  repo_version    => '5.x',
+  repo_version    => '6.x',
   security_plugin => 'x-pack',
 }
 
@@ -603,7 +576,6 @@ The following manifest will do the same, but with Shield:
 
 ```puppet
 class { 'elasticsearch':
-  java_install    => true,
   manage_repo     => true,
   repo_version    => '2.x',
   security_plugin => 'shield',
@@ -764,20 +736,6 @@ elasticsearch::instance { 'es-01':
   system_key => '/local/path/to/key',
 }
 ```
-
-### Package version pinning
-
-The module supports pinning the package version to avoid accidental upgrades that are not done by Puppet.
-To enable this feature:
-
-```puppet
-class { 'elasticsearch':
-  package_pin => true,
-  version     => '1.5.2',
-}
-```
-
-In this example we pin the package version to 1.5.2.
 
 ### Data directories
 
