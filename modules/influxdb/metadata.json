@@ -1,12 +1,12 @@
 {
   "name": "golja-influxdb",
-  "version": "3.1.1",
+  "version": "5.0.0",
   "author": "Dejan Golja",
-  "summary": "Manage InfluxDB version 0.10.X. For previous supported version check README.md",
+  "summary": "Manage InfluxDB version 1.0.0+. For previous supported version check README.md",
   "license": "Apache-2.0",
-  "source": "https://github.com/n1tr0g/golja-influxdb",
-  "project_page": "https://github.com/n1tr0g/golja-influxdb",
-  "issues_url": "https://github.com/n1tr0g/golja-influxdb/issues",
+  "source": "https://github.com/codylane/golja-influxdb",
+  "project_page": "https://github.com/codylane/golja-influxdb",
+  "issues_url": "https://github.com/codylane/golja-influxdb/issues",
   "tags": [
     "influxdb",
     "metrics"
@@ -39,20 +39,25 @@
         "12.04",
         "14.04"
       ]
+    },
+    {
+      "operatingsystem": "Archlinux"
     }
   ],
   "requirements": [
-    {
-      "name": "pe",
-      "version_requirement": ">= 3.0.0 < 2015.4.0"
-    },
     {
       "name": "puppet",
       "version_requirement": ">= 3.0.0 < 5.0.0"
     }
   ],
   "dependencies": [
-    {"name":"puppetlabs/stdlib","version_requirement":">= 1.0.0"},
-    {"name":"puppetlabs/apt","version_requirement":">=1.8.0 <3.0.0"}
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 1.0.0 <4.13.0"
+    },
+    {
+      "name": "puppetlabs/apt",
+      "version_requirement": ">=1.8.0 <3.0.0"
+    }
   ]
 }

@@ -1,7 +1,11 @@
 fixtures:
   repositories:
-    "stdlib": "https://github.com/puppetlabs/puppetlabs-stdlib"
-    "apt" : "https://github.com/puppetlabs/puppetlabs-apt"
+    apt:
+      repo: 'https://github.com/puppetlabs/puppetlabs-apt'
+      ref:  '2.3.0'
+    stdlib:
+      repo: 'https://github.com/puppetlabs/puppetlabs-stdlib'
+      ref:  '4.12.0'
   symlinks:
     influxdb: "#{source_dir}"
 

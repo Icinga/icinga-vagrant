@@ -1,5 +1,9 @@
 # PRIVATE CLASS: do not use directly
-class influxdb::repo::yum {
+class influxdb::repo::yum(
+  $ensure   = 'present',
+  $enabled  = 1,
+  $gpgcheck = 1,
+) {
 
   $_operatingsystem = $::operatingsystem ? {
     'CentOS' => downcase($::operatingsystem),
@@ -7,12 +11,12 @@ class influxdb::repo::yum {
   }
 
   yumrepo { 'repos.influxdata.com':
+    ensure   => $ensure,
     descr    => "InfluxDB Repository - ${::operatingsystem} \$releasever",
     baseurl  => "https://repos.influxdata.com/${$_operatingsystem}/\$releasever/\$basearch/stable",
-    enabled  => 1,
-    gpgcheck => 1,
+    enabled  => $enabled,
+    gpgcheck => $gpgcheck,
     gpgkey   => 'https://repos.influxdata.com/influxdb.key',
   }
 
-  Yumrepo['repos.influxdata.com'] -> Package<| tag == 'influxdb' |>
 }
