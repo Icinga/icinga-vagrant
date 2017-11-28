@@ -7,8 +7,8 @@ describe 'mongodb_database' do
   when 'Debian'
     version = "'2.6.6'"
   end
-  shared_examples 'normal tests' do |version|
-    context "when version is #{version.nil? ? 'nil' : version}" do
+  shared_examples 'normal tests' do |ver|
+    context "when version is #{ver.nil? ? 'nil' : ver}" do
       describe 'creating a database' do
         context 'with default port' do
           after :all do
@@ -23,11 +23,11 @@ describe 'mongodb_database' do
                  }
               -> class { 'mongodb::client': ensure => absent, }
             EOS
-            apply_manifest(pp, :catch_failures => true)
+            apply_manifest(pp, catch_failures: true)
           end
-          it 'should compile with no errors' do
+          it 'compiles with no errors' do
             pp = <<-EOS
-              class { 'mongodb::globals': manage_package_repo => true, version => #{version.nil? ? 'undef' : version} }
+              class { 'mongodb::globals': manage_package_repo => true, version => #{ver.nil? ? 'undef' : ver} }
               -> class { 'mongodb::server': }
               -> class { 'mongodb::client': }
               -> mongodb_database { 'testdb': ensure => present }
@@ -39,13 +39,13 @@ describe 'mongodb_database' do
               }
             EOS
 
-            apply_manifest(pp, :catch_failures => true)
-            apply_manifest(pp, :catch_changes => true)
+            apply_manifest(pp, catch_failures: true)
+            apply_manifest(pp, catch_changes: true)
           end
 
-          it 'should create the user' do
+          it 'creates the user' do
             shell("mongo testdb --quiet --eval 'db.auth(\"testuser\",\"passw0rd\")'") do |r|
-              expect(r.stdout.chomp).to eq("1")
+              expect(r.stdout.chomp).to eq('1')
             end
           end
         end
@@ -64,9 +64,9 @@ describe 'mongodb_database' do
                  }
               -> class { 'mongodb::client': ensure => absent, }
             EOS
-            apply_manifest(pp, :catch_failures => true)
+            apply_manifest(pp, catch_failures: true)
           end
-          it 'should work with no errors' do
+          it 'works with no errors' do
             pp = <<-EOS
               class { 'mongodb::globals': manage_package_repo => true, }
               -> class { 'mongodb::server': port => 27018 }
@@ -80,13 +80,13 @@ describe 'mongodb_database' do
               }
             EOS
 
-            apply_manifest(pp, :catch_failures => true)
-            apply_manifest(pp, :catch_changes => true)
+            apply_manifest(pp, catch_failures: true)
+            apply_manifest(pp, catch_changes: true)
           end
 
-          it 'should create the user' do
+          it 'creates the user' do
             shell("mongo testdb --quiet --port 27018 --eval 'db.auth(\"testuser\",\"passw0rd\")'") do |r|
-              expect(r.stdout.chomp).to eq("1")
+              expect(r.stdout.chomp).to eq('1')
             end
           end
         end

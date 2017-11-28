@@ -1,12 +1,15 @@
-# mongo.conf - generated from Puppet
+#mongodb.conf - generated from Puppet
 
-# System Log
+#System Log
 
 <% if @logpath -%>
 systemLog.path: <%= @logpath %>
 systemLog.destination: file
 <% if @logappend -%>
 systemLog.logAppend: <%= @logappend %>
+<% end -%>
+<% if @system_logrotate -%>
+systemLog.logRotate: <%= @system_logrotate %>
 <% end -%>
 <% elsif @syslog -%>
 systemLog.destination: syslog
@@ -29,11 +32,14 @@ systemLog.verbosity: 5
 <% end -%>
 
 #Process Management
-<% if @fork -%>
-processManagement.fork: <%= @fork %>
-<% end -%>
-<% if @pidfilepath -%>
-processManagement.pidFilePath: <%= @pidfilepath %>
+<% if @fork or @pidfilepath -%>
+processManagement:
+  <%- if @fork -%>
+  fork: <%= @fork %>
+  <%- end -%>
+  <%- if @pidfilepath -%>
+  pidFilePath: <%= @pidfilepath %>
+  <%- end -%>
 <% end -%>
 
 #Storage
@@ -44,7 +50,7 @@ storage.journal.enabled: false
 storage.journal.enabled: true
 <% end -%>
 <% if @noprealloc -%>
-storage.preallocDataFiles: <%= @noprealloc %>
+storage.preallocDataFiles: <%= !@noprealloc %>
 <% end -%>
 <% if @nssize -%>
 storage.nsSize: <%= @nssize %>
@@ -60,6 +66,9 @@ storage.quota.enforced: <%= @quota %>
 <% if @quotafiles -%>
 storage.quota.maxFilesPerDB: <%= @quotafiles %>
 <% end -%>
+<% end -%>
+<% if @storage_engine_internal -%>
+storage.engine: <%= @storage_engine_internal %>
 <% end -%>
 
 
@@ -77,9 +86,9 @@ security.javascriptEnabled: <%= @noscripting %>
 <% end -%>
 
 
-# Net
+#Net
 <% if @ipv6 -%>
-net.ipv6=<%= @ipv6 %>
+net.ipv6: <%= @ipv6 %>
 <% end -%>
 <% if @bind_ip -%>
 net.bindIp:  <%= Array(@bind_ip).join(',') %>
@@ -99,6 +108,19 @@ net.maxIncomingConnections: <%= @maxconns %>
 <% if ! @nohttpinterface.nil? -%>
 net.http.enabled: <%= ! @nohttpinterface %>
 <% end -%>
+<% if @ssl -%>
+net.ssl.mode: requireSSL
+net.ssl.PEMKeyFile: <%= @ssl_key %>
+<% if @ssl_ca -%>
+net.ssl.CAFile: <%= @ssl_ca %>
+<% end -%>
+<% if @ssl_weak_cert -%>
+net.ssl.weakCertificateValidation: <%= @ssl_weak_cert %>
+<% end -%>
+<% if @ssl_invalid_hostnames -%>
+net.ssl.allowInvalidHostnames: <%= @ssl_invalid_hostnames %>
+<% end -%>
+<% end -%>
 
 #Replication
 <% if @replset -%>
@@ -108,7 +130,7 @@ replication.replSetName: <%= @replset %>
 replication.oplogSizeMB: <%= @oplog_size %>
 <% end -%>
 
-# Sharding
+#Sharding
 <% if @configsvr -%>
 sharding.clusterRole: configsvr
 <% end -%>
@@ -131,4 +153,10 @@ operationProfiling.slowOpThresholdMs: <%= @slowms %>
 
 <% if @set_parameter -%>
 setParameter: <%= @set_parameter %>
+<% end -%>
+
+<% if @config_data -%>
+<% @config_data.each do |k,v| -%>
+<%= k %>: <%= v %>
+<% end -%>
 <% end -%>
