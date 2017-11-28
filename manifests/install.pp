@@ -1,19 +1,24 @@
+# filebeat::install
+#
+# A private class to manage the installation of Filebeat
+#
+# @summary A private class that manages the install of Filebeat
 class filebeat::install {
   anchor { 'filebeat::install::begin': }
 
   case $::kernel {
     'Linux':   {
-      class{ 'filebeat::install::linux':
+      class{ '::filebeat::install::linux':
         notify => Class['filebeat::service'],
       }
       Anchor['filebeat::install::begin'] -> Class['filebeat::install::linux'] -> Anchor['filebeat::install::end']
       if $::filebeat::manage_repo {
-        class { 'filebeat::repo': }
+        class { '::filebeat::repo': }
         Class['filebeat::repo'] -> Class['filebeat::install::linux']
       }
     }
     'Windows': {
-      class{'filebeat::install::windows':
+      class{'::filebeat::install::windows':
         notify => Class['filebeat::service'],
       }
       Anchor['filebeat::install::begin'] -> Class['filebeat::install::windows'] -> Anchor['filebeat::install::end']
@@ -24,4 +29,5 @@ class filebeat::install {
   }
 
   anchor { 'filebeat::install::end': }
+
 }
