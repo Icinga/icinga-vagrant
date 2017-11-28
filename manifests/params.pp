@@ -1,7 +1,7 @@
 class vim::params {
   $nocompatible = true
   $background   = 'dark'
-  $backspace    = "2"
+  $backspace    = '2'
   $lastposition = true
   $indent       = true
   $matchparen   = true
@@ -12,7 +12,7 @@ class vim::params {
   $maps         = {}
   $code         = []
   case $::osfamily {
-    debian: {
+    'Debian': {
       $package         = 'vim-nox'
       $editor_name     = 'vim.nox'
       $set_as_default  = true
@@ -20,37 +20,44 @@ class vim::params {
       $test_editor_set = "test /etc/alternatives/editor -ef /usr/bin/${editor_name}"
       $conf            = '/etc/vim/vimrc'
     }
-    redhat: {
-      $package        = 'vim-enhanced'
-      $set_as_default = false
-      $conf           = '/etc/vimrc'
+    'RedHat': {
+      $package         = 'vim-enhanced'
+      $set_as_default  = false
+      $set_editor_cmd  = undef
+      $test_editor_set = undef
+      $conf            = '/etc/vimrc'
     }
-    freebsd: {
-      $package        = 'vim-lite'
-      $set_as_default = false
+    'FreeBSD': {
+      $package         = 'vim-lite'
+      $set_as_default  = false
+      $set_editor_cmd  = undef
+      $test_editor_set = undef
     }
-    suse: {
-      $package        = 'vim'
-      $set_as_default = false
-      $conf           = '/etc/vimrc'
+    'Suse': {
+      $package         = 'vim'
+      $set_as_default  = false
+      $set_editor_cmd  = undef
+      $test_editor_set = undef
+      $conf            = '/etc/vimrc'
     }
-    gentoo: {
+    'Gentoo': {
       $package         = 'app-editors/vim'
       $set_as_default  = true
       $set_editor_cmd  = 'eselect editor set /usr/bin/vim'
       $test_editor_set = 'eselect editor show|grep /usr/bin/vim'
       $conf            = '/etc/vimrc'
     }
-    solaris: {
+    'Solaris': {
       if($::operatingsystemrelease =~ /^(5\.11|11|11\.\d+)$/){
-        $package        = '/editor/vim'
-        $conf           = '/usr/share/vim/vimrc'
-        $set_as_default = false
+        $package         = '/editor/vim'
+        $conf            = '/usr/share/vim/vimrc'
+        $set_as_default  = false
+        $set_editor_cmd  = undef
+        $test_editor_set = undef
       }else{
         fail("vim::params: Unsupported platform: ${::osfamily}/${::operatingsystemrelease}")
       }
     }
-    
     default: {
       case $::operatingsystem {
         default: {
