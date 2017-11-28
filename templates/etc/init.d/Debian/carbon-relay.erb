@@ -12,7 +12,7 @@
 # Description: Enables Graphites carbon-relay
 ### END INIT INFO
 
-PYTHON_CMD='python -W ignore'
+PYTHON_CMD='<%= scope.lookupvar('graphite::gr_python_binary') %> -W ignore'
 CARBON_DAEMON="relay"
 GRAPHITE_DIR="<%= scope.lookupvar('graphite::base_dir_REAL') %>"
 STOP_COUNTER=12 # 12 times 5s -> 60 secs
@@ -31,8 +31,8 @@ case "${OPERATION}" in
             if [ "${INSTANCE}" = "${CARBON_DAEMON}" ]; then
                 INSTANCE="a";
             fi;
-            <% if @gr_carbon_relay_ulimit -%>
-              ulimit -n <%= @gr_carbon_relay_ulimit %>
+            <% if scope.lookupvar('graphite::gr_carbon_relay_ulimit') -%>
+               ulimit -n <%= scope.lookupvar('graphite::gr_carbon_relay_ulimit') %>
             <% end -%>
             ${PYTHON_CMD} ${GRAPHITE_DIR}/bin/carbon-${CARBON_DAEMON}.py --instance=${INSTANCE} start
         done

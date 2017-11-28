@@ -19,7 +19,7 @@
 # Source function library.
 . /etc/rc.d/init.d/functions
 
-PYTHON_CMD='python -W ignore'
+PYTHON_CMD='<%= scope.lookupvar('graphite::gr_python_binary') %> -W ignore'
 CARBON_DAEMON="cache"
 GRAPHITE_DIR="<%= scope.lookupvar('graphite::base_dir_REAL') %>"
 PIDFILE_DIR="<%= scope.lookupvar('graphite::storage_dir_REAL') %>"

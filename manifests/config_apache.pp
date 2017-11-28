@@ -79,7 +79,7 @@ class graphite::config_apache inherits graphite::params {
     mode   => '0755',
   }
   exec { 'fix graphite race condition':
-    command     => 'python /tmp/fix-graphite-race-condition.py',
+    command     => "${::graphite::gr_python_binary} /tmp/fix-graphite-race-condition.py",
     cwd         => $graphite::graphiteweb_webapp_dir_REAL,
     environment => 'DJANGO_SETTINGS_MODULE=graphite.settings',
     user        => $graphite::config::gr_web_user_REAL,
@@ -92,6 +92,7 @@ class graphite::config_apache inherits graphite::params {
       File[$::graphite::storage_dir_REAL],
       File[$::graphite::graphiteweb_log_dir_REAL],
       File[$::graphite::graphiteweb_storage_dir_REAL],
+      File["${::graphite::storage_dir_REAL}/graphite.db"],
     ],
     before      => Service[$::graphite::params::apache_service_name],
     subscribe   => Exec['Initial django db creation'],

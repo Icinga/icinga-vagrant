@@ -90,7 +90,20 @@ CONTENT_DIR = '<%= scope.lookupvar('graphite::graphiteweb_webapp_dir_REAL') %>/c
 # NOTE: If any directory is unreadable in DATA_DIRS it will break metric browsing
 WHISPER_DIR = '<%= scope.lookupvar('graphite::local_data_dir_REAL') %>'
 RRD_DIR = '<%= scope.lookupvar('graphite::rrd_dir_REAL') %>'
-#DATA_DIRS = [WHISPER_DIR, RRD_DIR] # Default: set from the above variables
+<%
+  if scope.lookupvar('graphite::gr_cache_instances')
+    cache_instances = scope.lookupvar('graphite::gr_cache_instances')
+  end
+  whisper_dirs = Array.new
+  #if cache_instances != nil
+   cache_instances.each do |name, params|
+      if params["LOCAL_DATA_DIR"] then
+        whisper_dirs << params["LOCAL_DATA_DIR"]
+      end
+   end
+  unless whisper_dirs.empty? %>
+DATA_DIRS = [WHISPER_DIR, RRD_DIR,<%= whisper_dirs.map{|s| "'#{s}'" }.join(',') %>] # Default: set from the above variables
+<% end -%>
 LOG_DIR = '<%= scope.lookupvar('graphite::graphiteweb_log_dir_REAL') %>'
 #INDEX_FILE = '/opt/graphite/storage/index'  # Search index file
 

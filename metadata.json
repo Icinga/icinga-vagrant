@@ -1,6 +1,6 @@
 {
   "name": "dwerder-graphite",
-  "version": "6.0.4",
+  "version": "7.2.0",
   "source": "https://github.com/echocat/puppet-graphite.git",
   "author": "Daniel Werdermann",
   "license": "Apache-2.0",
@@ -51,15 +51,20 @@
       "operatingsystemrelease": [
         "12.04",
         "14.04",
-        "15.10"
+        "15.10",
+        "16.04"
+      ]
+    },
+    {
+      "operatingsystem": "Amazon",
+      "operatingsystemrelease": [
+        "2016.03",
+        "2015.09",
+        "2015.03"
       ]
     }
   ],
   "requirements": [
-    {
-      "name": "pe",
-      "version_requirement": ">= 3.0.0 < 2015.4.0"
-    },
     {
       "name": "puppet",
       "version_requirement": ">= 3.0.0 < 5.0.0"

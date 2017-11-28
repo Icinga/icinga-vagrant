@@ -19,7 +19,7 @@
 # Source function library.
 . /etc/rc.d/init.d/functions
 
-PYTHON_CMD='python -W ignore'
+PYTHON_CMD='<%= scope.lookupvar('graphite::gr_python_binary') %> -W ignore'
 CARBON_DAEMON="relay"
 GRAPHITE_DIR="<%= scope.lookupvar('graphite::base_dir_REAL') %>"
 PIDFILE_DIR="<%= scope.lookupvar('graphite::storage_dir_REAL') %>"
@@ -38,8 +38,8 @@ start()
         if [ "${INSTANCE}" = "${CARBON_DAEMON}" ]; then
             INSTANCE="a";
         fi;
-        <% if @gr_carbon_relay_ulimit -%>
-          ulimit -n <%= @gr_carbon_relay_ulimit %>
+        <% if scope.lookupvar('graphite::gr_carbon_relay_ulimit') -%>
+        ulimit -n <%= scope.lookupvar('graphite::gr_carbon_relay_ulimit') %>
         <% end -%>
         pidfile=${PIDFILE_DIR}/carbon-${CARBON_DAEMON}-${INSTANCE}.pid
         prog=carbon-${CARBON_DAEMON}-${INSTANCE}
