@@ -1,13 +1,12 @@
 require 'spec_helper_acceptance'
 
 describe 'mongodb::mongos class' do
-
   shared_examples 'normal tests' do |tengen|
-    if tengen
-      package_name = 'mongodb-org-mongos'
-    else
-      package_name = 'mongodb-server'
-    end
+    package_name = if tengen
+                     'mongodb-org-mongos'
+                   else
+                     'mongodb-server'
+                   end
     service_name = 'mongos'
     config_file  = '/etc/mongodb-shard.conf'
 
@@ -33,11 +32,11 @@ describe 'mongodb::mongos class' do
                  service_enable => false
              }
           EOS
-          apply_manifest(pp, :catch_failures => true)
+          apply_manifest(pp, catch_failures: true)
         end
       end
 
-      it 'should work with no errors' do
+      it 'works with no errors' do
         pp = <<-EOS
           class { 'mongodb::globals': manage_package_repo => #{tengen},
           } -> class { 'mongodb::server':
@@ -49,8 +48,8 @@ describe 'mongodb::mongos class' do
           }
         EOS
 
-        apply_manifest(pp, :catch_failures => true)
-        apply_manifest(pp, :catch_changes  => true)
+        apply_manifest(pp, catch_failures: true)
+        apply_manifest(pp, catch_changes: true)
       end
 
       describe package(package_name) do
@@ -62,21 +61,22 @@ describe 'mongodb::mongos class' do
       end
 
       describe service(service_name) do
-         it { is_expected.to be_enabled }
-         it { is_expected.to be_running }
+        it { is_expected.to be_enabled }
+        it { is_expected.to be_running }
       end
 
-      describe port(27017) do
+      describe port(27_017) do
         it { is_expected.to be_listening }
       end
 
-      describe port(27019) do
+      describe port(27_019) do
         it { is_expected.to be_listening }
       end
 
       describe command(client_name) do
         describe '#exit_status' do
           subject { super().exit_status }
+
           it { is_expected.to eq 0 }
         end
       end
@@ -100,7 +100,7 @@ describe 'mongodb::mongos class' do
                service_enable => false
              }
         EOS
-        apply_manifest(pp, :catch_failures => true)
+        apply_manifest(pp, catch_failures: true)
       end
     end
   end

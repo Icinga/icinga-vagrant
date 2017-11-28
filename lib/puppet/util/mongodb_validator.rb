@@ -10,19 +10,17 @@ module Puppet
       attr_reader :mongodb_port
 
       def initialize(mongodb_resource_name, mongodb_server, mongodb_port)
-        begin
-          # NOTE (spredzy) : By relying on the uri module
-          # we rely on its well tested interface to parse
-          # both IPv4 and IPv6 based URL with a port specified.
-          # Unfortunately URI needs a scheme, hence the http
-          # string here to make the string URI compliant.
-          uri = URI("http://#{mongodb_resource_name}")
-          @mongodb_server = IPAddr.new(uri.host).to_s
-          @mongodb_port = uri.port
-        rescue
-          @mongodb_server = IPAddr.new(mongodb_server).to_s
-          @mongodb_port   = mongodb_port
-        end
+        # NOTE (spredzy) : By relying on the uri module
+        # we rely on its well tested interface to parse
+        # both IPv4 and IPv6 based URL with a port specified.
+        # Unfortunately URI needs a scheme, hence the http
+        # string here to make the string URI compliant.
+        uri = URI("http://#{mongodb_resource_name}")
+        @mongodb_server = IPAddr.new(uri.host).to_s
+        @mongodb_port = uri.port
+      rescue
+        @mongodb_server = mongodb_server.to_s
+        @mongodb_port   = mongodb_port
       end
 
       # Utility method; attempts to make an https connection to the mongodb server.
@@ -31,7 +29,7 @@ module Puppet
       #
       # @return true if the connection is successful, false otherwise.
       def attempt_connection
-        Timeout::timeout(Puppet[:configtimeout]) do
+        Timeout.timeout(Puppet[:http_connect_timeout]) do
           begin
             TCPSocket.new(@mongodb_server, @mongodb_port).close
             true
@@ -46,4 +44,3 @@ module Puppet
     end
   end
 end
-

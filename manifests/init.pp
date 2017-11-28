@@ -7,7 +7,6 @@
 #
 # === Parameters
 #
-# enable_10gen (default: false) - Whether or not to set up 10gen software repositories
 # init (auto discovered) - override init (sysv or upstart) for Debian derivatives
 # location - override apt location configuration for Debian derivatives
 # packagename (auto discovered) - override the package name
@@ -32,76 +31,54 @@
 #
 # Copyright 2013 PuppetLabs
 #
-
 class mongodb (
-  # Deprecated parameters
-  $enable_10gen    = undef,
-
-  $init            = $mongodb::params::service_provider,
-  $location        = '',
-  $packagename     = undef,
-  $version         = undef,
-  $servicename     = $mongodb::params::service_name,
-  $service_enable  = true, #deprecated
-  $logpath         = $mongodb::params::logpath,
-  $logappend       = true,
-  $fork            = $mongodb::params::fork,
-  $port            = undef,
-  $dbpath          = $mongodb::params::dbpath,
-  $journal         = undef,
-  $nojournal       = undef,
-  $smallfiles      = undef,
-  $cpu             = undef,
-  $noauth          = undef,
-  $auth            = undef,
-  $verbose         = undef,
-  $objcheck        = undef,
-  $quota           = undef,
-  $oplog           = undef, #deprecated it's on if replica set
-  $oplog_size      = undef,
-  $nohints         = undef,
-  $nohttpinterface = undef,
-  $noscripting     = undef,
-  $notablescan     = undef,
-  $noprealloc      = undef,
-  $nssize          = undef,
-  $mms_token       = undef,
-  $mms_name        = undef,
-  $mms_interval    = undef,
-  $slave           = undef,
-  $only            = undef,
-  $master          = undef,
-  $source          = undef,
-  $configsvr       = undef,
-  $shardsvr        = undef,
-  $replset         = undef,
-  $rest            = undef,
-  $quiet           = undef,
-  $slowms          = undef,
-  $keyfile         = undef,
-  $key             = undef,
-  $ipv6            = undef,
-  $bind_ip         = undef,
-  $pidfilepath     = undef
+  Optional[String] $init                                                                    = $mongodb::params::service_provider,
+  Optional[String] $packagename                                                             = undef,
+  String $servicename                                                                       = $mongodb::params::service_name,
+  Variant[Boolean, Stdlib::Absolutepath] $logpath                                           = $mongodb::params::logpath,
+  Boolean $logappend                                                                        = true,
+  Optional[String] $system_logrotate                                                        = undef,
+  Optional[Boolean] $fork                                                                   = $mongodb::params::fork,
+  Optional[Integer[1, 65535]] $port                                                         = undef,
+  Stdlib::Absolutepath $dbpath                                                              = $mongodb::params::dbpath,
+  Optional[Boolean] $journal                                                                = undef,
+  Optional[String] $nojournal                                                               = undef,
+  Optional[Boolean] $smallfiles                                                             = undef,
+  Optional[Boolean] $cpu                                                                    = undef,
+  Optional[Boolean] $noauth                                                                 = undef,
+  Optional[Boolean] $auth                                                                   = undef,
+  Optional[Boolean] $verbose                                                                = undef,
+  Optional[Boolean] $objcheck                                                               = undef,
+  Optional[Boolean] $quota                                                                  = undef,
+  Optional[Integer] $oplog_size                                                             = undef,
+  $nohints                                                                                  = undef,
+  Optional[Boolean] $nohttpinterface                                                        = undef,
+  Optional[Boolean] $noscripting                                                            = undef,
+  Optional[Boolean] $notablescan                                                            = undef,
+  Optional[Boolean] $noprealloc                                                             = undef,
+  Optional[Integer] $nssize                                                                 = undef,
+  Optional[String] $mms_token                                                               = undef,
+  Optional[String] $mms_name                                                                = undef,
+  $mms_interval                                                                             = undef,
+  Optional[Boolean] $configsvr                                                              = undef,
+  Optional[Boolean] $shardsvr                                                               = undef,
+  Optional[String] $replset                                                                 = undef,
+  Optional[Boolean] $rest                                                                   = undef,
+  Optional[Boolean] $quiet                                                                  = undef,
+  Optional[Integer] $slowms                                                                 = undef,
+  Optional[Stdlib::Absolutepath] $keyfile                                                   = undef,
+  Optional[String[6]] $key                                                                  = undef,
+  Optional[Boolean] $ipv6                                                                   = undef,
+  Optional[Variant[Stdlib::Compat::Ip_address, Array[Stdlib::Compat::Ip_address]]] $bind_ip = undef,
+  Optional[Stdlib::Absolutepath] $pidfilepath                                               = undef,
+  Optional[String] $pidfilemode                                                             = undef,
 ) inherits mongodb::params {
-
-  if $enable_10gen {
-    fail("Parameter enable_10gen is no longer supported. Please use class { 'mongodb::globals': manage_package_repo => true }")
-  }
-
-  if $version {
-    fail("Parameter version is no longer supported. Please use class { 'mongodb::globals': version => VERSION }")
-  }
-
-  if $oplog {
-    fail('Parameter is no longer supported. On replica set Oplog is enabled by default.')
-  }
 
   notify { 'An attempt has been made below to automatically apply your custom
     settings to mongodb::server. Please verify this works in a safe test
     environment.': }
 
-  class { '::mongodb::server':
+  class { 'mongodb::server':
     package_name    => $packagename,
     logpath         => $logpath,
     logappend       => $logappend,
@@ -126,10 +103,6 @@ class mongodb (
     mms_token       => $mms_token,
     mms_name        => $mms_name,
     mms_interval    => $mms_interval,
-    slave           => $slave,
-    only            => $only,
-    master          => $master,
-    source          => $source,
     configsvr       => $configsvr,
     shardsvr        => $shardsvr,
     replset         => $replset,

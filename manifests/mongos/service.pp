@@ -29,27 +29,25 @@ class mongodb::mongos::service (
     $bind_ip_real = $bind_ip
   }
 
-  if $::osfamily == 'RedHat' {
-    file { '/etc/sysconfig/mongos' :
+  if $service_manage {
+    if $::osfamily == 'RedHat' {
+      file { '/etc/sysconfig/mongos' :
+        ensure  => file,
+        owner   => 'root',
+        group   => 'root',
+        mode    => '0755',
+        content => 'OPTIONS="--quiet -f /etc/mongodb-shard.conf"',
+        before  => Service['mongos'],
+      }
+    }
+    file { '/etc/init.d/mongos' :
       ensure  => file,
+      content => template("mongodb/mongos/${::osfamily}/mongos.erb"),
       owner   => 'root',
       group   => 'root',
       mode    => '0755',
-      content => 'OPTIONS="--quiet -f /etc/mongodb-shard.conf"',
       before  => Service['mongos'],
     }
-  }
-
-  file { '/etc/init.d/mongos' :
-    ensure  => file,
-    content => template("mongodb/mongos/${::osfamily}/mongos.erb"),
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    before  => Service['mongos'],
-  }
-
-  if $service_manage {
     service { 'mongos':
       ensure    => $service_ensure_real,
       name      => $service_name,

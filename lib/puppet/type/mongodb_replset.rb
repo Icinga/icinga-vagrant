@@ -1,9 +1,9 @@
 #
-# Author: François Charlier <francois.charlier@enovance.com>
+# Author: Francois Charlier <francois.charlier@enovance.com>
 #
 
 Puppet::Type.newtype(:mongodb_replset) do
-  @doc = "Manage a MongoDB replicaSet"
+  @doc = 'Manage a MongoDB replicaSet'
 
   ensurable do
     defaultto :present
@@ -14,15 +14,20 @@ Puppet::Type.newtype(:mongodb_replset) do
   end
 
   newparam(:name) do
-    desc "The name of the replicaSet"
+    desc 'The name of the replicaSet'
   end
 
   newparam(:arbiter) do
-    desc "The replicaSet arbiter"
+    desc 'The replicaSet arbiter'
   end
 
-  newproperty(:members, :array_matching => :all) do
-    desc "The replicaSet members"
+  newparam(:initialize_host) do
+    desc 'Host to use for Replicaset initialization'
+    defaultto '127.0.0.1'
+  end
+
+  newproperty(:members, array_matching: :all) do
+    desc 'The replicaSet members'
 
     def insync?(is)
       is.sort == should.sort

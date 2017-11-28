@@ -1,4 +1,4 @@
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__),"..","..",".."))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', '..', '..'))
 require 'puppet/util/mongodb_validator'
 
 # This file contains a provider for the resource type `mongodb_conn_validator`,
@@ -21,7 +21,7 @@ Puppet::Type.type(:mongodb_conn_validator).provide(:tcp_port) do
       # especially on the first install.  Therefore, our first connection attempt
       # may fail.  Here we have somewhat arbitrarily chosen to retry every 4
       # seconds until the configurable timeout has expired.
-      Puppet.debug("Failed to connect to mongodb; sleeping 4 seconds before retry")
+      Puppet.debug('Failed to connect to mongodb; sleeping 4 seconds before retry')
       sleep 4
       success = validator.attempt_connection
     end
@@ -48,6 +48,4 @@ Puppet::Type.type(:mongodb_conn_validator).provide(:tcp_port) do
   def validator
     @validator ||= Puppet::Util::MongodbValidator.new(resource[:name], resource[:server], resource[:port])
   end
-
 end
-

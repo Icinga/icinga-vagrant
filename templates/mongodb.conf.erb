@@ -1,4 +1,4 @@
-# mongo.conf - generated from Puppet
+# mongodb.conf - generated from Puppet
 
 
 <% if @logpath -%>
@@ -186,5 +186,23 @@ quiet = <%= @quiet %>
 <% if @ssl -%>
 sslOnNormalPorts = true
 sslPEMKeyFile = <%= @ssl_key %>
+<% if @ssl_ca -%>
 sslCAFile = <%= @ssl_ca %>
+<% end -%>
+<% if @ssl_weak_cert -%>
+# Modify this value in order to enable/disable the need for clients to do SSL client authentication
+# This configuration option has been changed in mongoDB 3.0.0 release. To date, both are valid.
+# - before 3.0.0: sslWeakCertificateValidation
+# - after 3.0.0: sslAllowConnectionsWithoutCertificates
+sslWeakCertificateValidation = <%= @ssl_weak_cert %>
+<% end -%>
+<% if @ssl_invalid_hostnames -%>
+net.ssl.allowInvalidHostnames = <%= @ssl_invalid_hostnames %>
+<% end -%>
+<% end -%>
+
+<% if @config_data -%>
+<% @config_data.each do |k,v| -%>
+<%= k %> = <%= v %>
+<% end -%>
 <% end -%>
