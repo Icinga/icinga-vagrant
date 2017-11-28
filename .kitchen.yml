@@ -1,0 +1,21 @@
+---
+driver:
+  name: docker
+  use_sudo: false
+
+provisioner:
+  name: puppet_apply
+  require_chef_for_busser: false
+  require_puppet_collections: true
+  modules_path: .
+  
+verifier:
+  name: inspec
+
+platforms:
+  - name: centos-6.9
+
+suites:
+  - name: default
+    provisioner:
+      manifests_path: test/integration/default

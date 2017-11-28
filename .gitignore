@@ -5,3 +5,4 @@ Gemfile.lock
 /.rspec_system
 /.ruby-version
 /.bundle
+/.kitchen
