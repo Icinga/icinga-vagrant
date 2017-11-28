@@ -22,6 +22,6 @@ defaults = {
 defaults.each {|k,v| set_default(@jvm_options, k, v)}
 -%>
 
-<% @jvm_options.each do |line| -%>
+<% @jvm_options.sort.each do |line| -%>
 <%= line %>
 <% end -%>

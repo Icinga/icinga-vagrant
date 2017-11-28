@@ -1,3 +1,23 @@
+6.0.0
+  Puppet 3 support removed. Minimum Puppet version is now 4.6.1.
+  Puppet 5 supported.
+  Logstash 6.x (and 5.x) supported.
+  File permissions for config files now match those from the Logstash package.
+  elastic/elastic_stack module is now used to manage repositories.
+  Logstash multiple pipelines supported.
+  Config files resources accept an explicit target path.
+
+5.3.0
+  Allow setting environment for plugin resources
+
+5.2.0
+  Allow 'http(s):// URLs for plugin install.
+
+5.1.0
+  Make config files be owned by root.
+  Allow 'file://' URLs for plugin install.
+  Sort lines in jvm.options for file.
+
 5.0.4
   Expose $logstash::home_dir
 
@@ -27,7 +47,6 @@
   Restart service on pattern file change.
   Remove dependency on external PGP server.
   Fix circular dependency on plugin installation.
-
 0.6.0
   Deprecates the logstash-contrib package.
   Supports Gem-based Logstash plugins.

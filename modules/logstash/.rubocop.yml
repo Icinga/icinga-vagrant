@@ -1,0 +1,8 @@
+AllCops:
+  Include:
+    - Rakefile
+    - Vagrantfile
+    - spec/**/*.rb
+  Exclude:
+    - spec/fixtures/**/*
+    - pkg/**/*

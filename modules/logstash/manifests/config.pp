@@ -8,22 +8,34 @@
 class logstash::config {
   require logstash::package
 
+  File {
+    owner => 'root',
+    group => 'root',
+  }
+
   # Configuration "fragment" directories for pipeline config and pattern files.
   # We'll keep these seperate since we may want to "purge" them. It's easy to
   # end up with orphan files when managing config fragments with Puppet.
   # Purging the directories resolves the problem.
-  $fragment_directories = [
-    "${logstash::config_dir}/conf.d",
-    "${logstash::config_dir}/patterns",
-  ]
 
   if($logstash::ensure == 'present') {
-    file { $logstash::config_dir: ensure  => directory }
+    file { $logstash::config_dir:
+      ensure => directory,
+      mode   => '0755',
+    }
 
-    file { $fragment_directories:
+    file { "${logstash::config_dir}/conf.d":
       ensure  => directory,
       purge   => $logstash::purge_config,
       recurse => $logstash::purge_config,
+      mode    => '0775',
+    }
+
+    file {     "${logstash::config_dir}/patterns":
+      ensure  => directory,
+      purge   => $logstash::purge_config,
+      recurse => $logstash::purge_config,
+      mode    => '0755',
     }
   }
   elsif($logstash::ensure == 'absent') {
@@ -33,10 +45,5 @@ class logstash::config {
       recurse => true,
       force   => true,
     }
-  }
-
-  File {
-    owner => $logstash::logstash_user,
-    group => $logstash::logstash_group,
   }
 }
