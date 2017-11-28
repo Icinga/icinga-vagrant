@@ -5,7 +5,7 @@ class graylog::repository(
 ) inherits graylog::params {
   anchor { 'graylog::repository::begin': }
   anchor { 'graylog::repository::end': }
-  
+
   if $url == undef {
     $graylog_repo_url = $::osfamily ? {
       'debian' => 'https://downloads.graylog.org/repo/debian/',

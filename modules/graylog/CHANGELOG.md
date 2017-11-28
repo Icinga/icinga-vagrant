@@ -1,3 +1,7 @@
+## 0.4.0 (2017-07-26)
+
+- Update for Graylog 2.3.0
+
 ## 0.3.0 (2017-03-06)
 
 - Adding a more complex example to README (#11)
