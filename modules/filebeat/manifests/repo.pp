@@ -1,13 +1,11 @@
+# filebeat::repo
+#
+# Manage the repository for Filebeat (Linux only for now)
+#
+# @summary Manages the yum, apt, and zypp repositories for Filebeat
 class filebeat::repo {
-  $debian_repo_url = $filebeat::real_version ? {
-    '1' => 'http://packages.elastic.co/beats/apt',
-    '5' => 'https://artifacts.elastic.co/packages/5.x/apt',
-  }
-
-  $yum_repo_url = $filebeat::real_version ? {
-    '1' => 'https://packages.elastic.co/beats/yum/el/$basearch',
-    '5' => 'https://artifacts.elastic.co/packages/5.x/yum',
-  }
+  $debian_repo_url = "https://artifacts.elastic.co/packages/${filebeat::major_version}.x/apt"
+  $yum_repo_url = "https://artifacts.elastic.co/packages/${filebeat::major_version}.x/yum"
 
   case $::osfamily {
     'Debian': {
@@ -17,9 +15,11 @@ class filebeat::repo {
 
       if !defined(Apt::Source['beats']){
         apt::source { 'beats':
+          ensure   => $::filebeat::alternate_ensure,
           location => $debian_repo_url,
           release  => 'stable',
           repos    => 'main',
+          pin      => $::filebeat::repo_priority,
           key      => {
             id     => '46095ACC8548582C1A2699A9D27D666CD88E42B4',
             source => 'https://artifacts.elastic.co/GPG-KEY-elasticsearch',
@@ -30,10 +30,12 @@ class filebeat::repo {
     'RedHat', 'Linux': {
       if !defined(Yumrepo['beats']){
         yumrepo { 'beats':
+          ensure   => $::filebeat::alternate_ensure,
           descr    => 'elastic beats repo',
           baseurl  => $yum_repo_url,
           gpgcheck => 1,
           gpgkey   => 'https://artifacts.elastic.co/GPG-KEY-elasticsearch',
+          priority => $::filebeat::repo_priority,
           enabled  => 1,
         }
       }
@@ -46,6 +48,7 @@ class filebeat::repo {
       }
       if !defined(Zypprepo['beats']){
         zypprepo { 'beats':
+          ensure      => $::filebeat::alternate_ensure,
           baseurl     => $yum_repo_url,
           enabled     => 1,
           autorefresh => 1,
@@ -60,4 +63,5 @@ class filebeat::repo {
       fail($filebeat::kernel_fail_message)
     }
   }
+
 }

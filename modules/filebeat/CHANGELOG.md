@@ -2,7 +2,145 @@ Changelog
 =========
 
 ## Unreleased
-[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.8.6...HEAD)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v2.3.0...HEAD)
+
+
+## [v2.3.0](https://github.com/pcfens/puppet-filebeat/tree/v2.3.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v2.2.0...v2.3.0)
+
+- Add support for Filebeat 6 [\#141](https://github.com/pcfens/puppet-filebeat/pull/141)
+- Add Support for hash.random in Kafka output [\#142](https://github.com/pcfens/puppet-filebeat/pull/142)
+
+## [v2.2.0](https://github.com/pcfens/puppet-filebeat/tree/v2.2.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v2.1.0...v2.2.0)
+
+- Support pipeline configurations in prospectors [\#134](https://github.com/pcfens/puppet-filebeat/pull/134)
+- Fix regex for validating download URL [\#135](https://github.com/pcfens/puppet-filebeat/pull/135)
+- Overhaul testing
+
+## [v2.1.0](https://github.com/pcfens/puppet-filebeat/tree/v2.1.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v2.0.0...v2.1.0)
+
+- Change beat_name configuration parameter to name [\#126](https://github.com/pcfens/puppet-filebeat/issues/126)
+- Make configuration directory/file ownership configurable [\#127](https://github.com/pcfens/puppet-filebeat/issues/127)
+
+## [v2.0.0](https://github.com/pcfens/puppet-filebeat/tree/v2.0.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v1.0.0...v2.0.0)
+
+- Drop support for Puppet 3
+- Drop support for Filebeat versions before 5
+- Add support for Puppet 5
+- Use a generic template by default
+- Remove processor defined type (create it in the config template)
+- Add a flag to disable validating the configuration (`disable_config_test`)
+
+## [v1.0.0](https://github.com/pcfens/puppet-filebeat/tree/v1.0.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.12.1...v1.0.0)
+
+- This is the last release with support for Filebeat versions prior to 5
+- Last release with support for Puppet 3
+- Add Logstash SSL support [\#121](https://github.com/pcfens/puppet-filebeat/pull/121)
+- Add ES loadbalance support [\#119](https://github.com/pcfens/puppet-filebeat/pull/119)
+
+The next major release will be a breaking release for anyone using processors.
+
+## [v0.12.1](https://github.com/pcfens/puppet-filebeat/tree/v0.12.1)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.12.0...v0.12.1)
+
+- Add support for SSL in Logstash [\#117](https://github.com/pcfens/puppet-filebeat/pull/117)
+
+## [v0.12.0](https://github.com/pcfens/puppet-filebeat/tree/v0.12.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.11.2...v0.12.0)
+
+Windows users: you may see a restart and replacement of your existing filebeat directory.
+There's a very brief discussion of the change in the [pull request](https://github.com/pcfens/puppet-filebeat/pull/113#issuecomment-307628477)
+
+- Support upgrades in Windows [\#113](https://github.com/pcfens/puppet-filebeat/pull/113)
+- Add optional repo_priority parameter [\#110](https://github.com/pcfens/puppet-filebeat/pull/110)
+- Update external dependencies, including pinning apt version
+
+## [v0.11.2](https://github.com/pcfens/puppet-filebeat/tree/v0.11.2)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.11.1...v0.11.2)
+
+- Explicitly support newer versions of the powershell modules [\#105](https://github.com/pcfens/puppet-filebeat/issues/105)
+- Support kafka codec.format module [\#106](https://github.com/pcfens/puppet-filebeat/pull/106)
+- The `add_locale` processor doesnt' require parameters [\#104](https://github.com/pcfens/puppet-filebeat/pull/104)
+
+## [v0.11.1](https://github.com/pcfens/puppet-filebeat/tree/v0.11.1)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.11.0...v0.11.1)
+
+- Restore puppet 3.x compatibility regression ([PUP-2523](https://tickets.puppetlabs.com/browse/PUP-2523))
+
+## [v0.11.0](https://github.com/pcfens/puppet-filebeat/tree/v0.11.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.10.4...v0.11.0)
+
+**Breaking Changes**
+- Processors are managed by their own defined resource (slight syntax change) [\#85](https://github.com/pcfens/puppet-filebeat/pull/85)
+- The registry file has likely moved because of an upstream change. Moving this file
+  can cause problems (duplicate or missed log entries), so you may want to point it
+  to your existing file (check in /.filebeat on Linux systems)
+
+**Normal Enhancements/Bugfixes**
+- Support proxy for windows file downloads [\#90](https://github.com/pcfens/puppet-filebeat/pull/90)
+- Setting `package_ensure` to absent removes puppet managed files and removes the package
+- Add support for index conditional output to elasticsearch [\#97](https://github.com/pcfens/puppet-filebeat/pull/97)
+- Add support for a conditional pipeline for elasticsearch [\#98](https://github.com/pcfens/puppet-filebeat/pull/98)
+- Template should check for nil instead of undef [\#63](https://github.com/pcfens/puppet-filebeat/issues/63)
+- Support for the round_robin and group_events parameters in kafka outputs [\#100](https://github.com/pcfens/puppet-filebeat/pull/100)
+
+## [v0.10.4](https://github.com/pcfens/puppet-filebeat/tree/v0.10.4)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.10.3...v0.10.4)
+
+- Add output.console support to the config template [\#91](https://github.com/pcfens/puppet-filebeat/issues/91)
+- Support puppet with strict variables enabled [\#92](https://github.com/pcfens/puppet-filebeat/issues/92)
+
+## [v0.10.3](https://github.com/pcfens/puppet-filebeat/tree/v0.10.3)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.10.2...v0.10.3)
+
+- Allow non-SSL downloads of windows filebeat zipfile [\#82](https://github.com/pcfens/puppet-filebeat/pull/82)
+- Basic support of processors in puppet <4.x [\#79](https://github.com/pcfens/puppet-filebeat/issues/79) (See note above)
+- Confine the filebeat_version fact in a way that works in Ruby 1.8.7 [\#88](https://github.com/pcfens/puppet-filebeat/pull/88)
+
+## [v0.10.2](https://github.com/pcfens/puppet-filebeat/tree/v0.10.2)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.10.1...v0.10.2)
+
+- Add close_older and force_close_files within prospector v5 [\#77](https://github.com/pcfens/puppet-filebeat/pull/77)
+
+## [v0.10.1](https://github.com/pcfens/puppet-filebeat/tree/v0.10.1)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.10.0...v0.10.1)
+
+- Support harvesting symlinks [\#74](https://github.com/pcfens/puppet-filebeat/pull/74)
+- Fix windows config file validation command [\#75](https://github.com/pcfens/puppet-filebeat/issues/75)
+
+## [v0.10.0](https://github.com/pcfens/puppet-filebeat/tree/v0.10.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.9.2...v0.10.0)
+
+- Add support for JSON decoding [\#72](https://github.com/pcfens/puppet-filebeat/pull/72)
+
+## [v0.9.2](https://github.com/pcfens/puppet-filebeat/tree/v0.9.2)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.9.1...v0.9.2)
+
+- Add support for close_* and clean_* parameters in prospectors [\#70](https://github.com/pcfens/puppet-filebeat/pull/70)
+
+## [v0.9.1](https://github.com/pcfens/puppet-filebeat/tree/v0.9.1)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.9.0...v0.9.1)
+
+- Fix yaml syntax around filebeat processors [\#71](https://github.com/pcfens/puppet-filebeat/pull/71)
+
+## [v0.9.0](https://github.com/pcfens/puppet-filebeat/tree/v0.9.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.8.7...v0.9.0)
+
+- Add support for tags in prospectors [\#68](https://github.com/pcfens/puppet-filebeat/pull/68)
+- Add support for filebeat processors [\#69](https://github.com/pcfens/puppet-filebeat/pull/69)
+- Fix the `filebeat_version` fact in Windows [\#59](https://github.com/pcfens/puppet-filebeat/issues/59)
+- Validate configuration files before notifying the filebeat service
+- Update the Windows install URL to the latest version
+
+## [v0.8.7](https://github.com/pcfens/puppet-filebeat/tree/v0.8.7)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.8.6...v0.8.7)
+
+- Update windows URL to the latest 5.x release
+- Remove nil values before rendering the template [\#65](https://github.com/pcfens/puppet-filebeat/pull/65)
 
 ## [v0.8.6](https://github.com/pcfens/puppet-filebeat/tree/v0.8.6)
 [Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v0.8.5...v0.8.6)
