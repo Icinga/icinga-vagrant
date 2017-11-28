@@ -8,7 +8,7 @@ hosts.each do |host|
   tmpdir = host.tmpdir('vcsrepo')
   step 'setup - create repo' do
     git_pkg = 'git'
-    if host['platform'] =~ /ubuntu-10/
+    if host['platform'] =~ %r{ubuntu-10}
       git_pkg = 'git-core'
     end
     install_package(host, git_pkg)
@@ -18,7 +18,7 @@ hosts.each do |host|
   end
 
   step 'setup - start http server' do
-    http_daemon =<<-EOF
+    http_daemon = <<-EOF
     require 'webrick'
     server = WEBrick::HTTPServer.new(:Port => 8000, :DocumentRoot => "#{tmpdir}")
     WEBrick::Daemon.start
@@ -49,18 +49,17 @@ hosts.each do |host|
     }
     EOS
 
-    apply_manifest_on(host, pp, :catch_failures => true)
-    apply_manifest_on(host, pp, :catch_changes  => true)
+    apply_manifest_on(host, pp, catch_failures: true)
+    apply_manifest_on(host, pp, catch_changes: true)
   end
 
   step "verify checkout is set to revision #{@sha}" do
     on(host, "ls #{tmpdir}/#{repo_name}/.git/") do |res|
-      fail_test('checkout not found') unless res.stdout.include? "HEAD"
+      fail_test('checkout not found') unless res.stdout.include? 'HEAD'
     end
 
     on(host, "cat #{tmpdir}/#{repo_name}/.git/HEAD") do |res|
-      fail_test('revision not found') unless res.stdout.include? "#{@sha}"
+      fail_test('revision not found') unless res.stdout.include? @sha.to_s
     end
   end
-
 end

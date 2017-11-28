@@ -19,7 +19,7 @@ describe 'MODULES-660' do
       source   => "file://#{tmpdir}/testrepo.git",
     }
     EOS
-    apply_manifest(pp, :catch_failures => true)
+    apply_manifest(pp, catch_failures: true)
   end
 
   after(:all) do
@@ -27,31 +27,33 @@ describe 'MODULES-660' do
   end
 
   shared_examples 'switch to branch/tag/sha' do
-    it 'pulls the new branch commits' do
-      pp = <<-EOS
+    pp = <<-EOS
       vcsrepo { "#{tmpdir}/testrepo":
         ensure   => latest,
         provider => git,
         revision => 'a_branch',
         source   => "file://#{tmpdir}/testrepo.git",
       }
-      EOS
-      apply_manifest(pp, :expect_changes => true)
-      apply_manifest(pp, :catch_changes  => true)
+    EOS
+    it 'pulls the new branch commits' do
+      apply_manifest(pp, expect_changes: true)
+      apply_manifest(pp, catch_changes: true)
     end
-    it 'checks out the tag' do
-      pp = <<-EOS
+
+    pp = <<-EOS
       vcsrepo { "#{tmpdir}/testrepo":
         ensure   => latest,
         provider => git,
         revision => '0.0.3',
         source   => "file://#{tmpdir}/testrepo.git",
       }
-      EOS
-      apply_manifest(pp, :expect_changes => true)
-      apply_manifest(pp, :catch_changes  => true)
+    EOS
+    it 'checks out the tag' do
+      apply_manifest(pp, expect_changes: true)
+      apply_manifest(pp, catch_changes: true)
     end
-    it 'checks out the sha' do
+
+    it 'checks out the sha' do # rubocop:disable RSpec/ExampleLength : The assignment's must be within the example for the test to pass.
       sha = shell("cd #{tmpdir}/testrepo && git rev-parse origin/master").stdout.chomp
       pp = <<-EOS
       vcsrepo { "#{tmpdir}/testrepo":
@@ -61,8 +63,8 @@ describe 'MODULES-660' do
         source   => "file://#{tmpdir}/testrepo.git",
       }
       EOS
-      apply_manifest(pp, :expect_changes => true)
-      apply_manifest(pp, :catch_changes  => true)
+      apply_manifest(pp, expect_changes: true)
+      apply_manifest(pp, catch_changes: true)
     end
   end
 

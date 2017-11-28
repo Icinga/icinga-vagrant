@@ -8,7 +8,7 @@ hosts.each do |host|
   tmpdir = host.tmpdir('vcsrepo')
   step 'setup - create repo' do
     git_pkg = 'git'
-    if host['platform'] =~ /ubuntu-10/
+    if host['platform'] =~ %r{ubuntu-10}
       git_pkg = 'git-core'
     end
     install_package(host, git_pkg)
@@ -18,7 +18,7 @@ hosts.each do |host|
   end
 
   step 'setup - delete user' do
-    apply_manifest_on(host, "user { '#{user}': ensure => absent, }", :catch_failures => true)
+    apply_manifest_on(host, "user { '#{user}': ensure => absent, }", catch_failures: true)
   end
 
   teardown do
@@ -35,17 +35,16 @@ hosts.each do |host|
     }
     EOS
 
-    apply_manifest_on(host, pp, :expect_failures => true)
+    apply_manifest_on(host, pp, expect_failures: true)
   end
 
   step "verify git checkout is NOT owned by user #{user}" do
     on(host, "ls #{tmpdir}/#{repo_name}/.git/") do |res|
-      fail_test('checkout not found') unless res.stdout.include? "HEAD"
+      fail_test('checkout not found') unless res.stdout.include? 'HEAD'
     end
 
     on(host, "stat --format '%U:%G' #{tmpdir}/#{repo_name}/.git/HEAD") do |res|
       fail_test('checkout not owned by user') if res.stdout.include? "#{user}:"
     end
   end
-
 end
