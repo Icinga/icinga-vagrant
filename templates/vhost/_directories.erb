@@ -67,6 +67,14 @@
     </Limit>
       <%- end -%>
     <%- end -%>
+    <%- if directory['limit_except'] && directory['limit_except'] != '' -%>
+      <%- Array(directory['limit_except']).each do |lim| -%>
+    <LimitExcept <%= lim['methods'] %>>
+    <%- scope.lookupvar('_template_scope')[:item] = lim -%>
+    <%= scope.function_template(["apache/vhost/_require.erb"]) -%>
+    </LimitExcept>
+      <%- end -%>
+    <%- end -%>
     <%- if directory['addhandlers'] and ! directory['addhandlers'].empty? -%>
       <%- [directory['addhandlers']].flatten.compact.each do |addhandler| -%>
     <FilesMatch ".+(<%= Array(addhandler['extensions']).collect { |s| Regexp.escape(s) }.join('|') %>)$">
@@ -206,6 +214,9 @@
     <%- if directory['force_type'] -%>
     ForceType <%= directory['force_type'] %>
     <%- end -%>
+    <%- if directory['add_charset'] -%>
+    AddCharset <%= directory['add_charset'] %>
+    <%- end -%>
     <%- if directory['ssl_options'] -%>
     SSLOptions <%= Array(directory['ssl_options']).join(' ') %>
     <%- end -%>
@@ -317,10 +328,51 @@
          <%- end -%>
       <%- end -%>
     <%- end -%>
+    <%- if directory['request_headers'] and ! directory['request_headers'].empty? -%>
+      ## Request Header rules
+      <%- Array(directory['request_headers']).each do |request_statement| -%>
+        <%- if request_statement != '' -%>
+            RequestHeader <%= request_statement %>
+        <%- end -%>
+      <%- end -%>
+    <%- end -%>
+    <%- if directory['proxy_pass'] and directory['provider'] and directory['provider'].match('location') -%>
+      <%- directory['proxy_pass'].flatten.compact.each do |proxy| -%>
+    ProxyPass <%= proxy['url'] %>
+        <%- if proxy['params'] -%>
+          <%- proxy['params'].keys.sort.each do |key| -%> <%= key %>=<%= proxy['params'][key] -%>
+          <%- end -%>
+        <%- end -%>
+        <%- if proxy['keywords'] %> <%= proxy['keywords'].join(' ') -%>
+        <%- end %>
+        <%- if not proxy['reverse_cookies'].nil? -%>
+          <%- Array(proxy['reverse_cookies']).each do |reverse_cookies| -%>
+            <%- if reverse_cookies['path'] -%>
+    ProxyPassReverseCookiePath <%= reverse_cookies['path'] %> <%= reverse_cookies['url'] %>
+            <%- end -%>
+            <%- if reverse_cookies['domain'] -%>
+    ProxyPassReverseCookieDomain <%= reverse_cookies['domain'] %> <%= reverse_cookies['url'] %>
+            <%- end -%>
+          <%- end -%>
+        <%- end -%>
+        <%- if proxy['reverse_urls'].nil? -%>
+    ProxyPassReverse <%= proxy['url'] %>
+        <%- else -%>
+          <%- Array(proxy['reverse_urls']).each do |reverse_url| -%>
+    ProxyPassReverse <%= reverse_url %>
+          <%- end -%>
+        <%- end -%>
+        <%- if proxy['setenv'] -%>
+          <%- Array(proxy['setenv']).each do |setenv_var| -%>
+    SetEnv <%= setenv_var %>
+          <%- end -%>
+        <%- end -%>
+      <% end -%>
+    <%- end -%>
     <%- if directory['custom_fragment'] -%>
     <%= directory['custom_fragment'] %>
     <%- end -%>
   </<%= provider %>>
     <%- end -%>
   <%- end -%>
-<% end -%>
+<%- end -%>

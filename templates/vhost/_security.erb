@@ -1,5 +1,9 @@
+<IfModule mod_security2.c>
 <% if @modsec_disable_vhost -%>
   SecRuleEngine Off
+<% end -%>
+<% if @modsec_audit_log_destination -%>
+  SecAuditLog "<%= @modsec_audit_log_destination %>"
 <% end -%>
 <% if @_modsec_disable_ids.is_a?(Hash) -%>
 <%   @_modsec_disable_ids.each do |location,rules| -%>
@@ -36,3 +40,4 @@
 <% if @modsec_body_limit -%>
   SecRequestBodyLimit <%= @modsec_body_limit %>
 <% end -%>
+</IfModule>
