@@ -18,6 +18,9 @@ $icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
 # http://192.168.33.7:5601/app/kibana#/dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426
 $kibanaDefaultAppId = 'dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426'
 
+$elasticsearchListenIP = 'localhost'
+$elasticsearchListenPort = '9200'
+
 ####################################
 # Setup
 ####################################
@@ -39,12 +42,15 @@ class { '::profiles::icinga::icingaweb2':
   icingaweb2_fqdn => $hostOnlyFQDN,
   modules => {
     "grafana" => {
-      "datasource"  => "influxdb",
+      "datasource"  => "graphite",
       "listen_ip"   => $hostOnlyIP,
       "listen_port" => $grafanaListenPort
     },
     "map" => {},
-    "elasticsearch" => {}
+    "elasticsearch" => {
+      "listen_ip"   => $elasticsearchListenIP,
+      "listen_port" => $elasticsearchListenPort
+    }
   }
 }
 ->
