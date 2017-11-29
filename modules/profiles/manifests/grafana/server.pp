@@ -20,6 +20,10 @@ class profiles::grafana::server (
         admin_user => 'admin',
         admin_password => 'admin',
       },
+      # better performance for Grafana module in Icinga Web 2 with direct access.
+      'auth.anonymous' => {
+        enabled => 'true'
+      }
     },
   }
 

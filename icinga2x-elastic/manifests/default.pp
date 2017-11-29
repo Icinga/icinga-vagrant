@@ -14,6 +14,9 @@ $icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
 # http://192.168.33.7:5601/app/kibana#/dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426
 $kibanaDefaultAppId = 'dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426'
 
+$elasticsearchListenIP = 'localhost'
+$elasticsearchListenPort = '9200'
+
 ####################################
 # Setup
 ####################################
@@ -34,7 +37,10 @@ class { '::profiles::icinga::icingaweb2':
   icingaweb2_listen_ip => $hostOnlyIP,
   icingaweb2_fqdn => $hostOnlyFQDN,
   modules => {
-    "elasticsearch" => {}
+    "elasticsearch" => {
+      "listen_ip"   => $elasticsearchListenIP,
+      "listen_port" => $elasticsearchListenPort
+    }
   }
 }
 ->

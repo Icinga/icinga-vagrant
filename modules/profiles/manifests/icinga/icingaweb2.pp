@@ -3,8 +3,6 @@ class profiles::icinga::icingaweb2 (
   $icingaweb2_fqdn = 'icingaweb2.vagrant-demo.icinga.com',
   $modules = {}
 ) {
-
-  # TODO: Replace Apache with Nginx
   apache::vhost { "${icingaweb2_fqdn}-http":
     priority        => 5,
     port            => '80',
@@ -37,68 +35,25 @@ class profiles::icinga::icingaweb2 (
     content => template("profiles/icinga/icingaweb2/apache_fpm.conf.erb"),
   }
 
-
-  # TODO for v2.0.0: Replace Apache with Nginx
-  #class { 'nginx':
-  #  confd_purge => true,
-  #}
-
-  #nginx::resource::server { $icingaweb2_fqdn:
-  #  ensure              => present,
-  #  www_root            => '/usr/share/icingaweb2/public',
-  #  location_cfg_append => {
-  #    'rewrite'             => '^/$ /icingaweb2 redirect'
-  #  }
-  #}
-  #nginx::resource::location { "${icingaweb2_fqdn}-fastcgi":
-  #  ensure              => present,
-  #  server              => $icingaweb2_fqdn,
-  #  location            => '~ ^/icingaweb2/index\.php(.*)$',
-  #  fastcgi_index       => 'index.php',
-  #  fastcgi_split_path  => '^(.+\.php)(/.+)$',
-  #  fastcgi             => "127.0.0.1:9000",
-  #  fastcgi_param       => {
-  #    'SCRIPT_FILENAME'     => '/usr/share/icingaweb2/public/index.php',
-  #    'ICINGAWEB_CONFIGDIR' => '/etc/icingaweb2',
-  #    'REMOTE_USER'         => '$remote_user'
-  #  }
-  #}
-  #nginx::resource::location { "${icingaweb2_fqdn}-public":
-  #  ensure              => present,
-  #  server              => $icingaweb2_fqdn,
-  #  www_root            => '/usr/share/icingaweb2/public',
-  #  location            => '~ ^/icingaweb2(.+)?',
-  #  index_files         => [ 'index.php' ],
-  #  location_cfg_append => {
-  #    'try_files'           => '$1 $uri $uri/ /icingaweb2/index.php$is_args$args'
-  #  }
-  #}
-  ## Avoid favicon.ico not found error messages
-  ## https://nichteinschalten.de/de/icingaweb2-unter-nginx-betreiben/
-  #nginx::resource::location { "${icingaweb2_fqdn}-favicon":
-  #  ensure              => present,
-  #  server              => $icingaweb2_fqdn,
-  #  www_root            => '/usr/share/icingaweb2/public',
-  #  location            => '/favicon.ico',
-  #  location_cfg_append => {
-  #    'log_not_found' => 'off',
-  #    'access_log'    => 'off',
-  #    'expires'       => 'max'
-  #  }
-  #}
-  #@user { nginx: ensure => present }
-  #User<| title == nginx |>{
-  #  groups +> ['icingaweb2']
-  #}
-
-
-
   package { [ 'scl-utils', 'centos-release-scl' ]:
     ensure => present,
   }->
+  # Workaround for PHP module not allowing to configure log path
+  file { '/var/opt/rh/rh-php71/log/php-fpm':
+    ensure => directory,
+    owner  => 'apache',
+    group  => 'apache',
+    mode   => '0770'
+  }
+  ->
+  file { '/var/log/php-fpm':
+    ensure => link,
+    source => '/var/opt/rh/rh-php71/log/php-fpm'
+  }
+  ->
   class { '::php::globals':
-    config_root => '/etc/opt/rh/rh-php71',
-    fpm_pid_file => '/var/opt/rh/rh-php71/run/php-fpm/php-fpm.pid'
+    config_root   => '/etc/opt/rh/rh-php71',
+    fpm_pid_file  => '/var/opt/rh/rh-php71/run/php-fpm/php-fpm.pid',
   }->
   class { '::php':
     package_prefix => 'rh-php71-php-', # most important
@@ -107,12 +62,14 @@ class profiles::icinga::icingaweb2 (
 
     manage_repos => false,
     fpm => true,
-    fpm_package => 'rh-php71-php-fpm',
-    fpm_service_name => 'rh-php71-php-fpm',
+    fpm_package        => 'rh-php71-php-fpm',
+    fpm_service_name   => 'rh-php71-php-fpm',
     fpm_service_enable => true,
     fpm_service_ensure => 'running',
-    #fpm_user => 'nginx', #requires to change package permissions, rh-php71 prefers apache
-    #fpm_group => 'nginx', #not supported by puppet3 branch of puppet-php
+    fpm_inifile        => '/etc/opt/rh/rh-php71/php-fpm.ini',
+    #fpm_error_log      => '/var/opt/rh/rh-php71/log/php-fpm',
+    fpm_user           => 'apache', # rh-php71 prefers apache
+    fpm_group          => 'apache',
     dev => true,
     composer => true,
     pear => true,
@@ -128,14 +85,6 @@ class profiles::icinga::icingaweb2 (
     # NOTE for future reference: DO NOT build imagick with PECL. That fails heavily, either with pear not in PATH and then configure & make on missing imagick-devel packages.
     # I'll rather shoot myself before doing so. We'll wait for SCL packages.
   }
-  # Icinga Web itself
-  ->
-  class { '::icingaweb2': # TODO: Replace with official module with Puppet 5 support
-  }
-  ->
-  package { 'icingaweb2-selinux':
-    ensure => latest,
-  }
   ->
   mysql::db { 'icingaweb2':
     user      => 'icingaweb2',
@@ -143,77 +92,101 @@ class profiles::icinga::icingaweb2 (
     host      => 'localhost',
     grant     => [ 'ALL' ]
   }
+  # Icinga Web itself
   ->
-  exec { 'populate-icingaweb2-mysql-db':
-    path 	=> '/bin:/usr/bin:/sbin:/usr/sbin',
-    unless  	=> 'mysql -uicingaweb2 -picingaweb2 icingaweb2 -e "SELECT * FROM icingaweb_user;" &> /dev/null',
-    command 	=> 'mysql -uicingaweb2 -picingaweb2 icingaweb2 < /usr/share/doc/icingaweb2/schema/mysql.schema.sql; mysql -uicingaweb2 -picingaweb2 icingaweb2 -e "INSERT INTO icingaweb_user (name, active, password_hash) VALUES (\'icingaadmin\', 1, \'\$1\$iQSrnmO9\$T3NVTu0zBkfuim4lWNRmH.\');"',
-    require => [ Mysql::Db['icingaweb2'], Class['icingaweb2'] ]
+  class { '::icingaweb2': # TODO: Replace with official module with Puppet 5 support
+    manage_repo   => false, # done in profiles::base::system
+    import_schema => true,  # imports DB schema and creates a default user icinga/icinga
+    db_type       => 'mysql',
+    db_host       => 'localhost',
+    db_port       => 3306,
+    db_username   => 'icingaweb2',
+    db_password   => 'icingaweb2'
   }
-  #->
-  # icingaweb2 package pulls in httpd which we don't want
-  #service { 'httpd':
-  #  ensure => stopped,
-  #}
+  ->
+  class { '::icingaweb2::module::monitoring':
+    ido_host           => 'localhost', # TODO: Params.
+    ido_db_name        => 'icinga',
+    ido_db_username    => 'icinga',
+    ido_db_password    => 'icinga',
+    commandtransports  => {
+      icinga2 => {
+        transport => 'api',
+        username  => 'icingaweb2', # TODO: Params.
+        password  => 'icingaweb2apitransport'
+      }
+    }
+  }
+  ->
+  package { 'icingaweb2-selinux':
+    ensure => latest,
+  }
 
+  $conf_dir        = $::icingaweb2::params::conf_dir
+
+  # Module handling
   if ('map' in $modules) {
-    # TODO: generic layout
-    $module = 'map'
-    icingaweb2::module { "${module}":
-      builtin => false,
-      repo_url => "https://github.com/nbuchwitz/icingaweb2-module-${module}"
-    }
-    ->
-    file { "/etc/icingaweb2/modules/${module}":
-      ensure => directory,
-      owner  => root,
-      group  => icingaweb2,
-      mode => '2770'
-    }
-    ->
-    file { "/etc/icingaweb2/modules/${module}/config.ini":
-      ensure => present,
-      owner  => root,
-      group  => icingaweb2,
-      mode => '0660',
-      content => template("profiles/icinga/icingaweb2/modules/${module}/config.ini.erb")
+    $map_module_conf_dir = "${conf_dir}/modules/map"
+
+    $map_settings = {
+      'module-map' => {
+        'section_name' => 'map',
+        'target'       => "${map_module_conf_dir}/config.ini",
+        'settings'     => {
+          'stateType'      => 'hard',
+          'default_zoom'   => '6',
+        }
+      }
     }
 
+    icingaweb2::module { 'map':
+      install_method => 'git',
+      git_repository => 'https://github.com/nbuchwitz/icingaweb2-module-map.git',
+      git_revision   => 'master',
+      settings       => $map_settings,
+    }
   }
 
   if ('cube' in $modules) {
-    icingaweb2::module { 'cube':
-      builtin => false
+    $cube_module_conf_dir = "${conf_dir}/modules/cube"
+
+    class { 'icingaweb2::module::cube':
+      git_revision   => 'master',
     }
   }
 
   if ('globe' in $modules) {
+    $globe_module_conf_dir = "${conf_dir}/modules/globe"
+
     icingaweb2::module { 'globe':
-      builtin => false,
-      repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-globe'
+      install_method => 'git',
+      git_repository => 'https://github.com/Mikesch-mp/icingaweb2-module-globe.git',
+      git_revision   => 'master'
     }
   }
 
   if ('businessprocess' in $modules) {
-    icingaweb2::module { 'businessprocess':
-      builtin => false
+    $businessprocess_module_conf_dir = "${conf_dir}/modules/businessprocess"
+
+    class { 'icingaweb2::module::businessprocess':
+      git_revision   => 'master'
     }
     ->
-    file { '/etc/icingaweb2/modules/businessprocess':
+    file { "${businessprocess_module_conf_dir}":
       ensure => directory,
       owner  => root,
       group  => icingaweb2,
       mode => '2770'
     }
     ->
-    file { '/etc/icingaweb2/modules/businessprocess/processes':
+    file { "${businessprocess_module_conf_dir}/processes":
       ensure => directory,
       owner  => root,
       group  => icingaweb2,
       mode => '2770'
     }
     ->
-    file { '/etc/icingaweb2/modules/businessprocess/processes/all.conf':
+    file { "${businessprocess_module_conf_dir}/processes/all.conf":
       ensure => present,
       owner  => root,
       group  => icingaweb2,
@@ -221,7 +194,7 @@ class profiles::icinga::icingaweb2 (
       content => template("profiles/icinga/icingaweb2/modules/businessprocess/processes/all.conf.erb")
     }
     ->
-    file { '/etc/icingaweb2/modules/businessprocess/processes/web.conf':
+    file { "${businessprocess_module_conf_dir}/processes/web.conf":
       ensure => present,
       owner  => root,
       group  => icingaweb2,
@@ -229,7 +202,7 @@ class profiles::icinga::icingaweb2 (
       content => template("profiles/icinga/icingaweb2/modules/businessprocess/processes/web.conf.erb")
     }
     ->
-    file { '/etc/icingaweb2/modules/businessprocess/processes/mysql.conf':
+    file { ""${businessprocess_module_conf_dir}/processes/mysql.conf":
       ensure => present,
       owner  => root,
       group  => icingaweb2,
@@ -239,31 +212,42 @@ class profiles::icinga::icingaweb2 (
   }
 
   if ('grafana' in $modules) {
-    $datasource = $modules['grafana']['datasource']
-    $listen_ip = $modules['grafana']['listen_ip']
-    $listen_port = $modules['grafana']['listen_port']
+    $grafana_datasource = $modules['grafana']['datasource']
+    $grafana_listen_ip = $modules['grafana']['listen_ip']
+    $grafana_listen_port = $modules['grafana']['listen_port']
+
+    $grafana_module_conf_dir = "${conf_dir}/modules/grafana"
+
+    $grafana_settings = {
+      'module-grafana' => {
+        'section_name'  => 'grafana',
+        'target'        => "${grafana_module_conf_dir}/config.ini",
+        'settings'      => {
+          'username'              => 'admin',
+          'password'              => 'admin',
+          'host'                  => "${grafana_listen_ip}:${grafana_listen_port}",
+          'protocol'              => 'http',
+          'height'                => '280',
+          'width'                 => '640',
+          'timerange'             => '1h',
+          'enableLink'            => 'yes',
+          'default-dashboard'     => 'icinga2-default',
+          'datasource'            => $grafana_datasource,
+          'defaultdashboardstore' => 'db',
+          'accessmode'            => 'direct',
+          'timeout'               => '30'
+        }
+      }
+    }
 
     icingaweb2::module { 'grafana':
-      builtin => false,
-      repo_url => 'https://github.com/Mikesch-mp/icingaweb2-module-grafana'
+      install_method => 'git',
+      git_repository => 'https://github.com/Mikesch-mp/icingaweb2-module-grafana.git',
+      git_revision   => 'master',
+      settings       => $grafana_settings,
     }
     ->
-    file { '/etc/icingaweb2/modules/grafana':
-      ensure => directory,
-      owner  => root,
-      group  => icingaweb2,
-      mode => '2770',
-      require => Package['icingaweb2']
-    }
-    ->
-    file { '/etc/icingaweb2/modules/grafana/config.ini':
-      ensure => present,
-      owner  => root,
-      group  => icingaweb2,
-      mode => '0660',
-      content => template("profiles/icinga/icingaweb2/modules/grafana/config.ini.erb")
-    }
-    ->
+    # TODO: Move this somewhere else.
     file { '/etc/icingaweb2/preferences':
       ensure => directory,
       owner  => root,
@@ -288,11 +272,41 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
-  # TODO: configuration
   if ('elasticsearch' in $modules) {
+    $elasticsearch_listen_ip = $modules['elasticsearch']['listen_ip']
+    $elasticsearch_listen_port = $modules['elasticsearch']['listen_port']
+
+    $elasticsearch_module_conf_dir = "${conf_dir}/modules/elasticsearch"
+
+    $elasticsearch_instance_name = 'elasticsearch'
+
+    $elasticsearch_settings = {
+      'module-elasticsearch-instances' => {
+        'section_name'  => $elasticsearch_instance_name,
+        'target'        => "${elasticsearch_module_conf_dir}/instances.ini",
+        'settings'      => {
+          #'user'                  => 'admin',
+          #'password'              => 'admin',
+          'uri'                  => "http://${elasticsearch_listen_ip}:${elasticsearch_listen_port}",
+        }
+      },
+      'module-elasticsearch-eventtypes' => {
+        'section_name'  => 'icinga2',
+        'target'        => "${elasticsearch_module_conf_dir}/eventtypes.ini",
+        'settings'      => {
+          'instance'              => $elasticsearch_instance_name,
+          'index'                 => 'icinga2-*',
+          'filter'                => 'host={host.name}',
+          'fields'                => '*'
+        }
+      }
+    }
+
     icingaweb2::module { 'elasticsearch':
-      builtin => false,
-      repo_revision => 'master',
+      install_method => 'git',
+      git_repository => 'https://github.com/icinga/icingaweb2-module-elasticsearch.git',
+      git_revision   => 'master',
+      settings       => $elasticsearch_settings,
     }
   }
 }
