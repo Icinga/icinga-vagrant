@@ -2,8 +2,11 @@
 # Global configuration
 ####################################
 
+$nodeName = 'icinga2-elastic' # TODO: Hiera.
 $hostOnlyIP = '192.168.33.7'
 $hostOnlyFQDN = 'icinga2x-elastic.vagrant.demo.icinga.com'
+
+$elasticRepoVersion = '5.x'
 $kibanaVersion = '5.3.1'
 $icingabeatVersion = '1.1.0'
 $icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
@@ -36,10 +39,11 @@ class { '::profiles::icinga::icingaweb2':
 }
 ->
 class { '::profiles::elastic::elasticsearch':
-  repo_version => '5.x',
+  repo_version => $elasticRepoVersion,
 }
 ->
 class { '::profiles::elastic::kibana':
+  repo_version => $elasticRepoVersion,
   kibana_revision => "${kibanaVersion}-1",
   kibana_host => '127.0.0.1',
   kibana_port => 5601,
@@ -47,7 +51,8 @@ class { '::profiles::elastic::kibana':
 }
 ->
 class { '::profiles::elastic::httpproxy':
-  listen_ip => $hostOnlyIP
+  listen_ip => $hostOnlyIP,
+  node_name => $nodeName
 }
 ->
 class { '::profiles::elastic::filebeat':
