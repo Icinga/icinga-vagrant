@@ -23,13 +23,13 @@ done
 # add datasource
 echo -e "Adding Graphite datasource"
 curl "$GRAFANA_DATASOURCES_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary <<DATASOURCE \
-  '{
-    "name": "icinga2-graphite",
-    "type": "graphite",
-    "url": "http://192.168.33.5:8003",
-    "access": "direct",
-    "isDefault": true
-   }'
+  "{
+    \"name\": \"icinga2-graphite\",
+    \"type\": \"graphite\",
+    \"url\": \"http://<%= @listen_ip-%>:<%= @backend_port-%>\",
+    \"access\": \"direct\",
+    \"isDefault\": true
+   }"
 DATASOURCE
 
 # add default dashboards

@@ -42,9 +42,11 @@ class { '::profiles::graphite::server':
 }
 ->
 class { '::profiles::grafana::server':
+  listen_ip => $hostOnlyIP,
   listen_port => $grafanaListenPort,
   version => '4.2.0-1',
-  backend => "graphite"
+  backend => "graphite",
+  backend_port => $graphiteListenPort
 }
 ->
 class { '::profiles::dashing::icinga2': }
