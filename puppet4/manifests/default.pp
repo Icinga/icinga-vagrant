@@ -33,19 +33,20 @@ class { '::profiles::base::java': }
 class { '::profiles::icinga::icinga2':
   features => [ "gelf", "influxdb", "graphite", "elasticsearch" ]
 }
-#->
-#class { '::profiles::icinga::icingaweb2':
-#  icingaweb2_listen_ip => $hostOnlyIP,
-#  icingaweb2_fqdn => $hostOnlyFQDN,
-#  modules => {
-#    "grafana" => {
-#      "datasource"  => "influxdb",
-#      "listen_ip"   => $hostOnlyIP,
-#      "listen_port" => $grafanaListenPort
-#    },
-#    "map" => {}
-#  }
-#}
+->
+class { '::profiles::icinga::icingaweb2':
+  icingaweb2_listen_ip => $hostOnlyIP,
+  icingaweb2_fqdn => $hostOnlyFQDN,
+  modules => {
+    "grafana" => {
+      "datasource"  => "influxdb",
+      "listen_ip"   => $hostOnlyIP,
+      "listen_port" => $grafanaListenPort
+    },
+    "map" => {},
+    "elasticsearch" => {}
+  }
+}
 ->
 class { '::profiles::dashing::icinga2': }
 ->
