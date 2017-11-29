@@ -2,12 +2,21 @@
 # Global configuration
 ####################################
 
+$nodeName = 'icinga2-puppet4' # TODO: Hiera.
 $hostOnlyIP = '192.168.33.50'
 $hostOnlyFQDN = 'puppet4.vagrant.demo.icinga.com'
 $graphiteListenPort = 8003
 $influxdbListenPort = 8086
 $grafanaListenPort = 8004
 
+# Elastic
+$elasticRepoVersion = '5.x'
+$kibanaVersion = '5.3.1'
+$icingabeatVersion = '1.1.0'
+$icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
+# keep this in sync with the icingabeat dashboard ids!
+# http://192.168.33.7:5601/app/kibana#/dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426
+$kibanaDefaultAppId = 'dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426'
 
 ####################################
 # Setup
@@ -22,7 +31,7 @@ class { '::profiles::base::apache': }
 class { '::profiles::base::java': }
 ->
 class { '::profiles::icinga::icinga2':
-  features => [ "gelf", "influxdb", "graphite" ]
+  features => [ "gelf", "influxdb", "graphite", "elasticsearch" ]
 }
 #->
 #class { '::profiles::icinga::icingaweb2':
@@ -62,6 +71,33 @@ class { '::profiles::grafana::server':
   backend => "graphite",
   backend_port => $graphiteListenPort
 }
+->
+class { '::profiles::elastic::elasticsearch':
+  repo_version => $elasticRepoVersion,
+}
+->
+class { '::profiles::elastic::kibana':
+  repo_version => $elasticRepoVersion,
+  kibana_revision => "${kibanaVersion}-1",
+  kibana_host => '127.0.0.1',
+  kibana_port => 5601,
+  kibana_default_app_id => $kibanaDefaultAppId
+}
+->
+class { '::profiles::elastic::httpproxy':
+  listen_ip => $hostOnlyIP,
+  node_name => $nodeName
+}
+->
+class { '::profiles::elastic::filebeat':
+}
+->
+class { '::profiles::elastic::icingabeat':
+  icingabeat_version => $icingabeatVersion,
+  icingabeat_dashboards_checksum => $icingabeatDashboardsChecksum,
+  kibana_version => $kibanaVersion
+}
+
 #->
 #class { '::profiles::graylog::elasticsearch':
 #  repo_version => '5.x',
