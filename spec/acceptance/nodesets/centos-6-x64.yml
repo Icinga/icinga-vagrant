@@ -1,0 +1,10 @@
+---
+HOSTS:
+  centos-6-x64:
+    roles:
+      - master
+    platform: el-6-x86_64
+    box: centos/6
+    hypervisor: vagrant
+CONFIG:
+  type: aio
