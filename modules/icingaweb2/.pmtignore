@@ -1,0 +1,14 @@
+import/
+/spec/fixtures/
+.tmp
+*.lock
+*.local
+.rbenv-gemsets
+.ruby-version
+build/
+docs/
+tests/
+log/
+junit/
+tmp/
+vendor/
