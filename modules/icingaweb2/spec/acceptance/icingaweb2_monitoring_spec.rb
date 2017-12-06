@@ -100,11 +100,11 @@ describe 'icingaweb2::module::monitoring class:' do
   describe file('/etc/icingaweb2/roles.ini') do
     it { is_expected.to be_file }
     it { is_expected.to contain '[default admin user]' }
-    it { is_expected.to contain 'users = "icinga"' }
+    it { is_expected.to contain 'users = "icingaadmin"' }
     it { is_expected.to contain 'permissions = "*"' }
   end
 
   describe command('mysql -e "select name from icingaweb2.icingaweb_user"') do
-    its(:stdout) { should match(%r{icinga}) }
+    its(:stdout) { should match(%r{icingaadmin}) }
   end
 end

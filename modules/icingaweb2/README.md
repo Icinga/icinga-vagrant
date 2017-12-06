@@ -172,7 +172,7 @@ generated.
 The module does not support the creation of databases, we encourage you to use either the [puppetlabs/mysql] or the
 [puppetlabs/puppetlabs-postgresql] module.
 
-:bulb: Default credentials are: **User:** `icinga` **Password**: `icinga`
+:bulb: Default credentials are: **User:** `icingaadmin` **Password**: `icinga`
 
 ##### MySQL
 Use MySQL as backend for user authentication in Icinga Web 2:
