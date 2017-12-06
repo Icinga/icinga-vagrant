@@ -39,7 +39,14 @@ class profiles::icinga::icingaweb2 (
     ensure => present,
   }->
   # Workaround for PHP module not allowing to configure log path
-  file { '/var/opt/rh/rh-php71/log/php-fpm':
+  file { [ '/var/opt', '/var/opt/rh', '/var/opt/rh/rh-php71' ]:
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0750'
+  }
+  ->
+  file { [ '/var/opt/rh/rh-php71/log', '/var/opt/rh/rh-php71/log/php-fpm' ]:
     ensure => directory,
     owner  => 'apache',
     group  => 'apache',
