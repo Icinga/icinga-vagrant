@@ -99,9 +99,9 @@ class profiles::icinga::icingaweb2 (
     host      => 'localhost',
     grant     => [ 'ALL' ]
   }
-  # Icinga Web itself
+  # Icinga Web 2 itself
   ->
-  class { '::icingaweb2': # TODO: Replace with official module with Puppet 5 support
+  class { '::icingaweb2':
     manage_repo   => false, # done in profiles::base::system
     import_schema => true,  # imports DB schema and creates a default user icinga/icinga
     db_type       => 'mysql',
