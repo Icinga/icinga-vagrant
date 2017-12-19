@@ -1,0 +1,12 @@
+---
+:backends:
+  - yaml
+:hierarchy:
+  - "nodes/%{::trusted.certname}"
+  - "%{::domain}"
+  - "%{::kernel}"
+  - common
+:merge_behavior: deeper
+
+:yaml:
+  :datadir:

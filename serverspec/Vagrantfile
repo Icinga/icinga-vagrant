@@ -1,0 +1,119 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+nodes = {
+  'i2oracle7puppet4' => {
+    :box => 'oracle-7.3-x64-virtualbox',
+    :url => 'http://boxes.icinga.com/vagrant/oracle/oracle-7.3-x64-virtualbox.box',
+    :md5 => '930a004ad923495d29123122c143a69f'
+  },
+  'i2sles12sp2puppet4' => {
+    :box => 'sles-12-sp2-x64-virtualbox.box',
+    :url => 'http://boxes.icinga.com/vagrant/sles/sles-12-sp2-x64-virtualbox.box',
+    :md5 => '549ecfa335ba3883e6feb311f81723ef'
+  },
+  'i2rhel7puppet4' => {
+    :box => 'centos-7.3-x64-virtualbox',
+    :url => 'http://boxes.icinga.com/vagrant/centos/centos-7.3-x64-virtualbox.box',
+    :md5 => 'd458134dc2cfddfb4765b2e64cff6b3a'
+  },
+  'i2rhel6puppet4' => {
+    :box => 'centos-6.8-x64-virtualbox',
+    :url => 'http://boxes.icinga.com/vagrant/centos/centos-6.8-x64-virtualbox.box',
+    :md5 => '7fb5b9b1c9dfdaed2da4ecb0d15eea99'
+  },
+  'i2debian8puppet4' => {
+    :box => 'debian-8.7-amd64-virtualbox.box',
+    :url => 'http://boxes.icinga.com/vagrant/debian/debian-8.7-amd64-virtualbox.box',
+    :md5 => '23708d2cad32a96bfb1448be03f9bbc8'
+  },
+  'i2debian7puppet4' => {
+    :box => 'debian-7.11-amd64-virtualbox',
+    :url => 'http://boxes.icinga.com/vagrant/debian/debian-7.11-amd64-virtualbox.box',
+    :md5 => '78dc5710545789da74f5b3727a20e453'
+  },
+  'i2ubuntu14puppet4' => {
+    :box => 'ubuntu-14.04.4-x64-virtualbox',
+    :url => 'http://boxes.icinga.com/vagrant/ubuntu/ubuntu-14.04.4-x64-virtualbox.box',
+    :md5 => '2280f5471cb63cc1c01e78880185fe02'
+  },
+  'i2ubuntu16puppet4' => {
+    :box => 'ubuntu-16.04-amd64-virtualbox.box',
+    :url => 'http://boxes.icinga.com/vagrant/ubuntu/ubuntu-16.04-amd64-virtualbox.box',
+    :md5 => '9e0b3ff7ad4c4b5782110c1784c9a051'
+  },
+  'i2w2k12r2puppet4' => {
+    :box => 'w2k12r2-x64-virtualbox',
+    :url => 'http://boxes.icinga.com/vagrant/private/w2k12r2.box',
+    :md5 => '8d2f63885253289bfcad47256146ea02'
+  },
+  'i2freebsd10puppet4' => {
+    :box    => 'freebsd-10.3-amd64-virtualbox',
+    :url    => 'http://boxes.icinga.com/vagrant/freebsd/freebsd-10.3-amd64-virtualbox.box',
+    :md5    => '68c708200667c6fd075d24a3f8e29061',
+    :kernel => 'bsd'
+  },
+  'i2freebsd11puppet4' => {
+    :box    => 'freebsd-11.0-amd64-virtualbox',
+    :url    => 'http://boxes.icinga.com/vagrant/freebsd/freebsd-11.0-amd64-virtualbox.box',
+    :md5    => '3ee3583815214a7443e9a0d288241cc4',
+    :kernel => 'bsd'
+  },
+}
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  nodes.each_pair do |name, options|
+    config.vm.define name do |node_config|
+      node_config.vm.box = options[:box]
+      node_config.vm.hostname = "#{name}"
+      node_config.vm.box_url = options[:url]
+      node_config.vm.box_download_checksum = options[:md5]
+      node_config.vm.box_download_checksum_type = 'md5'
+      node_config.vm.network :private_network, :adapter => 2, ip: options[:ip] if options[:ip]
+
+      if options[:kernel] == "bsd"
+        node_config.vm.synced_folder "./environments", "/tmp/vagrant-puppet/environments", type: "rsync"
+      end
+
+      if options[:forwarded]
+        options[:forwarded].each_pair do |guest, local|
+          node_config.vm.network "forwarded_port", guest: guest, host: local
+        end
+      end
+
+      node_config.vm.provider :virtualbox do |vb|
+        vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
+        vb.name = name
+        vb.gui = false
+        vb.customize ["modifyvm", :id,
+          "--groups", "/icinga2",
+          "--memory", "512",
+          "--audio", "none",
+          "--usb", "on",
+          "--usbehci", "off",
+          "--nic2", "intnet",
+        ]
+        vb.memory = options[:memory] if options[:memory]
+        vb.cpus = options[:cpus] if options[:cpus]
+      end
+
+      node_config.vm.provision :shell,
+        :path => "scripts/#{name}.sh" if options[:box] != "w2k12r2-x64-virtualbox"
+      node_config.vm.provision :shell,
+        :path => "scripts/#{name}.bat" if options[:box] == "w2k12r2-x64-virtualbox"
+
+      node_config.vm.provision :puppet do |puppet|
+        puppet.environment = "production"
+        puppet.environment_path = "environments"
+        puppet.hiera_config_path = "hiera.yaml"
+        #puppet.options = "--debug"
+      end
+
+    end
+  end
+
+end

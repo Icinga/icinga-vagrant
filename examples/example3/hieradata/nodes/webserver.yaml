@@ -1,0 +1,17 @@
+---
+classes:
+  - 'role::webserver'
+
+icinga_vars:
+  client_endpoint: "%{::fqdn}"
+  role: http-server
+  vhosts:
+    sub.domain.tld:
+      uri: '/ping'
+  checks:
+    'nginx-status':
+      nginx_status_host_address: '127.0.0.1'
+      nginx_status_port: '8433'
+      nginx_status_url: '/nginx-status'
+      nginx_status_warn: '100,50,100'
+      nginx_status_critical: '200,100,200'

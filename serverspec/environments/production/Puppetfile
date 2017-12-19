@@ -1,0 +1,13 @@
+forge "http://forge.puppetlabs.com"
+
+mod 'puppetlabs/stdlib', :latest
+mod 'puppetlabs/concat', :latest
+mod 'puppetlabs/apt', :latest
+mod 'puppetlabs/chocolatey', :latest
+mod 'puppetlabs/powershell', :latest
+mod 'puppetlabs/mysql', :latest
+mod 'badgerious/windows_env', :latest
+mod 'puppet/zypprepo', :latest
+mod 'icinga2',
+  :git    => 'https://github.com/Icinga/puppet-icinga2.git',
+  :branch => 'master'

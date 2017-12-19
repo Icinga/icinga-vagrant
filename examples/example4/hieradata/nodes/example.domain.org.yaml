@@ -1,0 +1,9 @@
+---
+icinga2::host:
+  vars:
+    disks:
+      'disk /':
+        disk_wfree: 10%
+        disk_cfree: 5%
+  import:
+    - postgres-dbms
