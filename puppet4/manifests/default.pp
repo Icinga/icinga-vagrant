@@ -10,7 +10,14 @@ $influxdbListenPort = 8086
 $grafanaListenPort = 8004
 
 # Elastic
+# TODO: Wait for 6.x support in Icingabeat
+#$elasticRepoVersion = '6.x'
+#$elasticsearchVersion = '6.0.0'
+#$kibanaVersion = '6.0.0'
+#$icingabeatVersion = '1.1.1'
+#$icingabeatDashboardsChecksum = '11f1f92e541f4256727137094d4d69efdd6f3862'
 $elasticRepoVersion = '5.x'
+$elasticsearchVersion = '5.6.4'
 $kibanaVersion = '5.3.1'
 $icingabeatVersion = '1.1.0'
 $icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
@@ -34,31 +41,32 @@ class { '::profiles::base::apache': }
 class { '::profiles::base::java': }
 ->
 class { '::profiles::icinga::icinga2':
-  features => [ "gelf", "influxdb", "graphite", "elasticsearch" ]
+  #features => [ "gelf", "influxdb", "graphite", "elasticsearch" ]
+  features => [ "gelf", "elasticsearch" ]
 }
 ->
 class { '::profiles::icinga::icingaweb2':
   icingaweb2_listen_ip => $hostOnlyIP,
   icingaweb2_fqdn => $hostOnlyFQDN,
   modules => {
-    "grafana" => {
-      "datasource"  => "graphite",
-      "listen_ip"   => $hostOnlyIP,
-      "listen_port" => $grafanaListenPort
-    },
-    "map" => {},
+#    "grafana" => {
+#      "datasource"  => "graphite",
+#      "listen_ip"   => $hostOnlyIP,
+#      "listen_port" => $grafanaListenPort
+#    },
+#    "map" => {},
     "elasticsearch" => {
       "listen_ip"   => $elasticsearchListenIP,
       "listen_port" => $elasticsearchListenPort
     }
   }
 }
-->
-class { '::profiles::dashing::icinga2': }
-->
-class { '::profiles::influxdb::server':
-}
-->
+#->
+#class { '::profiles::dashing::icinga2': }
+#->
+#class { '::profiles::influxdb::server':
+#}
+#->
 #class { '::profiles::grafana::server':
 #  listen_ip => $hostOnlyIP,
 #  listen_port => $grafanaListenPort,
@@ -66,21 +74,22 @@ class { '::profiles::influxdb::server':
 #  backend => "influxdb",
 #  backend_port => $influxdbListenPort
 #}
-class { '::profiles::graphite::server':
-  listen_ip   => $hostOnlyIP,
-  listen_port => $graphiteListenPort
-}
-->
-class { '::profiles::grafana::server':
-  listen_ip => $hostOnlyIP,
-  listen_port => $grafanaListenPort,
-  version => '4.6.2-1',
-  backend => "graphite",
-  backend_port => $graphiteListenPort
-}
+#class { '::profiles::graphite::server':
+#  listen_ip   => $hostOnlyIP,
+#  listen_port => $graphiteListenPort
+#}
+#->
+#class { '::profiles::grafana::server':
+#  listen_ip => $hostOnlyIP,
+#  listen_port => $grafanaListenPort,
+#  version => '4.6.2-1',
+#  backend => "graphite",
+#  backend_port => $graphiteListenPort
+#}
 ->
 class { '::profiles::elastic::elasticsearch':
   repo_version => $elasticRepoVersion,
+  elasticsearch_revision => $elasticsearchVersion
 }
 ->
 class { '::profiles::elastic::kibana':
@@ -97,6 +106,7 @@ class { '::profiles::elastic::httpproxy':
 }
 ->
 class { '::profiles::elastic::filebeat':
+  filebeat_major_version => '5'
 }
 ->
 class { '::profiles::elastic::icingabeat':
