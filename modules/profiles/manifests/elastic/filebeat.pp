@@ -1,19 +1,22 @@
 class profiles::elastic::filebeat (
+  $filebeat_major_version = '6',
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200
 ){
   class { 'filebeat':
+    major_version => $filebeat_major_version,
+    package_ensure => latest,
     outputs => {
       'elasticsearch' => {
         'hosts' => [
-          'http://${elasticsearch_host}:${elasticsearch_port}'
+          "http://${elasticsearch_host}:${elasticsearch_port}"
         ],
-        'index' => 'filebeat'
+#        'index' => 'filebeat'
       }
     },
     logging => {
       'level' => 'debug' #TODO reset after finishing the box
-    }
+    },
   }
   ->
   exec { 'filebeat-default-index-pattern':

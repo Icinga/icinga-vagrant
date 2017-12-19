@@ -1,5 +1,6 @@
 class profiles::elastic::elasticsearch (
   $repo_version = '5.x',
+  $elasticsearch_revision = '5.6.1',
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200
 ) {
@@ -14,6 +15,7 @@ class profiles::elastic::elasticsearch (
   class { 'elasticsearch':
     manage_repo  => true,
     repo_version => $repo_version,
+    version      => $elasticsearch_revision,
     jvm_options => [
       '-Xms256m',
       '-Xmx256m'

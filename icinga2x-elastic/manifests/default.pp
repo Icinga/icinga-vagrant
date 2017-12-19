@@ -6,7 +6,15 @@ $nodeName = 'icinga2-elastic' # TODO: Hiera.
 $hostOnlyIP = '192.168.33.7'
 $hostOnlyFQDN = 'icinga2x-elastic.vagrant.demo.icinga.com'
 
+# Elastic
+# TODO: Wait for 6.x support in Icingabeat
+#$elasticRepoVersion = '6.x'
+#$elasticsearchVersion = '6.0.0'
+#$kibanaVersion = '6.0.0'
+#$icingabeatVersion = '1.1.1'
+#$icingabeatDashboardsChecksum = '11f1f92e541f4256727137094d4d69efdd6f3862'
 $elasticRepoVersion = '5.x'
+$elasticsearchVersion = '5.6.4'
 $kibanaVersion = '5.3.1'
 $icingabeatVersion = '1.1.0'
 $icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
@@ -62,6 +70,7 @@ class { '::profiles::elastic::httpproxy':
 }
 ->
 class { '::profiles::elastic::filebeat':
+  filebeat_major_version => '5'
 }
 ->
 class { '::profiles::elastic::icingabeat':

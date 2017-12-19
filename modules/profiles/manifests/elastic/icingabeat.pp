@@ -1,7 +1,7 @@
 class profiles::elastic::icingabeat (
-  $icingabeat_version = '1.1.0',
-  $icingabeat_dashboards_checksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020',
-  $kibana_version = '5.3.1',
+  $icingabeat_version = '1.1.1',
+  $icingabeat_dashboards_checksum = '11f1f92e541f4256727137094d4d69efdd6f3862',
+  $kibana_version = '6.0.0',
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200
 ) {
