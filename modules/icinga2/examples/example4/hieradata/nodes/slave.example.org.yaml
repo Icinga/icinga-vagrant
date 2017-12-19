@@ -1,0 +1,4 @@
+---
+profile::icinga2::slave::slave_zone: dmz
+profile::icinga2::slave::parent_endpoints:
+  - 'master.example.org'

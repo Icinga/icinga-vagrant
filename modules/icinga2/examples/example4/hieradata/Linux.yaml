@@ -1,0 +1,9 @@
+---
+icinga2::host:
+  vars:
+    os: Linux
+    disks:
+      'disk /':
+        disk_partition: /
+  import:
+    - linux-host

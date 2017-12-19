@@ -1,0 +1,30 @@
+---
+icinga2::manage_repo: true
+icinga2::confd: false
+icinga2::features:
+  - 'api'
+  - 'mainlog'
+icinga2::constants:
+  NodeName: "%{::fqdn}"
+  ZoneName: 'satellite'
+icinga2::feature::api::endpoints:
+  'agent.local': {}
+  'satellite.local':
+    host: 192.168.33.57
+icinga2::feature::api::zones:
+  satellite:
+    endpoints:
+      - 'satellite.local'
+  agent:
+    endpoints:
+      - 'agent.local'
+    parent: 'satellite'
+profiles::icinga2::icinga_agent::os_independent_zones:
+  'global-templates':
+    global: true
+profiles::icinga2::icinga_agent::windows_zones:
+  'windows-commands':
+    global: true
+profiles::icinga2::icinga_agent::linux_zones:
+  'linux-commands':
+    global: true

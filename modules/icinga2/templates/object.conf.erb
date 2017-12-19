@@ -1,0 +1,31 @@
+
+<% if @apply.is_a?(String) %>apply <%= @object_type -%>
+<% if @prefix -%>
+<% if scope.lookupvar('icinga2::_constants').include?(@object_name) -%>
+ <%= @object_name -%>
+<% else -%>
+  "<%= @object_name %>" <% end -%>
+<% end -%>
+ for (<%= @apply %>) to <%= @apply_target -%> {
+<% else -%>
+<% if @apply %>apply<% else -%>
+<% if @template %>template<% else %>object<% end -%>
+<% end %> <%= @object_type -%>
+<% if scope.lookupvar('icinga2::_constants').include?(@object_name) -%>
+ <%= @object_name -%>
+<% else -%>
+ "<%= @object_name %>" <% end -%>
+<% if @apply && @apply_target %>to <%= @apply_target -%><% end -%> {
+<% end -%>
+<% @import.each do |i| -%>
+  import "<%= i %>"
+<% end -%>
+<% unless @import.empty? %><%= "\n" %><% end -%>
+<% if @apply.is_a?(String) and @apply =~ /^([A-Za-z_]+)\s+in\s+.+$/ -%>
+<%= scope.function_icinga2_attributes([@_attrs,2,@attrs_list,{$1=>{}}]) -%>
+<% elsif @apply.is_a?(String) and @apply =~ /^([A-Za-z_]+)\s+=>\s+([A-Za-z_]+)\s+in\s+.+$/ -%>
+<%= scope.function_icinga2_attributes([@_attrs,2,@attrs_list.concat([$1]),{$2=>{}}]) -%>
+<% else -%>
+<%= scope.function_icinga2_attributes([@_attrs,2,@attrs_list]) -%>
+<% end -%>
+}

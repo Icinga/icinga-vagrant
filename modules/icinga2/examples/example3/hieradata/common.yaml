@@ -1,0 +1,12 @@
+---
+classes:
+ - 'profile::base'
+
+icinga_vars:
+  os: Linux
+  cores: "%{::processorcount}"
+  virtual_machine: "%{::is_virtual}"
+  distro: "%{::operatingsystem}"
+  disks:
+    'disk /':
+      disk_partitions: '/'

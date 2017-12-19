@@ -1,0 +1,31 @@
+---
+icinga2::manage_repo: true
+icinga2::confd: true
+icinga2::constants:
+  NodeName: "%{::fqdn}"
+  ZoneName: 'master'
+icinga2::features:
+  - 'api'
+  - 'checker'
+  - 'mainlog'
+  - 'notification'
+  - 'statusdata'
+  - 'compatlog'
+  - 'command'
+  - 'idomysql'
+  - 'graphite'
+  # - 'debuglog'
+
+icinga2::feature::api::accept_commands: true
+icinga2::feature::api::endpoints: {}
+icinga2::feature::api::zones: {}
+
+icinga2::feature::graphite::host: '192.168.1.8'
+icinga2::feature::graphite::port: '2003'
+icinga2::feature::graphite::enable_send_tresholds: true
+icinga2::feature::graphite::enable_send_metadata: true
+
+icinga2::feature::idomysql::database: icinga2
+icinga2::feature::idomysql::user: icinga2
+icinga2::feature::idomysql::password: "*************"
+icinga2::feature::idomysql::import_schema: true
