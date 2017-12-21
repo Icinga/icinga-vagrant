@@ -83,7 +83,7 @@ class icinga2::feature::elasticsearch(
   $ensure                 = present,
   $host                   = '127.0.0.1',
   $port                   = 9200,
-  $inde                   = 'icinga2',
+  $index                  = 'icinga2',
   $username               = undef,
   $password               = undef,
   $enable_ssl             = false,
