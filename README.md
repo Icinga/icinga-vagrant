@@ -553,7 +553,7 @@ General:
   puppet-php               | >= 4.7.0<5.0.0 | modules/php               | https://github.com/voxpupuli/puppet-php.git
   puppet-selinux           | >= 4.7.1       | modules/selinux           | https://github.com/voxpupuli/puppet-selinux.git
   puppetlabs-java          | >= 4.7.0       | modules/java              | https://github.com/puppetlabs/puppetlabs-java.git
-  puppet-yum               | >= 4.6.1       | modules/yum               | [ ] NEW: https://github.com/voxpupuli/puppet-yum OLD: https://github.com/CERIT-SC/puppet-yum.git
+  puppet-yum               | >= 4.6.1       | modules/yum               | https://github.com/voxpupuli/puppet-yum
   puppet-archive           | >= 4.7.1       | modules/archive           | https://github.com/voxpupuli/puppet-archive.git
   puppet-vim               | >=4.0.0<5.0.0  | modules/vim               | https://github.com/saz/puppet-vim.git
   puppet-datacat           | Type for ES    | modules/datacat           | https://github.com/richardc/puppet-datacat.git
@@ -564,8 +564,8 @@ Specific projects:
   Name                     | Puppet Version | Path                      | Url
   -------------------------|----------------|---------------------------|-------------------------------
   puppet-elastic-stack     | >= 4.6.1       | modules/elastic\_stack    | https://github.com/elastic/puppet-elastic-stack
-  puppet-icinga2           | 4.x            | modules/icinga2           | [ ] TO BE ADDED
-  puppet-icingaweb2        | >= 4.7.0       | modules/icingaweb2        | [ ] TO BE ADDED
+  puppet-icinga2           | 4.x            | modules/icinga2           | https://github.com/Icinga/puppet-icinga2 (Patch for Elasticsearch)
+  puppet-icingaweb2        | >= 4.7.0       | modules/icingaweb2        | https://github.com/Icinga/puppet-icingaweb2 (Patch for icingaadmin user)
   puppet-graylog           | ???            | modules/graylog           | [ ] NEEDS v4 SUPPORT https://github.com/Graylog2/puppet-graylog.git
   puppet-elasticsearch     | >= 4.5.0       | modules/elasticsearch     | https://github.com/elasticsearch/puppet-elasticsearch.git
   puppet-nginx             | >= 4.7.0       | modules/nginx             | https://github.com/voxpupuli/puppet-nginx.git
@@ -573,9 +573,9 @@ Specific projects:
   puppet-kibana            | >= 4.5.0       | modules/kibana            | https://github.com/elastic/puppet-kibana.git
   puppet-filebeat          | >= 4.0.0       | modules/filebeat          | https://github.com/pcfens/puppet-filebeat.git
   puppetlabs-mongodb       | >= 4.7.1       | modules/mongodb           | https://github.com/puppetlabs/puppetlabs-mongodb.git
-  golja-influxdb           | >= 3.0.0<5.0.0 | modules/influxdb          | [ ] NEEDS TESTS https://github.com/n1tr0g/golja-influxdb.git
-  puppet-graphite          | >= 3.0.0<5.0.0 | modules/graphite          | [ ] NEEDS TESTS ON UPDATE https://github.com/echocat/puppet-graphite.git
-  puppet-grafana           | >= 4.7.1       | modules/grafana           | [ ] NEW https://github.com/voxpupuli/puppet-grafana OLD https://github.com/bfraser/puppet-grafana.git
+  golja-influxdb           | >= 3.0.0<5.0.0 | modules/influxdb          | https://github.com/n1tr0g/golja-influxdb.git
+  puppet-graphite          | >= 3.0.0<5.0.0 | modules/graphite          | https://github.com/echocat/puppet-graphite.git
+  puppet-grafana           | >= 4.7.1       | modules/grafana           | NEW https://github.com/voxpupuli/puppet-grafana
 
 
 ### Puppet Module Git Subtree <a id="contributing-puppet-module-git-subtree"></a>
