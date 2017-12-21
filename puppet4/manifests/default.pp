@@ -41,8 +41,12 @@ class { '::profiles::base::apache': }
 class { '::profiles::base::java': }
 ->
 class { '::profiles::icinga::icinga2':
-  #features => [ "gelf", "influxdb", "graphite", "elasticsearch" ]
-  features => [ "gelf", "elasticsearch" ]
+  features => {
+    "elasticsearch" => {
+      "listen_ip"   => $elasticsearchListenIP,
+      "listen_port" => $elasticsearchListenPort
+    }
+  }
 }
 ->
 class { '::profiles::icinga::icingaweb2':
