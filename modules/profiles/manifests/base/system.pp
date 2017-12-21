@@ -4,7 +4,21 @@ class profiles::base::system {
   class { 'epel': }
   ->
   # Icinga repository is required
-  class { 'icinga_rpm': } # TODO: Refactor the module
+  yumrepo { 'icinga-snapshot-builds':
+    baseurl  => "http://packages.icinga.com/epel/${::operatingsystemmajrelease}/release/",
+    descr    => 'ICINGA (snapshot builds for epel)',
+    enabled  => 1,
+    gpgcheck => 1,
+    gpgkey   => 'http://packages.icinga.com/icinga.key',
+  }
+  ->
+  yumrepo { 'icinga-stable-release':
+    baseurl  => "http://packages.icinga.com/epel/${::operatingsystemmajrelease}/release/",
+    descr    => 'ICINGA (stable release for epel)',
+    enabled  => 0,
+    gpgcheck => 1,
+    gpgkey   => 'http://packages.icinga.com/icinga.key',
+  }
   ->
   # Base packages
   package { [ 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion', 'screen', 'htop', 'unzip' ]:
