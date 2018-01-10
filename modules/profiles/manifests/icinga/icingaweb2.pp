@@ -91,7 +91,10 @@ class profiles::icinga::icingaweb2 (
   #  groups +> ['icingaweb2']
   #}
 
-
+  file { '/usr/local/bin/php':
+    ensure => link,
+    target => '/opt/rh/rh-php71/root/usr/bin/php',
+  } -> Class['php::composer::auto_update']
 
   package { [ 'scl-utils', 'centos-release-scl' ]:
     ensure => present,
