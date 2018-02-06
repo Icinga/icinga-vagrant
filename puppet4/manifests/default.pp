@@ -5,9 +5,18 @@
 $nodeName = 'icinga2-puppet4' # TODO: Hiera.
 $hostOnlyIP = '192.168.33.50'
 $hostOnlyFQDN = 'puppet4.vagrant.demo.icinga.com'
+
+$graphiteListenIP = $hostOnlyIP
 $graphiteListenPort = 8003
+$influxdbListenIP = $hostOnlyIP
 $influxdbListenPort = 8086
+$grafanaListenIP = $hostOnlyIP
 $grafanaListenPort = 8004
+$gelfListenIP = $hostOnlyIP
+$gelfListenPort = 12201
+$elasticsearchListenIP = 'localhost'
+$elasticsearchListenPort = '9200'
+
 
 # Elastic
 # TODO: Wait for 6.x support in Icingabeat
@@ -25,9 +34,6 @@ $icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
 # http://192.168.33.7:5601/app/kibana#/dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426
 $kibanaDefaultAppId = 'dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426'
 
-$elasticsearchListenIP = 'localhost'
-$elasticsearchListenPort = '9200'
-
 ####################################
 # Setup
 ####################################
@@ -42,10 +48,22 @@ class { '::profiles::base::java': }
 ->
 class { '::profiles::icinga::icinga2':
   features => {
-    "elasticsearch" => {
-      "listen_ip"   => $elasticsearchListenIP,
-      "listen_port" => $elasticsearchListenPort
-    }
+    "graphite" => {
+      "listen_ip"   => $graphiteListenIP,
+      "listen_port" => $graphiteListenPort
+    },
+    #"influxdb" => {
+    #  "listen_ip"   => $influxdbListenIP,
+    #  "listen_port" => $influxdbListenPort
+    #},
+    #"gelf" => {
+    #  "listen_ip"   => $gelfListenIP,
+    #  "listen_port" => $gelfListenPort
+    #}
+    #"elasticsearch" => {
+    #  "listen_ip"   => $elasticsearchListenIP,
+    #  "listen_port" => $elasticsearchListenPort
+    #},
   }
 }
 ->
@@ -59,11 +77,20 @@ class { '::profiles::icinga::icingaweb2':
 #      "listen_port" => $grafanaListenPort
 #    },
 #    "map" => {},
-    "elasticsearch" => {
-      "listen_ip"   => $elasticsearchListenIP,
-      "listen_port" => $elasticsearchListenPort
+#    "elasticsearch" => {
+#      "listen_ip"   => $elasticsearchListenIP,
+#      "listen_port" => $elasticsearchListenPort
+#    },
+    "graphite" => {
+      "listen_ip"   => $graphiteListenIP,
+      "listen_port" => $graphiteListenPort
     }
   }
+}
+->
+class { '::profiles::graphite::server':
+  listen_ip   => $graphiteListenIP,
+  listen_port => $graphiteListenPort
 }
 #->
 #class { '::profiles::dashing::icinga2': }
@@ -79,7 +106,7 @@ class { '::profiles::icinga::icingaweb2':
 #  backend_port => $influxdbListenPort
 #}
 #class { '::profiles::graphite::server':
-#  listen_ip   => $hostOnlyIP,
+#  listen_ip   => $graphiteListenIP,
 #  listen_port => $graphiteListenPort
 #}
 #->
@@ -90,34 +117,34 @@ class { '::profiles::icinga::icingaweb2':
 #  backend => "graphite",
 #  backend_port => $graphiteListenPort
 #}
-->
-class { '::profiles::elastic::elasticsearch':
-  repo_version => $elasticRepoVersion,
-  elasticsearch_revision => $elasticsearchVersion
-}
-->
-class { '::profiles::elastic::kibana':
-  repo_version => $elasticRepoVersion,
-  kibana_revision => "${kibanaVersion}-1",
-  kibana_host => '127.0.0.1',
-  kibana_port => 5601,
-  kibana_default_app_id => $kibanaDefaultAppId
-}
-->
-class { '::profiles::elastic::httpproxy':
-  listen_ip => $hostOnlyIP,
-  node_name => $nodeName
-}
-->
-class { '::profiles::elastic::filebeat':
-  filebeat_major_version => '5'
-}
-->
-class { '::profiles::elastic::icingabeat':
-  icingabeat_version => $icingabeatVersion,
-  icingabeat_dashboards_checksum => $icingabeatDashboardsChecksum,
-  kibana_version => $kibanaVersion
-}
+#->
+#class { '::profiles::elastic::elasticsearch':
+#  repo_version => $elasticRepoVersion,
+#  elasticsearch_revision => $elasticsearchVersion
+#}
+#->
+#class { '::profiles::elastic::kibana':
+#  repo_version => $elasticRepoVersion,
+#  kibana_revision => "${kibanaVersion}-1",
+#  kibana_host => '127.0.0.1',
+#  kibana_port => 5601,
+#  kibana_default_app_id => $kibanaDefaultAppId
+#}
+#->
+#class { '::profiles::elastic::httpproxy':
+#  listen_ip => $hostOnlyIP,
+#  node_name => $nodeName
+#}
+#->
+#class { '::profiles::elastic::filebeat':
+#  filebeat_major_version => '5'
+#}
+#->
+#class { '::profiles::elastic::icingabeat':
+#  icingabeat_version => $icingabeatVersion,
+#  icingabeat_dashboards_checksum => $icingabeatDashboardsChecksum,
+#  kibana_version => $kibanaVersion
+#}
 
 #->
 #class { '::profiles::graylog::elasticsearch':
