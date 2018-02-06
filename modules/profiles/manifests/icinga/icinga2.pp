@@ -13,12 +13,14 @@ class profiles::icinga::icinga2 (
     manage_repo => false,
     confd       => $confd,
     features    => $basic_features, # all other features are specifically invoked below.
+#    require     => Yumrepo['icinga-snapshot-builds']
+    require     => Class['::profiles::base::system']
   }
   ->
   package { $real_packages:
     ensure => 'latest',
   }
-
+  ->
   file { 'check_mysql_health':
     name => '/usr/lib64/nagios/plugins/check_mysql_health',
     owner => root,
@@ -54,6 +56,24 @@ class profiles::icinga::icinga2 (
   class { '::icinga2::pki::ca': }
 
   # Features
+  if (has_key($features, 'graphite')) {
+    $graphite = $features['graphite']
+
+    class { '::icinga2::feature::graphite':
+      host => $graphite['listen_ip'],
+      port => $graphite['listen_port'],
+    }
+  }
+  if (has_key($features, 'influxdb')) {
+    $influxdb = $features['influxdb']
+
+    class { '::icinga2::feature::influxdb':
+      host => $influxdb['listen_ip'],
+      port => $influxdb['listen_port'],
+      enable_send_metadata => true,
+      enable_send_thresholds => true
+    }
+  }
   if (has_key($features, 'elasticsearch')) {
     $elasticsearch = $features['elasticsearch']
 
@@ -63,11 +83,22 @@ class profiles::icinga::icinga2 (
       enable_send_perfdata => true
     }
   }
+  if (has_key($features, 'gelf')) {
+    $gelf = $features['gelf']
+
+    class { '::icinga2::feature::gelf':
+      host => $gelf['listen_ip'],
+      port => $gelf['listen_port'],
+      enable_send_perfdata => true
+    }
+  }
+
+  # other Icinga2 features are not supported by this profile.
 
   # Config
   file { '/etc/icinga2/demo':
     ensure  => directory,
-    tag     => icinga2::config::file
+    tag     => icinga2::config::file,
   }
 
   File {
