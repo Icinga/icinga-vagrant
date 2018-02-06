@@ -5,7 +5,7 @@ class profiles::base::system {
   ->
   # Icinga repository is required
   yumrepo { 'icinga-snapshot-builds':
-    baseurl  => "http://packages.icinga.com/epel/${::operatingsystemmajrelease}/release/",
+    baseurl  => "http://packages.icinga.com/epel/${::operatingsystemmajrelease}/snapshot/",
     descr    => 'ICINGA (snapshot builds for epel)',
     enabled  => 1,
     gpgcheck => 1,
