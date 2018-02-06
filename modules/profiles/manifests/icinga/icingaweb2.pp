@@ -279,6 +279,41 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  if ('graphite' in $modules) {
+    $graphite_listen_ip = $modules['graphite']['listen_ip']
+    $graphite_listen_port = $modules['graphite']['listen_port']
+
+    $graphite_module_conf_dir = "${conf_dir}/modules/graphite"
+
+    $graphite_instance_name = 'graphite'
+
+    $graphite_settings = {
+      'module-graphite-general' => {
+        'section_name'  => 'graphite',
+        'target'        => "${graphite_module_conf_dir}/config.ini",
+        'settings'      => {
+          'url'                  => "http://${graphite_listen_ip}:${graphite_listen_port}",
+        }
+      },
+      'module-graphite-ui' => {
+        'section_name'  => 'ui',
+        'target'        => "${graphite_module_conf_dir}/config.ini",
+        'settings'      => {
+          'default_time_range'      => '1',
+          'default_time_range_unit' => 'minutes',
+          'disable_no_graphs_found' => '0'
+        }
+      },
+    }
+
+    icingaweb2::module { 'graphite':
+      install_method => 'git',
+      git_repository => 'https://github.com/icinga/icingaweb2-module-graphite.git',
+      git_revision   => 'master',
+      settings       => $graphite_settings,
+    }
+  }
+
   if ('elasticsearch' in $modules) {
     $elasticsearch_listen_ip = $modules['elasticsearch']['listen_ip']
     $elasticsearch_listen_port = $modules['elasticsearch']['listen_port']
