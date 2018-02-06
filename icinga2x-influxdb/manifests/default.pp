@@ -3,9 +3,12 @@
 # Global configuration
 ####################################
 
+$nodeName = 'icinga2-influxdb' # TODO: Hiera.
 $hostOnlyIP = '192.168.33.8'
 $hostOnlyFQDN = 'icinga2x-influxdb.vagrant.demo.icinga.com'
+$grafanaListenIP = $hostOnlyIP
 $grafanaListenPort = 8004
+$influxdbListenIP = $hostOnlyIP
 $influxdbListenPort = 8086
 
 ####################################
@@ -19,7 +22,12 @@ class { '::profiles::base::mysql': }
 class { '::profiles::base::apache': }
 ->
 class { '::profiles::icinga::icinga2':
-  features => [ "influxdb" ]
+  features => {
+    "influxdb" => {
+      "listen_ip"   => $influxdbListenIP,
+      "listen_port" => $influxdbListenPort
+    }
+  }
 }
 ->
 class { '::profiles::icinga::icingaweb2':
