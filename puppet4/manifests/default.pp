@@ -12,10 +12,12 @@ $influxdbListenIP = $hostOnlyIP
 $influxdbListenPort = 8086
 $grafanaListenIP = $hostOnlyIP
 $grafanaListenPort = 8004
-$gelfListenIP = $hostOnlyIP
-$gelfListenPort = 12201
 $elasticsearchListenIP = 'localhost'
 $elasticsearchListenPort = '9200'
+$gelfListenIP = $hostOnlyIP
+$gelfListenPort = 12201
+$graylogListenIP = $hostOnlyIP
+$graylogListenPort = 9000
 
 
 # Elastic
@@ -48,18 +50,18 @@ class { '::profiles::base::java': }
 ->
 class { '::profiles::icinga::icinga2':
   features => {
-    "graphite" => {
-      "listen_ip"   => $graphiteListenIP,
-      "listen_port" => $graphiteListenPort
-    },
+    #"graphite" => {
+    #  "listen_ip"   => $graphiteListenIP,
+    #  "listen_port" => $graphiteListenPort
+    #},
     #"influxdb" => {
     #  "listen_ip"   => $influxdbListenIP,
     #  "listen_port" => $influxdbListenPort
     #},
-    #"gelf" => {
-    #  "listen_ip"   => $gelfListenIP,
-    #  "listen_port" => $gelfListenPort
-    #}
+    "gelf" => {
+      "listen_ip"   => $gelfListenIP,
+      "listen_port" => $gelfListenPort
+    }
     #"elasticsearch" => {
     #  "listen_ip"   => $elasticsearchListenIP,
     #  "listen_port" => $elasticsearchListenPort
@@ -81,17 +83,21 @@ class { '::profiles::icinga::icingaweb2':
 #      "listen_ip"   => $elasticsearchListenIP,
 #      "listen_port" => $elasticsearchListenPort
 #    },
-    "graphite" => {
-      "listen_ip"   => $graphiteListenIP,
-      "listen_port" => $graphiteListenPort
-    }
+#    "graphite" => {
+#      "listen_ip"   => $graphiteListenIP,
+#      "listen_port" => $graphiteListenPort
+#    },
+#    "graylog" => {
+#      "listen_ip"   => $graylogListenIP,
+#      "listen_port" => $graylogListenPort
+#    }
   }
 }
-->
-class { '::profiles::graphite::server':
-  listen_ip   => $graphiteListenIP,
-  listen_port => $graphiteListenPort
-}
+#->
+#class { '::profiles::graphite::server':
+#  listen_ip   => $graphiteListenIP,
+#  listen_port => $graphiteListenPort
+#}
 #->
 #class { '::profiles::dashing::icinga2': }
 #->
@@ -146,19 +152,20 @@ class { '::profiles::graphite::server':
 #  kibana_version => $kibanaVersion
 #}
 
-#->
-#class { '::profiles::graylog::elasticsearch':
-#  repo_version => '5.x',
-#}
-#->
-#class { '::profiles::graylog::mongodb': }
-#->
-#class { '::profiles::graylog::server':
-#  repo_version => '2.3',
-#  listen_ip => $hostOnlyIP
-#}
-#->
-#class { '::profiles::graylog::plugin': }
+->
+class { '::profiles::graylog::elasticsearch':
+  repo_version => '5.x',
+}
+->
+class { '::profiles::graylog::mongodb': }
+->
+class { '::profiles::graylog::server':
+  repo_version => '2.4',
+  listen_ip => $graylogListenIP,
+  listen_port => $graylogListenPort
+}
+->
+class { '::profiles::graylog::plugin': }
 #
 #
 #
