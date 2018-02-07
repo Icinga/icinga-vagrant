@@ -14,6 +14,8 @@ $grafanaListenIP = $hostOnlyIP
 $grafanaListenPort = 8004
 $elasticsearchListenIP = 'localhost'
 $elasticsearchListenPort = '9200'
+$kibanaListenIP = 'localhost'
+$kibanaListenPort = 5601
 $gelfListenIP = $hostOnlyIP
 $gelfListenPort = 12201
 $graylogListenIP = $hostOnlyIP
@@ -21,20 +23,13 @@ $graylogListenPort = 9000
 
 
 # Elastic
-# TODO: Wait for 6.x support in Icingabeat
-#$elasticRepoVersion = '6.x'
-#$elasticsearchVersion = '6.0.0'
-#$kibanaVersion = '6.0.0'
-#$icingabeatVersion = '1.1.1'
-#$icingabeatDashboardsChecksum = '11f1f92e541f4256727137094d4d69efdd6f3862'
-$elasticRepoVersion = '5.x'
-$elasticsearchVersion = '5.6.4'
-$kibanaVersion = '5.3.1'
-$icingabeatVersion = '1.1.0'
-$icingabeatDashboardsChecksum = '9c98cf4341cbcf6d4419258ebcc2121c3dede020'
+$elasticRepoVersion = '6.x'
+$elasticsearchVersion = '6.2.0'
+$kibanaVersion = '6.2.0'
+$icingabeatVersion = '6.1.1'
 # keep this in sync with the icingabeat dashboard ids!
-# http://192.168.33.7:5601/app/kibana#/dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426
-$kibanaDefaultAppId = 'dashboard/720f2f20-0979-11e7-a4dd-e96fa284b426'
+# http://192.168.33.7:5601/app/kibana#/dashboard/34e97340-e4ce-11e7-b4d1-8383451ae5a4
+$kibanaDefaultAppId = 'dashboard/34e97340-e4ce-11e7-b4d1-8383451ae5a4'
 
 ####################################
 # Setup
@@ -49,6 +44,7 @@ class { '::profiles::base::apache': }
 class { '::profiles::base::java': }
 ->
 class { '::profiles::icinga::icinga2':
+  node_name => $nodeName,
   features => {
     #"graphite" => {
     #  "listen_ip"   => $graphiteListenIP,
@@ -58,14 +54,14 @@ class { '::profiles::icinga::icinga2':
     #  "listen_ip"   => $influxdbListenIP,
     #  "listen_port" => $influxdbListenPort
     #},
-    "gelf" => {
-      "listen_ip"   => $gelfListenIP,
-      "listen_port" => $gelfListenPort
-    }
-    #"elasticsearch" => {
-    #  "listen_ip"   => $elasticsearchListenIP,
-    #  "listen_port" => $elasticsearchListenPort
-    #},
+    #"gelf" => {
+    #  "listen_ip"   => $gelfListenIP,
+    #  "listen_port" => $gelfListenPort
+    #}
+    "elasticsearch" => {
+      "listen_ip"   => $elasticsearchListenIP,
+      "listen_port" => $elasticsearchListenPort
+    },
   }
 }
 ->
@@ -79,10 +75,10 @@ class { '::profiles::icinga::icingaweb2':
 #      "listen_port" => $grafanaListenPort
 #    },
 #    "map" => {},
-#    "elasticsearch" => {
-#      "listen_ip"   => $elasticsearchListenIP,
-#      "listen_port" => $elasticsearchListenPort
-#    },
+    "elasticsearch" => {
+      "listen_ip"   => $elasticsearchListenIP,
+      "listen_port" => $elasticsearchListenPort
+    },
 #    "graphite" => {
 #      "listen_ip"   => $graphiteListenIP,
 #      "listen_port" => $graphiteListenPort
@@ -123,49 +119,52 @@ class { '::profiles::icinga::icingaweb2':
 #  backend => "graphite",
 #  backend_port => $graphiteListenPort
 #}
-#->
-#class { '::profiles::elastic::elasticsearch':
-#  repo_version => $elasticRepoVersion,
-#  elasticsearch_revision => $elasticsearchVersion
-#}
-#->
-#class { '::profiles::elastic::kibana':
-#  repo_version => $elasticRepoVersion,
-#  kibana_revision => "${kibanaVersion}-1",
-#  kibana_host => '127.0.0.1',
-#  kibana_port => 5601,
-#  kibana_default_app_id => $kibanaDefaultAppId
-#}
-#->
-#class { '::profiles::elastic::httpproxy':
-#  listen_ip => $hostOnlyIP,
-#  node_name => $nodeName
-#}
-#->
-#class { '::profiles::elastic::filebeat':
-#  filebeat_major_version => '5'
-#}
-#->
-#class { '::profiles::elastic::icingabeat':
-#  icingabeat_version => $icingabeatVersion,
-#  icingabeat_dashboards_checksum => $icingabeatDashboardsChecksum,
-#  kibana_version => $kibanaVersion
-#}
+->
+class { '::profiles::elastic::elasticsearch':
+  repo_version => $elasticRepoVersion,
+  elasticsearch_revision => $elasticsearchVersion
+}
+->
+class { '::profiles::elastic::kibana':
+  repo_version => $elasticRepoVersion,
+  kibana_revision => "${kibanaVersion}-1",
+  kibana_host => $kibanaListenIP,
+  kibana_port => $kibanaListenPort,
+  kibana_default_app_id => $kibanaDefaultAppId
+}
+->
+class { '::profiles::elastic::httpproxy':
+  listen_ip => $hostOnlyIP,
+  node_name => $nodeName
+}
+->
+class { '::profiles::elastic::filebeat':
+  filebeat_major_version => '6'
+}
+->
+class { '::profiles::elastic::icingabeat':
+  icingabeat_version => $icingabeatVersion,
+  kibana_version => $kibanaVersion,
+  elasticsearch_host => $elasticsearchListenIP,
+  elasticsearch_port => $elaticsearchListenPort,
+  kibana_host => $kibanaListenIP, # needed for dashboard provisioning
+  kibana_port => $kibanaListenPort,
+}
 
-->
-class { '::profiles::graylog::elasticsearch':
-  repo_version => '5.x',
-}
-->
-class { '::profiles::graylog::mongodb': }
-->
-class { '::profiles::graylog::server':
-  repo_version => '2.4',
-  listen_ip => $graylogListenIP,
-  listen_port => $graylogListenPort
-}
-->
-class { '::profiles::graylog::plugin': }
+#->
+#class { '::profiles::graylog::elasticsearch':
+#  repo_version => '5.x',
+#}
+#->
+#class { '::profiles::graylog::mongodb': }
+#->
+#class { '::profiles::graylog::server':
+#  repo_version => '2.4',
+#  listen_ip => $graylogListenIP,
+#  listen_port => $graylogListenPort
+#}
+#->
+#class { '::profiles::graylog::plugin': }
 #
 #
 #
