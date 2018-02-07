@@ -20,7 +20,7 @@ class profiles::elastic::icingabeat (
   service { 'icingabeat':
     ensure => running
   }
-
+  ->
   exec { 'http-conn-validator-kibana':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
     command => "/usr/local/bin/http-conn-validator \"http://$kibana_host:$kibana_port\"",
@@ -39,7 +39,8 @@ class profiles::elastic::icingabeat (
   ->
   exec { 'icingabeat-kibana-dashboards':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
-    command => '/usr/share/icingabeat/bin/icingabeat -c /etc/icingabeat/icingabeat.yml -path.home /usr/share/icingabeat -path.config /etc/icingabeat -path.data /var/lib/icingabeat -path.logs /var/log/icingabeat setup'
+    command => '/usr/share/icingabeat/bin/icingabeat -c /etc/icingabeat/icingabeat.yml -path.home /usr/share/icingabeat -path.config /etc/icingabeat -path.data /var/lib/icingabeat -path.logs /var/log/icingabeat setup',
+    require => Yum::Install['icingabeat']
   }
   ->
   exec { 'icingabeat-kibana-default-index-pattern':
