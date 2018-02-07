@@ -1,13 +1,14 @@
 class profiles::elastic::icingabeat (
-  $icingabeat_version = '1.1.1',
-  $icingabeat_dashboards_checksum = '11f1f92e541f4256727137094d4d69efdd6f3862',
+  $icingabeat_version = '6.1.1',
   $kibana_version = '6.0.0',
   $elasticsearch_host = '127.0.0.1',
-  $elasticsearch_port = 9200
+  $elasticsearch_port = 9200,
+  $kibana_host = '127.0.0.1',
+  $kibana_port = 5601
 ) {
   yum::install { 'icingabeat':
     ensure => present,
-    source => "https://github.com/Icinga/icingabeat/releases/download/v${icingabeat_version}/icingabeat-${icingabeat_version}-x86_64.rpm"
+    source => "https://github.com/Icinga/icingabeat/releases/download/v${icingabeat_version}/icingabeat-${icingabeat_version}.x86_64.rpm"
   }
   ->
   file { '/etc/icingabeat/icingabeat.yml':
@@ -19,14 +20,18 @@ class profiles::elastic::icingabeat (
   service { 'icingabeat':
     ensure => running
   }
+
+  exec { 'http-conn-validator-kibana':
+    path => '/bin:/usr/bin:/sbin:/usr/sbin',
+    command => "/usr/local/bin/http-conn-validator \"http://$kibana_host:$kibana_port\"",
+    timeout => 1800
+  }
   ->
   archive { '/tmp/icingabeat-dashboards.zip':
     ensure => present,
     extract => true,
     extract_path => '/tmp',
     source => "https://github.com/Icinga/icingabeat/releases/download/v${icingabeat_version}/icingabeat-dashboards-${icingabeat_version}.zip",
-    checksum => "${icingabeat_dashboards_checksum}",
-    checksum_type => 'sha1',
     creates => "/tmp/icingabeat-dashboards-${icingabeat_version}",
     cleanup => true,
     require => Package['unzip']
@@ -34,7 +39,7 @@ class profiles::elastic::icingabeat (
   ->
   exec { 'icingabeat-kibana-dashboards':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
-    command => "/usr/share/icingabeat/scripts/import_dashboards -dir /tmp/icingabeat-dashboards-${icingabeat_version} -es http://${elasticsearch_host}:${elasticsearch_port}"
+    command => '/usr/share/icingabeat/bin/icingabeat -c /etc/icingabeat/icingabeat.yml -path.home /usr/share/icingabeat -path.config /etc/icingabeat -path.data /var/lib/icingabeat -path.logs /var/log/icingabeat setup'
   }
   ->
   exec { 'icingabeat-kibana-default-index-pattern':
