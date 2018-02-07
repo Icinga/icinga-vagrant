@@ -1,7 +1,8 @@
 class profiles::icinga::icinga2 (
   $features = {},
   $packages = [],
-  $confd = 'demo'
+  $confd = 'demo',
+  $node_name = 'icinga2',
 ){
   # Always initialize the main features required
   $basic_features = [ 'checker', 'notification', 'mainlog' ]
@@ -13,6 +14,9 @@ class profiles::icinga::icinga2 (
     manage_repo => false,
     confd       => $confd,
     features    => $basic_features, # all other features are specifically invoked below.
+    constants   => {
+      'NodeName' => $node_name
+    },
 #    require     => Yumrepo['icinga-snapshot-builds']
     require     => Class['::profiles::base::system']
   }
