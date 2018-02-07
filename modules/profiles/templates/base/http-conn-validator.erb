@@ -1,0 +1,19 @@
+#!/bin/bash
+
+URL=$1
+TIMEOUT=30
+
+START=$(date +%s)
+
+# wait until server is started
+echo -e "Checking whether server is listening at $URL"
+until $(curl --output /dev/null --silent $URL); do
+  NOW=$(date +%s)
+  REAL_TIMEOUT=$(( START + TIMEOUT ))
+  if [[ "$NOW" -gt "$REAL_TIMEOUT" ]]; then
+    echo "Cannot reach server at $URL. Timeout reached."
+    exit 1
+  fi
+  printf '.'
+  sleep 1
+done

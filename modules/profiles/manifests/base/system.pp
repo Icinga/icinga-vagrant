@@ -54,4 +54,12 @@ class profiles::base::system {
     subscribe   => File['/etc/profile.d/env.sh'],
     refreshonly => true
   }
+  ->
+  # This can be used to wait for a given URL parameter, e.g. Kibana or Icinga 2 API
+  file { '/usr/local/bin/http-conn-validator':
+    owner => root,
+    group => root,
+    mode  => '0755',
+    content => template("profiles/base/http-conn-validator.erb")
+  }
 }
