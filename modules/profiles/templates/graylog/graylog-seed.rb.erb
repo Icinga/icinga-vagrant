@@ -6,7 +6,6 @@
 require 'json'
 require 'uri'
 require 'net/http'
-require 'facter'
 
 $stdout.sync = true
 
@@ -120,9 +119,7 @@ end
 
 ## MAIN
 
-#ipaddress = Facter.fact(:ipaddress).value # TODO: Use Hiera
-ipaddress = '192.168.33.6'
-client = HTTPClient.new("http://admin:admin@#{ipaddress}:9000/api/")
+client = HTTPClient.new("http://admin:admin@<%= @listen_ip-%>:<%= @listen_port-%>/api/")
 server = Graylog2Server.new(client)
 
 # Wait until the Graylog2 server is reachable.

@@ -14,12 +14,11 @@ class profiles::graylog::elasticsearch (
   class { 'elasticsearch':
     manage_repo  => true,
     repo_version => $repo_version,
-    java_install => false,
+    version      => $elasticsearch_revision,
     jvm_options => [
       '-Xms256m',
       '-Xmx256m'
     ],
-    require => Class['java']
   }
   ->
   elasticsearch::instance { 'graylog-es':
