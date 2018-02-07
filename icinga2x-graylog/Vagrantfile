@@ -112,9 +112,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # provisioner: post script
       node_config.vm.provision :shell, :path => "../scripts/shell_provisioner_post.sh", run: "always"
 
-      #Graylog specific modification
-      node_config.vm.provision :shell, :path => "scripts/graylog2-seed.rb"
-
       # print a friendly message
       node_config.vm.provision "shell", inline: <<-SHELL
         echo "Finished installing the Vagrant box '#{name}'."
