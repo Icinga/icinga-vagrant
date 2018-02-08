@@ -1,6 +1,6 @@
 {
   "name": "dwerder-graphite",
-  "version": "7.2.0",
+  "version": "7.3.0",
   "source": "https://github.com/echocat/puppet-graphite.git",
   "author": "Daniel Werdermann",
   "license": "Apache-2.0",
@@ -43,7 +43,8 @@
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
         "7",
-        "8"
+        "8",
+        "9"
       ]
     },
     {

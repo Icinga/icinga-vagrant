@@ -230,13 +230,24 @@ DATABASES = {
 #REMOTE_STORE_FIND_TIMEOUT = 2.5  # Timeout for metric find requests
 #REMOTE_STORE_RETRY_DELAY = 60    # Time before retrying a failed remote webapp
 #REMOTE_FIND_CACHE_DURATION = 300 # Time to cache remote metric find results
+
 <% else %>
 CLUSTER_SERVERS = ['<%= scope.lookupvar('graphite::gr_cluster_servers').join("','") %>']
 
+# Remote cluster settings config names changed in Graphite 1.0.
+# See https://github.com/echocat/puppet-graphite/pull/356 for more info
+<% if scope.lookupvar('graphite::version_1') >= 0 %>
+REMOTE_FETCH_TIMEOUT = <%= scope.lookupvar('graphite::gr_cluster_fetch_timeout') %>
+REMOTE_FIND_TIMEOUT = <%= scope.lookupvar('graphite::gr_cluster_find_timeout') %>
+REMOTE_RETRY_DELAY = <%= scope.lookupvar('graphite::gr_cluster_retry_delay') %>
+FIND_CACHE_DURATION = <%= scope.lookupvar('graphite::gr_cluster_cache_duration') %>
+<% else %>
 REMOTE_STORE_FETCH_TIMEOUT = <%= scope.lookupvar('graphite::gr_cluster_fetch_timeout') %>
 REMOTE_STORE_FIND_TIMEOUT = <%= scope.lookupvar('graphite::gr_cluster_find_timeout') %>
 REMOTE_STORE_RETRY_DELAY = <%= scope.lookupvar('graphite::gr_cluster_retry_delay') %>
 REMOTE_FIND_CACHE_DURATION = <%= scope.lookupvar('graphite::gr_cluster_cache_duration') %>
+<% end %>
+
 <% end %>
 
 ## Prefetch cache
@@ -284,6 +295,21 @@ CARBONLINK_TIMEOUT = <%= scope.lookupvar('graphite::gr_carbonlink_hosts_timeout'
 #CARBONLINK_QUERY_BULK = False
 <% unless [:undef, nil].include? scope.lookupvar('graphite::gr_carbonlink_query_bulk') -%>
 CARBONLINK_QUERY_BULK = <%= scope.lookupvar('graphite::gr_carbonlink_query_bulk') %>
+<% end -%>
+
+<%- if scope.lookupvar('graphite::gr_graphite_ver') >= '0.9.16' -%>
+# Type of metric hashing function.
+# The default `carbon_ch` is Graphite's traditional consistent-hashing implementation.
+# Alternatively, you can use `fnv1a_ch`, which supports the Fowler-Noll-Vo hash
+# function (FNV-1a) hash implementation offered by the carbon-c-relay project
+# https://github.com/grobian/carbon-c-relay
+#
+# Supported values: carbon_ch, fnv1a_ch
+#
+#CARBONLINK_HASHING_TYPE = 'carbon_ch'
+<% unless [:undef, nil].include? scope.lookupvar('graphite::gr_carbonlink_hashing_type') -%>
+CARBONLINK_HASHING_TYPE = '<%= scope.lookupvar('graphite::gr_carbonlink_hashing_type') %>'
+<% end -%>
 <% end -%>
 
 #####################################

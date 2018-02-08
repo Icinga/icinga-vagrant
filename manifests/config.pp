@@ -98,7 +98,8 @@ class graphite::config inherits graphite::params {
 
   # first init of user db for graphite
   exec { 'Initial django db creation':
-    command     => "${::graphite::gr_python_binary} manage.py syncdb --noinput",
+    command     => $::graphite::gr_django_init_command,
+    provider    => $::graphite::gr_django_init_provider,
     cwd         => $graphite_web_managepy_location,
     refreshonly => true,
     require     => $syncdb_require,
