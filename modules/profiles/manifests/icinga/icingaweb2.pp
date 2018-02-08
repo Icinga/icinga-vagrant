@@ -1,6 +1,9 @@
 class profiles::icinga::icingaweb2 (
   $icingaweb2_listen_ip = '192.168.33.5',
   $icingaweb2_fqdn = 'icingaweb2.vagrant-demo.icinga.com',
+  $node_name = 'icinga2',
+  $api_username = 'root',
+  $api_password = 'icinga',
   $modules = {}
 ) {
   apache::vhost { "${icingaweb2_fqdn}-http":
@@ -117,15 +120,15 @@ class profiles::icinga::icingaweb2 (
   }
   ->
   class { '::icingaweb2::module::monitoring':
-    ido_host           => 'localhost', # TODO: Params.
+    ido_host           => 'localhost',
     ido_db_name        => 'icinga',
     ido_db_username    => 'icinga',
     ido_db_password    => 'icinga',
     commandtransports  => {
       icinga2 => {
-        transport => 'api',
-        username  => 'icingaweb2', # TODO: Params.
-        password  => 'icingaweb2apitransport'
+        transport => 'api', # Use full-blown root, not best practice.
+        username  => $api_username,
+        password  => $api_password
       }
     }
   }
@@ -137,6 +140,40 @@ class profiles::icinga::icingaweb2 (
   $conf_dir        = $::icingaweb2::params::conf_dir
 
   # Module handling
+  if ('director' in $modules) {
+    $director_git_revision = $modules['director']['git_revision']
+
+    mysql::db { 'director':
+      user      => 'director',
+      password  => 'director',
+      host      => 'localhost',
+      charset   => 'utf8',
+      grant     => [ 'ALL' ]
+    }
+
+    # wait until Icinga 2 and the REST API is fully available.
+    exec { 'http-conn-validator-icinga-api':
+      path => '/bin:/usr/bin:/sbin:/usr/sbin',
+      command => "/usr/local/bin/http-conn-validator \"https://$api_username:$api_password@localhost:5665/v1\"",
+      timeout => 1800,
+      require => Class['icinga2::service']
+    }
+    ->
+    class {'icingaweb2::module::director':
+      git_revision  => $director_git_revision,
+      db_host       => 'localhost',
+      db_name       => 'director',
+      db_username   => 'director',
+      db_password   => 'director',
+      import_schema => true,
+      kickstart     => true,
+      endpoint      => $node_name,
+      api_username  => $api_username,
+      api_password  => $api_password,
+      require       => Mysql::Db['director']
+    }
+  }
+
   if ('map' in $modules) {
     $map_module_conf_dir = "${conf_dir}/modules/map"
 
