@@ -221,13 +221,6 @@ class profiles::icinga::icingaweb2 (
       git_revision   => 'master'
     }
     ->
-    file { "${businessprocess_module_conf_dir}":
-      ensure => directory,
-      owner  => root,
-      group  => icingaweb2,
-      mode => '2770'
-    }
-    ->
     file { "${businessprocess_module_conf_dir}/processes":
       ensure => directory,
       owner  => root,
@@ -251,7 +244,7 @@ class profiles::icinga::icingaweb2 (
       content => template("profiles/icinga/icingaweb2/modules/businessprocess/processes/web.conf.erb")
     }
     ->
-    file { ""${businessprocess_module_conf_dir}/processes/mysql.conf":
+    file { "${businessprocess_module_conf_dir}/processes/mysql.conf":
       ensure => present,
       owner  => root,
       group  => icingaweb2,
