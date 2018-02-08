@@ -1,3 +1,17 @@
+## 2018-02-01 - 7.3.0 (Feature release)
+
+#### Features:
+
+- Add support for Debian 9 (stretch)
+- Add support for graphite 1.x
+- Add `gr_carbonlink_hashing_type` (since graphite 0.9.16+)
+- Add `gr_django_init_provider`
+- Add `gr_django_init_command`
+
+#### Bugfixes:
+
+- Support renamed parameters in local_settings.py for graphite 1.x+
+
 ## 2017-08-01 - 7.2.0 (Feature release)
 
 #### Features:

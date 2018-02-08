@@ -1,6 +1,4 @@
-Version: Apache 2.0
-
-echocat puppet-graphite, Copyright (c) 2011-2014 echocat
+Copyright 2011 echocat
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

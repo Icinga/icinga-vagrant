@@ -322,6 +322,9 @@
 # [*gr_carbonlink_query_bulk*]
 #   Boolean. 0.9.13 function. Using 'query-bulk' queries for carbon.
 #   Default: false
+# [*gr_carbonlink_hashing_type*]
+#   String. 0.9.16 function. Defining 'consistent-hashing' type.
+#   Default: carbon_ch
 # [*gr_cluster_fetch_timeout*]
 #   Timeout to fetch series data.   Default = 6
 # [*gr_cluster_find_timeout*]
@@ -437,6 +440,12 @@
 # [*wsgi_inactivity-timeout*]
 #   WSGI inactivity-timeout in seconds.
 #   Default is 120
+# [*gr_django_init_provider*]
+#   Provider for the Django DB initialization exec.
+#   Default: 'posix'
+# [*gr_django_init_command]
+#   Command to use for the Django DB initialization exec.
+#   default: "${::graphite::params::python_binary} manage.py syncdb --noinput"
 # [*gr_django_tagging_pkg*]
 #   String. The name of the django tagging package to install
 #   Default: django-tagging
@@ -732,6 +741,8 @@ class graphite (
   $wsgi_processes                         = 5,
   $wsgi_threads                           = 5,
   $wsgi_inactivity_timeout                = 120,
+  $gr_django_init_provider                = $::graphite::params::django_init_provider,
+  $gr_django_init_command                 = "${::graphite::params::python_binary} manage.py syncdb --noinput",
   $gr_django_tagging_pkg                  = $::graphite::params::django_tagging_pkg,
   $gr_django_tagging_ver                  = $::graphite::params::django_tagging_ver,
   $gr_django_tagging_source               = $::graphite::params::django_tagging_source,
@@ -761,6 +772,7 @@ class graphite (
   $gr_disable_webapp_cache                = false,
   $gr_enable_logrotation                  = true,
   $gr_carbonlink_query_bulk               = undef,
+  $gr_carbonlink_hashing_type             = undef,
   $gr_carbonlink_hosts_timeout            = '1.0',
   $gr_rendering_hosts                     = undef,
   $gr_rendering_hosts_timeout             = '1.0',
@@ -805,6 +817,9 @@ class graphite (
   $graphiteweb_webapp_dir_REAL      = pick($gr_graphiteweb_webapp_dir, "${base_dir_REAL}/webapp")
   $graphiteweb_storage_dir_REAL     = $gr_graphiteweb_storage_dir
   $graphiteweb_install_lib_dir_REAL = pick($gr_graphiteweb_install_lib_dir, "${graphiteweb_webapp_dir_REAL}/graphite")
+
+  # Check for Graphite version 1 and above
+  $version_1 = versioncmp($gr_graphite_ver, '1.0')
 
   # The anchor resources allow the end user to establish relationships
   # to the "main" class and preserve the relationship to the

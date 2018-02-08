@@ -737,6 +737,10 @@ Default is undef (array). Array of webbapp hosts. eg.: ['10.0.2.2:80', '10.0.2.3
 
 Default is undef (array). Array of carbonlink hosts. eg.: ['10.0.2.2:80', '10.0.2.3:80']
 
+##### `gr_carbonlink_hashing_type`
+
+Default is undef (string). Defines consistent-hashing type for 0.9.16+, e.g.: 'carbon_ch'
+
 ##### `gr_cluster_fetch_timeout`
 
 Default is 6. Timeout to fetch series data.
