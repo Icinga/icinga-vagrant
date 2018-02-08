@@ -23,6 +23,7 @@ class { '::profiles::base::apache': }
 class { '::profiles::base::java': }
 ->
 class { '::profiles::icinga::icinga2':
+  node_name => $nodeName,
   features => {
     "gelf" => {
       "listen_ip"   => $gelfListenIP,
@@ -34,6 +35,7 @@ class { '::profiles::icinga::icinga2':
 class { '::profiles::icinga::icingaweb2':
   icingaweb2_listen_ip => $hostOnlyIP,
   icingaweb2_fqdn => $hostOnlyFQDN,
+  node_name => $nodeName,
   modules => {
 #    "graylog" => {
 #      "listen_ip"   => $graylogListenIP,

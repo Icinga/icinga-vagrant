@@ -22,6 +22,7 @@ class { '::profiles::base::mysql': }
 class { '::profiles::base::apache': }
 ->
 class { '::profiles::icinga::icinga2':
+  node_name => $nodeName,
   features => {
     "influxdb" => {
       "listen_ip"   => $influxdbListenIP,
@@ -33,6 +34,7 @@ class { '::profiles::icinga::icinga2':
 class { '::profiles::icinga::icingaweb2':
   icingaweb2_listen_ip => $hostOnlyIP,
   icingaweb2_fqdn => $hostOnlyFQDN,
+  node_name => $nodeName,
   modules => {
     "grafana" => {
       "datasource"  => "influxdb",

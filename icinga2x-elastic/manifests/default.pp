@@ -45,6 +45,7 @@ class { '::profiles::icinga::icinga2':
 class { '::profiles::icinga::icingaweb2':
   icingaweb2_listen_ip => $hostOnlyIP,
   icingaweb2_fqdn => $hostOnlyFQDN,
+  node_name => $nodeName,
   modules => {
     "elasticsearch" => {
       "listen_ip"   => $elasticsearchListenIP,
