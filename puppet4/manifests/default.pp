@@ -99,8 +99,8 @@ class { '::profiles::base::java': }
 #}
 #->
 class { '::profiles::graphite::server':
-  listen_ip   => $graphiteListenIP,
-  listen_port => $graphiteListenPort
+  listen_ip   => $graphiteWebListenIP,
+  listen_port => $graphiteWebListenPort
 }
 #->
 #class { '::profiles::dashing::icinga2': }
