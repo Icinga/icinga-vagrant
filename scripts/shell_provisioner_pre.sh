@@ -45,7 +45,7 @@ if [ `getenforce` = 'Enforcing' ]; then
     setenforce 0
 fi
 
-if grep -qP "^SELINUX=enforcing" /etc/selinux/config; then
+if grep -qP "^SELINUX=enforcing" /etc/sysconfig/selinux; then
     echo "Disabling selinux after reboot"
-    sed -i 's/^\\(SELINUX=\\)enforcing/\\1disabled/' /etc/selinux/config
+    sed -i 's/^\\(SELINUX=\\)enforcing/\\1disabled/' /etc/sysconfig/selinux
 fi

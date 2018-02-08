@@ -1,5 +1,9 @@
 # This profile must be run before all others
 class profiles::base::system {
+  class { selinux:
+    mode => 'disabled',
+  }
+  ->
   # EPEL repository is needed everywhere
   class { 'epel': }
   ->
