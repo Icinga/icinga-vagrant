@@ -21,7 +21,7 @@ class profiles::base::system {
   }
   ->
   # Base packages
-  package { [ 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion', 'screen', 'htop', 'unzip' ]:
+  package { [ 'mailx', 'tree', 'gdb', 'git', 'bash-completion', 'screen', 'htop', 'unzip' ]:
     ensure => 'installed',
   }
   ->
