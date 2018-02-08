@@ -558,6 +558,7 @@ General:
   puppet-vim               | >=4.0.0<5.0.0    | modules/vim               | https://github.com/saz/puppet-vim.git
   puppet-datacat           | Type for ES      | modules/datacat           | https://github.com/richardc/puppet-datacat.git
   puppet-inifile           | >= 4.7.0         | modules/inifile           | https://github.com/puppetlabs/puppetlabs-inifile.git
+  puppet-timezone          | >= 4.0.0         | modules/timezone          | https://github.com/saz/puppet-timezone.git
 
 Specific projects:
 

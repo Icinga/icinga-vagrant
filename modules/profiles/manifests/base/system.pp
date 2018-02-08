@@ -1,5 +1,9 @@
 # This profile must be run before all others
 class profiles::base::system {
+  class { 'timezone':
+     timezone => 'Europe/Berlin', #keep using the same as PHP
+  }
+  ->
   class { selinux:
     mode => 'disabled',
   }
