@@ -1,5 +1,5 @@
 class profiles::grafana::server (
-  $version = '4.2.0-1',
+  $version = '4.6.3-1',
   $listen_ip = '192.168.33.5',
   $listen_port = 8004,
   $backend = 'graphite',
