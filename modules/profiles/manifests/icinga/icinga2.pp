@@ -3,6 +3,20 @@ class profiles::icinga::icinga2 (
   $packages = [],
   $confd = 'demo',
   $node_name = 'icinga2',
+  $api_users = {
+    'root' => {
+      password => 'icinga',
+      permissions => [ "*" ]
+    },
+    'dashing' => {
+      password => 'icinga2ondashingr0xx',
+      permissions => [ "status/query", "objects/query/*" ]
+    },
+    'icingaweb2' => {
+     password => 'icingaweb2apitransport',
+     permissions => [ "status/query", "actions/*", "objects/modify/*", "objects/query/*" ]
+    }
+  }
 ){
   # Always initialize the main features required
   $basic_features = [ 'checker', 'notification', 'mainlog' ]
@@ -99,6 +113,15 @@ class profiles::icinga::icinga2 (
 
   # other Icinga2 features are not supported by this profile.
 
+  $api_users.each |$name, $attrs| {
+     icinga2::object::apiuser { "$name":
+       ensure => present,
+       password => $attrs['password'],
+       permissions => $attrs['permissions'],
+       target => '/etc/icinga2/demo/api-users.conf'
+     }
+  }
+
   # Config
   file { '/etc/icinga2/demo':
     ensure  => directory,
@@ -112,14 +135,6 @@ class profiles::icinga::icinga2 (
   }
 
   # TODO: Split demo based on parameters; standalone vs cluster
-  file { '/etc/icinga2/demo/api-users.conf':
-    ensure  => present,
-    mode    => '0644',
-    content => template("profiles/icinga/icinga2/config/demo/api-users.conf.erb"),
-    tag     => icinga2::config::file,
-    require => File['/etc/icinga2/demo']
-  }
-  ->
   file { '/etc/icinga2/demo/many.conf':
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/many.conf.erb"),
