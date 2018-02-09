@@ -8,13 +8,13 @@
 # load the overridden settings.
 
 nodes = {
-  'icinga2a' => {
+  'icinga2-master1' => {
     :box_virtualbox => 'bento/centos-7.4',
     :box_parallels  => 'bento/centos-7.4',
     :box_libvirt    => 'centos/7',
     :mac            => '020027001000',
     :net            => 'cluster.local',
-    :hostonly       => '192.168.33.10',
+    :hostonly       => '192.168.33.101',
     :memory         => '1024',
     :cpus           => '2',
     :forwarded	    => {
@@ -23,13 +23,13 @@ nodes = {
       '22'  => '50810'
     }
   },
-  'icinga2b' => {
+  'icinga2-satellite1' => {
     :box_virtualbox => 'bento/centos-7.4',
     :box_parallels  => 'bento/centos-7.4',
     :box_libvirt    => 'centos/7',
     :mac            => '020027002000',
     :net            => 'cluster.local',
-    :hostonly       => '192.168.33.20',
+    :hostonly       => '192.168.33.102',
     :memory         => '1024',
     :cpus           => '2',
     :forwarded	    => {
