@@ -47,39 +47,39 @@ class { '::profiles::base::apache': }
 ->
 class { '::profiles::base::java': }
 ->
-#class { '::profiles::icinga::icinga2':
-#  node_name => $nodeName,
-#  features => {
-#    #"graphite" => {
-#    #  "listen_ip"   => $carbonListenIP,
-#    #  "listen_port" => $carbonListenPort
-#    #},
-#    #"influxdb" => {
-#    #  "listen_ip"   => $influxdbListenIP,
-#    #  "listen_port" => $influxdbListenPort
-#    #},
-#    #"gelf" => {
-#    #  "listen_ip"   => $gelfListenIP,
-#    #  "listen_port" => $gelfListenPort
-#    #}
-#    "elasticsearch" => {
-#      "listen_ip"   => $elasticsearchListenIP,
-#      "listen_port" => $elasticsearchListenPort
+class { '::profiles::icinga::icinga2':
+  node_name => $nodeName,
+  features => {
+    #"graphite" => {
+    #  "listen_ip"   => $carbonListenIP,
+    #  "listen_port" => $carbonListenPort
+    #},
+    #"influxdb" => {
+    #  "listen_ip"   => $influxdbListenIP,
+    #  "listen_port" => $influxdbListenPort
+    #},
+    "gelf" => {
+      "listen_ip"   => $gelfListenIP,
+      "listen_port" => $gelfListenPort
+    }
+    #"elasticsearch" => {
+    #  "listen_ip"   => $elasticsearchListenIP,
+    #  "listen_port" => $elasticsearchListenPort
+    #},
+  }
+}
+->
+class { '::profiles::icinga::icingaweb2':
+  icingaweb2_listen_ip => $hostOnlyIP,
+  icingaweb2_fqdn => $hostOnlyFQDN,
+  node_name => $nodeName,
+  modules => {
+#    "grafana" => {
+#      "datasource"  => "graphite",
+#      "listen_ip"   => $grafanaListenIP,
+#      "listen_port" => $grafanaListenPort
 #    },
-#  }
-#}
-#->
-#class { '::profiles::icinga::icingaweb2':
-#  icingaweb2_listen_ip => $hostOnlyIP,
-#  icingaweb2_fqdn => $hostOnlyFQDN,
-#  node_name => $nodeName,
-#  modules => {
-##    "grafana" => {
-##      "datasource"  => "graphite",
-##      "listen_ip"   => $grafanaListenIP,
-##      "listen_port" => $grafanaListenPort
-##    },
-##    "map" => {},
+#    "map" => {},
 #    "director" => {
 #      "git_revision" => $directorVersion
 #    },
@@ -87,21 +87,21 @@ class { '::profiles::base::java': }
 #      "listen_ip"   => $elasticsearchListenIP,
 #      "listen_port" => $elasticsearchListenPort
 #    },
-##    "graphite" => {
-##      "listen_ip"   => $graphiteWebListenIP,
-##      "listen_port" => $graphiteWebListenPort
-##    },
-##    "graylog" => {
-##      "listen_ip"   => $graylogListenIP,
-##      "listen_port" => $graylogListenPort
-##    }
-#  }
-#}
-#->
-class { '::profiles::graphite::server':
-  listen_ip   => $graphiteWebListenIP,
-  listen_port => $graphiteWebListenPort
+#    "graphite" => {
+#      "listen_ip"   => $graphiteWebListenIP,
+#      "listen_port" => $graphiteWebListenPort
+#    },
+    "graylog" => {
+      "listen_ip"   => $graylogListenIP,
+      "listen_port" => $graylogListenPort
+    }
+  }
 }
+#->
+#class { '::profiles::graphite::server':
+#  listen_ip   => $graphiteWebListenIP,
+#  listen_port => $graphiteWebListenPort
+#}
 #->
 #class { '::profiles::dashing::icinga2': }
 #->
@@ -159,20 +159,20 @@ class { '::profiles::graphite::server':
 #  kibana_port => $kibanaListenPort,
 #}
 
-#->
-#class { '::profiles::graylog::elasticsearch':
-#  repo_version => '5.x',
-#}
-#->
-#class { '::profiles::graylog::mongodb': }
-#->
-#class { '::profiles::graylog::server':
-#  repo_version => '2.4',
-#  listen_ip => $graylogListenIP,
-#  listen_port => $graylogListenPort
-#}
-#->
-#class { '::profiles::graylog::plugin': }
+->
+class { '::profiles::graylog::elasticsearch':
+  repo_version => '5.x',
+}
+->
+class { '::profiles::graylog::mongodb': }
+->
+class { '::profiles::graylog::server':
+  repo_version => '2.4',
+  listen_ip => $graylogListenIP,
+  listen_port => $graylogListenPort
+}
+->
+class { '::profiles::graylog::plugin': }
 #
 #
 #
