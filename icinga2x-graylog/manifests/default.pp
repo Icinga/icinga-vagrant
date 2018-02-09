@@ -2,6 +2,7 @@
 # Global configuration
 ####################################
 
+$nodeName = 'icinga2-graylog' # TODO: Hiera.
 $hostOnlyIP = '192.168.33.6'
 $hostOnlyFQDN = 'icinga2x-graylog.vagrant.demo.icinga.com'
 
