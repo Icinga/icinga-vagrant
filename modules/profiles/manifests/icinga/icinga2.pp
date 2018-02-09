@@ -1,8 +1,15 @@
 class profiles::icinga::icinga2 (
   $features = {},
   $packages = [],
-  $confd = 'demo',
+  $has_ca = true,
   $node_name = 'icinga2',
+  $zone_name = undef,
+  $ticket_salt = undef,       # needed on the master, keep this secret
+  $zones = undef,
+  $endpoints = undef,
+  $api_pki = 'none',  # override for satellites
+  $api_ca_host = undef,       # satellite
+  $api_ticket_salt = undef,   # satellite
   $api_users = {
     'root' => {
       password => 'icinga',
@@ -24,12 +31,18 @@ class profiles::icinga::icinga2 (
   # Allow to add more packages
   $real_packages = [ 'nagios-plugins-all', 'vim-icinga2', 'icinga2-debuginfo' ] + $packages
 
+  # standalone environments need a local configuration
+  if (!$zone_name) {
+    $real_confd = 'demo'
+  }
+
   class { '::icinga2':
     manage_repo => false,
-    confd       => $confd,
+    confd       => $real_confd,
     features    => $basic_features, # all other features are specifically invoked below.
     constants   => {
-      'NodeName' => $node_name
+      'NodeName'    => $node_name,
+      'TicketSalt'  => $ticket_salt, # this is needed for CSR signing on the master
     },
 #    require     => Yumrepo['icinga-snapshot-builds']
     require     => Class['::profiles::base::system']
@@ -47,7 +60,6 @@ class profiles::icinga::icinga2 (
     content => template("profiles/icinga/check_mysql_health.erb")
   }
 
-  # TODO: remove hardcoded names
   mysql::db { 'icinga':
     user      => 'icinga',
     password  => 'icinga',
@@ -66,12 +78,24 @@ class profiles::icinga::icinga2 (
   }
 
   class { '::icinga2::feature::api':
-    pki => 'none',
+    pki             => $api_pki,
+    ca_host         => $api_ca_host,
+    ticket_salt     => $api_ticket_salt,
     accept_commands => true,
     accept_config   => true,
+    endpoints       => $endpoints,
+    zones           => $zones
   }
 
-  class { '::icinga2::pki::ca': }
+  # Only the master is allowed to have its own CA
+  if ($has_ca == true) {
+    class { '::icinga2::pki::ca': }
+  }
+
+  icinga2::object::zone { 'global-templates':
+    global => true,
+  }
+
 
   # Features
   if (has_key($features, 'graphite')) {
@@ -113,17 +137,30 @@ class profiles::icinga::icinga2 (
 
   # other Icinga2 features are not supported by this profile.
 
+  # Config
+  if ($zone_name == 'master') {
+    $config_path = "/etc/icinga2/zones.d/satellite" # the master zone puts everything into the satellite zone. find a better way, TODO.
+  } else {
+    $config_path = '/etc/icinga2/demo'
+  }
+
+  file { 'confd':
+    path    => '/etc/icinga2/conf.d',
+    ensure  => directory,
+    purge   => true,
+    recurse => true,
+  }
+
   $api_users.each |$name, $attrs| {
      icinga2::object::apiuser { "$name":
        ensure => present,
        password => $attrs['password'],
        permissions => $attrs['permissions'],
-       target => '/etc/icinga2/demo/api-users.conf'
+       target => "$config_path/api-users.conf"
      }
   }
 
-  # Config
-  file { '/etc/icinga2/demo':
+  file { $config_path:
     ensure  => directory,
     tag     => icinga2::config::file,
   }
@@ -135,79 +172,79 @@ class profiles::icinga::icinga2 (
   }
 
   # TODO: Split demo based on parameters; standalone vs cluster
-  file { '/etc/icinga2/demo/many.conf':
+  file { "$config_path/many.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/many.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/hosts.conf':
+  file { "$config_path/hosts.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/hosts.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/services.conf':
+  file { "$config_path/services.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/services.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/templates.conf':
+  file { "$config_path/templates.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/templates.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/groups.conf':
+  file { "$config_path/groups.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/groups.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/notifications.conf':
+  file { "$config_path/notifications.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/notifications.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/commands.conf':
+  file { "$config_path/commands.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/commands.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/timeperiods.conf':
+  file { "$config_path/timeperiods.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/timeperiods.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/users.conf':
+  file { "$config_path/users.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/users.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/additional_services.conf':
+  file { "$config_path/additional_services.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/additional_services.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/bp.conf':
+  file { "$config_path/bp.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/bp.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/cube.conf':
+  file { "$config_path/cube.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/cube.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/maps.conf':
+  file { "$config_path/maps.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/maps.conf.erb"),
     tag     => icinga2::config::file
