@@ -254,8 +254,8 @@ $ cd icinga2x-cluster && vagrant up
 
   Application       | Url                                   | Credentials
   ------------------|---------------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.10/icingaweb2       | icingaadmin/icinga
-  Icinga Web 2      | http://192.168.33.20/icingaweb2       | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.101/icingaweb2      | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.102/icingaweb2      | icingaadmin/icinga
   Icinga 2 API      | https://192.168.33.10:5665/v1         | root/icinga
   Icinga 2 API      | https://192.168.33.20:5665/v1         | root/icinga
 
