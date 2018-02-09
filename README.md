@@ -22,12 +22,13 @@ A simple `vagrant up` fully installs these VMs and you are ready to explore
 the Icinga ecosystem and possible integrations.
 
 You can use these boxes for your own local demos, or to learn how to use Icinga
-in your environment.
+in your environment. The Puppet provisioner uses official upstream modules
+including [puppet-icinga2](https://github.com/icinga/puppet-icinga2) and [puppet-icingaweb2](https://github.com/icinga/puppet-icingaweb2).
 
-* [Icinga 2 Standalone](README.md#boxes-icinga2x), [Icinga 2 Cluster](README.md#boxes-icinga2x-cluster)
-* [Icinga 2 and InfluxDB](README.md#boxes-icinga2x-influxdb)
-* [Icinga 2 and Elastic](README.md#boxes-icinga2x-elastic)
-* [Icinga 2 and Graylog](README.md#boxes-icinga2x-graylog)
+* [Icinga 2 Standalone](README.md#boxes-standalone), [Icinga 2 Distributed](README.md#boxes-distributed)
+* [Icinga 2 and InfluxDB](README.md#boxes-influxdb)
+* [Icinga 2 and Elastic](README.md#boxes-elastic)
+* [Icinga 2 and Graylog](README.md#boxes-graylog)
 
 ## Icinga Web 2 <a id="about-icingaweb2"></a>
 
@@ -204,21 +205,20 @@ Proceed here for an overview about all available [boxes](#boxes).
 
 ## Boxes <a id="boxes"></a>
 
-### Icinga 2 Standalone <a id="boxes-icinga2x"></a>
+### Standalone <a id="boxes-standalone"></a>
 
 * 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director), [Grafana](https://github.com/Mikesch-mp/icingaweb2-module-grafana), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts), [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
-* [NagVis](http://nagvis.org/)
+  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director), [Graphite](https://github.com/Icinga/icingaweb2-module-graphite), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Cube](https://github.com/Icinga/icingaweb2-module-cube), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
 * [Graphite](https://graphiteapp.org/)
 * [Grafana](https://grafana.com/)
-* [Dashing](https://github.com/Icinga/dashing-icinga2)
+* [Dashing](https://github.com/Icinga/dashing-icinga2) for Icinga 2
 
 Run Vagrant:
 
 ```
-$ cd icinga2x && vagrant up
+$ cd standalone && vagrant up
 ```
 
 #### Application Interfaces
@@ -238,16 +238,16 @@ $ vagrant ssh -c "sudo systemctl start dashing-icinga2"
 ```
 
 
-### Icinga 2 Cluster <a id="boxes-icinga2x-cluster"></a>
+### Distributed <a id="boxes-distributed"></a>
 
-* 2 VMs as Icinga 2 Master/Checker Cluster
+* 2 VMs as Icinga 2 Master/Satellite scenario
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
 
 Run Vagrant:
 
 ```
-$ cd icinga2x-cluster && vagrant up
+$ cd distributed && vagrant up
 ```
 
 #### Application Interfaces
@@ -256,11 +256,11 @@ $ cd icinga2x-cluster && vagrant up
   ------------------|---------------------------------------|----------------
   Icinga Web 2      | http://192.168.33.101/icingaweb2      | icingaadmin/icinga
   Icinga Web 2      | http://192.168.33.102/icingaweb2      | icingaadmin/icinga
-  Icinga 2 API      | https://192.168.33.10:5665/v1         | root/icinga
-  Icinga 2 API      | https://192.168.33.20:5665/v1         | root/icinga
+  Icinga 2 API      | https://192.168.33.101:5665/v1        | root/icinga
+  Icinga 2 API      | https://192.168.33.102:5665/v1        | root/icinga
 
 
-### Icinga 2 InfluxDB <a id="boxes-icinga2x-influxdb"></a>
+### InfluxDB <a id="boxes-influxdb"></a>
 
 * 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
@@ -272,7 +272,7 @@ $ cd icinga2x-cluster && vagrant up
 Run Vagrant:
 
 ```
-$ cd icinga2x-influxdb && vagrant up
+$ cd influxdb && vagrant up
 ```
 
 #### Application Interfaces
@@ -284,7 +284,7 @@ $ cd icinga2x-influxdb && vagrant up
   Grafana           | http://192.168.33.8:8004          | admin/admin
 
 
-### Icinga 2 and Elastic Stack <a id="boxes-icinga2x-elastic"></a>
+### Elastic Stack <a id="boxes-elastic"></a>
 
 * [Elastic Stack](https://www.elastic.co/products)
   * [Elasticsearch](https://www.elastic.co/products/elasticsearch)
@@ -292,11 +292,12 @@ $ cd icinga2x-influxdb && vagrant up
   * [Kibana](https://www.elastic.co/products/kibana)
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
+  * [Elasticsearch](https://github.com/Icinga/icingaweb2-module-elasticsearch) module
 
 Run Vagrant:
 
 ```
-$ cd icinga2x-elastic && vagrant up
+$ cd elastic && vagrant up
 ```
 
 Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-vagrant/issues/31).
@@ -312,16 +313,17 @@ Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-
   Kibana (TLS)              | https://192.168.33.7:5602         | icinga/icinga
   Elasticsearch/Nginx (TLS) | https://192.168.33.7:9202	        | icinga/icinga
 
-### Icinga 2 and Graylog <a id="boxes-icinga2x-graylog"></a>
+### Graylog <a id="boxes-graylog"></a>
 
 * [Graylog](https://www.graylog.org)
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
+  * [Graylog](https://github.com/Icinga/icingaweb2-module-graylog) module
 
 Run Vagrant:
 
 ```
-$ cd icinga2x-graylog && vagrant up
+$ cd graylog && vagrant up
 ```
 
 #### Application Interfaces
@@ -439,7 +441,6 @@ Project			| URL
 Icinga 2		| https://www.icinga.com/docs/icinga2/latest/doc/01-about/
 Icinga Web 2		| https://www.icinga.com/docs/icingaweb2/latest/doc/01-About/
 Director 		| https://www.icinga.com/docs/director/latest/doc/01-Introduction/
-NagVis			| https://www.nagvis.org/doc
 Graphite		| https://graphite.readthedocs.io
 InfluxDB		| https://docs.influxdata.com/influxdb/
 Grafana			| https://docs.grafana.org
@@ -536,9 +537,15 @@ curl -sl -I 192.168.33.8:8086/ping
 
 ## Puppet Module Overview <a id="contributing-puppet-modules"></a>
 
-The Vagrant boxes use these imported puppet modules for provisioning. The modules are
-pulled into this repository as git subtree. The main reason for not using submodules is
-that the upstream source may be gone if this project does not catch up with updating/migrating.
+The following Puppet modules are used for provisioning the boxes, installing
+packages and configuring everything for your needs. In addition to these
+official modules, specific Puppet profiles have been created to avoid
+code duplication.
+
+The modules are pulled into this repository as git subtree. The main reason
+for not using submodules or the official way of installing Puppet modules is
+that the upstream source may be gone or unreachable. That must not happen
+with this Vagrant environment.
 
 General:
 
