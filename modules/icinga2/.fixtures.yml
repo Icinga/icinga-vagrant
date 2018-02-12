@@ -1,0 +1,9 @@
+fixtures:
+  forge_modules:
+    stdlib: "puppetlabs/stdlib"
+    concat: "puppetlabs/concat"
+    apt: "puppetlabs/apt"
+    chocolatey: "puppetlabs/chocolatey"
+    zypprepo: "puppet/zypprepo"
+  symlinks:
+    icinga2: "#{source_dir}"

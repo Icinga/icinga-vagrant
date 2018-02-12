@@ -1,0 +1,58 @@
+---
+#Travis CI Job File. Feel free to extend. Have a look at the special cases in the Gemfile for Ruby 1.9
+sudo: false
+language: ruby
+cache: bundler
+#bundler_args: --without system_tests development
+before_install:
+  - bundle -v
+  - rm Gemfile.lock || true
+  - gem update --system
+  - gem update bundler
+  - gem --version
+  - bundle -v
+script:
+  - 'bundle exec rake $CHECK'
+env:
+  global:
+    - PARALLEL_TEST_PROCESSORS=4
+matrix:
+  fast_finish: true
+  include:
+  - rvm: 2.4.0
+    env: PUPPET_VERSION="~> 5.0" CHECK=test
+  - rvm: 2.3.3
+    env: PUPPET_VERSION="~> 4.0" CHECK=test
+  - rvm: 2.2.6
+    env: PUPPET_VERSION="~> 4.0" CHECK=test
+  - rvm: 2.1.10
+    env: PUPPET_VERSION="~> 4.0" CHECK=build DEPLOY_TO_FORGE=yes
+  - rvm: 2.1.10
+    env: PUPPET_VERSION="~> 4.0" CHECK=test
+  - rvm: 2.1.10
+    env: PUPPET_VERSION="~> 3.8" STRICT_VARIABLES="yes" FUTURE_PARSER="yes" CHECK=test FIXTURES_YML=.fixtures.puppet3.yml
+  - rvm: 2.1.10
+    env: PUPPET_VERSION="~> 3.8" STRICT_VARIABLES="yes" CHECK=test FIXTURES_YML=.fixtures.puppet3.yml
+  - rvm: 1.9.3
+    env: PUPPET_VERSION="~> 3.8" STRICT_VARIABLES="yes" CHECK=test FIXTURES_YML=.fixtures.puppet3.yml
+  - rvm: 1.9.3
+    env: PUPPET_VERSION="~> 3.8" STRICT_VARIABLES="yes" FUTURE_PARSER="yes" CHECK=test FIXTURES_YML=.fixtures.puppet3.yml
+branches:
+  only:
+  - master
+  - /^v\d/
+notifications:
+  email: false
+deploy:
+  provider: puppetforge
+  deploy:
+    branch: master
+  user: icinga
+  password:
+    secure: "U4FeZmywLvOLXRv30EoWoWa2Eey41Zn2bE9NTVzDtJ0U6dR4g22aGpe7JsJRfetV7+8gxHfnxhx4vNSPUqt2wKT0AUTMAAiadsbKypjLV7VHf+owjyvhRBNpUFFhxYJwZuyBBJdAaw0DBu/vZa345tCKXOMg9DADJ900Z1l47X137QMMVHyLPJ+NUqKD/ONPXf0NDCGXnZLQwFVQw7rbYmYR2O5kb5x1Fkq4b3onvHOIe5obkj5DFUjICw2nPdp/f+VVg80EDCl/IagCvrKMAryeoF2GqYijjm6arxruxwW+igR1LfuXmDLWP4f/Xc/IzcciwIWD6P1cKoqId+TfdWE8K4TJt6pZCWA3CK/lk2KsdxHJeqwpoK18AglI86UAmK5pwSnDhm4OgqADVRUtOrq7k1IMHWs/T49q9PgHqn2CwuIvmSAYdLq7peLzizCZ0ZrRkFfnXNG8hf/hBNTrS0DdJmJnGkZk7gCJJQUgprGD5FSnOBFV0w9cXNLbXR9RSPKTVdnBZnCl3oyXLlMAeKrHQ6fvFHfmfpcKmufxTF32jkWxt9fnHgoNFZHzs0aY1B/zRw4GMmgHgobVQY/czw2iMzMmKvoAGB8aO4EtToKFkL6hcBxEtNCfXF3EJZykTim+AT7SfHSeShXQ+Isy2kd2Oeamiurrm5iS27FkzjQ="
+  on:
+    tags: true
+    # all_branches is required to use tags
+    all_branches: true
+    # Only publish the build marked with "DEPLOY_TO_FORGE"
+    condition: "$DEPLOY_TO_FORGE = yes"

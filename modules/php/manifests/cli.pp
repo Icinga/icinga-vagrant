@@ -9,16 +9,13 @@
 #   Hash with nested hash of key => value to set in inifile
 #
 class php::cli(
-  $inifile  = $::php::params::cli_inifile,
-  $settings = {}
+  Stdlib::Absolutepath $inifile = $::php::params::cli_inifile,
+  Hash $settings                = {}
 ) inherits ::php::params {
 
   if $caller_module_name != $module_name {
     warning('php::cli is private')
   }
-
-  validate_absolute_path($inifile)
-  validate_hash($settings)
 
   $real_settings = deep_merge($settings, hiera_hash('php::cli::settings', {}))
 

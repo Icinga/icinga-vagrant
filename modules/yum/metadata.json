@@ -1,47 +1,69 @@
 {
-  "name": "ceritsc-yum",
-  "version": "0.9.8",
-  "author": "ceritsc",
+  "name": "puppet-yum",
+  "version": "2.1.1-rc0",
+  "author": "Vox Pupuli",
   "summary": "YUM utilities",
   "license": "MIT",
-  "source": "https://github.com/CERIT-SC/puppet-yum.git",
-  "project_page": "https://github.com/CERIT-SC/puppet-yum",
-  "issues_url": "https://github.com/CERIT-SC/puppet-yum/issues",
+  "source": "https://github.com/voxpupuli/puppet-yum.git",
+  "project_page": "https://github.com/voxpupuli/puppet-yum",
+  "issues_url": "https://github.com/voxpupuli/puppet-yum/issues",
+  "data_provider": "hiera",
   "dependencies": [
-    {"name":"puppetlabs/stdlib","version_requirement":">= 4.2.0"}
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.10.0 < 5.0.0"
+    },
+    {
+      "name": "puppetlabs/concat",
+      "version_requirement": ">= 1.2.5 < 5.0.0"
+    }
   ],
   "tags": [
     "yum",
-    "package"
+    "package",
+    "rpm",
+    "voxpupuli"
   ],
   "operatingsystem_support": [
     {
-      "operatingsystem": "RedHat"
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
     },
     {
-      "operatingsystem": "CentOS"
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
     },
     {
-      "operatingsystem": "OracleLinux"
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
     },
     {
-      "operatingsystem": "Scientific"
+      "operatingsystem": "OracleLinux",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
     },
     {
-      "operatingsystem": "SLES"
-    },
-    {
-      "operatingsystem": "SLED"
+      "operatingsystem": "Amazon",
+      "operatingsystemrelease": [
+        "2017"
+      ]
     }
   ],
   "requirements": [
     {
-      "name": "pe",
-      "version_requirement": "3.3.x"
-    },
-    {
       "name": "puppet",
-      "version_requirement": "3.3"
+      "version_requirement": ">= 4.6.1 < 6.0.0"
     }
   ]
 }

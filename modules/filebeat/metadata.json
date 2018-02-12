@@ -1,30 +1,32 @@
 {
   "name": "pcfens-filebeat",
-  "version": "0.8.6",
+  "version": "2.3.0",
   "author": "pcfens",
-  "license": "Apache-2.0",
   "summary": "A module to install and manage the filebeat log shipper",
+  "license": "Apache-2.0",
   "source": "https://github.com/pcfens/puppet-filebeat",
   "project_page": "https://github.com/pcfens/puppet-filebeat",
   "issues_url": "https://github.com/pcfens/puppet-filebeat/issues",
   "tags": ["filebeat", "logstash", "elasticsearch", "elastic"],
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">=4.6.0 <5.0.0"
+    },
+    {
+      "name": "puppetlabs/apt",
+      "version_requirement": ">=2.0.0 <5.0.0"
+    },
+    {
+      "name": "puppetlabs/powershell",
+      "version_requirement": ">= 1.0.1 < 3.0.0"
+    },
+    {
+      "name": "puppet/archive",
+      "version_requirement": ">= 0.5.0 < 3.0.0"
+    }
+  ],
   "operatingsystem_support": [
-    {
-      "operatingsystem": "RedHat",
-      "operatingsystemrelease": [
-        "5.0",
-        "6.0",
-        "7.0"
-      ]
-    },
-    {
-      "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": [
-        "12.04",
-        "14.04",
-        "16.04"
-      ]
-    },
     {
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
@@ -34,15 +36,16 @@
       ]
     },
     {
-      "operatingsystem": "Fedora",
+      "operatingsystem": "OracleLinux",
       "operatingsystemrelease": [
-        "21",
-        "22"
+        "6",
+        "7"
       ]
     },
     {
-      "operatingsystem": "OracleLinux",
+      "operatingsystem": "RedHat",
       "operatingsystemrelease": [
+        "5",
         "6",
         "7"
       ]
@@ -56,39 +59,34 @@
       ]
     },
     {
-      "operatingsystem": "Windows",
+      "operatingsystem": "Debian",
       "operatingsystemrelease": [
-        "Server 2012",
-        "Server 2012 R2"
+        "8"
       ]
-    }
-  ],
-  "dependencies": [
-    {
-      "name": "puppetlabs/stdlib",
-      "version_requirement": ">=4.6.0 <5.0.0"
     },
     {
-      "name": "puppetlabs/apt",
-      "version_requirement": ">=2.0.0 <3.0.0"
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04",
+        "16.04"
+      ]
     },
     {
-      "name": "puppetlabs/powershell",
-      "version_requirement": ">= 1.0.1 < 2.0.0"
-    },
-    {
-      "name": "lwf/remote_file",
-      "version_requirement": ">= 0.2.0 < 2.0.0"
+      "operatingsystem": "windows",
+      "operatingsystemrelease": [
+        "2012",
+        "2012 R2"
+      ]
     }
   ],
   "requirements": [
     {
-      "name": "pe",
-      "version_requirement": ">= 3.0.0 < 2016.5.0"
-    },
-    {
       "name": "puppet",
-      "version_requirement": ">= 3.0.0 < 5.0.0"
+      "version_requirement": ">= 4.0.0 < 6.0.0"
     }
-  ]
+  ],
+  "pdk-version": "1.1.0",
+  "template-url": "file:///opt/puppetlabs/pdk/share/cache/pdk-module-template.git",
+  "template-ref": "heads/master-0-g54e88a4"
 }

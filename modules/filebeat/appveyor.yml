@@ -1,0 +1,59 @@
+version: 1.1.x.{build}
+skip_commits:
+  message: /^\(?doc\)?.*/
+clone_depth: 10
+init:
+  - SET
+  - 'mkdir C:\ProgramData\PuppetLabs\code && exit 0'
+  - 'mkdir C:\ProgramData\PuppetLabs\facter && exit 0'
+  - 'mkdir C:\ProgramData\PuppetLabs\hiera && exit 0'
+  - 'mkdir C:\ProgramData\PuppetLabs\puppet\var && exit 0'
+environment:
+  PUPPET_GEM_VERSION: ~> 4.0
+  matrix:
+    -
+      RUBY_VERSION: 24-x64
+      CHECK: syntax lint
+    -
+      RUBY_VERSION: 24-x64
+      CHECK: metadata_lint
+    -
+      RUBY_VERSION: 24-x64
+      CHECK: rubocop
+    -
+      RUBY_VERSION: 24-x64
+      CHECK: spec
+    -
+      RUBY_VERSION: 21-x64
+      CHECK: spec
+matrix:
+  fast_finish: true
+install:
+  - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
+  # Due to a bug in the version of OpenSSL shipped with Ruby 2.4.1 on Windows
+  # (https://bugs.ruby-lang.org/issues/11033). Errors are ignored because the
+  # mingw gem calls out to pacman to install OpenSSL which is already
+  # installed, causing gem to raise a warning that powershell determines to be
+  # a fatal error.
+  - ps: |
+      $ErrorActionPreference = "SilentlyContinue"
+      if($env:RUBY_VERSION -eq "24-x64") {
+        gem install openssl "~> 2.0.4" --no-rdoc --no-ri -- --with-openssl-dir=C:\msys64\mingw64
+      }
+      $host.SetShouldExit(0)
+  - bundle install --jobs 4 --retry 2 --without system_tests
+  - type Gemfile.lock
+build: off
+test_script:
+  - bundle exec puppet -V
+  - ruby -v
+  - gem -v
+  - bundle -v
+  - bundle exec rake %CHECK%
+notifications:
+  - provider: Email
+    to:
+      - nobody@nowhere.com
+    on_build_success: false
+    on_build_failure: false
+    on_build_status_changed: false

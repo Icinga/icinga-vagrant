@@ -33,4 +33,23 @@ describe Puppet::Type.type(:kibana_plugin).provider(:kibana) do
   end
 
   include_examples 'kibana plugin provider'
+
+  describe 'url' do
+    it 'causes --url to be passed to install' do
+      url = 'https://some.sample.url/directory'
+      expect(provider).to(
+        receive(:execute)
+          .with(
+            [executable] + install_args + [resource[:name], '--url', url],
+            :uid => 'kibana', :gid => 'kibana'
+          )
+          .and_return(
+            Puppet::Util::Execution::ProcessOutput.new('success', 0)
+          )
+      )
+      resource[:url] = url
+      provider.create
+      provider.flush
+    end
+  end
 end

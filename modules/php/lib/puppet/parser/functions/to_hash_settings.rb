@@ -1,28 +1,28 @@
 
 module Puppet::Parser::Functions
   newfunction(:to_hash_settings, type: :rvalue, doc: <<-EOS
-This function converts a +{key => value}+ hash into a nested hash and can add an id to the outer key.
-The optional id string as second parameter is prepended to the resource name.
+    This function converts a +{key => value}+ hash into a nested hash and can add an id to the outer key.
+    The optional id string as second parameter is prepended to the resource name.
 
-*Examples:*
+    *Examples:*
 
-  to_hash_settings({'a' => 1, 'b' => 2})
+      to_hash_settings({'a' => 1, 'b' => 2})
 
-Would return:
-  {
-    'a' => {'key' => 'a', 'value' => 1},
-    'b' => {'key' => 'b', 'value' => 2}
-  }
+    Would return:
+      {
+        'a' => {'key' => 'a', 'value' => 1},
+        'b' => {'key' => 'b', 'value' => 2}
+      }
 
-and:
+    and:
 
-  to_hash_settings({'a' => 1, 'b' => 2}, 'foo')
+      to_hash_settings({'a' => 1, 'b' => 2}, 'foo')
 
-Would return:
-  {
-    'foo: a' => {'key' => 'a', 'value' => 1},
-    'foo: b' => {'key' => 'b', 'value' => 2}
-  }
+    Would return:
+      {
+        'foo: a' => {'key' => 'a', 'value' => 1},
+        'foo: b' => {'key' => 'b', 'value' => 2}
+      }
 EOS
              ) do |arguments|
     hash, id = arguments

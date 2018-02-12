@@ -1,11 +1,12 @@
 require 'spec_helper'
 
-describe :artifactory_sha1 do
-  before :all do
+describe :artifactory_sha1 do # rubocop:disable RSpec/DescribeSymbol
+  before :all do # rubocop:disable RSpec/BeforeAfterAll
     Puppet::Parser::Functions.autoloader.loadall
   end
 
   let(:scope) { PuppetlabsSpec::PuppetInternals.scope }
+
   example_json = File.read(fixtures('checksum', 'artifactory.json'))
 
   it 'parses sha1' do

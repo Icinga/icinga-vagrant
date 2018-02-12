@@ -2,6 +2,12 @@
 #
 # === Parameters
 #
+# [*user*]
+#   The user that php-fpm should run as
+#
+# [*group*]
+#   The group that php-fpm should run as
+#
 # [*service_enable*]
 #   Enable/disable FPM service
 #
@@ -44,35 +50,31 @@
 #   Defaults is empty hash.
 #
 class php::fpm (
-  $ensure               = $::php::ensure,
-  $service_ensure       = $::php::fpm_service_ensure,
-  $service_enable       = $::php::fpm_service_enable,
-  $service_name         = $::php::fpm_service_name,
-  $service_provider     = $::php::fpm_service_provider,
-  $package              = $::php::real_fpm_package,
-  $inifile              = $::php::fpm_inifile,
-  $settings             = $::php::real_settings,
-  $global_pool_settings = $::php::real_fpm_global_pool_settings,
-  $pools                = $::php::real_fpm_pools,
-  $log_owner            = $::php::log_owner,
-  $log_group            = $::php::log_group,
+  String $ensure                = $::php::ensure,
+  $user                         = $::php::fpm_user,
+  $group                        = $::php::fpm_group,
+  $service_ensure               = $::php::fpm_service_ensure,
+  $service_enable               = $::php::fpm_service_enable,
+  $service_name                 = $::php::fpm_service_name,
+  $service_provider             = $::php::fpm_service_provider,
+  String $package               = $::php::real_fpm_package,
+  Stdlib::Absolutepath $inifile = $::php::fpm_inifile,
+  Hash $settings                = $::php::real_settings,
+  $global_pool_settings         = $::php::real_fpm_global_pool_settings,
+  Hash $pools                   = $::php::real_fpm_pools,
+  $log_owner                    = $::php::log_owner,
+  $log_group                    = $::php::log_group,
 ) {
 
   if ! defined(Class['php']) {
     warning('php::fpm is private')
   }
 
-  validate_string($ensure)
-  validate_string($package)
-  validate_absolute_path($inifile)
-  validate_hash($settings)
-  validate_hash($pools)
-
   $real_settings = deep_merge($settings, hiera_hash('php::fpm::settings', {}))
 
   # On FreeBSD fpm is not a separate package, but included in the 'php' package.
   # Implies that the option SET+=FPM was set when building the port.
-  $real_package = $::osfamily ? {
+  $real_package = $facts['os']['family'] ? {
     'FreeBSD' => [],
     default   => $package,
   }
@@ -83,6 +85,8 @@ class php::fpm (
   }
 
   class { '::php::fpm::config':
+    user      => $user,
+    group     => $group,
     inifile   => $inifile,
     settings  => $real_settings,
     log_owner => $log_owner,
@@ -100,7 +104,9 @@ class php::fpm (
 
   # Create an override to use a reload signal as trusty and utopic's
   # upstart version supports this
-  if $::operatingsystem == 'Ubuntu' and ($::operatingsystemmajrelease == '14.04' or $::operatingsystemmajrelease == '14.10') {
+  if ($facts['os']['name'] == 'Ubuntu'
+      and versioncmp($facts['os']['release']['full'], '14') >= 0
+      and versioncmp($facts['os']['release']['full'], '16') < 0) {
     if ($service_enable) {
       $fpm_override = 'reload signal USR2'
     }

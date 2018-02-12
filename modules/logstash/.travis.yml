@@ -12,56 +12,65 @@ services:
 language: ruby
 
 rvm:
-  - 2.2.5
+  - 2.3.4
 
 script:
-  # Some of our tests can take long time, and not output anything while they
-  # are running. If this goes on for too long (ten minutes), then Travis
-  # will assume the build has stalled, and kill it.
-  #
-  # It's a bit cheeky, but let's make sure that _something_ goes to STDOUT
-  # every five minutes, so that our build won't be killed unjustly.
-  - (while true; do date --iso-8601=seconds; sleep 300; done) &
+  - docker run --privileged -d polarbearlabs/haveged:1.9.1 # https://github.com/elastic/logstash/issues/5507
   - (if [[ -n $TRAVIS_LINT ]]; then make lint; else bundle exec rake beaker; fi)
 
 env:
   global:
-    - TRAVIS_CI=true
-    - LOGSTASH_VERSION=5.1.2
+    - LOGSTASH_VERSION=6.0.0
     - BEAKER_PE_DIR=spec/fixtures/artifacts
   matrix:
     # Do linting once.
     - TRAVIS_LINT=true
 
     # Then run the acceptance tests across the matrix.
-    - PUPPET_VERSION=3.8.7 BEAKER_set=centos-6
+    - PUPPET_VERSION=4.6.1 BEAKER_set=centos-6
     - PUPPET_VERSION=4.8.2 BEAKER_set=centos-6
-    # - PUPPET_VERSION=3.8.4 BEAKER_set=centos-6 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
+    - PUPPET_VERSION=4.8.2 BEAKER_set=centos-6 LOGSTASH_VERSION=5.6.4
 
-    - PUPPET_VERSION=3.8.7 BEAKER_set=centos-7
-    - PUPPET_VERSION=4.0.0 BEAKER_set=centos-7
-    - PUPPET_VERSION=4.1.0 BEAKER_set=centos-7
-    - PUPPET_VERSION=4.2.3 BEAKER_set=centos-7
-    - PUPPET_VERSION=4.3.2 BEAKER_set=centos-7
-    - PUPPET_VERSION=4.4.2 BEAKER_set=centos-7
-    - PUPPET_VERSION=4.5.3 BEAKER_set=centos-7
-    - PUPPET_VERSION=4.6.2 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.6.1 BEAKER_set=centos-7
     - PUPPET_VERSION=4.7.0 BEAKER_set=centos-7
     - PUPPET_VERSION=4.8.2 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.9.4 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.10.8 BEAKER_set=centos-7
+    - PUPPET_VERSION=4.10.8 BEAKER_set=centos-7 LOGSTASH_VERSION=5.6.4
 
-    - PUPPET_VERSION=3.8.7 BEAKER_set=debian-7
+    - PUPPET_VERSION=5.3.3 BEAKER_set=centos-7
+    - PUPPET_VERSION=5.3.3 BEAKER_set=centos-7 LOGSTASH_VERSION=5.6.4
+
+    - PUPPET_VERSION=4.6.1 BEAKER_set=debian-7
     - PUPPET_VERSION=4.8.2 BEAKER_set=debian-7
-    # - PUPPET_VERSION=3.8.4 BEAKER_set=debian-7 BEAKER_PE_VER=3.8.4 BEAKER_IS_PE=true
+    - PUPPET_VERSION=4.8.2 BEAKER_set=debian-7 LOGSTASH_VERSION=5.6.4
 
-    - PUPPET_VERSION=3.8.7 BEAKER_set=debian-8
+    - PUPPET_VERSION=4.6.1 BEAKER_set=debian-8
     - PUPPET_VERSION=4.8.2 BEAKER_set=debian-8
+    - PUPPET_VERSION=4.9.4 BEAKER_set=debian-8
+    - PUPPET_VERSION=4.10.8 BEAKER_set=debian-8
+    - PUPPET_VERSION=4.10.8 BEAKER_set=debian-8 LOGSTASH_VERSION=5.6.4
 
-    - PUPPET_VERSION=3.8.7 BEAKER_set=opensuse-13
+    - PUPPET_VERSION=5.3.3 BEAKER_set=debian-8
+    - PUPPET_VERSION=5.3.3 BEAKER_set=debian-8 LOGSTASH_VERSION=5.6.4
 
-    - PUPPET_VERSION=3.8.7 BEAKER_set=ubuntu-1204
-    - PUPPET_VERSION=4.8.2 BEAKER_set=ubuntu-1204
-
-    - PUPPET_VERSION=3.8.7 BEAKER_set=ubuntu-1404
+    - PUPPET_VERSION=4.6.1 BEAKER_set=ubuntu-1404
     - PUPPET_VERSION=4.8.2 BEAKER_set=ubuntu-1404
+    - PUPPET_VERSION=4.9.4 BEAKER_set=ubuntu-1404
+    - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1404
+    - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=5.6.4
 
+    - PUPPET_VERSION=5.3.3 BEAKER_set=ubuntu-1404
+    - PUPPET_VERSION=5.3.3 BEAKER_set=ubuntu-1404 LOGSTASH_VERSION=5.6.4
+
+    - PUPPET_VERSION=4.6.1 BEAKER_set=ubuntu-1604
     - PUPPET_VERSION=4.8.2 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=4.9.4 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=4.10.8 BEAKER_set=ubuntu-1604 LOGSTASH_VERSION=5.6.4
+
+    - PUPPET_VERSION=5.0.1 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=5.1.0 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=5.2.0 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=5.3.3 BEAKER_set=ubuntu-1604
+    - PUPPET_VERSION=5.3.3 BEAKER_set=ubuntu-1604 LOGSTASH_VERSION=5.6.4

@@ -7,12 +7,12 @@ class grafana::service {
   case $::grafana::install_method {
     'docker': {
       $container = {
-        'grafana' => $::grafana::container_params
+        'grafana' => $::grafana::container_params,
       }
 
       $defaults = {
         image => "${::grafana::params::docker_image}:${::grafana::version}",
-        ports => $::grafana::params::docker_ports
+        ports => $::grafana::params::docker_ports,
       }
 
       create_resources(docker::run, $container, $defaults)
@@ -21,7 +21,7 @@ class grafana::service {
       service { $::grafana::service_name:
         ensure    => running,
         enable    => true,
-        subscribe => Package[$::grafana::package_name]
+        subscribe => Package[$::grafana::package_name],
       }
     }
     'archive': {
@@ -35,7 +35,7 @@ class grafana::service {
           binary     => "su - grafana -c '${service_path} -config=${service_config} -homepath=${::grafana::install_dir} web &'",
           hasrestart => false,
           hasstatus  => false,
-          status     => "ps -ef | grep ${::grafana::service_name} | grep -v grep"
+          status     => "ps -ef | grep ${::grafana::service_name} | grep -v grep",
         }
       }
     }

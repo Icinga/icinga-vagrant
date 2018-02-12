@@ -7,7 +7,7 @@ hosts.each do |host|
   tmpdir = host.tmpdir('vcsrepo')
   step 'setup - create repo' do
     git_pkg = 'git'
-    if host['platform'] =~ /ubuntu-10/
+    if host['platform'] =~ %r{ubuntu-10}
       git_pkg = 'git-core'
     end
     install_package(host, git_pkg)
@@ -29,14 +29,13 @@ hosts.each do |host|
     }
     EOS
 
-    apply_manifest_on(host, pp, :catch_failures => true)
-    apply_manifest_on(host, pp, :catch_changes  => true)
+    apply_manifest_on(host, pp, catch_failures: true)
+    apply_manifest_on(host, pp, catch_changes: true)
   end
 
   step 'verify repo is on master branch' do
-    on(host, "cat #{tmpdir}/#{repo_name}/.git/HEAD") do |res|
-      assert_match(/ref: refs\/heads\/master/, stdout, "Git checkout not on master on #{host}")
+    on(host, "cat #{tmpdir}/#{repo_name}/.git/HEAD") do |_res|
+      assert_match(%r{ref: refs/heads/master}, stdout, "Git checkout not on master on #{host}")
     end
   end
-
 end

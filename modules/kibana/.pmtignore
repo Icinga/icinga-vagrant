@@ -2,5 +2,7 @@ coverage/
 doc/
 junit/
 log/
+spec/
 tmp/
 vendor/
+Guardfile

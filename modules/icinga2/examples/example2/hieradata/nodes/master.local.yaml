@@ -1,0 +1,62 @@
+---
+icinga2::manage_repo: true
+icinga2::confd: false
+icinga2::features:
+  - 'api'
+  - 'checker'
+  - 'mainlog'
+  - 'notification'
+  - 'statusdata'
+  - 'compatlog'
+  - 'command'
+  - 'idomysql'
+icinga2::constants:
+  NodeName: "%{::fqdn}"
+  ZoneName: 'master'
+icinga2::feature::api::endpoints:
+  'master.local': {}
+  'satellite.local':
+    host: 192.168.33.57
+icinga2::feature::api::zones:
+  master:
+    endpoints:
+      - 'master.local'
+  satellite:
+    endpoints:
+      - 'satellite.local'
+    parent: 'master'
+icinga2::feature::idomysql::user: 'icinga'
+icinga2::feature::idomysql::password: 'icingapassword'
+icinga2::feature::idomysql::database: 'icinga'
+icinga2::feature::idomysql::import_schema: true
+profiles::icinga2::icinga_master::zones:
+  'global-templates':
+    global: true
+  'windows-commands':
+    global: true
+  'linux-commands':
+    global: true
+mysql::server::root_password: 'supersecure' 
+mysql::server::databases:
+  icinga:
+    ensure: 'present'
+mysql::server::users:
+  'icinga@localhost':
+    ensure: 'present'
+    password_hash: '*C78C76985162B449CDE1FA2732002C8ACB175936' #icingapassword
+mysql::server::grants:
+  'icinga@localhost/icinga.*':
+    ensure: 'present'
+    privileges:
+      - 'ALTER'
+      - 'CREATE'
+      - 'SELECT'
+      - 'INSERT'
+      - 'UPDATE'
+      - 'DELETE'
+      - 'DROP'
+      - 'CREATE VIEW'
+      - 'INDEX'
+      - 'EXECUTE'
+    table: 'icinga.*'
+    user: 'icinga@localhost'

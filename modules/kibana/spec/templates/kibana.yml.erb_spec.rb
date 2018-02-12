@@ -28,10 +28,10 @@ describe 'kibana.yml.erb' do
     end
 
     let :yaml do
-      <<-EOS
+      <<-CONFIG
         kibana.index: ".kibana"
         server.host: localhost
-      EOS
+      CONFIG
     end
 
     it { expect(harness).to eq(yaml.config) }

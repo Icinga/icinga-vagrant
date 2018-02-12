@@ -48,7 +48,7 @@ describe PuppetX::Bodeco::Archive do
     expect(zip.send(:command, '-a')).to eq 'unzip -a /tmp/fun\ folder/test.zip'
   end
 
-  system_v = %w(Solaris AIX)
+  system_v = %w[Solaris AIX]
   system_v.each do |os|
     it "#command on #{os}" do
       Facter.stubs(:value).with(:osfamily).returns os

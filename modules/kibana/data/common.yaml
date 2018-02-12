@@ -1,0 +1,11 @@
+---
+kibana::ensure: present
+kibana::config: {}
+kibana::manage_repo: true
+kibana::package_source: ~
+kibana::repo_key_id: 46095ACC8548582C1A2699A9D27D666CD88E42B4
+kibana::repo_key_source: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+kibana::repo_priority: ~
+kibana::repo_proxy: ~
+kibana::repo_version: 6.x
+kibana::status: enabled

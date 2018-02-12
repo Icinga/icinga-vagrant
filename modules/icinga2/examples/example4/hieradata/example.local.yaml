@@ -1,0 +1,5 @@
+---
+profile::icinga2::agent::parent_endpoints:
+  'master.example.local':
+    host: 172.16.1.11
+profile::icinga2::agent::parent_zone: master

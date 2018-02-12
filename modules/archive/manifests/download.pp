@@ -38,7 +38,7 @@ define archive::download (
   Optional[Enum['none', 'md5', 'sha1', 'sha2','sh256', 'sha384', 'sha512']] $digest_type      = 'md5',   # bad default!
   Integer                       $timeout          = 120,     # ignored
   Stdlib::Compat::Absolute_path $src_target       = '/usr/src',
-  Boolean                       $allow_insecure   = false,   # ignored
+  Boolean                       $allow_insecure   = false,
   Boolean                       $follow_redirects = false,   # ignored (default)
   Boolean                       $verbose          = true,    # ignored
   String                        $path             = $::path, # ignored
@@ -59,5 +59,6 @@ define archive::download (
     checksum_url    => $digest_url,
     proxy_server    => $proxy_server,
     user            => $user,
+    allow_insecure  => $allow_insecure,
   }
 }

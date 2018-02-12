@@ -1,0 +1,9 @@
+---
+:version: 3
+:backends:
+    - yaml
+:yaml:
+    :datadir: './spec/fixtures/data'
+:hierarchy:
+    - "%{facts.hiera_fixture}"
+    - 'default'

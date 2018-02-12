@@ -7,6 +7,7 @@ describe 'php::fpm::pool' do
         facts
       end
       let(:pre_condition) { 'include php' }
+
       case facts[:osfamily]
       when 'Debian'
         case facts[:operatingsystem]

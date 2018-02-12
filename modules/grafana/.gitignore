@@ -1,15 +1,20 @@
-.*.sw?
-pkg
-spec/fixtures
-.rspec_system
-.vagrant
-log/
-
-# for a library or gem, you might want to ignore these files since the code is
-# intended to run in multiple environments; otherwise, check them in:
+pkg/
 Gemfile.lock
+Gemfile.local
+vendor/
+.vendor/
+spec/fixtures/manifests/
+spec/fixtures/modules/
+.vagrant/
+.bundle/
 .ruby-version
-.ruby-gemset
-
-# unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
-.rvmrc
+coverage/
+log/
+.idea/
+.dependencies/
+.librarian/
+Puppetfile.lock
+*.iml
+.*.sw?
+.yardoc/
+Guardfile

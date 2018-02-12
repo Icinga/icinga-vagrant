@@ -1,9 +1,56 @@
 class profiles::icinga::icinga2 (
-  $features = []
+  $features = {},
+  $packages = [],
+  $has_ca = true,
+  $node_name = 'icinga2',
+  $zone_name = undef,
+  $ticket_salt = undef,       # needed on the master, keep this secret
+  $zones = undef,
+  $endpoints = undef,
+  $api_pki = 'none',  # override for satellites
+  $api_ca_host = undef,       # satellite
+  $api_ticket_salt = undef,   # satellite
+  $api_users = {
+    'root' => {
+      password => 'icinga',
+      permissions => [ "*" ]
+    },
+    'dashing' => {
+      password => 'icinga2ondashingr0xx',
+      permissions => [ "status/query", "objects/query/*" ]
+    },
+    'icingaweb2' => {
+     password => 'icingaweb2apitransport',
+     permissions => [ "status/query", "actions/*", "objects/modify/*", "objects/query/*" ]
+    }
+  }
 ){
-  class { '::icinga2': } # TODO: Use official module with Puppet 5 support
+  # Always initialize the main features required
+  $basic_features = [ 'checker', 'notification', 'mainlog' ]
+
+  # Allow to add more packages
+  $real_packages = [ 'nagios-plugins-all', 'vim-icinga2', 'icinga2-debuginfo' ] + $packages
+
+  # standalone environments need a local configuration
+  if (!$zone_name) {
+    $real_confd = 'demo'
+  }
+
+  class { '::icinga2':
+    manage_repo => false,
+    confd       => $real_confd,
+    features    => $basic_features, # all other features are specifically invoked below.
+    constants   => {
+      'NodeName'    => $node_name,
+      'TicketSalt'  => $ticket_salt, # this is needed for CSR signing on the master
+    },
+#    require     => Yumrepo['icinga-snapshot-builds']
+    require     => Class['::profiles::base::system']
+  }
   ->
-  class { '::monitoring_plugins': } # TODO: Refactor module
+  package { $real_packages:
+    ensure => 'latest',
+  }
   ->
   file { 'check_mysql_health':
     name => '/usr/lib64/nagios/plugins/check_mysql_health',
@@ -13,13 +60,6 @@ class profiles::icinga::icinga2 (
     content => template("profiles/icinga/check_mysql_health.erb")
   }
 
-  package { 'icinga2-ido-mysql':
-    ensure => latest,
-    require => Class['icinga_rpm'],
-    alias => 'icinga2-ido-mysql'
-  }
-  ->
-  # TODO: remove hardcoded names
   mysql::db { 'icinga':
     user      => 'icinga',
     password  => 'icinga',
@@ -28,191 +68,186 @@ class profiles::icinga::icinga2 (
     collate   => 'latin1_general_ci',
     grant     => [ 'ALL' ]
   }
-  ->
-  exec { 'populate-icinga2-ido-mysql-db':
-    path => '/bin:/usr/bin:/sbin:/usr/sbin',
-    unless => "mysql -uicinga -picinga icinga -e \"SELECT * FROM icinga_dbversion;\" &> /dev/null",
-    command => "mysql -uicinga -picinga icinga < /usr/share/icinga2-ido-mysql/schema/mysql.sql",
-    user => 'root',
-    environment => [ "HOME=/root" ],
-    require => [ Mysql::Db['icinga'], Package['icinga2-ido-mysql'] ]
-  }
-  ->
-  icinga2::feature { 'ido-mysql':
-    require => Exec['populate-icinga2-ido-mysql-db']
+
+  class{ '::icinga2::feature::idomysql':
+    user          => 'icinga',
+    password      => 'icinga',
+    database      => 'icinga',
+    import_schema => true,
+    require       => Mysql::Db['icinga'],
   }
 
-  package { 'vim-icinga2':
-    ensure => 'latest',
-    require => [ Class['icinga_rpm'], Class['vim'] ],
-    alias => 'vim-icinga2'
+  class { '::icinga2::feature::api':
+    pki             => $api_pki,
+    ca_host         => $api_ca_host,
+    ticket_salt     => $api_ticket_salt,
+    accept_commands => true,
+    accept_config   => true,
+    endpoints       => $endpoints,
+    zones           => $zones
   }
 
-  # api
-  exec { 'enable-icinga2-api':
-    path => '/bin:/usr/bin:/sbin:/usr/sbin',
-    command => 'icinga2 api setup',
-    require => Package['icinga2'],
-    notify  => Service['icinga2']
+  # Only the master is allowed to have its own CA
+  if ($has_ca == true) {
+    class { '::icinga2::pki::ca': }
+  }
+
+  icinga2::object::zone { 'global-templates':
+    global => true,
+  }
+
+
+  # Features
+  if (has_key($features, 'graphite')) {
+    $graphite = $features['graphite']
+
+    class { '::icinga2::feature::graphite':
+      host => $graphite['listen_ip'],
+      port => $graphite['listen_port'],
+    }
+  }
+  if (has_key($features, 'influxdb')) {
+    $influxdb = $features['influxdb']
+
+    class { '::icinga2::feature::influxdb':
+      host => $influxdb['listen_ip'],
+      port => $influxdb['listen_port'],
+      enable_send_metadata => true,
+      enable_send_thresholds => true
+    }
+  }
+  if (has_key($features, 'elasticsearch')) {
+    $elasticsearch = $features['elasticsearch']
+
+    class { '::icinga2::feature::elasticsearch':
+      host => $elasticsearch['listen_ip'],
+      port => $elasticsearch['listen_port'],
+      enable_send_perfdata => true
+    }
+  }
+  if (has_key($features, 'gelf')) {
+    $gelf = $features['gelf']
+
+    class { '::icinga2::feature::gelf':
+      host => $gelf['listen_ip'],
+      port => $gelf['listen_port'],
+      enable_send_perfdata => true
+    }
+  }
+
+  # other Icinga2 features are not supported by this profile.
+
+  # Config
+  if ($zone_name == 'master') {
+    $config_path = "/etc/icinga2/zones.d/satellite" # the master zone puts everything into the satellite zone. find a better way, TODO.
+  } else {
+    $config_path = '/etc/icinga2/demo'
+  }
+
+  file { 'confd':
+    path    => '/etc/icinga2/conf.d',
+    ensure  => directory,
+    purge   => true,
+    recurse => true,
+  }
+
+  $api_users.each |$name, $attrs| {
+     icinga2::object::apiuser { "$name":
+       ensure => present,
+       password => $attrs['password'],
+       permissions => $attrs['permissions'],
+       target => "$config_path/api-users.conf"
+     }
+  }
+
+  file { $config_path:
+    ensure  => directory,
+    tag     => icinga2::config::file,
+  }
+
+  File {
+    owner => 'icinga',
+    group => 'icinga',
+    mode  => '0644',
   }
 
   # TODO: Split demo based on parameters; standalone vs cluster
-  # TODO: Set owner/group
-  file { '/etc/icinga2/icinga2.conf':
+  file { "$config_path/many.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
-    content => template("profiles/icinga/icinga2/config/icinga2_standalone.conf.erb"),
-    require => Package['icinga2'],
-    notify  => Service['icinga2']
-  }
-  ->
-  file { '/etc/icinga2/demo':
-    ensure  => directory,
-    owner   => icinga,
-    group   => icinga,
-    notify  => Service['icinga2']
-  }
-  ->
-  file { '/etc/icinga2/demo/api-users.conf':
-    owner   => root,
-    group   => root,
-    mode    => '0644',
-    content => template("profiles/icinga/icinga2/config/demo/api-users.conf.erb"),
-    notify  => Service['icinga2']
-  }
-  ->
-  file { '/etc/icinga2/demo/many.conf':
-    ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/many.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/hosts.conf':
+  file { "$config_path/hosts.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/hosts.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/services.conf':
+  file { "$config_path/services.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/services.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/templates.conf':
+  file { "$config_path/templates.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/templates.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/groups.conf':
+  file { "$config_path/groups.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/groups.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/notifications.conf':
+  file { "$config_path/notifications.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/notifications.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/commands.conf':
+  file { "$config_path/commands.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/commands.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/timeperiods.conf':
+  file { "$config_path/timeperiods.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/timeperiods.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/users.conf':
+  file { "$config_path/users.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/users.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/additional_services.conf':
+  file { "$config_path/additional_services.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/additional_services.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/bp.conf':
+  file { "$config_path/bp.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/bp.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/cube.conf':
+  file { "$config_path/cube.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/cube.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
   ->
-  file { '/etc/icinga2/demo/maps.conf':
+  file { "$config_path/maps.conf":
     ensure  => present,
-    owner   => icinga,
-    group   => icinga,
     content => template("profiles/icinga/icinga2/config/demo/maps.conf.erb"),
-    notify  => Service['icinga2']
+    tag     => icinga2::config::file
   }
-
-
-#  @user { vagrant: ensure => present }
-#  User<| title == vagrant |>{
-#    groups +> ['icinga', 'icingacmd'],
-#    require => ['icinga2']
-#  }
-
-   if ('graphite' in $features) {
-     icinga2::feature { 'graphite': }
-   }
-   if ('influxdb' in $features) {
-     icinga2::feature { 'influxdb': }
-   }
-   if ('gelf' in $features) {
-     icinga2::feature { 'gelf': }
-   }
-
-   if ('elasticsearch' in $features) {
-     file { "/etc/icinga2/features-available/elasticsearch.conf":
-       owner  => icinga,
-       group  => icinga,
-       content => template("profiles/icinga/icinga2/config/elasticsearch.conf.erb"),
-       notify    => Service['icinga2']
-     }
-     ->
-     icinga2::feature { 'elasticsearch': }
-   }
-
 }
 

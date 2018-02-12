@@ -62,6 +62,10 @@
 # Set to 'testing' to install beta versions
 # Defaults to stable.
 #
+# [*plugins*]
+# A hash of plugins to be passed to `create_resources`, wraps around the
+# `grafana_plugin` resource.
+#
 # === Examples
 #
 #  class { '::grafana':
@@ -69,35 +73,35 @@
 #  }
 #
 class grafana (
-  $archive_source      = $::grafana::params::archive_source,
-  $cfg_location        = $::grafana::params::cfg_location,
-  $cfg                 = $::grafana::params::cfg,
-  $ldap_cfg            = $::grafana::params::ldap_cfg,
-  $container_cfg       = $::grafana::params::container_cfg,
-  $container_params    = $::grafana::params::container_params,
-  $data_dir            = $::grafana::params::data_dir,
-  $install_dir         = $::grafana::params::install_dir,
-  $install_method      = $::grafana::params::install_method,
-  $manage_package_repo = $::grafana::params::manage_package_repo,
-  $package_name        = $::grafana::params::package_name,
-  $package_source      = $::grafana::params::package_source,
-  $repo_name           = $::grafana::params::repo_name,
-  $rpm_iteration       = $::grafana::params::rpm_iteration,
-  $service_name        = $::grafana::params::service_name,
-  $version             = $::grafana::params::version
+  Optional[String] $archive_source     = undef,
+  String $cfg_location                 = $::grafana::params::cfg_location,
+  Hash $cfg                            = $::grafana::params::cfg,
+  Optional[Hash] $ldap_cfg             = undef,
+  Boolean $container_cfg               = $::grafana::params::container_cfg,
+  Hash $container_params               = $::grafana::params::container_params,
+  String $data_dir                     = $::grafana::params::data_dir,
+  String $install_dir                  = $::grafana::params::install_dir,
+  String $install_method               = $::grafana::params::install_method,
+  Boolean $manage_package_repo         = $::grafana::params::manage_package_repo,
+  String $package_name                 = $::grafana::params::package_name,
+  Optional[String] $package_source     = undef,
+  Enum['stable', 'testing'] $repo_name = $::grafana::params::repo_name,
+  String $rpm_iteration                = $::grafana::params::rpm_iteration,
+  String $service_name                 = $::grafana::params::service_name,
+  String $version                      = $::grafana::params::version,
+  Hash $plugins                        = {}
 ) inherits grafana::params {
 
-  # validate parameters here
-  if !is_hash($cfg) {
-    fail('cfg parameter must be a hash')
-  }
+  contain grafana::install
+  contain grafana::config
+  contain grafana::service
 
-  class { 'grafana::install': } ->
-  class { 'grafana::config': } ~>
-  class { 'grafana::service': }
+  Class['grafana::install']
+  -> Class['grafana::config']
+  ~> Class['grafana::service']
 
-  contain 'grafana::install'
-  contain 'grafana::service'
+  create_resources(grafana_plugin, $plugins)
 
-  #Class['grafana']
+  Grafana_Plugin <| |> ~> Class['grafana::service']
+
 }

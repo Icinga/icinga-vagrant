@@ -1,0 +1,15 @@
+---
+lookup_options:
+    yum::config_options:
+        merge: 'hash'
+    yum::repos:
+        merge:
+            strategy: 'deep'
+            knockout_prefix: '--'
+            merge_hash_arrays: true
+    yum::managed_repos:
+        merge: 'unique'
+    yum::os_default_repos:
+        merge: 'unique'
+    yum::repo_exclusions:
+        merge: 'unique'

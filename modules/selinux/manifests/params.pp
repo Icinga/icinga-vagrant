@@ -1,17 +1,19 @@
-# Class: selinux::params
+# selinux::params
 #
-# Description
-#  This class provides default parameters for the selinux class
+# THIS IS A PRIVATE CLASS
+# =======================
 #
-# Sample Usage:
-#  sx_mod_dir = $selinux::sx_mod_dir
+# This class provides default parameters for the selinux class
 #
 class selinux::params {
-  $makefile       = '/usr/share/selinux/devel/Makefile'
-  $sx_mod_dir     = '/usr/share/selinux'
+  $refpolicy_makefile = '/usr/share/selinux/devel/Makefile'
   $mode           = undef
   $type           = undef
   $manage_package = true
+
+  $refpolicy_package_name = 'selinux-policy-devel'
+
+  $module_build_root = "${facts['puppet_vardir']}/puppet-selinux"
 
   if $::operatingsystemmajrelease {
     $os_maj_release = $::operatingsystemmajrelease
@@ -32,30 +34,20 @@ class selinux::params {
             '21','22','23' : {
               $package_name = 'policycoreutils-devel'
             }
-            '24', '25' : {
-              $package_name = 'selinux-policy-devel'
-            }
             default: {
-              fail("${::operatingsystem}-${::os_maj_release} is not supported")
+              $package_name = 'policycoreutils-python-utils'
             }
           }
         }
         'Amazon': {
           $sx_fs_mount = '/selinux'
-          case $os_maj_release {
-            '4': {
-              $package_name = 'policycoreutils-python'
-            }
-            default: {
-              fail("${::operatingsystem}-${::os_maj_release} is not supported")
-            }
-          }
+          $package_name = 'policycoreutils'
         }
         default: {
           case $os_maj_release {
             '7': {
               $sx_fs_mount = '/sys/fs/selinux'
-              $package_name = 'selinux-policy-devel'
+              $package_name = 'policycoreutils-python'
             }
             '6': {
               $sx_fs_mount = '/selinux'
@@ -83,9 +75,4 @@ class selinux::params {
       fail("${::osfamily} is not supported")
     }
   }
-
-  $restorecond_config_file       = '/etc/selinux/restorecond.conf'
-  $restorecond_config_file_mode  = '0644'
-  $restorecond_config_file_owner = 'root'
-  $restorecond_config_file_group = 'root'
 }

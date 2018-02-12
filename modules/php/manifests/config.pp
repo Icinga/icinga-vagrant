@@ -18,16 +18,13 @@
 #   }
 #
 define php::config(
-  $file,
-  $config
+  Stdlib::Absolutepath $file,
+  Hash $config
 ) {
 
   if $caller_module_name != $module_name {
     warning('php::config is private')
   }
-
-  validate_absolute_path($file)
-  validate_hash($config)
 
   create_resources(::php::config::setting, to_hash_settings($config, $file), {
     file => $file

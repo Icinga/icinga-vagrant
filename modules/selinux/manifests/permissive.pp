@@ -1,41 +1,32 @@
-# Definition: selinux::permissive
+# selinux::permissive
 #
-# Description
-#  This method will set a context to permissive
+# This define will set an SELinux type to permissive
 #
-# Class create by David Twersky <dmtwersky@gmail.com>
-# Based on selinux::fcontext by Erik M Jacobs<erikmjacobs@gmail.com>
-#  Adds to puppet-selinux by jfryman
-#   https://github.com/jfryman/puppet-selinux
-#  Originally written/sourced from Lance Dillon<>
-#   http://riffraff169.wordpress.com/2012/03/09/add-file-contexts-with-puppet/
+# @param ensure Set to present to add or absent to remove a permissive mode of a type
+# @param seltype A particular selinux type to make permissive, like "oddjob_mkhomedir_t"
 #
-# Parameters:
-#   - $context: A particular context, like "oddjob_mkhomedir_t"
-#
-# Actions:
-#  Runs "semanage permissive -a" with the context you wish to allow
-#
-# Requires:
-#  - SELinux
-#  - policycoreutils-python (for el-based systems)
-#
-# Sample Usage:
-#
-#  selinux::permissive { 'allow-oddjob_mkhomedir_t':
-#    context  => 'oddjob_mkhomedir_t',
-#  }
+# @example Mark oddjob_mkhomedir_t permissive
+#   selinux::permissive { 'oddjob_mkhomedir_t':
+#     ensure => 'present'
+#   }
 #
 define selinux::permissive (
-  $context,
+  String $seltype = $title,
+  Enum['present', 'absent'] $ensure = 'present',
 ) {
 
   include ::selinux
+  if $ensure == 'present' {
+    Anchor['selinux::module post']
+    -> Selinux::Permissive[$title]
+    -> Anchor['selinux::end']
+  } else {
+    Anchor['selinux::start']
+    -> Selinux::Permissive[$title]
+    -> Anchor['selinux::module pre']
+  }
 
-  exec { "add_${context}":
-    command => shellquote('semanage', 'permissive', '-a', $context),
-    unless  => sprintf('semanage permissive -l | grep -Fx %s', shellquote($context)),
-    path    => '/bin:/sbin:/usr/bin:/usr/sbin',
-    require => Class['selinux::package'],
+  selinux_permissive {$seltype:
+    ensure => $ensure,
   }
 }

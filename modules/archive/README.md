@@ -117,28 +117,16 @@ archive { '/tmp/test100k.db':
 
 ### Puppet URL
 
-Below is an example of how to deploy a tar.gz to a local directory when it is
-served via the ```puppet:///``` style url which is not currently supported.
+Since march 2017, the Archive type also supports puppet URLs. Here is an example
+of how to use this:
 
 ```puppet
-$docs_filename = 'help.tar.gz'
-$docs_gz_path  = "/tmp/${docs_filename}"
-$homedir = '/home/myuser/'
 
-# First, deploy the archive to the local filesystem
-file {$docs_gz_path:
-  ensure => file,
-  source => "puppet:///modules/profile/${docs_filename}",
-}
-
-# Then expand the archive where you need it to go
-archive { $docs_gz_path:
-  path          => $docs_gz_path,
-  #cleanup       => true, # Do not use this argument with this workaround for idempotency reasons
+archive { '/home/myuser/help':
+  source        => 'puppet:///modules/profile/help.tar.gz',
   extract       => true,
   extract_path  => $homedir,
   creates       => "${homedir}/help" #directory inside tgz
-  require       => [ File[$docs_gz_path] ],
 }
 ```
 
@@ -263,7 +251,11 @@ class { '::archive':
 
 # See AWS cli guide for credential and configuration settings:
 # http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
-file { '/root/.aws/credential':
+file { '/root/.aws/credentials':
+  ensure => file,
+  ...
+}
+file { '/root/.aws/config':
   ensure => file,
   ...
 }
@@ -276,6 +268,40 @@ archive { '/tmp/gravatar.png':
 
 NOTE: Alternative s3 provider support can be implemented by overriding the
 [s3_download method](lib/puppet/provider/archive/ruby.rb):
+
+### Download customizations
+
+In some cases you may need custom flags for curl/wget/s3 which can be
+supplied via `download_options`. Since this parameter is provider specific,
+beware of the order of defaults:
+
+* s3:// files accepts aws cli options
+  ```puppet
+  archive { '/tmp/gravatar.png':
+    ensure           => present,
+    source           => 's3://bodecoio/gravatar.png',
+    download_options => ['--region', 'eu-central-1'],
+  }
+  ```
+* puppet `provider` override:
+  ```puppet
+  archive { '/tmp/jta-1.1.jar':
+    ensure           => present,
+    source           => 'http://central.maven.org/maven2/javax/transaction/jta/1.1/jta-1.1.jar',
+    provider         => 'wget',
+    download_options => '--continue',
+  }
+  ```
+* Linux default provider is `curl`, and Windows default is `ruby` (no effect).
+
+This option can also be applied globally to address issues for specific OS:
+```puppet
+if $::facts['osfamily'] != 'RedHat' {
+  Archive {
+    download_options => '--tlsv1',
+  }
+}
+```
 
 ### Migrating from puppet-staging
 

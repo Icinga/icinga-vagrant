@@ -14,40 +14,41 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:grafana_datasource) do
-  let(:gdatasource) {
-    described_class.new :name => "foo", :grafana_url => "http://example.com", :url => 'http://influx.example.com'
-  }
-  context "when setting parameters" do
+  let(:gdatasource) do
+    described_class.new name: 'foo', grafana_url: 'http://example.com', url: 'http://influx.example.com'
+  end
 
-    it "should fail if grafana_url isn't HTTP-based" do
-      expect {
-        described_class.new :name => "foo", :grafana_url => "example.com", :content => "{}", :ensure => :present
-      }.to raise_error(Puppet::Error, /not a valid URL/)
+  context 'when setting parameters' do
+    it "fails if grafana_url isn't HTTP-based" do
+      expect do
+        described_class.new name: 'foo', grafana_url: 'example.com', content: '{}', ensure: :present
+      end.to raise_error(Puppet::Error, %r{not a valid URL})
     end
 
-    it "should fail if json_data isn't valid" do
-      expect {
-        described_class.new :name => "foo", :grafana_url => "http://example.com", :json_data => "invalid", :ensure => :present
-      }.to raise_error(Puppet::Error, /json_data should be a Hash/)
+    it "fails if json_data isn't valid" do
+      expect do
+        described_class.new name: 'foo', grafana_url: 'http://example.com', json_data: 'invalid', ensure: :present
+      end.to raise_error(Puppet::Error, %r{json_data should be a Hash})
     end
 
-    it "should accept valid parameters" do
+    # rubocop:disable RSpec/MultipleExpectations
+    it 'accepts valid parameters' do
       expect(gdatasource[:name]).to eq('foo')
       expect(gdatasource[:grafana_url]).to eq('http://example.com')
       expect(gdatasource[:url]).to eq('http://influx.example.com')
     end
-    it "should autorequire the grafana-server for proper ordering" do
+    it 'autorequires the grafana-server for proper ordering' do
       catalog = Puppet::Resource::Catalog.new
-      service = Puppet::Type.type(:service).new(:name => "grafana-server")
+      service = Puppet::Type.type(:service).new(name: 'grafana-server')
       catalog.add_resource service
       catalog.add_resource gdatasource
 
       relationship = gdatasource.autorequire.find do |rel|
-        (rel.source.to_s == "Service[grafana-server]") and (rel.target.to_s == gdatasource.to_s)
+        (rel.source.to_s == 'Service[grafana-server]') && (rel.target.to_s == gdatasource.to_s)
       end
       expect(relationship).to be_a Puppet::Relationship
     end
-    it "should not autorequire the service it is not managed" do
+    it 'does not autorequire the service it is not managed' do
       catalog = Puppet::Resource::Catalog.new
       catalog.add_resource gdatasource
       expect(gdatasource.autorequire).to be_empty

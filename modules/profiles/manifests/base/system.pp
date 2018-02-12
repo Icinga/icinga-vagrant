@@ -1,13 +1,35 @@
 # This profile must be run before all others
 class profiles::base::system {
+  class { 'timezone':
+     timezone => 'Europe/Berlin', #keep using the same as PHP
+  }
+  ->
+  class { selinux:
+    mode => 'disabled',
+  }
+  ->
   # EPEL repository is needed everywhere
   class { 'epel': }
   ->
   # Icinga repository is required
-  class { 'icinga_rpm': } # TODO: Refactor the module
+  yumrepo { 'icinga-snapshot-builds':
+    baseurl  => "http://packages.icinga.com/epel/${::operatingsystemmajrelease}/snapshot/",
+    descr    => 'ICINGA (snapshot builds for epel)',
+    enabled  => 1,
+    gpgcheck => 1,
+    gpgkey   => 'http://packages.icinga.com/icinga.key',
+  }
+  ->
+  yumrepo { 'icinga-stable-release':
+    baseurl  => "http://packages.icinga.com/epel/${::operatingsystemmajrelease}/release/",
+    descr    => 'ICINGA (stable release for epel)',
+    enabled  => 0,
+    gpgcheck => 1,
+    gpgkey   => 'http://packages.icinga.com/icinga.key',
+  }
   ->
   # Base packages
-  package { [ 'mailx', 'tree', 'gdb', 'rlwrap', 'git', 'bash-completion', 'screen', 'htop', 'unzip' ]:
+  package { [ 'mailx', 'tree', 'gdb', 'git', 'bash-completion', 'screen', 'htop', 'unzip' ]:
     ensure => 'installed',
   }
   ->
@@ -39,5 +61,13 @@ class profiles::base::system {
     command     => '. /etc/profile',
     subscribe   => File['/etc/profile.d/env.sh'],
     refreshonly => true
+  }
+  ->
+  # This can be used to wait for a given URL parameter, e.g. Kibana or Icinga 2 API
+  file { '/usr/local/bin/http-conn-validator':
+    owner => root,
+    group => root,
+    mode  => '0755',
+    content => template("profiles/base/http-conn-validator.erb")
   }
 }

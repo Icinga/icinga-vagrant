@@ -21,32 +21,24 @@ Facter.add(:java_version) do
   # Additionally, facter versions prior to 2.0.1 only support
   # positive matches, so this needs to be done manually in setcode.
   setcode do
-    unless [ 'openbsd', 'darwin' ].include? Facter.value(:operatingsystem).downcase
+    unless ['darwin'].include? Facter.value(:operatingsystem).downcase
+      version = nil
       if Facter::Util::Resolution.which('java')
-        Facter::Util::Resolution.exec('java -Xmx8m -version 2>&1').lines.first.split(/"/)[1].strip
+        Facter::Util::Resolution.exec('java -Xmx12m -version 2>&1').lines.each { |line| version = $LAST_MATCH_INFO[1] if %r{^.+ version \"(.+)\"$} =~ line }
       end
+      version
     end
   end
 end
 
 Facter.add(:java_version) do
-  confine :operatingsystem => 'OpenBSD'
+  confine operatingsystem: 'Darwin'
   has_weight 100
   setcode do
-    Facter::Util::Resolution.with_env("PATH" => '/usr/local/jdk-1.7.0/jre/bin:/usr/local/jre-1.7.0/bin') do
-      if Facter::Util::Resolution.which('java')
-        Facter::Util::Resolution.exec('java -Xmx8m -version 2>&1').lines.first.split(/"/)[1].strip
-      end
-    end
-  end
-end
-
-Facter.add(:java_version) do
-  confine :operatingsystem => 'Darwin'
-  has_weight 100
-  setcode do
-    unless /Unable to find any JVMs matching version/ =~ Facter::Util::Resolution.exec('/usr/libexec/java_home --failfast 2>&1')
-      Facter::Util::Resolution.exec('java -Xmx8m -version 2>&1').lines.first.split(/"/)[1].strip
+    unless %r{Unable to find any JVMs matching version} =~ Facter::Util::Resolution.exec('/usr/libexec/java_home --failfast 2>&1')
+      version = nil
+      Facter::Util::Resolution.exec('java -Xmx12m -version 2>&1').lines.each { |line| version = $LAST_MATCH_INFO[1] if %r{^.+ version \"(.+)\"$} =~ line }
+      version
     end
   end
 end

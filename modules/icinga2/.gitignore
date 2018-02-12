@@ -1,0 +1,17 @@
+## editors
+/.idea/
+*~
+*.swp
+.DS_Store
+
+## puppet
+.vagrant
+modules/
+spec/fixtures/
+pkg/
+
+## ruby
+Gemfile.lock
+/.ruby-*
+.bundle
+vendor/

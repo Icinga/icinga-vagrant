@@ -4,7 +4,7 @@ tmpdir = default.tmpdir('vcsrepo')
 
 describe 'clones a remote repo' do
   before(:all) do
-    my_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+    File.expand_path(File.join(File.dirname(__FILE__), '..'))
     shell("mkdir -p #{tmpdir}") # win test
   end
 
@@ -13,29 +13,28 @@ describe 'clones a remote repo' do
   end
 
   context 'ensure latest with no revision' do
-    it 'clones from default remote' do
-      pp = <<-EOS
+    pp = <<-EOS
       vcsrepo { "#{tmpdir}/vcsrepo":
           ensure   => present,
           provider => git,
           source   => "https://github.com/puppetlabs/puppetlabs-vcsrepo.git",
       }
-      EOS
-
-      apply_manifest(pp, :catch_failures => true)
+    EOS
+    it 'clones from default remote' do
+      apply_manifest(pp, catch_failures: true)
       shell("cd #{tmpdir}/vcsrepo; /usr/bin/git reset --hard HEAD~2")
     end
 
-    it 'updates' do
-      pp = <<-EOS
+    pp = <<-EOS
       vcsrepo { "#{tmpdir}/vcsrepo":
           ensure   => latest,
           provider => git,
           source   => "https://github.com/puppetlabs/puppetlabs-vcsrepo.git",
       }
-      EOS
-
-      apply_manifest(pp, :catch_failures => true)
+    EOS
+    it 'updates' do
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
   end
 end

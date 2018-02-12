@@ -1,12 +1,12 @@
 source 'https://rubygems.org'
-ruby '2.2.5'
+ruby '2.3.4'
 
-puppetversion = ENV['PUPPET_VERSION'] || '4.8.1'
+puppetversion = ENV['PUPPET_VERSION'] || '4.10.7'
 gem 'puppet', puppetversion, :require => false
 
-gem 'beaker', '3.4.0'
-gem 'beaker-pe', '1.6.1'
-gem 'beaker-rspec', '6.0.0'
+gem 'beaker', '3.15.0'
+gem 'beaker-pe', '1.13.0'
+gem 'beaker-rspec', '6.1.0'
 
 # REF: https://github.com/voxpupuli/metadata-json-lint/issues/10
 # gem 'metadata-json-lint'
@@ -29,8 +29,8 @@ gem 'puppetlabs_spec_helper'
 gem 'puppet-syntax'
 gem 'rspec-puppet-facts'
 gem 'rubocop'
-gem 'serverspec', '2.37.2'
-gem 'specinfra', '2.57.2'
+gem 'serverspec', '2.38.0'
+gem 'specinfra', '2.67.3'
 gem 'syck'
 gem 'webmock'
 gem 'redcarpet'

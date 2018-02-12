@@ -5,10 +5,10 @@ describe 'kibana class v5' do
   let(:plugin)         { 'health_metric_vis' }
   let(:plugin_version) { '0.3.4' }
   let(:port)           { 5602 }
-  let(:version)        { '5.2.0' }
+  let(:version)        { fact('osfamily') == 'RedHat' ? '5.2.0-1' : '5.2.0' }
 
   let(:manifest) do
-    <<-EOS
+    <<-MANIFEST
         class { 'kibana':
           ensure => '#{version}',
           config => {
@@ -23,11 +23,11 @@ describe 'kibana class v5' do
           url     => '#{plugin_url}',
           version => '#{plugin_version}',
         }
-      EOS
+      MANIFEST
   end
 
   let(:plugin_url) do
-    "https://github.com/DeanF/#{plugin}/releases/download/v#{plugin_version}/#{plugin}-#{version}.zip"
+    "https://github.com/DeanF/#{plugin}/releases/download/v#{plugin_version}/#{plugin}-#{version.split('-').first}.zip"
   end
 
   include_examples 'class manifests',

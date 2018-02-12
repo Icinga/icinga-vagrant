@@ -27,7 +27,9 @@ class php::fpm::service(
 
   $reload = "service ${service_name} reload"
 
-  if $::operatingsystem == 'Ubuntu' and $::operatingsystemmajrelease == '12.04' {
+  if ($facts['os']['name'] == 'Ubuntu'
+      and versioncmp($facts['os']['release']['full'], '12') >= 0
+      and versioncmp($facts['os']['release']['full'], '14') < 0) {
     # Precise upstart doesn't support reload signals, so use
     # regular service restart instead
     $restart = undef

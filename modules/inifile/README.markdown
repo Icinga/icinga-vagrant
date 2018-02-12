@@ -1,8 +1,8 @@
-#inifile
+# inifile
 
 [![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-inifile.png?branch=master)](https://travis-ci.org/puppetlabs/puppetlabs-inifile)
 
-####Table of Contents
+#### Table of Contents
 
 1. [Overview](#overview)
 2. [Module Description - What the module does and why it is useful](#module-description)
@@ -13,17 +13,17 @@
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Development - Guide for contributing to the module](#development)
 
-##Overview
+## Overview
 
 The inifile module lets Puppet manage settings stored in INI-style configuration files.
 
-##Module Description
+## Module Description
 
 Many applications use INI-style configuration files to store their settings. This module supplies two custom resource types to let you manage those settings through Puppet.
 
-##Setup
+## Setup
 
-###Beginning with inifile
+### Beginning with inifile
 
 To manage a single setting in an INI file, add the `ini_setting` type to a class:
 
@@ -37,7 +37,7 @@ ini_setting { "sample setting":
 }
 ~~~
 
-##Usage
+## Usage
 
 
 The inifile module tries hard not to manipulate your file any more than it needs to. In most cases, it doesn't affect the original whitespace, comments, ordering, etc.
@@ -46,7 +46,7 @@ The inifile module tries hard not to manipulate your file any more than it needs
  * Supports either whitespace or no whitespace around '='.
  * Adds any missing sections to the INI file.
 
-###Manage multiple values in a setting
+### Manage multiple values in a setting
 
 Use the `ini_subsetting` type:
 
@@ -69,7 +69,7 @@ JAVA_ARGS="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/pe
 ~~~
 
 
-###Use a non-standard section header
+### Use a non-standard section header
 
 ~~~puppet
 ini_setting { 'default minage':
@@ -90,7 +90,28 @@ default:
    minage = 1
 ~~~
 
-###Implement child providers
+### Use a non-standard indent character (or string) for added settings
+
+~~~puppet
+ini_setting { 'procedure cache size':
+  ensure         => present,
+  path           => '/var/lib/ase/config/ASE-16_0/SYBASE.cfg',
+  section        => 'SQL Server Administration',
+  setting        => 'procedure cache size',
+  value          => '15000',
+  indent_char    => "\t",
+  indent_width   => 2,
+}
+~~~
+
+Results in:
+
+~~~puppet
+[SQL Server Administration]
+		procedure cache size = 15000
+~~~
+
+### Implement child providers
 
 You might want to create child providers that inherit the `ini_setting` provider, for one or both of these purposes:
 
@@ -266,15 +287,15 @@ ini_setting { '[section1] setting3':
 ~~~
 
 
-##Reference
+## Reference
 
-###Public Types
+### Public Types
 
  * [`ini_setting`](#type-ini_setting)
 
  * [`ini_subsetting`](#type-ini_subsetting)
 
-###Public Functions
+### Public Functions
 
  * [`create_ini_settings`](#function-create_ini_settings)
 
@@ -330,6 +351,14 @@ Global show_diff configuraton takes priority over this one -
 ##### `section_suffix`
 
 *Optional.*  Designates the string that will appear after the section's name.  Default value: "]".
+
+##### `indent_char`
+
+*Optional.*  Designates the character (or string) that will be used to indent newly created settings. This will not affect settings which already exist in the file, even if they are changed. Default value: " ".
+
+##### `indent_width`
+
+*Optional.*  Designates the number of `indent_char` to indent newly inserted settings by. If this is not defined, the default is to compute the indentation automatically from existing settings in the section, or no indent if the section does not yet exist. This will not affect settings which already exist in the file, even if they are changed.
 
 ##### `refreshonly`
 
@@ -463,13 +492,13 @@ $example = {
 
 Default value: '{}'.
 
-##Limitations
+## Limitations
 
 This module has been tested on [all PE-supported platforms](https://forge.puppetlabs.com/supported#compat-matrix), and no issues have been identified. Additionally, it is tested (but not supported) on Windows 7, Mac OS X 10.9, and Solaris 12.
 
 Due to (PUP-4709) the create_ini_settings function will cause errors when attempting to create multiple ini_settings in one go when using Puppet 4.0.x or 4.1.x. If needed, the temporary fix for this can be found here: https://github.com/puppetlabs/puppetlabs-inifile/pull/196.
 
-##Development
+## Development
 
 Puppet Labs modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can't access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.
 
@@ -477,6 +506,6 @@ We want to keep it as easy as possible to contribute changes so that our modules
 
 For more information, see our [module contribution guide.](https://docs.puppetlabs.com/forge/contributing.html)
 
-###Contributors
+### Contributors
 
 To see who's already involved, see the [list of contributors.](https://github.com/puppetlabs/puppetlabs-inifile/graphs/contributors)

@@ -1,3 +1,50 @@
+## 2018-02-01 - 7.3.0 (Feature release)
+
+#### Features:
+
+- Add support for Debian 9 (stretch)
+- Add support for graphite 1.x
+- Add `gr_carbonlink_hashing_type` (since graphite 0.9.16+)
+- Add `gr_django_init_provider`
+- Add `gr_django_init_command`
+
+#### Bugfixes:
+
+- Support renamed parameters in local_settings.py for graphite 1.x+
+
+## 2017-08-01 - 7.2.0 (Feature release)
+
+#### Features:
+
+- Add a new parameter : `gr_base_dir_managed_externally`
+
+#### Bugfixes:
+
+- Updated python-pip to python2-pip for RedHat 7 variants
+- If there are multiple cache instances, and any but the last crash, this returns 0 and puppet will not try to restart the service(s)
+
+## 2017-03-22 - 7.1.0 (Feature release)
+
+#### Features:
+
+- Add `gr_pip_install_options` param for setting install_options for pip
+
+## 2017-03-17 - 7.0.0 (Major release)
+
+#### Features:
+
+- Add support for Ubuntu Xenial (see compatibility part of README)
+- Add the ability to specify an alternative python binary
+- Allow setting service provider by parameter
+- Make logrotation optional
+- Autodetect additional whisper dirs
+- Optimizations for Amazon Linux
+- Add parameter gr_carbon_log_rotate
+
+#### Bugfixes:
+
+- Some smaller fixes
+
 ## 2016-05-31 - 6.0.4 (Bugfix release)
 
 #### Bugfixes:

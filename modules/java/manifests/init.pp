@@ -9,7 +9,6 @@
 #    or other platform-specific options where there are multiple
 #    implementations available (eg: OpenJDK vs Oracle JDK).
 #
-#
 #  [*version*]
 #    The version of java to install. By default, this module simply ensures
 #    that java is present, and does not require a specific version.
@@ -35,6 +34,10 @@
 #    alternative is actually enabled, this is required to ensure the
 #    correct JVM is enabled.
 #
+#  [*java_home*]
+#    The path to where the JRE is installed. This will be set as an
+#    environment variable.
+#
 # Actions:
 #
 # Requires:
@@ -42,28 +45,19 @@
 # Sample Usage:
 #
 class java(
-  $distribution          = 'jdk',
-  $version               = 'present',
-  $package               = undef,
-  $package_options       = undef,
-  $java_alternative      = undef,
-  $java_alternative_path = undef
+  String $distribution                                              = 'jdk',
+  Pattern[/present|installed|latest|^[.+_0-9a-zA-Z:~-]+$/] $version = 'present',
+  Optional[String] $package                                         = undef,
+  Optional[Array] $package_options                                  = undef,
+  Optional[String] $java_alternative                                = undef,
+  Optional[String] $java_alternative_path                           = undef,
+  Optional[String] $java_home                                       = undef
 ) {
-  include java::params
+  include ::java::params
 
-  validate_re($version, 'present|installed|latest|^[.+_0-9a-zA-Z:~-]+$')
-  
-  if $package_options != undef {
-    validate_array($package_options)
-  }
-
-  if has_key($java::params::java, $distribution) {
-    $default_package_name     = $java::params::java[$distribution]['package']
-    $default_alternative      = $java::params::java[$distribution]['alternative']
-    $default_alternative_path = $java::params::java[$distribution]['alternative_path']
-    $java_home                = $java::params::java[$distribution]['java_home']
-  } else {
-    fail("Java distribution ${distribution} is not supported.")
+  $default_package_name = has_key($java::params::java, $distribution) ? {
+    false   => undef,
+    default => $java::params::java[$distribution]['package'],
   }
 
   $use_java_package_name = $package ? {
@@ -71,12 +65,17 @@ class java(
     default => $package,
   }
 
+
+  ## Weird logic........
   ## If $java_alternative is set, use that.
   ## Elsif the DEFAULT package is being used, then use $default_alternative.
   ## Else undef
   $use_java_alternative = $java_alternative ? {
-    undef   => $use_java_package_name ? {
-      $default_package_name => $default_alternative,
+    undef                   => $use_java_package_name ? {
+      $default_package_name => has_key($java::params::java, $distribution) ? {
+        default => $java::params::java[$distribution]['alternative'],
+        false => undef,
+      },
       default               => undef,
     },
     default => $java_alternative,
@@ -84,11 +83,36 @@ class java(
 
   ## Same logic as $java_alternative above.
   $use_java_alternative_path = $java_alternative_path ? {
-    undef   => $use_java_package_name ? {
-      $default_package_name => $default_alternative_path,
+    undef                   => $use_java_package_name ? {
+      $default_package_name => has_key($java::params::java, $distribution) ? {
+      default               => $java::params::java[$distribution]['alternative_path'],
+      false                 => undef,
+      },
       default               => undef,
     },
     default => $java_alternative_path,
+  }
+
+  $use_java_home = $java_home ? {
+    undef                   => $use_java_package_name ? {
+      $default_package_name => has_key($java::params::java, $distribution) ? {
+        default             => $java::params::java[$distribution]['java_home'],
+        false               => undef,
+      },
+      default               => undef,
+    },
+    default => $java_home,
+  }
+
+  ## This should only be required if we did not override all the information we need.
+  # One of the defaults is missing and its not intentional:
+  if ((
+      $use_java_package_name == undef or $use_java_alternative == undef or
+      $use_java_alternative_path == undef or $use_java_home == undef
+    ) and (
+      ! has_key($::java::params::java, $distribution)
+    )) {
+    fail("Java distribution ${distribution} is not supported. Missing default values.")
   }
 
   $jre_flag = $use_java_package_name ? {
@@ -105,14 +129,12 @@ class java(
   }
 
   anchor { 'java::begin:': }
-  ->
-  package { 'java':
+  -> package { 'java':
     ensure          => $version,
     install_options => $package_options,
     name            => $use_java_package_name,
   }
-  ->
-  class { 'java::config': }
+  -> class { 'java::config': }
   -> anchor { 'java::end': }
 
 }

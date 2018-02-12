@@ -1,6 +1,8 @@
+#
+# validate_bool.rb
+#
 module Puppet::Parser::Functions
-
-  newfunction(:validate_bool, :doc => <<-'ENDHEREDOC') do |args|
+  newfunction(:validate_bool, doc: <<-'ENDHEREDOC') do |args|
     Validate that all passed values are either true or false. Abort catalog
     compilation if any value fails this check.
 
@@ -19,16 +21,14 @@ module Puppet::Parser::Functions
 
     ENDHEREDOC
 
-    unless args.length > 0 then
-      raise Puppet::ParseError, ("validate_bool(): wrong number of arguments (#{args.length}; must be > 0)")
+    if args.empty?
+      raise Puppet::ParseError, "validate_bool(): wrong number of arguments (#{args.length}; must be > 0)"
     end
 
     args.each do |arg|
       unless function_is_bool([arg])
-        raise Puppet::ParseError, ("#{arg.inspect} is not a boolean.  It looks to be a #{arg.class}")
+        raise Puppet::ParseError, "#{arg.inspect} is not a boolean.  It looks to be a #{arg.class}"
       end
     end
-
   end
-
 end

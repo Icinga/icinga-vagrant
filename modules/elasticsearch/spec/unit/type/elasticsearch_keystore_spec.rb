@@ -1,10 +1,10 @@
-require 'spec_helper'
+require 'spec_helper_rspec'
 
 describe Puppet::Type.type(:elasticsearch_keystore) do
   let(:resource_name) { 'es-01' }
 
   describe 'validating attributes' do
-    %i[instance purge].each do |param|
+    %i[configdir instance purge].each do |param|
       it "should have a `#{param}` parameter" do
         expect(described_class.attrtype(param)).to eq(:param)
       end

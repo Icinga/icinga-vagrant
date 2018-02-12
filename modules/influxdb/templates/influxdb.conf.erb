@@ -1,245 +1,84 @@
 # This config file is managed by Puppet
-#
+<%-
+  def value_parser(v)
+    return v if v =~ /^[\d]+$/
 
-reporting-disabled = <%= @reporting_disabled %>
+    return v if v.is_a?(Integer)
 
-[meta]
-  enabled = true
-  dir = "<%= @meta_dir %>"
-  bind-address = "<%= @meta_bind_address %>"
-  http-bind-address = "<%= @meta_http_bind_address -%>"
-  retention-autocreate = <%= @retention_autocreate %>
-  election-timeout = "<%= @election_timeout %>"
-  heartbeat-timeout = "<%= @heartbeat_timeout %>"
-  leader-lease-timeout = "<%= @leader_lease_timeout %>"
-  commit-timeout = "<%= @commit_timeout %>"
-  cluster-tracing = <%= @cluster_tracing %>
+    return v if v.is_a?(TrueClass)
 
-[data]
-  enabled = <%= @data_enabled %>
-  dir = "<%= @data_dir %>"
-  max-wal-size = <%= @max_wal_size %>
-  wal-flush-interval = "<%= @wal_flush_interval %>"
-  wal-partition-flush-delay = "<%= @wal_partition_flush_delay %>"
-  wal-dir = "<%= @wal_dir %>"
-  wal-logging-enabled = <%= @wal_logging_enabled %>
-  trace-logging-enabled = <%= @trace_logging_enabled %>
-<% if @wal_ready_series_size -%>
-  wal-ready-series-size = <%= @wal_ready_series_size %>
-<% end -%>
-<% if @wal_compaction_threshold -%>
-  wal-compaction-threshold = <%= @wal_compaction_threshold %>
-<% end -%>
-<% if @wal_max_series_size -%>
-  wal-max-series-size = <%= @wal_max_series_size %>
-<% end -%>
-<% if @wal_flush_cold_interval -%>
-  wal-flush-cold-interval = "<%= @wal_flush_cold_interval %>"
-<% end -%>
-<% if @wal_partition_size_threshold -%>
-  wal-partition-size-threshold = <%= @wal_partition_size_threshold %>
-<% end -%>
-<% if @query_log_enabled -%>
-  query-log-enabled = <%@query_log_enabled %>
-<% end -%>
-<% if @cache_max_memory_size -%>
-  cache-max-memory-size = <%= @cache_max_memory_size %>
-<% end -%>
-<% if @cache_snapshot_memory_size -%>
-  cache-snapshot-memory-size = <%= @cache_snapshot_memory_size %>
-<% end -%>
-<% if @cache_snapshot_write_cold_duration -%>
-  cache-snapshot-write-cold-duration = "<%= @cache_snapshot_write_cold_duration %>"
-<% end -%>
-<% if @compact_min_file_count -%>
-  compact-min-file-count = <%= @compact_min_file_count %>
-<% end -%>
-<% if @compact_full_write_cold_duration -%>
-  compact-full-write-cold-duration = "<%= @compact_full_write_cold_duration %>"
-<% end -%>
-<% if @max_points_per_block -%>
-  max-points-per-block = <%= @max_points_per_block %>
-<% end -%>
+    return v if v.is_a?(FalseClass)
 
-[hinted-handoff]
-  enabled = <%= @hinted_handoff_enabled %>
-  dir = "<%= @hinted_handoff_dir %>"
-  max-size = <%= @hinted_handoff_max_size %>
-  max-age = "<%= @hinted_handoff_max_age %>"
-  retry-rate-limit = <%= @hinted_handoff_retry_rate_limit %>
-  retry-interval = "<%= @hinted_handoff_retry_interval %>"
-  retry-max-interval = "<%= @hinted_handoff_retry_max_interval %>"
-  purge-interval = "<%= @hinted_handoff_purge_interval %>"
+    return v if v.is_a?(Float)
 
-[coordinator]
-  shard-writer-timeout = "<%= @shard_writer_timeout %>"
-  write-timeout = "<%= @cluster_write_timeout %>"
+    return v if v.is_a?(Array)
 
-[retention]
-  enabled = <%= @retention_enabled %>
-  check-interval = "<%= @retention_check_interval %>"
+    # if we get here just return a string
+    return "\"#{v}\""
+  end
 
-[shard-precreation]
-  enabled = <%= @shard_precreation_enabled %>
-  check-interval = "<%= @shard_precreation_check_interval %>"
-  advance-period = "<%= @shard_precreation_advance_period %>"
+  def build_section(section_name, config, show_header=true)
+    result = []
 
-[monitor]
-  store-enabled = <%= @monitoring_enabled %>
-  store-database = "<%= @monitoring_database %>"
-  store-interval = "<%= @monitoring_write_interval %>"
+    if config and ! config.empty?
+      result << "[#{section_name}]" if show_header
+      config.sort_by{|key, value| key}.each do |key, value|
+        val = value_parser(value)
+        result << "#{key} = #{val}"
+      end
+    end
 
-[admin]
-  enabled = <%= @admin_enabled %>
-  bind-address = "<%= @admin_bind_address %>"
-  https-enabled = <%= @admin_https_enabled %>
-  https-certificate = "<%= @admin_https_certificate %>"
+    result.empty? ? '' : result.join("\n")
+  end
 
-[http]
-  enabled = <%= @http_enabled %>
-  bind-address = "<%= @http_bind_address %>"
-  auth-enabled = <%= @http_auth_enabled %>
-  log-enabled = <%= @http_log_enabled %>
-  write-tracing = <%= @http_write_tracing %>
-  pprof-enabled = <%= @http_pprof_enabled %>
-  https-enabled = <%= @http_https_enabled %>
-  https-certificate = "<%= @http_https_certificate %>"
+  def build_sub_section(section_name, config)
 
-<% if @graphite_options and ! @graphite_options.empty? -%>
-<% if @graphite_options.is_a?(Hash) -%>
-[[graphite]]
-<% @graphite_options.keys.sort.each do |key| -%>
-<% val = @graphite_options[key] 
-  if key == 'templates' and val.is_a?(Array) -%>
-  templates = [
-  <%- val.each do |template| -%>
-    "<%=template %>",
-  <%- end -%>
-  ]
-<% elsif val.is_a?(Array) or val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
-  <%=key %> = <%=val %>
-<% else -%>
-  <%=key %> = "<%=val %>"
-<% end -%>
-<% end -%>
-<% elsif @graphite_options.is_a?(Array) -%>
-<% @graphite_options.each do |option| -%>
-[[graphite]]
-<% @options.key.sort.each do |key| -%>
-<% val = @options[key] 
-  if key == 'templates' and val.is_a?(Array) -%>
-  templates = [
-  <%- val.each do |template| -%>
-    "<%=template %>",
-  <%- end -%>
-  ]
-<% elsif val.is_a?(Array) or val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
-  <%=key %> = <%=val %>
-<% else -%>
-  <%=key %> = "<%=val %>"
-<% end -%>
-<% end -%>
-<% end -%>
-<% end -%>
-<% else -%>
-[[graphite]]
-  enabled = false
-<% end -%>
+    result = []
 
-<% if @collectd_options and ! @collectd_options.empty? -%>
-<% if @collectd_options.is_a?(Hash) -%>
-[[collectd]]
-<% @collectd_options.keys.sort.each do |key| -%>
-<% val = @collectd_options[key] 
-  if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
-  <%=key %> = <%=val %>
-<% else -%>
-  <%=key %> = "<%=val %>"
-<% end -%>
-<% end -%>
-<% elsif @collectd_options.is_a?(Array) -%>
-<% @collectd_options.each do |option| -%>
-[[collectd]]
-<% option.keys.sort.each do |key| -%>
-<% val = @option[key] 
-  if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
-  <%=key %> = <%=val %>
-<% else -%>
-  <%=key %> = "<%=val %>"
-<% end -%>
-<% end -%>
-<% end -%>
-<% end -%>
-<% else -%>
-[[collectd]]
-  enabled = false
-<% end -%>
+    if config and ! config.empty?
 
-<% if @opentsdb_options and ! @opentsdb_options.empty? -%>
-<% if @opentsdb_options.is_a?(Hash) -%>
-[[opentsdb]]
-<% @opentsdb_options.keys.sort.each do |key| 
-   val = @opentsdb_options[key] 
-  -%>
-<% if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
-  <%=key %> = <%=val %>
-<% else -%>
-  <%=key %> = "<%=val %>"
-<% end -%>
-<% end -%>
-<% elsif @opentsdb_options.is_a?(Array) -%>
-<% @opentsdb_options.each do |option| -%>
-[[opentsdb]]
-<% option.keys.sort.each do |key|
-   val = @option[key]
-  -%>
-<% if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
-  <%=key %> = <%=val %>
-<% else -%>
-  <%=key %> = "<%=val %>"
-<% end -%>
-<% end -%>
-<% end -%>
-<% end -%>
-<% else -%>
-[[opentsdb]]
-  enabled = false
-<% end -%>
+      result << "[[#{section_name}]]"
 
-<% if @udp_options and ! @udp_options.empty? -%>
-<% if @udp_options.is_a?(Hash) -%>
-[[udp]]
-<% @udp_options.keys.sort.each do |key| 
-   val =  @udp_options[key]
-   -%>
-<% if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
-  <%=key %> = <%=val %>
-<% else -%>
-  <%=key %> = "<%=val %>"
-<% end -%>
-<% end -%>
-<% elsif @udp_options.is_a?(Array) -%>
-<% @udp_options.each do |option| -%>
-[[udp]]
-<% option.keys.sort.each do |key| 
- val = option[key]
-  -%>
-<% if val =~ /^(true|false|[0-9]+)$/ or val.is_a?(TrueClass) or val.is_a?(FalseClass) or val.is_a?(Fixnum) -%>
-  <%=key %> = <%=val %>
-<% else -%>
-  <%=key %> = "<%=val %>"
-<% end -%>
-<% end -%>
-<% end -%>
-<% end -%>
-<% else -%>
-[[udp]]
-  enabled = false
-<% end -%>
+      config.each do |name, data|
+        result << build_section(name, data, false)
+      end
 
-[continuous_queries]
-  enabled = <%= @continuous_queries_enabled %>
-  log-enabled = <%= @continuous_queries_log_enabled %>
-<% if @continuous_queries_run_interval -%>
-  run-interval = "<%= @continuous_queries_run_interval %>"
-<% end -%>
+    end
+
+    result.empty? ? '' : result.join("\n").chomp
+  end
+
+-%>
+
+# GLOBAL configuration options
+<%= build_section('global', @global_config, false) %>
+
+<%= build_section('meta', @meta_config) %>
+
+<%= build_section('data', @data_config) %>
+
+<%= build_section('coordinator', @coordinator_config) %>
+
+<%= build_section('retention', @retention_config) %>
+
+<%= build_section('shard-precreation', @shard_precreation_config) %>
+
+<%= build_section('monitor', @monitor_config) %>
+
+<%= build_section('admin', @admin_config) %>
+
+<%= build_section('http', @http_config) %>
+
+<%= build_section('subscriber', @subscriber_config) %>
+
+<%= build_section('hinted-handoff', @hinted_handoff_config) %>
+
+<%= build_sub_section('graphite', @graphite_config) %>
+
+<%= build_sub_section('collectd', @collectd_config) %>
+
+<%= build_sub_section('opentsdb', @opentsdb_config) %>
+
+<%= build_sub_section('udp', @udp_config) %>
+
+<%= build_section('continuous_queries', @continuous_queries_config) %>

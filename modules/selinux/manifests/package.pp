@@ -1,18 +1,13 @@
-# Class: selinux::package
+# selinux::package
+#
+# THIS IS A PRIVATE CLASS
+# =======================
 #
 # This module manages additional packages required to support some of the functions.
 #
-# Parameters:
+# @param manage_package See main class
+# @param package_name See main class
 #
-# There are no default parameters for this class.
-#
-# Actions:
-#
-# Requires:
-#
-# Sample Usage:
-#
-# This class file is not called directly
 class selinux::package (
   $manage_package = $::selinux::manage_package,
   $package_name   = $::selinux::package_name,

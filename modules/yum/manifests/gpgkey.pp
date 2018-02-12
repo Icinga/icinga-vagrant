@@ -20,23 +20,36 @@
 #
 # Sample usage:
 #   yum::gpgkey { '/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-smoketest1':
-#     ensure  => present,
+#     ensure  => 'present',
 #     content => '-----BEGIN PGP PUBLIC KEY BLOCK-----
 #   ...
 #   -----END PGP PUBLIC KEY BLOCK-----';
 #   }
 #
 define yum::gpgkey (
-  $path    = $name,
-  $ensure  = present,
-  $content = '',
-  $source  = '',
-  $owner   = 'root',
-  $group   = 'root',
-  $mode    = '0644'
+  String                    $path    = $name,
+  Enum['present', 'absent'] $ensure  = 'present',
+  Optional[String]          $content = undef,
+  Optional[String]          $source  = undef,
+  String                    $owner   = 'root',
+  String                    $group   = 'root',
+  String                    $mode    = '0644'
 ) {
-  validate_absolute_path($path)
-  validate_string($owner, $group, $mode)
+
+  $_creators = [$content, $source]
+  $_used_creators = $_creators.filter |$value| { !empty($value) }
+
+  unless size($_used_creators) != 1 {
+    File[$path] {
+      content => $content,
+      source  => $source,
+    }
+  } else {
+    case size($_used_creators) {
+      0:       { fail('Missing params: $content or $source must be specified') }
+      default: { fail('You cannot specify more than one of content, source') }
+    }
+  }
 
   file { $path:
     ensure => $ensure,
@@ -45,24 +58,12 @@ define yum::gpgkey (
     mode   => $mode,
   }
 
-  if ($content == '') and ($source == '') {
-    fail('Missing params: $content or $source must be specified')
-  } elsif $content {
-    File[$path] {
-      content => $content
-    }
-  } else {
-    File[$path] {
-      source => $source
-    }
-  }
-
   $rpmname = "gpg-pubkey-$( \
 gpg --quiet --with-colon --homedir=/root --throw-keyids <${path} | \
 cut -d: -f5 | cut -c9- | tr '[A-Z]' '[a-z]' | head -1)"
 
   case $ensure {
-    present: {
+    'present', default: {
       exec { "rpm-import-${name}":
         path    => '/bin:/usr/bin:/sbin/:/usr/sbin',
         command => "rpm --import ${path}",
@@ -71,17 +72,13 @@ cut -d: -f5 | cut -c9- | tr '[A-Z]' '[a-z]' | head -1)"
       }
     }
 
-    absent: {
+    'absent': {
       exec { "rpm-delete-${name}":
         path    => '/bin:/usr/bin:/sbin/:/usr/sbin',
         command => "rpm -e ${rpmname}",
         onlyif  => ["test -f ${path}", "rpm -q ${rpmname}"],
         before  => File[$path],
       }
-    }
-
-    default: {
-      fail("Invalid ensure state: ${ensure}")
     }
   }
 }

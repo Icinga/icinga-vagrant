@@ -44,11 +44,14 @@ class php::repo::debian(
   }})
 
   ::apt::source { "source_php_${release}":
-    location    => $location,
-    release     => $release,
-    repos       => $repos,
-    include_src => $include_src,
-    require     => Apt::Key['php::repo::debian'],
+    location => $location,
+    release  => $release,
+    repos    => $repos,
+    include  => {
+      'src' => $include_src,
+      'deb' => true,
+    },
+    require  => Apt::Key['php::repo::debian'],
   }
 
   if ($dotdeb) {
@@ -56,10 +59,13 @@ class php::repo::debian(
     # See: http://www.dotdeb.org/instructions/
     if $release == 'wheezy-php56' {
       ::apt::source { 'dotdeb-wheezy':
-        location    => $location,
-        release     => 'wheezy',
-        repos       => $repos,
-        include_src => $include_src,
+        location => $location,
+        release  => 'wheezy',
+        repos    => $repos,
+        include  => {
+          'src' => $include_src,
+          'deb' => true,
+        },
       }
     }
   }

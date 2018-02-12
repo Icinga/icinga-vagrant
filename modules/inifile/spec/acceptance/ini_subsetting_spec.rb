@@ -22,10 +22,14 @@ describe 'ini_subsetting resource' do
     end
 
     describe file(path) do
-      it { should be_file }
-      its(:content) {
-        should match content
+      it { is_expected.to be_file }
+
+      describe '#content' do
+        subject { super().content }
+        it {
+        is_expected.to match content
       }
+      end
     end
   end
 
@@ -43,7 +47,7 @@ describe 'ini_subsetting resource' do
     end
 
     describe file(path) do
-      it { should_not be_file }
+      it { is_expected.not_to be_file }
     end
   end
 
@@ -75,10 +79,14 @@ describe 'ini_subsetting resource' do
       end
 
       describe file("#{tmpdir}/ini_subsetting.ini") do
-        it { should be_file }
-        its(:content) {
-          should match /\[one\]\nkey = alphabet betatrons/
+        it { is_expected.to be_file }
+
+        describe '#content' do
+          subject { super().content }
+          it {
+          is_expected.to match /\[one\]\nkey = alphabet betatrons/
         }
+        end
       end
     end
 
@@ -107,12 +115,16 @@ describe 'ini_subsetting resource' do
       end
 
       describe file("#{tmpdir}/ini_subsetting.ini") do
-        it { should be_file }
-        its(:content) {
-          should match /\[one\]/
-          should match /key = betatrons/
-          should_not match /alphabet/
+        it { is_expected.to be_file }
+
+        describe '#content' do
+          subject { super().content }
+          it {
+          is_expected.to match /\[one\]/
+          is_expected.to match /key = betatrons/
+          is_expected.not_to match /alphabet/
         }
+        end
       end
     end
   end
@@ -223,10 +235,14 @@ describe 'ini_subsetting resource' do
         end
 
         describe file("#{tmpdir}/ini_subsetting.ini") do
-          it { should be_file }
-          its(:content) {
-            should match content
+          it { is_expected.to be_file }
+
+          describe '#content' do
+            subject { super().content }
+            it {
+            is_expected.to match content
           }
+          end
         end
       end
     end

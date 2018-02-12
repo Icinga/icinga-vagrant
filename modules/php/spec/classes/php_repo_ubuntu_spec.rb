@@ -19,6 +19,7 @@ describe 'php::repo::ubuntu', type: :class do
               version: '7.0'
             }
           end
+
           it { is_expected.to contain_exec('add-apt-repository-ppa:ondrej/php') }
         end
 
@@ -28,6 +29,7 @@ describe 'php::repo::ubuntu', type: :class do
               version: '5.6'
             }
           end
+
           it { is_expected.to contain_exec('add-apt-repository-ppa:ondrej/php') }
         end
 
@@ -37,6 +39,7 @@ describe 'php::repo::ubuntu', type: :class do
               version: '5.4'
             }
           end
+
           it { expect { is_expected.to raise_error(Puppet::Error) } }
         end
 

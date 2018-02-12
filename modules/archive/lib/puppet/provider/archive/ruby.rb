@@ -170,6 +170,8 @@ Puppet::Type.type(:archive).provide(:ruby) do
     tempfile.close!
 
     case resource[:source]
+    when %r{^(puppet)}
+      puppet_download(temppath)
     when %r{^(http|ftp)}
       download(temppath)
     when %r{^file}
@@ -187,11 +189,19 @@ Puppet::Type.type(:archive).provide(:ruby) do
     # conditionally verify checksum:
     if resource[:checksum_verify] == :true && resource[:checksum_type] != :none
       archive = PuppetX::Bodeco::Archive.new(temppath)
-      raise(Puppet::Error, 'Download file checksum mismatch') unless archive.checksum(resource[:checksum_type]) == checksum
+      actual_checksum = archive.checksum(resource[:checksum_type])
+      if actual_checksum != checksum
+        raise(Puppet::Error, "Download file checksum mismatch (expected: #{checksum} actual: #{actual_checksum})")
+      end
     end
 
-    FileUtils.mkdir_p(File.dirname(archive_filepath))
-    FileUtils.mv(temppath, archive_filepath)
+    move_file_in_place(temppath, archive_filepath)
+  end
+
+  def move_file_in_place(from, to)
+    # Ensure to directory exists.
+    FileUtils.mkdir_p(File.dirname(to))
+    FileUtils.mv(from, to)
   end
 
   def download(filepath)
@@ -207,6 +217,13 @@ Puppet::Type.type(:archive).provide(:ruby) do
     )
   end
 
+  def puppet_download(filepath)
+    PuppetX::Bodeco::Util.puppet_download(
+      resource[:source],
+      filepath
+    )
+  end
+
   def s3_download(path)
     params = [
       's3',
@@ -214,6 +231,7 @@ Puppet::Type.type(:archive).provide(:ruby) do
       resource[:source],
       path
     ]
+    params += resource[:download_options] if resource[:download_options]
 
     aws(params)
   end

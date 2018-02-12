@@ -15,26 +15,22 @@
 #   Specify which version of the package to install
 #
 class php::embedded(
-  $ensure   = $::php::ensure,
-  $package  =
-    "${::php::package_prefix}${::php::params::embedded_package_suffix}",
-  $inifile  = $::php::params::embedded_inifile,
-  $settings = {},
+  String $ensure                = $::php::ensure,
+  String $package               = "${::php::package_prefix}${::php::params::embedded_package_suffix}",
+  Stdlib::Absolutepath $inifile = $::php::params::embedded_inifile,
+  Hash $settings                = {},
 ) inherits ::php::params {
 
   if $caller_module_name != $module_name {
     warning('php::embedded is private')
   }
 
-  validate_absolute_path($inifile)
-  validate_hash($settings)
-
   $real_settings = deep_merge(
     $settings,
     hiera_hash('php::embedded::settings', {})
   )
 
-  $real_package = $::osfamily ? {
+  $real_package = $facts['os']['family'] ? {
     'Debian' => "lib${package}",
     default   => $package,
   }
@@ -42,8 +38,8 @@ class php::embedded(
   package { $real_package:
     ensure  => $ensure,
     require => Class['::php::packages'],
-  }->
-  ::php::config { 'embedded':
+  }
+  -> ::php::config { 'embedded':
     file   => $inifile,
     config => $real_settings,
   }

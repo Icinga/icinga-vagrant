@@ -6,11 +6,14 @@ describe Puppet::Type.type(:package).provider(:pear) do
   end
 
   let(:provider) do
-    described_class.new(resource)
+    provider = described_class.new(resource)
+    provider.resource = resource
+    provider
   end
 
   before do
     described_class.stubs(:command).with(:pear).returns '/fake/pear'
+    resource.provider = provider
   end
 
   describe '.instances' do

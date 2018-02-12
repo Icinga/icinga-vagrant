@@ -12,8 +12,53 @@ module PuppetX
         @connection = PuppetX::Bodeco.const_get(uri.scheme.upcase).new("#{uri.scheme}://#{uri.host}:#{uri.port}", options)
         @connection.content(uri)
       end
-    end
 
+      #
+      # This allows you to use a puppet syntax for a file and return it's content.
+      #
+      # @example
+      #  puppet_download 'puppet:///modules/my_module_name/my_file.dat
+      #
+      # @param [String] url this is the puppet url of the file to be fetched
+      # @param [String] filepath this is path of the file to create
+      #
+      # @raise [ArgumentError] when the file doesn't exist
+      #
+      def self.puppet_download(url, filepath)
+        # Somehow there is no consistent way to determine what terminus to use. So we switch to a
+        # trial and error method. First we start withe the default. And if it doesn't work, we try the
+        # other ones
+        status = load_file_with_any_terminus(url)
+        raise ArgumentError, "Could not retrieve information from environment #{Puppet['environment']} source(s) #{url}'" unless status
+        File.open(filepath, 'w') { |file| file.write(status.content) }
+      end
+
+      # @private
+      # rubocop:disable HandleExceptions
+      def self.load_file_with_any_terminus(url)
+        termini_to_try = [:file_server, :rest]
+        termini_to_try.each do |terminus|
+          with_terminus(terminus) do
+            begin
+              content = Puppet::FileServing::Content.indirection.find(url)
+            rescue SocketError, Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTDOWN, Errno::EHOSTUNREACH, Errno::ETIMEDOUT
+              # rescue any network error
+            end
+            return content if content
+          end
+        end
+        nil
+      end
+      # rubocop:enable HandleExceptions
+
+      def self.with_terminus(terminus)
+        old_terminus = Puppet[:default_file_terminus]
+        Puppet[:default_file_terminus] = terminus
+        value = yield
+        Puppet[:default_file_terminus] = old_terminus
+        value
+      end
+    end
     class HTTP
       require 'net/http'
 
@@ -25,10 +70,15 @@ module PuppetX
         @password = options[:password]
         @cookie = options[:cookie]
         @insecure = options[:insecure]
-        proxy_server = options[:proxy_server]
-        proxy_type = options[:proxy_type]
 
-        ENV["#{proxy_type}_proxy"] = proxy_server
+        if options[:proxy_server]
+          uri = URI(options[:proxy_server])
+          unless uri.scheme
+            uri = URI("#{options[:proxy_type]}://#{options[:proxy_server]}")
+          end
+          @proxy_addr = uri.hostname
+          @proxy_port = uri.port
+        end
 
         ENV['SSL_CERT_FILE'] = File.expand_path(File.join(__FILE__, '..', 'cacert.pem')) if Facter.value(:osfamily) == 'windows' && !ENV.key?('SSL_CERT_FILE')
       end
@@ -48,7 +98,7 @@ module PuppetX
                     else
                       { use_ssl: false }
                     end
-        Net::HTTP.start(uri.host, uri.port, http_opts) do |http|
+        Net::HTTP.start(uri.host, uri.port, @proxy_addr, @proxy_port, http_opts) do |http|
           http.request(generate_request(uri)) do |response|
             case response
             when Net::HTTPSuccess

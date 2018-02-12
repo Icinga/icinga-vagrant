@@ -26,6 +26,7 @@ define archive::nexus (
   Enum['none', 'md5', 'sha1', 'sha2','sh256', 'sha384', 'sha512'] $checksum_type   = 'md5',
   Boolean           $checksum_verify = true,
   String            $packaging       = 'jar',
+  Boolean           $use_nexus3_urls = false,
   Optional[String]  $classifier      = undef,
   Optional[String]  $extension       = undef,
   Optional[String]  $username        = undef,
@@ -65,9 +66,20 @@ define archive::nexus (
 
   }.filter |$keys, $values| { $values != undef }
 
-  $artifact_url = assemble_nexus_url($url, $query_params)
-  $checksum_url = regsubst($artifact_url, "p=${packaging}", "p=${packaging}.${checksum_type}")
-
+  if $use_nexus3_urls {
+    if $classifier {
+      $c = "-${classifier}"
+    } else {
+      $c = ''
+    }
+    $artifact_url = sprintf('%s/repository/%s/%s/%s/%s/%s-%s%s.%s', $url,
+                            $repository, regsubst($group_id, '\.', '/', 'G'), $artifact_id,
+                            $version, $artifact_id, $version, $c, $packaging)
+    $checksum_url = sprintf('%s.%s', $artifact_url, $checksum_type)
+  } else {
+    $artifact_url = assemble_nexus_url($url, $query_params)
+    $checksum_url = regsubst($artifact_url, "p=${packaging}", "p=${packaging}.${checksum_type}")
+  }
   archive { $name:
     ensure          => $ensure,
     source          => $artifact_url,

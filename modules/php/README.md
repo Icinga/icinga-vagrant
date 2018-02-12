@@ -1,4 +1,4 @@
-[![Puppet Forge](http://img.shields.io/puppetforge/v/voxpupuli/php.svg)](https://forge.puppetlabs.com/voxpupuli/php)
+[![Puppet Forge](http://img.shields.io/puppetforge/v/puppet/php.svg)](https://forge.puppetlabs.com/puppet/php)
 [![Build Status](https://travis-ci.org/voxpupuli/puppet-php.svg?branch=master)](https://travis-ci.org/voxpupuli/puppet-php)
 
 ## Current Status
@@ -129,6 +129,17 @@ by default. Specify additional pools like so:
 For an overview of all possible parameters for `php::fpm::pool` resources
 please see [its documention](http://php.puppet.mayflower.de/php/fpm/pool.html).
 
+### Overriding php-fpm user
+
+By default, php-fpm is set up to run as Apache. If you need to customize that user, you can do that like so:
+
+```puppet
+  class { '::php':
+    fpm_user  => 'nginx',
+    fpm_group => 'nginx',
+  }
+```
+
 ### Alternative examples using Hiera
 Alternative to the Puppet DSL code examples above, you may optionally define your PHP configuration using Hiera.
 
@@ -139,6 +150,8 @@ Below are all the examples you see above, but defined in YAML format for use wit
 php::ensure: latest
 php::manage_repos: true
 php::fpm: true
+php::fpm_user: 'nginx'
+php::fpm_group: 'nginx'
 php::dev: true
 php::composer: true
 php::pear: true

@@ -1,3 +1,18 @@
+## Supported Release 2.0.0
+### Summary
+This is a major release that includes a few bugfixes as well as some general module updates.
+
+**This release drops Puppet 3 support**
+
+### Changed
+- Moved lower Puppet version requirement to 4.7.0, MODULES-4830
+
+### Fixed
+- Fix path validation on windows MODULES-4170
+- Fix headings in README
+- Fix for mimicking commented settings MODULES-4932
+- Fix for Backwards compatible ini_file.set_value MODULES-5172
+
 ## Supported Release 1.6.0
 ### Summary
 This release expands functionality around sub-settings and adds the `refreshonly` parameter so the user can specify whether a resource should or should not respond to a refresh event.

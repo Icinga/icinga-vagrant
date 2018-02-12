@@ -12,25 +12,15 @@
 #   Path to pid file for fpm
 
 class php::globals (
-  $php_version  = undef,
-  $config_root  = undef,
-  $fpm_pid_file = undef,
+  Optional[Pattern[/^[57].[0-9]/]] $php_version = undef,
+  Optional[Stdlib::Absolutepath] $config_root   = undef,
+  Optional[Stdlib::Absolutepath] $fpm_pid_file  = undef,
 ) {
-  if $php_version != undef {
-    validate_re($php_version, '^[57].[0-9]')
-  }
-  if $config_root != undef {
-    validate_absolute_path($config_root)
-  }
 
-  if $fpm_pid_file != undef {
-    validate_absolute_path($fpm_pid_file)
-  }
-
-  $default_php_version = $::osfamily ? {
-    'Debian' => $::operatingsystem ? {
-      'Ubuntu' => $::operatingsystemrelease ? {
-        /^(16.04)$/ => '7.0',
+  $default_php_version = $facts['os']['family'] ? {
+    'Debian' => $facts['os']['name'] ? {
+      'Ubuntu' => $facts['os']['release']['full'] ? {
+        /^(1[67].04)$/ => '7.0',
         default => '5.x',
       },
       default => '5.x',
@@ -40,9 +30,9 @@ class php::globals (
 
   $globals_php_version = pick($php_version, $default_php_version)
 
-  case $::osfamily {
+  case $facts['os']['family'] {
     'Debian': {
-      if $::operatingsystem == 'Ubuntu' {
+      if $facts['os']['name'] == 'Ubuntu' {
         case $globals_php_version {
           /^5\.4/: {
             $default_config_root  = '/etc/php5'
@@ -83,7 +73,7 @@ class php::globals (
             $fpm_service_name     = "php${globals_php_version}-fpm"
             $ext_tool_enable      = "/usr/sbin/phpenmod -v ${globals_php_version}"
             $ext_tool_query       = "/usr/sbin/phpquery -v ${globals_php_version}"
-            $package_prefix       = 'php7.0-'
+            $package_prefix       = "php${globals_php_version}-"
           }
           default: {
             $default_config_root  = '/etc/php5'
@@ -114,15 +104,19 @@ class php::globals (
       }
     }
     'RedHat': {
-      $default_config_root  = '/etc/php.d'
+      $default_config_root  = '/etc'
       $default_fpm_pid_file = '/var/run/php-fpm/php-fpm.pid'
     }
     'FreeBSD': {
       $default_config_root  = '/usr/local/etc'
       $default_fpm_pid_file = '/var/run/php-fpm.pid'
     }
+    'Archlinux': {
+      $default_config_root  =  '/etc/php'
+      $default_fpm_pid_file = '/run/php-fpm/php-fpm.pid'
+    }
     default: {
-      fail("Unsupported osfamily: ${::osfamily}")
+      fail("Unsupported osfamily: ${facts['os']['family']}")
     }
   }
 

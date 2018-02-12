@@ -1,3 +1,11 @@
+##2016-10-24 - Release 4.0.0
+###Summary
+- Official support for influxdb 1.0.0
+
+##2016-06-06 - Release 3.1.1
+###Summary
+- metadata updates (quality score update)
+
 ##2016-06-05 - Release 3.1.0
 ###Summary
 - Fix compatibility requirements

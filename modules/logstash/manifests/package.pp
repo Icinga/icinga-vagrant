@@ -23,10 +23,27 @@ class logstash::package(
   $package_name = $logstash::package_name,
 )
 {
+  Exec {
+    path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
+    cwd       => '/',
+    tries     => 3,
+    try_sleep => 10,
+  }
+
+  File {
+    ensure => file,
+    backup => false,
+  }
+
   if $logstash::ensure == 'present' {
     # Check if we want to install a specific version.
     if $version {
-      $package_ensure = $version
+      if $::osfamily == 'redhat' {
+        $package_ensure = regsubst($version, '-', '~')
+      }
+      else {
+        $package_ensure = $version
+      }
     }
     else {
       $package_ensure = $logstash::auto_upgrade ? {
@@ -70,6 +87,8 @@ class logstash::package(
         'rpm':   { $package_provider = 'rpm'   }
         default: { fail("Unknown file extension '${extension}'.") }
       }
+
+      $package_require = undef
     }
     else {
       # Use the OS packaging system to locate the package.
@@ -77,11 +96,14 @@ class logstash::package(
       $package_provider = undef
       if $::osfamily == 'Debian' {
         $package_require = Class['apt::update']
+      } else {
+        $package_require = undef
       }
     }
   }
   else { # Package removal
     $package_local_file = undef
+    $package_require = undef
     if ($::osfamily == 'Suse') {
       $package_provider = 'rpm'
       $package_ensure = 'absent' # "purged" not supported by provider
@@ -98,17 +120,5 @@ class logstash::package(
     source   => $package_local_file, # undef if using package manager.
     provider => $package_provider, # undef if using package manager.
     require  => $package_require,
-  }
-
-  Exec {
-    path      => [ '/bin', '/usr/bin', '/usr/local/bin' ],
-    cwd       => '/',
-    tries     => 3,
-    try_sleep => 10,
-  }
-
-  File {
-    ensure => file,
-    backup => false,
   }
 }

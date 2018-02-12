@@ -1,4 +1,0 @@
-fixtures:
-  symlinks:
-    sysctl: "#{source_dir}"
-

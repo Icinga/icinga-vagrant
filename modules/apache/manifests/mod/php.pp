@@ -1,15 +1,16 @@
 class apache::mod::php (
-  $package_name   = undef,
-  $package_ensure = 'present',
-  $path           = undef,
-  $extensions     = ['.php'],
-  $content        = undef,
-  $template       = 'apache/mod/php.conf.erb',
-  $source         = undef,
-  $root_group     = $::apache::params::root_group,
-  $php_version    = $::apache::params::php_version,
+  $package_name     = undef,
+  $package_ensure   = 'present',
+  $path             = undef,
+  Array $extensions = ['.php'],
+  $content          = undef,
+  $template         = 'apache/mod/php.conf.erb',
+  $source           = undef,
+  $root_group       = $::apache::params::root_group,
+  $php_version      = $::apache::params::php_version,
 ) inherits apache::params {
 
+  include ::apache
   $mod = "php${php_version}"
 
   if defined(Class['::apache::mod::prefork']) {
@@ -21,7 +22,6 @@ class apache::mod::php (
   else {
     fail('apache::mod::php requires apache::mod::prefork or apache::mod::itk; please enable mpm_module => \'prefork\' or mpm_module => \'itk\' on Class[\'apache\']')
   }
-  validate_array($extensions)
 
   if $source and ($content or $template != 'apache/mod/php.conf.erb') {
     warning('source and content or template parameters are provided. source parameter will be used')
@@ -38,7 +38,7 @@ class apache::mod::php (
   }
 
   # Determine if we have a package
-  $mod_packages = $::apache::params::mod_packages
+  $mod_packages = $::apache::mod_packages
   if $package_name {
     $_package_name = $package_name
   } elsif has_key($mod_packages, $mod) { # 2.6 compatibility hack
@@ -52,13 +52,25 @@ class apache::mod::php (
   $_lib = "libphp${php_version}.so"
   $_php_major = regsubst($php_version, '^(\d+)\..*$', '\1')
 
-  ::apache::mod { $mod:
-    package        => $_package_name,
-    package_ensure => $package_ensure,
-    lib            => $_lib,
-    id             => "php${_php_major}_module",
-    path           => $path,
-  }
+  if $::operatingsystem == 'SLES' {
+      ::apache::mod { $mod:
+        package        => $_package_name,
+        package_ensure => $package_ensure,
+        lib            => 'mod_php5.so',
+        id             => "php${_php_major}_module",
+        path           => "${::apache::lib_path}/mod_php5.so",
+      }
+    } else {
+      ::apache::mod { $mod:
+        package        => $_package_name,
+        package_ensure => $package_ensure,
+        lib            => $_lib,
+        id             => "php${_php_major}_module",
+        path           => $path,
+      }
+
+    }
+
 
   include ::apache::mod::mime
   include ::apache::mod::dir

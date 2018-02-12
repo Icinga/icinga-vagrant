@@ -1,6 +1,6 @@
 {
   "name": "graylog-graylog",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "Graylog, Inc.",
   "summary": "Install and configure a Graylog system",
   "license": "Apache-2.0",

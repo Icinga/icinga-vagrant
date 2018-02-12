@@ -3,7 +3,6 @@ fixtures:
      stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
      archive: "https://github.com/voxpupuli/puppet-archive.git"
      docker: "https://github.com/garethr/garethr-docker.git"
-     wget: "https://github.com/maestrodev/puppet-wget.git"
      apt: "https://github.com/puppetlabs/puppetlabs-apt.git"
   symlinks:
     grafana: "#{source_dir}"

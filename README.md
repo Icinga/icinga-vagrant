@@ -22,12 +22,13 @@ A simple `vagrant up` fully installs these VMs and you are ready to explore
 the Icinga ecosystem and possible integrations.
 
 You can use these boxes for your own local demos, or to learn how to use Icinga
-in your environment.
+in your environment. The Puppet provisioner uses official upstream modules
+including [puppet-icinga2](https://github.com/icinga/puppet-icinga2) and [puppet-icingaweb2](https://github.com/icinga/puppet-icingaweb2).
 
-* [Icinga 2 Standalone](README.md#boxes-icinga2x), [Icinga 2 Cluster](README.md#boxes-icinga2x-cluster)
-* [Icinga 2 and InfluxDB](README.md#boxes-icinga2x-influxdb)
-* [Icinga 2 and Elastic](README.md#boxes-icinga2x-elastic)
-* [Icinga 2 and Graylog](README.md#boxes-icinga2x-graylog)
+* [Icinga 2 Standalone](README.md#boxes-standalone), [Icinga 2 Distributed](README.md#boxes-distributed)
+* [Icinga 2 and InfluxDB](README.md#boxes-influxdb)
+* [Icinga 2 and Elastic](README.md#boxes-elastic)
+* [Icinga 2 and Graylog](README.md#boxes-graylog)
 
 ## Icinga Web 2 <a id="about-icingaweb2"></a>
 
@@ -204,21 +205,20 @@ Proceed here for an overview about all available [boxes](#boxes).
 
 ## Boxes <a id="boxes"></a>
 
-### Icinga 2 Standalone <a id="boxes-icinga2x"></a>
+### Standalone <a id="boxes-standalone"></a>
 
 * 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director), [Grafana](https://github.com/Mikesch-mp/icingaweb2-module-grafana), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Generic TTS](https://github.com/Icinga/icingaweb2-module-generictts), [NagVis](https://github.com/Icinga/icingaweb2-module-nagvis), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
-* [NagVis](http://nagvis.org/)
+  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director), [Graphite](https://github.com/Icinga/icingaweb2-module-graphite), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Cube](https://github.com/Icinga/icingaweb2-module-cube), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
 * [Graphite](https://graphiteapp.org/)
 * [Grafana](https://grafana.com/)
-* [Dashing](https://github.com/Icinga/dashing-icinga2)
+* [Dashing](https://github.com/Icinga/dashing-icinga2) for Icinga 2
 
 Run Vagrant:
 
 ```
-$ cd icinga2x && vagrant up
+$ cd standalone && vagrant up
 ```
 
 #### Application Interfaces
@@ -238,29 +238,29 @@ $ vagrant ssh -c "sudo systemctl start dashing-icinga2"
 ```
 
 
-### Icinga 2 Cluster <a id="boxes-icinga2x-cluster"></a>
+### Distributed <a id="boxes-distributed"></a>
 
-* 2 VMs as Icinga 2 Master/Checker Cluster
+* 2 VMs as Icinga 2 Master/Satellite scenario
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
 
 Run Vagrant:
 
 ```
-$ cd icinga2x-cluster && vagrant up
+$ cd distributed && vagrant up
 ```
 
 #### Application Interfaces
 
   Application       | Url                                   | Credentials
   ------------------|---------------------------------------|----------------
-  Icinga Web 2      | http://192.168.33.10/icingaweb2       | icingaadmin/icinga
-  Icinga Web 2      | http://192.168.33.20/icingaweb2       | icingaadmin/icinga
-  Icinga 2 API      | https://192.168.33.10:5665/v1         | root/icinga
-  Icinga 2 API      | https://192.168.33.20:5665/v1         | root/icinga
+  Icinga Web 2      | http://192.168.33.101/icingaweb2      | icingaadmin/icinga
+  Icinga Web 2      | http://192.168.33.102/icingaweb2      | icingaadmin/icinga
+  Icinga 2 API      | https://192.168.33.101:5665/v1        | root/icinga
+  Icinga 2 API      | https://192.168.33.102:5665/v1        | root/icinga
 
 
-### Icinga 2 InfluxDB <a id="boxes-icinga2x-influxdb"></a>
+### InfluxDB <a id="boxes-influxdb"></a>
 
 * 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
@@ -272,7 +272,7 @@ $ cd icinga2x-cluster && vagrant up
 Run Vagrant:
 
 ```
-$ cd icinga2x-influxdb && vagrant up
+$ cd influxdb && vagrant up
 ```
 
 #### Application Interfaces
@@ -284,7 +284,7 @@ $ cd icinga2x-influxdb && vagrant up
   Grafana           | http://192.168.33.8:8004          | admin/admin
 
 
-### Icinga 2 and Elastic Stack <a id="boxes-icinga2x-elastic"></a>
+### Elastic Stack <a id="boxes-elastic"></a>
 
 * [Elastic Stack](https://www.elastic.co/products)
   * [Elasticsearch](https://www.elastic.co/products/elasticsearch)
@@ -292,11 +292,12 @@ $ cd icinga2x-influxdb && vagrant up
   * [Kibana](https://www.elastic.co/products/kibana)
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
+  * [Elasticsearch](https://github.com/Icinga/icingaweb2-module-elasticsearch) module
 
 Run Vagrant:
 
 ```
-$ cd icinga2x-elastic && vagrant up
+$ cd elastic && vagrant up
 ```
 
 Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-vagrant/issues/31).
@@ -312,16 +313,17 @@ Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-
   Kibana (TLS)              | https://192.168.33.7:5602         | icinga/icinga
   Elasticsearch/Nginx (TLS) | https://192.168.33.7:9202	        | icinga/icinga
 
-### Icinga 2 and Graylog <a id="boxes-icinga2x-graylog"></a>
+### Graylog <a id="boxes-graylog"></a>
 
 * [Graylog](https://www.graylog.org)
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
+  * [Graylog](https://github.com/Icinga/icingaweb2-module-graylog) module
 
 Run Vagrant:
 
 ```
-$ cd icinga2x-graylog && vagrant up
+$ cd graylog && vagrant up
 ```
 
 #### Application Interfaces
@@ -439,7 +441,6 @@ Project			| URL
 Icinga 2		| https://www.icinga.com/docs/icinga2/latest/doc/01-about/
 Icinga Web 2		| https://www.icinga.com/docs/icingaweb2/latest/doc/01-About/
 Director 		| https://www.icinga.com/docs/director/latest/doc/01-Introduction/
-NagVis			| https://www.nagvis.org/doc
 Graphite		| https://graphite.readthedocs.io
 InfluxDB		| https://docs.influxdata.com/influxdb/
 Grafana			| https://docs.grafana.org
@@ -536,48 +537,53 @@ curl -sl -I 192.168.33.8:8086/ping
 
 ## Puppet Module Overview <a id="contributing-puppet-modules"></a>
 
-The Vagrant boxes use these imported puppet modules for provisioning. The modules are
-pulled into this repository as git subtree. The main reason for not using submodules is
-that the upstream source may be gone if this project does not catch with updating/migrating.
+The following Puppet modules are used for provisioning the boxes, installing
+packages and configuring everything for your needs. In addition to these
+official modules, specific Puppet profiles have been created to avoid
+code duplication.
+
+The modules are pulled into this repository as git subtree. The main reason
+for not using submodules or the official way of installing Puppet modules is
+that the upstream source may be gone or unreachable. That must not happen
+with this Vagrant environment.
 
 General:
 
-  Name     		| Path				| Url
-  ----------------------|-------------------------------|-------------------------------
-  puppetlabs-stdlib	| modules/stdlib		| https://github.com/puppetlabs/puppetlabs-stdlib.git
-  puppetlabs-concat	| modules/concat		| https://github.com/puppetlabs/puppetlabs-concat.git
-  puppetlabs-apache	| modules/apache		| https://github.com/puppetlabs/puppetlabs-apache.git
-  puppetlabs-mysql	| modules/mysql			| https://github.com/puppetlabs/puppetlabs-mysql.git
-  puppetlabs-postgresql	| modules/postgresql		| https://github.com/puppetlabs/puppetlabs-postgresql.git
-  puppetlabs-vcsrepo	| modules/vcsrepo		| https://github.com/puppetlabs/puppetlabs-vcsrepo.git
-  puppet-module-epel	| modules/epel			| https://github.com/stahnma/puppet-module-epel.git
-  puppet-php		| modules/php			| https://github.com/voxpupuli/puppet-php.git (branch `puppet3`)
-  puppet-selinux	| modules/selinux		| https://github.com/voxpupuli/puppet-selinux.git (branch `puppet3`)
-  puppetlabs-java	| modules/java			| https://github.com/puppetlabs/puppetlabs-java.git
-  puppet-yum		| modules/yum			| https://github.com/CERIT-SC/puppet-yum.git
-  puppet-wget           | modules/wget                  | https://github.com/maestrodev/puppet-wget.git
-  puppet-archive	| modules/archive		| https://github.com/voxpupuli/puppet-archive.git
-  puppet-vim            | modules/vim                   | https://github.com/saz/puppet-vim.git
-  puppet-lib-file\_contact | modules/file\_contact      | https://github.com/electrical/puppet-lib-file_concat.git
-  puppet-sysctl		| modules/sysctl		| https://github.com/thias/puppet-sysctl.git
-  puppet-datacat        | modules/datacat               | https://github.com/richardc/puppet-datacat.git
-  puppet-inifile        | modules/inifile               | https://github.com/puppetlabs/puppetlabs-inifile.git (commit 88bf9868b532ddf556bdb617f67eda9de0b8dc0f, 1.6.0)
+  Name                     | Puppet Version   | Path                      | Url
+  -------------------------|------------------|---------------------------|-------------------------------
+  puppetlabs-stdlib        | >= 2.7.20        | modules/stdlib            | https://github.com/puppetlabs/puppetlabs-stdlib.git
+  puppetlabs-concat        | >= 4.7.0         | modules/concat            | https://github.com/puppetlabs/puppetlabs-concat.git
+  puppetlabs-apache        | >= 4.7.0         | modules/apache            | https://github.com/puppetlabs/puppetlabs-apache.git
+  puppetlabs-mysql         | >= 4.7.0         | modules/mysql             | https://github.com/puppetlabs/puppetlabs-mysql.git
+  puppetlabs-vcsrepo       | >= 4.7.0         | modules/vcsrepo           | https://github.com/puppetlabs/puppetlabs-vcsrepo.git
+  puppet-module-epel       | >= 3.0.0         | modules/epel              | https://github.com/stahnma/puppet-module-epel.git
+  puppet-php               | >= 4.7.0 < 5.0.0 | modules/php               | https://github.com/voxpupuli/puppet-php.git
+  puppet-selinux           | >= 4.7.1         | modules/selinux           | https://github.com/voxpupuli/puppet-selinux.git
+  puppetlabs-java          | >= 4.7.0         | modules/java              | https://github.com/puppetlabs/puppetlabs-java.git
+  puppet-yum               | >= 4.6.1         | modules/yum               | https://github.com/voxpupuli/puppet-yum
+  puppet-archive           | >= 4.7.1         | modules/archive           | https://github.com/voxpupuli/puppet-archive.git
+  puppet-vim               | >=4.0.0<5.0.0    | modules/vim               | https://github.com/saz/puppet-vim.git
+  puppet-datacat           | Type for ES      | modules/datacat           | https://github.com/richardc/puppet-datacat.git
+  puppet-inifile           | >= 4.7.0         | modules/inifile           | https://github.com/puppetlabs/puppetlabs-inifile.git
+  puppet-timezone          | >= 4.0.0         | modules/timezone          | https://github.com/saz/puppet-timezone.git
 
 Specific projects:
 
-  Name     		| Path				| Url
-  ----------------------|-------------------------------|-------------------------------
-  puppet-graylog	| modules/graylog		| https://github.com/Graylog2/puppet-graylog.git
-  puppet-elasticsearch	| modules/elasticsearch		| https://github.com/elasticsearch/puppet-elasticsearch.git
-  puppet-nginx  	| modules/nginx			| https://github.com/voxpupuli/puppet-nginx.git (branch `puppet3`)
-  puppet-logstash       | modules/logstash              | https://github.com/elastic/puppet-logstash.git
-  puppet-kibana		| modules/kibana		| https://github.com/elastic/puppet-kibana.git
-  puppet-filebeat       | modules/filebeat		| https://github.com/pcfens/puppet-filebeat.git
-  puppetlabs-mongodb	| modules/mongodb		| https://github.com/puppetlabs/puppetlabs-mongodb.git
-  golja-influxdb        | modules/influxdb              | https://github.com/n1tr0g/golja-influxdb.git including a [PR for 1.0.0 support](https://github.com/n1tr0g/golja-influxdb/pull/47)
-  puppet-graphite	| modules/graphite		| Patched for systemd usage from https://github.com/echocat/puppet-graphite.git
-  puppet-grafana	| modules/grafana		| https://github.com/bfraser/puppet-grafana.git
-  graylog2-puppet	| modules/graylog2		| https://github.com/Graylog2/graylog2-puppet.git
+  Name                     | Puppet Version   | Path                      | Url
+  -------------------------|------------------|---------------------------|-------------------------------
+  puppet-elastic-stack     | >= 4.6.1         | modules/elastic\_stack    | https://github.com/elastic/puppet-elastic-stack
+  puppet-icinga2           | 4.x              | modules/icinga2           | https://github.com/Icinga/puppet-icinga2 (Patch for Elasticsearch)
+  puppet-icingaweb2        | >= 4.7.0         | modules/icingaweb2        | https://github.com/Icinga/puppet-icingaweb2 (Patch for icingaadmin user)
+  puppet-graylog           | 4.x              | modules/graylog           | https://github.com/Graylog2/puppet-graylog.git
+  puppet-elasticsearch     | >= 4.5.0         | modules/elasticsearch     | https://github.com/elasticsearch/puppet-elasticsearch.git
+  puppet-nginx             | >= 4.7.0         | modules/nginx             | https://github.com/voxpupuli/puppet-nginx.git
+  puppet-logstash          | >= 4.6.1         | modules/logstash          | https://github.com/elastic/puppet-logstash.git
+  puppet-kibana            | >= 4.5.0         | modules/kibana            | https://github.com/elastic/puppet-kibana.git
+  puppet-filebeat          | >= 4.0.0         | modules/filebeat          | https://github.com/pcfens/puppet-filebeat.git
+  puppetlabs-mongodb       | >= 4.7.1         | modules/mongodb           | https://github.com/puppetlabs/puppetlabs-mongodb.git
+  golja-influxdb           | >= 3.0.0 < 5.0.0 | modules/influxdb          | https://github.com/n1tr0g/golja-influxdb.git
+  puppet-graphite          | >= 3.0.0 < 5.0.0 | modules/graphite          | https://github.com/echocat/puppet-graphite.git
+  puppet-grafana           | >= 4.7.1         | modules/grafana           | https://github.com/voxpupuli/puppet-grafana.git
 
 
 ### Puppet Module Git Subtree <a id="contributing-puppet-module-git-subtree"></a>

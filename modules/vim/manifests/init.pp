@@ -90,9 +90,9 @@
 #
 # [Remember: No empty lines between comments and class definition]
 class vim(
-  $set_as_default   = $vim::params::set_as_default,
   $ensure           = 'present',
   $autoupgrade      = false,
+  $set_as_default   = $vim::params::set_as_default,
   $package          = $vim::params::package,
   $set_editor_cmd   = $vim::params::set_editor_cmd,
   $test_editor_set  = $vim::params::test_editor_set,
@@ -138,7 +138,7 @@ class vim(
     content => template('vim/vimrc.erb'),
   }
 
-  if $set_as_default {
+  if $set_as_default and $set_editor_cmd {
     exec { $set_editor_cmd:
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
       unless  => $test_editor_set,

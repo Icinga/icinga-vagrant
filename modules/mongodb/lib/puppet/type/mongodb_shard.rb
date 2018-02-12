@@ -3,7 +3,7 @@
 #
 
 Puppet::Type.newtype(:mongodb_shard) do
-  @doc = "Manage a MongoDB Shard"
+  @doc = 'Manage a MongoDB Shard'
 
   ensurable do
     defaultto :present
@@ -14,15 +14,15 @@ Puppet::Type.newtype(:mongodb_shard) do
   end
 
   newparam(:name) do
-    desc "The name of the shard"
+    desc 'The name of the shard'
   end
 
   newproperty(:member) do
-    desc "The shard member"
+    desc 'The shard member'
   end
 
-  newproperty(:keys, :array_matching => :all) do
-    desc "The sharding keys"
+  newproperty(:keys, array_matching: :all) do
+    desc 'The sharding keys'
 
     def insync?(is)
       is.sort == should.sort

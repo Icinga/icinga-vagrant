@@ -1,4 +1,4 @@
-test_name "Installing Puppet and vcsrepo module" do
+test_name 'Installing Puppet and vcsrepo module' do
   step 'install puppet' do
     if @options[:provision]
       # This will fail if puppet is already installed, ie --no-provision
@@ -23,10 +23,10 @@ test_name "Installing Puppet and vcsrepo module" do
 
   step 'install module' do
     hosts.each do |host|
-      proj_root = File.expand_path(File.join(File.dirname(__FILE__),'..','..'))
+      proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
 
       # This require beaker 1.15
-      copy_module_to(host, :source => proj_root, :module_name => 'vcsrepo')
+      copy_module_to(host, source: proj_root, module_name: 'vcsrepo')
 
       case fact_on(host, 'osfamily')
       when 'RedHat'
@@ -34,18 +34,18 @@ test_name "Installing Puppet and vcsrepo module" do
       when 'Debian'
         install_package(host, 'git-core')
       else
-        if !check_for_package(host, 'git')
-          puts "Git package is required for this module"
+        unless check_for_package(host, 'git')
+          puts 'Git package is required for this module'
           exit
         end
       end
 
       gitconfig = <<-EOS
-[user]
-	email = root@localhost
-	name = root
-EOS
-      create_remote_file(host, "/root/.gitconfig", gitconfig)
+      [user]
+        email = root@localhost
+        name = root
+      EOS
+      create_remote_file(host, '/root/.gitconfig', gitconfig)
     end
   end
 end

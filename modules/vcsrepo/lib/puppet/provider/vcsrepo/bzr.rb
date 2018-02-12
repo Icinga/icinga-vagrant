@@ -1,12 +1,13 @@
 require File.join(File.dirname(__FILE__), '..', 'vcsrepo')
 
-Puppet::Type.type(:vcsrepo).provide(:bzr, :parent => Puppet::Provider::Vcsrepo) do
-  desc "Supports Bazaar repositories"
+Puppet::Type.type(:vcsrepo).provide(:bzr, parent: Puppet::Provider::Vcsrepo) do
+  desc 'Supports Bazaar repositories'
 
-  commands :bzr => 'bzr'
+  commands bzr: 'bzr'
   has_features :reference_tracking
 
   def create
+    check_force
     if !@resource.value(:source)
       create_repository(@resource.value(:path))
     else
@@ -15,7 +16,13 @@ Puppet::Type.type(:vcsrepo).provide(:bzr, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def working_copy_exists?
-    File.directory?(File.join(@resource.value(:path), '.bzr'))
+    return false unless File.directory?(@resource.value(:path))
+    begin
+      bzr('status', @resource.value(:path))
+      return true
+    rescue Puppet::ExecutionFailure
+      return false
+    end
   end
 
   def exists?
@@ -28,10 +35,10 @@ Puppet::Type.type(:vcsrepo).provide(:bzr, :parent => Puppet::Provider::Vcsrepo) 
 
   def revision
     at_path do
-      current_revid = bzr('version-info')[/^revision-id:\s+(\S+)/, 1]
+      current_revid = bzr('version-info')[%r{^revision-id:\s+(\S+)}, 1]
       desired = @resource.value(:revision)
       begin
-        desired_revid = bzr('revision-info', desired).strip.split(/\s+/).last
+        desired_revid = bzr('revision-info', desired).strip.split(%r{\s+}).last
       rescue Puppet::ExecutionFailure
         # Possible revid available during update (but definitely not current)
         desired_revid = nil
@@ -55,15 +62,25 @@ Puppet::Type.type(:vcsrepo).provide(:bzr, :parent => Puppet::Provider::Vcsrepo) 
     update_owner
   end
 
+  def source
+    at_path do
+      bzr('info')[%r{^\s+parent branch:\s+(\S+?)$}m, 1]
+    end
+  end
+
+  def source=(_desired)
+    create # recreate
+  end
+
   def latest
     at_path do
-      bzr('version-info', ':parent')[/^revision-id:\s+(\S+)/, 1]
+      bzr('version-info', ':parent')[%r{^revision-id:\s+(\S+)}, 1]
     end
   end
 
   def latest?
     at_path do
-      return self.revision == self.latest
+      return revision == latest
     end
   end
 
@@ -86,8 +103,6 @@ Puppet::Type.type(:vcsrepo).provide(:bzr, :parent => Puppet::Provider::Vcsrepo) 
   end
 
   def update_owner
-    if @resource.value(:owner) or @resource.value(:group)
-      set_ownership
-    end
+    set_ownership if @resource.value(:owner) || @resource.value(:group)
   end
 end

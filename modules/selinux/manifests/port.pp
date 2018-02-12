@@ -1,66 +1,66 @@
-# Definition: selinux::fcontext
+# selinux::port
 #
-# Description
-#  This method will manage a local network port context setting, and will
-#  persist it across reboots.
-#  It will perform a check to ensure the network context is not already set.
-#  Anyplace you wish to use this method you must ensure that the selinux class is required
-#  first. Otherwise you run the risk of attempting to execute the semanage and that program
-#  will not yet be installed.
+# This method will manage a local network port context setting, and will
+# persist it across reboots.
 #
-# Class create by Matt Willsher<matt@monki.org.uk>
-# Based on selinux::fcontext by Erik M Jacobs<erikmjacobs@gmail.com>
-#  Adds to puppet-selinux by jfryman
-#   https://github.com/jfryman/puppet-selinux
-#  Originally written/sourced from Lance Dillon<>
-#   http://riffraff169.wordpress.com/2012/03/09/add-file-contexts-with-puppet/
+# @example Add port-context syslogd_port_t to port 8514/tcp
+#   selinux::port { 'allow-syslog-relp':
+#     ensure   => 'present',
+#     seltype  => 'syslogd_port_t',
+#     protocol => 'tcp',
+#     port     => 8514,
+#   }
 #
-# Parameters:
-#   - $context: A particular network port context, like "syslogd_port_t"
-#   - $protocol: Either tcp or udp. If unset, omits -p flag from semanage.
-#   - $port: An network port number, like '8514'
-#   - $argument: An argument for semanage port. Default: "-a"
-#
-# Actions:
-#  Runs "semanage port" with options to persistently set the file context
-#
-# Requires:
-#  - SELinux
-#  - policycoreutils-python (for el-based systems)
-#
-# Sample Usage:
-#
-#  selinux::port { 'allow-syslog-relp':
-#    context  => 'syslogd_port_t',
-#    protocol => 'tcp',
-#    port     => '8514',
-#  }
+# @param ensure Set to present to add or absent to remove a port context.
+# @param seltype An SELinux port type
+# @param protocol Either 'tcp', 'udp', 'ipv4' or 'ipv6'
+# @param port A network port number, like 8514,
+# @param port_range A port-range tuple, eg. [9090, 9095].
 #
 define selinux::port (
-  $context,
-  $port,
-  $protocol = undef,
-  $argument = '-a',
+  String                             $seltype,
+  Enum['tcp', 'udp']                 $protocol,
+  Optional[Integer[1,65535]]         $port = undef,
+  Optional[Tuple[Integer[1,65535], 2, 2]] $port_range = undef,
+  Enum['present', 'absent']          $ensure = 'present',
 ) {
 
   include ::selinux
 
-  if $protocol {
-    validate_re($protocol, ['^tcp6?$', '^udp6?$'])
-    $protocol_switch = ['-p', $protocol]
-    $protocol_check = "${protocol} "
-    $port_exec_command = "add_${context}_${port}_${protocol}"
+  if $ensure == 'present' {
+    Anchor['selinux::module post']
+    -> Selinux::Port[$title]
+    -> Anchor['selinux::end']
+  } elsif $ensure == 'absent' {
+    Class['selinux::config']
+    -> Selinux::Port[$title]
+    -> Anchor['selinux::module pre']
   } else {
-    $protocol_switch = []
-    $protocol_check = '' # lint:ignore:empty_string_assignment variable is used to create regexp and undef is not possible
-    $port_exec_command = "add_${context}_${port}"
+    fail('Unexpected $ensure value')
   }
 
-  exec { $port_exec_command:
-    command => shellquote('semanage', 'port', $argument, '-t', $context, $protocol_switch, "${port}"), # lint:ignore:only_variable_string port can be number and we need to force it to be string for shellquote
-    # This works because there seems to be more than one space after protocol and before first port
-    unless  => sprintf('semanage port -l | grep -E %s', shellquote("^${context}  *${protocol_check}.* ${port}(\$|,)")),
-    path    => '/bin:/sbin:/usr/bin:/usr/sbin',
-    require => Class['selinux::package'],
+  if ($port == undef and $port_range == undef) {
+    fail("You must define either 'port' or 'port_range'")
+  }
+  if ($port != undef and $port_range != undef) {
+    fail("You can't define both 'port' and 'port_range'")
+  }
+
+  $range = $port_range ? {
+    undef   => [$port, $port],
+    default => $port_range,
+  }
+
+  # this can only happen if port_range is used
+  if $range[0] > $range[1] {
+    fail("Malformed port range: ${port_range}")
+  }
+
+  selinux_port {"${protocol}_${range[0]}-${range[1]}":
+    ensure    => $ensure,
+    low_port  => $range[0],
+    high_port => $range[1],
+    seltype   => $seltype,
+    protocol  => $protocol,
   }
 }

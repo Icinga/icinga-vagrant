@@ -14,46 +14,47 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:grafana_dashboard) do
-  let(:gdashboard) {
-    described_class.new :name => "foo", :grafana_url => "http://example.com/", :content => "{}", :ensure => :present
-  }
-  context "when setting parameters" do
+  let(:gdashboard) do
+    described_class.new name: 'foo', grafana_url: 'http://example.com/', content: '{}', ensure: :present
+  end
 
-    it "should fail if grafana_url isn't HTTP-based" do
-      expect {
-        described_class.new :name => "foo", :grafana_url => "example.com", :content => "{}", :ensure => :present
-      }.to raise_error(Puppet::Error, /not a valid URL/)
+  context 'when setting parameters' do
+    it "fails if grafana_url isn't HTTP-based" do
+      expect do
+        described_class.new name: 'foo', grafana_url: 'example.com', content: '{}', ensure: :present
+      end.to raise_error(Puppet::Error, %r{not a valid URL})
     end
 
-    it "should fail if content isn't provided" do
-      expect {
-        described_class.new :name => "foo", :grafana_url => "http://example.com", :ensure => :present
-      }.to raise_error(Puppet::Error, /content is required/)
+    it "fails if content isn't provided" do
+      expect do
+        described_class.new name: 'foo', grafana_url: 'http://example.com', ensure: :present
+      end.to raise_error(Puppet::Error, %r{content is required})
     end
 
-    it "should fail if content isn't JSON" do
-      expect {
-        described_class.new :name => "foo", :grafana_url => "http://example.com/", :content => "{invalid", :ensure => :present
-      }.to raise_error(Puppet::Error, /Invalid JSON/)
+    it "fails if content isn't JSON" do
+      expect do
+        described_class.new name: 'foo', grafana_url: 'http://example.com/', content: '{invalid', ensure: :present
+      end.to raise_error(Puppet::Error, %r{Invalid JSON})
     end
 
-    it "should accept valid parameters" do
+    # rubocop:disable RSpec/MultipleExpectations
+    it 'accepts valid parameters' do
       expect(gdashboard[:name]).to eq('foo')
       expect(gdashboard[:grafana_url]).to eq('http://example.com/')
       expect(gdashboard[:content]).to eq({})
     end
-    it "should autorequire the grafana-server for proper ordering" do
+    it 'autorequires the grafana-server for proper ordering' do
       catalog = Puppet::Resource::Catalog.new
-      service = Puppet::Type.type(:service).new(:name => "grafana-server")
+      service = Puppet::Type.type(:service).new(name: 'grafana-server')
       catalog.add_resource service
       catalog.add_resource gdashboard
 
       relationship = gdashboard.autorequire.find do |rel|
-        (rel.source.to_s == "Service[grafana-server]") and (rel.target.to_s == gdashboard.to_s)
+        (rel.source.to_s == 'Service[grafana-server]') && (rel.target.to_s == gdashboard.to_s)
       end
       expect(relationship).to be_a Puppet::Relationship
     end
-    it "should not autorequire the service it is not managed" do
+    it 'does not autorequire the service it is not managed' do
       catalog = Puppet::Resource::Catalog.new
       catalog.add_resource gdashboard
       expect(gdashboard.autorequire).to be_empty

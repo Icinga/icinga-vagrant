@@ -8,10 +8,11 @@
 3. [Usage - Configuration options and additional functionality](#usage)
     * [Customize server options](#customize-server-options)
     * [Create a database](#create-a-database)
-    * [Customize configuration](#create-custom-configuration)
+    * [Customize configuration](#customize-configuration)
     * [Work with an existing server](#work-with-an-existing-server)
     * [Specify passwords](#specify-passwords)
     * [Install Percona server on CentOS](#install-percona-server-on-centos)
+    * [Install MariaDB on Ubuntu](#install-mariadb-on-ubuntu)
 4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Development - Guide for contributing to the module](#development)
@@ -28,10 +29,9 @@ This module manages both the installation and configuration of MySQL, as well as
 
 To install a server with the default options:
 
-`include '::mysql::server'`. 
+`include '::mysql::server'`.
 
-To customize options, such as the root
-password or `/etc/my.cnf` settings, you must also pass in an override hash:
+To customize options, such as the root password or `/etc/my.cnf` settings, you must also pass in an override hash:
 
 ```puppet
 class { '::mysql::server':
@@ -41,7 +41,7 @@ class { '::mysql::server':
 }
 ```
 
-See [**Customize Server Options**](#customize-server-options) below for examples of the hash structure for $override_options`.
+See [**Customize Server Options**](#customize-server-options) below for examples of the hash structure for $override_options.
 
 ## Usage
 
@@ -66,9 +66,9 @@ For options that you would traditionally represent in this format:
 thing = X
 ```
 
-...you can make an entry like `thing => true`, `thing => value`, or `thing => "` in the hash. Alternatively, you can pass an array, as `thing => ['value', 'value2']`, or list each `thing => value` separately on separate lines. 
+Entries can be created as `thing => true`, `thing => value`, or `thing => ""` in the hash. Alternatively, you can pass an array as `thing => ['value', 'value2']` or list each `thing => value` separately on individual lines.
 
-You can pass a variable in the hash without setting a value for it; the variable would then use MySQL's default settings. To exclude an option from the my.cnf file --- for example, when using `override_options` to revert to a default value --- pass `thing => undef`.
+You can pass a variable in the hash without setting a value for it; the variable would then use MySQL's default settings. To exclude an option from the `my.cnf` file --- for example, when using `override_options` to revert to a default value --- pass `thing => undef`.
 
 If an option needs multiple instances, pass an array. For example,
 
@@ -82,7 +82,7 @@ $override_options = {
 
 produces
 
-```
+```puppet
 [mysqld]
 replicate-do-db = base1
 replicate-do-db = base2
@@ -132,7 +132,8 @@ mysql::db { 'mydb':
   password => 'mypass',
   host     => 'localhost',
   grant    => ['SELECT', 'UPDATE'],
-  sql      => '/path/to/sqlfile',
+  sql      => '/path/to/sqlfile.gz',
+  import_cat_cmd => 'zcat',
   import_timeout => 900,
 }
 ```
@@ -145,7 +146,7 @@ To add custom MySQL configuration, place additional files into `includedir`. Thi
 
 To instantiate databases and users on an existing MySQL server, you need a `.my.cnf` file in `root`'s home directory. This file must specify the remote server address and credentials. For example:
 
-```
+```puppet
 [client]
 user=root
 host=localhost
@@ -172,8 +173,7 @@ mysql::db { 'mydb':
 ### Install Percona server on CentOS
 
 This example shows how to do a minimal installation of a Percona server on a
-CentOS system. 
-This sets up the Percona server, client, and bindings (including Perl and Python bindings). You can customize this usage and update the version as needed. 
+CentOS system. This sets up the Percona server, client, and bindings (including Perl and Python bindings). You can customize this usage and update the version as needed.
 
 This usage has been tested on Puppet 4.4 / CentOS 7 / Percona Server 5.7.
 
@@ -240,6 +240,147 @@ Yumrepo['percona']->
 Class['mysql::bindings']
 ```
 
+### Install MariaDB on Ubuntu
+
+#### Optional: Install the MariaDB official repo
+
+In this example, we'll use the latest stable (currently 10.1) from the official MariaDB repository, not the one from the distro repository. You could instead use the package from the Ubuntu repository. Make sure you use the repository corresponding to the version you want.
+
+**Note:** `sfo1.mirrors.digitalocean.com` is one of many mirrors available. You can use any official mirror.
+
+```puppet
+include apt
+
+apt::source { 'mariadb':
+  location => 'http://sfo1.mirrors.digitalocean.com/mariadb/repo/10.1/ubuntu',
+  release  => $::lsbdistcodename,
+  repos    => 'main',
+  key      => {
+    id     => '199369E5404BD5FC7D2FE43BCBCB082A1BB943DB',
+    server => 'hkp://keyserver.ubuntu.com:80',
+  },
+  include => {
+    src   => false,
+    deb   => true,
+  },
+}
+```
+
+#### Install the MariaDB server
+
+This example shows MariaDB server installation on Ubuntu Trusty. Adjust the version and the parameters of `my.cnf` as needed. All parameters of the `my.cnf` can be defined using the `override_options` parameter.
+
+The folders `/var/log/mysql` and `/var/run/mysqld` are created automatically, but if you are using other custom folders, they should exist as prerequisites for this code.
+
+All the values set here are an example of a working minimal configuration.
+
+Specify the version of the package you want with the `package_ensure` parameter.
+
+```puppet
+class {'::mysql::server':
+  package_name     => 'mariadb-server',
+  package_ensure   => '10.1.14+maria-1~trusty',
+  service_name     => 'mysql',
+  root_password    => 'AVeryStrongPasswordUShouldEncrypt!',
+  override_options => {
+    mysqld => {
+      'log-error' => '/var/log/mysql/mariadb.log',
+      'pid-file'  => '/var/run/mysqld/mysqld.pid',
+    },
+    mysqld_safe => {
+      'log-error' => '/var/log/mysql/mariadb.log',
+    },
+  }
+}
+
+# Dependency management. Only use that part if you are installing the repository
+# as shown in the Preliminary step of this example.
+Apt::Source['mariadb'] ~>
+Class['apt::update'] ->
+Class['::mysql::server']
+
+```
+
+#### Install the MariaDB client
+
+This example shows how to install the MariaDB client and all of the bindings at once. You can do this installation separately from the server installation.
+
+Specify the version of the package you want with the `package_ensure` parameter.
+
+```puppet
+class {'::mysql::client':
+  package_name    => 'mariadb-client',
+  package_ensure  => '10.1.14+maria-1~trusty',
+  bindings_enable => true,
+}
+
+# Dependency management. Only use that part if you are installing the repository as shown in the Preliminary step of this example.
+Apt::Source['mariadb'] ~>
+Class['apt::update'] ->
+Class['::mysql::client']
+```
+
+### Install MySQL Community server on CentOS
+
+You can install MySQL Community Server on CentOS using the mysql module and Hiera. This example was tested with the following versions:
+
+* MySQL Community Server 5.6
+* Centos 7.3
+* Puppet 3.8.7 using Hiera
+* puppetlabs-mysql module v3.9.0
+
+In Puppet:
+
+```puppet
+include ::mysql::server
+
+create_resources(yumrepo, hiera('yumrepo', {}))
+
+Yumrepo['repo.mysql.com'] -> Anchor['mysql::server::start']
+Yumrepo['repo.mysql.com'] -> Package['mysql_client']
+
+create_resources(mysql::db, hiera('mysql::server::db', {}))
+```
+
+In Hiera:
+
+```yaml
+---
+
+# Centos 7.3
+yumrepo:
+  'repo.mysql.com':
+    baseurl: "http://repo.mysql.com/yum/mysql-5.6-community/el/%{::operatingsystemmajrelease}/$basearch/"
+    descr: 'repo.mysql.com'
+    enabled: 1
+    gpgcheck: true
+    gpgkey: 'http://repo.mysql.com/RPM-GPG-KEY-mysql'
+
+mysql::client::package_name: "mysql-community-client" # required for proper MySQL installation
+mysql::server::package_name: "mysql-community-server" # required for proper MySQL installation
+mysql::server::package_ensure: 'installed' # do not specify version here, unfortunately yum fails with error that package is already installed
+mysql::server::root_password: "change_me_i_am_insecure"
+mysql::server::manage_config_file: true
+mysql::server::service_name: 'mysqld' # required for puppet module
+mysql::server::override_options:
+  'mysqld':
+    'bind-address': '127.0.0.1'
+    'log-error': /var/log/mysqld.log' # required for proper MySQL installation
+  'mysqld_safe':
+    'log-error': '/var/log/mysqld.log'  # required for proper MySQL installation
+
+# create database + account with access, passwords are not encrypted
+mysql::server::db:
+  "dev":
+    user: "dev"
+    password: "devpass"
+    host: "127.0.0.1"
+    grant:
+      - "ALL"
+
+```
+
+
 ## Reference
 
 ### Classes
@@ -280,13 +421,21 @@ Class['mysql::bindings']
 
 ##### `create_root_user`
 
-Whether root user should be created. Valid values are true, false. Defaults to true.
+Whether root user should be created.
+
+Valid values are `true`, `false`.
+
+Defaults to `true`.
 
 This is useful for a cluster setup with Galera. The root user has to be created only once. You can set this parameter true on one node and set it to false on the remaining nodes.
 
 #####  `create_root_my_cnf`
 
-Whether to create `/root/.my.cnf`. Valid values are true, false. Defaults to true.
+Whether to create `/root/.my.cnf`.
+
+Valid values are `true`, `false`.
+
+Defaults to `true`.
 
 `create_root_my_cnf` allows creation of `/root/.my.cnf` independently of `create_root_user`. You can use this for a cluster setup with Galera where you want `/root/.my.cnf` to exist on all nodes.
 
@@ -296,7 +445,7 @@ The MySQL root password. Puppet attempts to set the root password and update `/r
 
 This is required if `create_root_user` or `create_root_my_cnf` are true. If `root_password` is 'UNSET', then `create_root_user` and `create_root_my_cnf` are assumed to be false --- that is, the MySQL root user and `/root/.my.cnf` are not created.
 
-Password changes are supported; however, the old password must be set in `/root/.my.cnf`. Effectively, Puppet uses the old password, configured in `/root/my.cnf`, to set the new password in MySQL, and then updates `/root/.my.cnf` with the new password. 
+Password changes are supported; however, the old password must be set in `/root/.my.cnf`. Effectively, Puppet uses the old password, configured in `/root/my.cnf`, to set the new password in MySQL, and then updates `/root/.my.cnf` with the new password.
 
 ##### `old_root_password`
 
@@ -322,21 +471,35 @@ The location, as a path, of the MySQL configuration file.
 
 ##### `manage_config_file`
 
-Whether the MySQL configuration file should be managed. Valid values are true, false. Defaults to true.
+Whether the MySQL configuration file should be managed.
+
+Valid values are `true`, `false`.
+
+Defaults to `true`.
 
 ##### `includedir`
+
 The location, as a path, of !includedir for custom configuration overrides.
 
 ##### `install_options`
+
 Passes [install_options](https://docs.puppetlabs.com/references/latest/type.html#package-attribute-install_options) array to managed package resources. You must pass the appropriate options for the specified package manager.
 
 ##### `purge_conf_dir`
 
-Whether the `includedir` directory should be purged. Valid values are true, false. Defaults to false.
+Whether the `includedir` directory should be purged.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
 
 ##### `restart`
 
-Whether the service should be restarted when things change. Valid values are true, false. Defaults to false.
+Whether the service should be restarted when things change.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
 
 ##### `root_group`
 
@@ -348,11 +511,17 @@ The name of the group of the MySQL daemon user. Can be a group name or a group I
 
 ##### `package_ensure`
 
-Whether the package exists or should be a specific version. Valid values are 'present', 'absent', or 'x.y.z'. Defaults to 'present'.
+Whether the package exists or should be a specific version.
+
+Valid values are 'present', 'absent', or 'x.y.z'.
+
+Defaults to 'present'.
 
 ##### `package_manage`
 
-Whether to manage the MySQL server package. Defaults to true.
+Whether to manage the MySQL server package.
+
+Defaults to `true`.
 
 ##### `package_name`
 
@@ -360,29 +529,45 @@ The name of the MySQL server package to install.
 
 ##### `remove_default_accounts`
 
-Specifies whether to automatically include `mysql::server::account_security`. Valid values are true, false. Defaults to false.
+Specifies whether to automatically include `mysql::server::account_security`.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
 
 ##### `service_enabled`
 
-Specifies whether the service should be enabled. Valid values are true, false. Defaults to true.
+Specifies whether the service should be enabled.
+
+Valid values are `true`, `false`.
+
+Defaults to `true`.
 
 ##### `service_manage`
 
-Specifies whether the service should be managed. Valid values are true, false. Defaults to true.
+Specifies whether the service should be managed.
+
+Valid values are `true`, `false`.
+
+Defaults to `true`.
 
 ##### `service_name`
 
-The name of the MySQL server service. Defaults are OS dependent, defined in params.pp.
+The name of the MySQL server service.
+
+Defaults are OS dependent, defined in 'params.pp'.
 
 ##### `service_provider`
 
-The provider to use to manage the service. For Ubuntu, defaults to 'upstart'; otherwise, default is undefined.
+The provider to use to manage the service.
+
+For Ubuntu, defaults to 'upstart'; otherwise, default is undefined.
 
 ##### `users`
 
-Optional hash of users to create, which are passed to [mysql_user](#mysql_user). 
+Optional hash of users to create, which are passed to [mysql_user](#mysql_user).
 
-```
+```puppet
 users => {
   'someuser@localhost' => {
     ensure                   => 'present',
@@ -391,15 +576,16 @@ users => {
     max_updates_per_hour     => '0',
     max_user_connections     => '0',
     password_hash            => '*F3A2A51A9B0F2BE2468926B4132313728C250DBF',
+    tls_options              => ['NONE'],
   },
 }
 ```
 
 ##### `grants`
 
-Optional hash of grants, which are passed to [mysql_grant](#mysql_grant). 
+Optional hash of grants, which are passed to [mysql_grant](#mysql_grant).
 
-```
+```puppet
 grants => {
   'someuser@localhost/somedb.*' => {
     ensure     => 'present',
@@ -415,7 +601,7 @@ grants => {
 
 Optional hash of databases to create, which are passed to [mysql_database](#mysql_database).
 
-```
+```puppet
 databases   => {
   'somedb'  => {
     ensure  => 'present',
@@ -440,30 +626,39 @@ Directory in which to store backups.
 
 ##### `backupdirmode`
 
-Permissions applied to the backup directory. This parameter is passed directly
-to the `file` resource.
+Permissions applied to the backup directory. This parameter is passed directly to the `file` resource.
 
 ##### `backupdirowner`
 
-Owner for the backup directory. This parameter is passed directly to the `file`
-resource.
+Owner for the backup directory. This parameter is passed directly to the `file` resource.
 
 ##### `backupdirgroup`
 
-Group owner for the backup directory. This parameter is passed directly to the
-`file` resource.
+Group owner for the backup directory. This parameter is passed directly to the `file` resource.
 
 ##### `backupcompress`
 
-Whether backups should be compressed. Valid values are true, false. Defaults to true.
+Whether backups should be compressed.
+
+Valid values are `true`, `false`.
+
+Defaults to `true`.
 
 ##### `backuprotate`
 
-How many days to keep backups. Valid value is an integer. Defaults to '30'.
+How many days to keep backups.
+
+Valid value is an integer.
+
+Defaults to 30.
 
 ##### `delete_before_dump`
 
-Whether to delete old .sql files before backing up. Setting to true deletes old files before backing up, while setting to false deletes them after backup. Valid values are true, false. Defaults to false.
+Whether to delete old .sql files before backing up. Setting to true deletes old files before backing up, while setting to false deletes them after backup.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
 
 ##### `backupdatabases`
 
@@ -471,19 +666,31 @@ Specifies an array of databases to back up.
 
 ##### `file_per_database`
 
-Whether a separate file be used per database. Valid values are true, false. Defaults to false.
+Whether a separate file be used per database.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
 
 ##### `include_routines`
 
-Whether or not to include routines for each database when doing a `file_per_database` backup. Defaults to false.
+Whether or not to include routines for each database when doing a `file_per_database` backup.
+
+Defaults to `false`.
 
 ##### `include_triggers`
 
-Whether or not to include triggers for each database when doing a `file_per_database` backup. Defaults to false.
+Whether or not to include triggers for each database when doing a `file_per_database` backup.
+
+Defaults to `false`.
 
 ##### `ensure`
 
-Allows you to remove the backup scripts. Valid values are 'present', 'absent'. Defaults to 'present'.
+Allows you to remove the backup scripts.
+
+Valid values are 'present', 'absent'.
+
+Defaults to 'present'.
 
 ##### `execpath`
 
@@ -493,9 +700,11 @@ Allows you to set a custom PATH should your MySQL installation be non-standard p
 
 An array of two elements to set the backup time. Allows ['23', '5'] (i.e., 23:05) or ['3', '45'] (i.e., 03:45) for HH:MM times.
 
+#### mysql::server::backup
+
 ##### `postscript`
 
-A script that is executed when the backup is finished. This could be used to (r)sync the backup to a central store. This script can be either a single line that is directly executed or a number of lines supplied as an array. It could also be one or more externally managed (executable) files.
+A script that is executed when the backup is finished. This could be used to sync the backup to a central store. This script can be either a single line that is directly executed or a number of lines supplied as an array. It could also be one or more externally managed (executable) files.
 
 ##### `prescript`
 
@@ -511,7 +720,11 @@ Sets the server backup implementation. Valid values are:
 
 ##### `maxallowedpacket`
 
-Define the maximum SQL statement size for the backup dump script. The default value is 1MB as this is the default Mysql Server value.
+Defines the maximum SQL statement size for the backup dump script. The default value is 1MB, as this is the default MySQL Server value.
+
+##### `optional_args`
+
+Specifies an array of optional arguments which should be passed through to the backup tool. (Currently only supported by the xtrabackup provider.)
 
 #### mysql::server::monitor
 
@@ -525,7 +738,7 @@ The password to create for MySQL monitoring.
 
 ##### `mysql_monitor_hostname`
 
-The hostname from which the monitoring user requests are allowed access. 
+The hostname from which the monitoring user requests are allowed access.
 
 #### mysql::server::mysqltuner
 
@@ -533,45 +746,79 @@ The hostname from which the monitoring user requests are allowed access.
 
 ##### `ensure`
 
-Ensures that the resource exists. Valid values are `present`, `absent`. Defaults to `present`.
+Ensures that the resource exists.
+
+Valid values are 'present', 'absent'.
+
+Defaults to 'present'.
 
 ##### `version`
 
-The version to install from the major/MySQLTuner-perl github repository. Must be a valid tag. Defaults to 'v1.3.0'.
+The version to install from the major/MySQLTuner-perl github repository. Must be a valid tag.
 
-##### `source`
+Defaults to 'v1.3.0'.
 
-Specifies the source. If not specified, defaults to `https://github.com/major/MySQLTuner-perl/raw/${version}/mysqltuner.pl`
+##### `environment`
+
+Environment variables active during download, e.g. to download via proxies: environment => 'https_proxy=http://proxy.example.com:80'
 
 #### mysql::bindings
 
 ##### `client_dev`
 
-Specifies whether `::mysql::bindings::client_dev` should be included. Valid values are true', false. Defaults to false.
+Specifies whether `::mysql::bindings::client_dev` should be included.
+
+Valid values are `true`', `false`.
+
+Defaults to `false`.
 
 ##### `daemon_dev`
 
-Specifies whether `::mysql::bindings::daemon_dev` should be included. Valid values are true, false. Defaults to false.
+Specifies whether `::mysql::bindings::daemon_dev` should be included.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
 
 ##### `java_enable`
 
-Specifies whether `::mysql::bindings::java` should be included. Valid values are true, false. Defaults to false.
+Specifies whether `::mysql::bindings::java` should be included.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
 
 #####  `perl_enable`
 
-Specifies whether `mysql::bindings::perl` should be included. Valid values are true, false. Defaults to false.
+Specifies whether `mysql::bindings::perl` should be included.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
 
 ##### `php_enable`
 
-Specifies whether `mysql::bindings::php` should be included. Valid values are true, false. Defaults to false.
+Specifies whether `mysql::bindings::php` should be included.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
 
 ##### `python_enable`
 
-Specifies whether `mysql::bindings::python` should be included. Valid values are true, false. Defaults to false.
+Specifies whether `mysql::bindings::python` should be included.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
 
 ##### `ruby_enable`
 
-Specifies whether `mysql::bindings::ruby` should be included. Valid values are true, false. Defaults to false.
+Specifies whether `mysql::bindings::ruby` should be included.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
 
 ##### `install_options`
 
@@ -579,79 +826,131 @@ Passes `install_options` array to managed package resources. You must pass the [
 
 ##### `client_dev_package_ensure`
 
-Whether the package should be present, absent, or a specific version. Valid values are 'present', 'absent', or 'x.y.z'. Only applies if `client_dev => true`.
- 
+Whether the package should be present, absent, or a specific version.
+
+Valid values are 'present', 'absent', or 'x.y.z'.
+
+Only applies if `client_dev => true`.
+
 ##### `client_dev_package_name`
 
-The name of the client_dev package to install. Only applies if `client_dev => true`.
- 
+The name of the client_dev package to install.
+
+Only applies if `client_dev => true`.
+
 ##### `client_dev_package_provider`
 
-The provider to use to install the client_dev package. Only applies if `client_dev => true`.
+The provider to use to install the client_dev package.
+
+Only applies if `client_dev => true`.
 
 ##### `daemon_dev_package_ensure`
 
-Whether the package should be present, absent, or a specific version. Valid values are 'present', 'absent', or 'x.y.z'. Only applies if `daemon_dev => true`.
+Whether the package should be present, absent, or a specific version.
+
+Valid values are 'present', 'absent', or 'x.y.z'.
+
+Only applies if `daemon_dev => true`.
 
 ##### `daemon_dev_package_name`
 
-The name of the daemon_dev package to install. Only applies if `daemon_dev => true`.
+The name of the daemon_dev package to install.
+
+Only applies if `daemon_dev => true`.
 
 ##### `daemon_dev_package_provider`
 
-The provider to use to install the daemon_dev package. Only applies if `daemon_dev => true`.
+The provider to use to install the daemon_dev package.
+
+Only applies if `daemon_dev => true`.
 
 ##### `java_package_ensure`
 
-Whether the package should be present, absent, or a specific version. Valid values are 'present', 'absent', or 'x.y.z'. Only applies if `java_enable => true`.
+Whether the package should be present, absent, or a specific version.
+
+Valid values are 'present', 'absent', or 'x.y.z'.
+
+Only applies if `java_enable => true`.
 
 ##### `java_package_name`
 
-The name of the Java package to install. Only applies if `java_enable => true`.
+The name of the Java package to install.
+
+Only applies if `java_enable => true`.
 
 ##### `java_package_provider`
 
-The provider to use to install the Java package. Only applies if `java_enable => true`.
+The provider to use to install the Java package.
+
+Only applies if `java_enable => true`.
 
 ##### `perl_package_ensure`
 
-Whether the package should be present, absent, or a specific version. Valid values are 'present', 'absent', or 'x.y.z'. Only applies if `perl_enable => true`.
+Whether the package should be present, absent, or a specific version.
+
+Valid values are 'present', 'absent', or 'x.y.z'.
+
+Only applies if `perl_enable => true`.
 
 ##### `perl_package_name`
 
-The name of the Perl package to install. Only applies if `perl_enable => true`.
+The name of the Perl package to install.
+
+Only applies if `perl_enable => true`.
 
 ##### `perl_package_provider`
 
-The provider to use to install the Perl package. Only applies if `perl_enable => true`.
+The provider to use to install the Perl package.
+
+Only applies if `perl_enable => true`.
 
 ##### `php_package_ensure`
 
-Whether the package should be present, absent, or a specific version. Valid values are 'present', 'absent', or 'x.y.z'. Only applies if `php_enable => true`.
- 
+Whether the package should be present, absent, or a specific version.
+
+Valid values are 'present', 'absent', or 'x.y.z'.
+
+Only applies if `php_enable => true`.
+
 ##### `php_package_name`
 
-The name of the PHP package to install. Only applies if `php_enable => true`.
+The name of the PHP package to install.
+
+Only applies if `php_enable => true`.
 
 ##### `python_package_ensure`
 
-Whether the package should be present, absent, or a specific version. Valid values are 'present', 'absent', or 'x.y.z'. Only applies if `python_enable => true`.
+Whether the package should be present, absent, or a specific version.
+
+Valid values are 'present', 'absent', or 'x.y.z'.
+
+Only applies if `python_enable => true`.
 
 ##### `python_package_name`
 
-The name of the Python package to install. Only applies if `python_enable => true`.
+The name of the Python package to install.
+
+Only applies if `python_enable => true`.
 
 ##### `python_package_provider`
 
-The provider to use to install the PHP package. Only applies if `python_enable => true`.
+The provider to use to install the Python package.
+
+Only applies if `python_enable => true`.
 
 ##### `ruby_package_ensure`
 
-Whether the package should be present, absent, or a specific version. Valid values are 'present', 'absent', or 'x.y.z'. Only applies if `ruby_enable => true`.
+Whether the package should be present, absent, or a specific version.
+
+Valid values are 'present', 'absent', or 'x.y.z'.
+
+Only applies if `ruby_enable => true`.
 
 ##### `ruby_package_name`
 
-The name of the Ruby package to install. Only applies if `ruby_enable => true`.
+The name of the Ruby package to install.
+
+Only applies if `ruby_enable => true`.
 
 ##### `ruby_package_provider`
 
@@ -661,18 +960,27 @@ What provider should be used to install the package.
 
 ##### `bindings_enable`
 
-Whether to automatically install all bindings. Valid values are true, false. Default to false.
+Whether to automatically install all bindings.
+
+Valid values are `true`, `false`.
+
+Default to `false`.
 
 ##### `install_options`
+
 Array of install options for managed package resources. You must pass the appropriate options for the package manager.
 
 ##### `package_ensure`
 
-Whether the MySQL package should be present, absent, or a specific version. Valid values are 'present', 'absent', or 'x.y.z'.
+Whether the MySQL package should be present, absent, or a specific version.
+
+Valid values are 'present', 'absent', or 'x.y.z'.
 
 ##### `package_manage`
 
-Whether to manage the MySQL client package. Defaults to true.
+Whether to manage the MySQL client package.
+
+Defaults to `true`.
 
 ##### `package_name`
 
@@ -682,7 +990,7 @@ The name of the MySQL client package to install.
 
 #### mysql::db
 
-```
+```puppet
 mysql_database { 'information_schema':
   ensure  => 'present',
   charset => 'utf8',
@@ -698,46 +1006,74 @@ mysql_database { 'mysql':
 ##### `user`
 
 The user for the database you're creating.
- 
+
 ##### `password`
 
 The password for $user for the database you're creating.
 
 ##### `dbname`
 
-The name of the database to create. Defaults to $name.
- 
+The name of the database to create.
+
+Defaults to "$name".
+
 ##### `charset`
 
-The character set for the database. Defaults to 'utf8'.
+The character set for the database.
+
+Defaults to 'utf8'.
 
 ##### `collate`
 
-The collation for the database. Defaults to 'utf8_general_ci'.
- 
+The collation for the database.
+
+Defaults to 'utf8_general_ci'.
+
 ##### `host`
 
-The host to use as part of user@host for grants. Defaults to 'localhost'.
+The host to use as part of user@host for grants.
+
+Defaults to 'localhost'.
 
 ##### `grant`
 
-The privileges to be granted for user@host on the database. Defaults to 'ALL'.
+The privileges to be granted for user@host on the database.
+
+Defaults to 'ALL'.
 
 ##### `sql`
 
-The path to the sqlfile you want to execute. This can be single file specified as string, or it can be an array of strings. Defaults to undef.
+The path to the sqlfile you want to execute. This can be single file specified as string, or it can be an array of strings.
+
+Defaults to `undef`.
 
 ##### `enforce_sql`
 
-Specifies whether executing the sqlfiles should happen on every run. If set to false, sqlfiles only run once. Valid values are true, false. Defaults to false.
- 
+Specifies whether executing the sqlfiles should happen on every run. If set to false, sqlfiles only run once.
+
+Valid values are `true`, `false`.
+
+Defaults to `false`.
+
 ##### `ensure`
 
-Specifies whether to create the database. Valid values are 'present', 'absent'. Defaults to 'present'. 
+Specifies whether to create the database.
+
+Valid values are 'present', 'absent'.
+
+Defaults to 'present'.
 
 ##### `import_timeout`
 
-Timeout, in seconds, for loading the sqlfiles. Defaults to '300'.
+Timeout, in seconds, for loading the sqlfiles.
+
+Defaults to 300.
+
+##### `import_cat_cmd`
+
+Command to read the sqlfile for importing the database. Useful for compressed sqlfiles. For example, you can use 'zcat' for .gz files.
+
+Defaults to 'cat'.
 
 ### Types
 
@@ -747,7 +1083,11 @@ Timeout, in seconds, for loading the sqlfiles. Defaults to '300'.
 
 ##### `ensure`
 
-Whether the resource is present. Valid values are 'present', 'absent'. Defaults to 'present'.
+Whether the resource is present.
+
+Valid values are 'present', 'absent'.
+
+Defaults to 'present'.
 
 ##### `name`
 
@@ -755,17 +1095,21 @@ The name of the MySQL database to manage.
 
 ##### `charset`
 
-The CHARACTER SET setting for the database. Defaults to ':utf8'.
+The CHARACTER SET setting for the database.
+
+Defaults to ':utf8'.
 
 ##### `collate`
 
-The COLLATE setting for the database. Defaults to ':utf8_general_ci'. 
+The COLLATE setting for the database.
+
+Defaults to ':utf8_general_ci'.
 
 #### mysql_user
 
 Creates and manages user grants within MySQL.
 
-```
+```puppet
 mysql_user { 'root@127.0.0.1':
   ensure                   => 'present',
   max_connections_per_hour => '0',
@@ -777,10 +1121,19 @@ mysql_user { 'root@127.0.0.1':
 
 You can also specify an authentication plugin.
 
-```
+```puppet
 mysql_user{ 'myuser'@'localhost':
   ensure                   => 'present',
   plugin                   => 'unix_socket',
+}
+```
+
+TLS options can be specified for a user.
+
+```puppet
+mysql_user{ 'myuser'@'localhost':
+  ensure                   => 'present',
+  tls_options              => ['SSL'],
 }
 ```
 
@@ -794,28 +1147,46 @@ The user's password hash of the user. Use mysql_password() for creating such a h
 
 ##### `max_user_connections`
 
-Maximum concurrent connections for the user. Must be an integer value. A value of '0' specifies no (or global) limit.
+Maximum concurrent connections for the user.
+
+Must be an integer value.
+
+A value of '0' specifies no (or global) limit.
 
 ##### `max_connections_per_hour`
 
-Maximum connections per hour for the user. Must be an integer value. A value of '0' specifies no (or global) limit.
+Maximum connections per hour for the user.
+
+Must be an integer value.
+
+A value of '0' specifies no (or global) limit.
 
 ##### `max_queries_per_hour`
 
-Maximum queries per hour for the user. Must be an integer value. A value of '0' specifies no (or global) limit.
+Maximum queries per hour for the user.
+
+Must be an integer value.
+
+A value of '0' specifies no (or global) limit.
 
 ##### `max_updates_per_hour`
 
-Maximum updates per hour for the user. Must be an integer value. A value of '0' specifies no (or global) limit.
+Maximum updates per hour for the user.
+
+Must be an integer value.
+
+A value of '0' specifies no (or global) limit.
+
+##### `tls_options`
+
+SSL-related options for a MySQL account, using one or more tls_option values. 'NONE' specifies that the account has no TLS options enforced, and the available options are 'SSL', 'X509', 'CIPHER *cipher*', 'ISSUER *issuer*', 'SUBJECT *subject*'; as stated in the MySQL documentation.
 
 
 #### mysql_grant
 
-`mysql_grant` creates grant permissions to access databases within
-MySQL. To create grant permissions to access databases with MySQL, use it you must create the title of the resource as shown below,
-following the pattern of `username@hostname/database.table`:
+`mysql_grant` creates grant permissions to access databases within MySQL. To create grant permissions to access databases with MySQL, use it you must create the title of the resource as shown below, following the pattern of `username@hostname/database.table`:
 
-```
+```puppet
 mysql_grant { 'root@localhost/*.*':
   ensure     => 'present',
   options    => ['GRANT'],
@@ -827,7 +1198,7 @@ mysql_grant { 'root@localhost/*.*':
 
 It is possible to specify privileges down to the column level:
 
-```
+```puppet
 mysql_grant { 'root@localhost/mysql.user':
   ensure     => 'present',
   privileges => ['SELECT (Host, User)'],
@@ -836,13 +1207,19 @@ mysql_grant { 'root@localhost/mysql.user':
 }
 ```
 
+To revoke GRANT privilege specify ['NONE'].
+
 ##### `ensure`
 
-Whether the resource is present. Valid values are 'present', 'absent'. Defaults to 'present'.
+Whether the resource is present.
+
+Valid values are 'present', 'absent'.
+
+Defaults to 'present'.
 
 ##### `name`
 
-Name to describe the grant. Must in a 'user/table' format. 
+Name to describe the grant. Must in a 'user/table' format.
 
 ##### `privileges`
 
@@ -864,7 +1241,7 @@ MySQL options to grant. Optional.
 
 `mysql_plugin` can be used to load plugins into the MySQL Server.
 
-```
+```puppet
 mysql_plugin { 'auth_socket':
   ensure     => 'present',
   soname     => 'auth_socket.so',
@@ -873,7 +1250,11 @@ mysql_plugin { 'auth_socket':
 
 ##### `ensure`
 
-Whether the resource is present. Valid values are 'present', 'absent'. Defaults to 'present'.
+Whether the resource is present.
+
+Valid values are 'present', 'absent'.
+
+Defaults to 'present'.
 
 ##### `name`
 
@@ -885,12 +1266,9 @@ The library file name.
 
 #### `mysql_datadir`
 
-Initializes the MySQL data directory with version specific code. Pre MySQL 5.7.6
-it uses mysql_install_db. After MySQL 5.7.6 it uses mysqld --initialize-insecure.
+Initializes the MySQL data directory with version specific code. Pre MySQL 5.7.6 it uses mysql_install_db. After MySQL 5.7.6 it uses mysqld --initialize-insecure.
 
-Insecure initialization is needed, as mysqld version 5.7 introduced "secure by default" mode.
-This means MySQL generates a random password and writes it to STDOUT. This means puppet
-can never accesss the database server afterwards, as no credencials are available.
+Insecure initialization is needed, as mysqld version 5.7 introduced 'secure by default' mode. This means MySQL generates a random password and writes it to STDOUT. This means puppet can never access the database server afterwards, as no credentials are available.
 
 This type is an internal type and should not be called directly.
 
@@ -902,9 +1280,11 @@ Determines the MySQL version by parsing the output from `mysql --version`
 
 #### `mysql_server_id`
 
-Generates a unique id, based on the node's MAC address, which can be used as
-`server_id`. This fact will *always* return `0` on nodes that have only
-loopback interfaces. Because those nodes aren't connected to the outside world, this shouldn't cause any conflicts.
+Generates a unique id, based on the node's MAC address, which can be used as `server_id`. This fact will *always* return `0` on nodes that have only loopback interfaces. Because those nodes aren't connected to the outside world, this shouldn't cause any conflicts.
+
+### Tasks
+
+The MySQL module has an example task that allows a user to execute arbitary SQL against a database. Please refer to to the [PE documentation](https://puppet.com/docs/pe/2017.3/orchestrator/running_tasks.html) or [Bolt documentation](https://puppet.com/docs/bolt/latest/bolt.html) on how to execute a task.
 
 ## Limitations
 
@@ -923,14 +1303,9 @@ Testing on other platforms has been minimal and cannot be guaranteed.
 
 ## Development
 
-Puppet Labs modules on the Puppet Forge are open projects, and community
-contributions are essential for keeping them great. We can't access the
-huge number of platforms and myriad of hardware, software, and deployment
-configurations that Puppet is intended to serve.
+Puppet modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can't access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.
 
-We want to keep it as easy as possible to contribute changes so that our
-modules work in your environment. There are a few guidelines that we need
-contributors to follow so that we can have a chance of keeping on top of things.
+We want to keep it as easy as possible to contribute changes so that our modules work in your environment. There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
 
 Check out our the complete [module contribution guide](https://docs.puppetlabs.com/forge/contributing.html).
 
@@ -948,4 +1323,4 @@ This module is based on work by David Schmitt. The following contributors have c
 * Michael Arnold
 * Chris Weyl
 * Daniël van Eeden
-
+* Jan-Otto Kröpke

@@ -1,6 +1,6 @@
-#graphite
+# graphite
 
-####Table of Contents
+#### Table of Contents
 
 1. [Overview - What is the graphite module?](#overview)
 2. [Module Description - What does this module do?](#module-description)
@@ -17,7 +17,7 @@
 6. [Limitations - OS compatibility, etc.](#limitations)
 7. [Contributing to the graphite module](#contributing)
 
-##Overview
+## Overview
 
 This module installs and makes basic configs for graphite, with carbon and whisper.
 
@@ -25,18 +25,18 @@ This module installs and makes basic configs for graphite, with carbon and whisp
 [![Build Status](https://secure.travis-ci.org/echocat/puppet-graphite.png?branch=master)](https://travis-ci.org/echocat/puppet-graphite)
 [![Puppet Forge Downloads](http://img.shields.io/puppetforge/dt/dwerder/graphite.svg)](https://forge.puppetlabs.com/dwerder/graphite)
 
-##Module Description
+## Module Description
 
 [Graphite](http://graphite.readthedocs.org/en/latest/overview.html), and its components Carbon and Whisper, is an enterprise-scale monitoring tool. This module sets up a simple graphite server with all its components. Furthermore it can be used to set up more complex graphite environments with metric aggregation, clustering and so on.
 
-##Setup
+## Setup
 
 **What graphite affects:**
 
 * packages/services/configuration files for Graphite
 * on default sets up webserver (can be disabled if manage by other module)
 
-###Beginning with Graphite
+### Beginning with Graphite
 
 To install Graphite with default parameters
 
@@ -46,7 +46,7 @@ To install Graphite with default parameters
 
 The defaults are determined by your operating system e.g. Debian systems have one set of defaults, and RedHat systems have another). This defaults should work well on testing environments with graphite as a standalone service on the machine. For production use it is recommend to use a database like MySQL and cache data in memcached (not installed with this module) and configure it here. Furthermore you should check things like `gr_storage_schemas`.
 
-###Configure MySQL and Memcached
+### Configure MySQL and Memcached
 
 ```puppet
   class { 'graphite':
@@ -80,14 +80,14 @@ The defaults are determined by your operating system e.g. Debian systems have on
   }
 ```
 
-###Configure Graphite with Grafana
+### Configure Graphite with Grafana
 
 This setup will use the [puppetlabs-apache](https://forge.puppetlabs.com/puppetlabs/apache) and [bfraser-grafana](https://forge.puppet.com/bfraser/grafana) modules to setup a graphite system with grafana frontend. You will also need an elasticsearch as it is required for grafana.
 
 ```puppet
 include '::apache'
 
-apache::vhost { graphite.my.domain:
+apache::vhost { 'graphite.my.domain':
   port    => '80',
   docroot => '/opt/graphite/webapp',
   wsgi_application_group      => '%{GLOBAL}',
@@ -128,7 +128,7 @@ class {'grafana':
 }
 ```
 
-###Configuration with Apache 2.4 and CORS
+### Configuration with Apache 2.4 and CORS
 
 If you use a system which ships Apache 2.4, then you will need a slightly different vhost config.
 Here is an example with Apache 2.4 and [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing) enabled.
@@ -142,7 +142,7 @@ If you do not know what CORS, then do not use it. Its disabled by default. You w
   }
 ```
 
-###Configuration with Additional LDAP Options
+### Configuration with Additional LDAP Options
 
 If additional LDAP parameters are needed for your Graphite installation, you can specify them using the `gr_ldap_options`
 parameter. For example, this is useful if you're using SSL and need to configure LDAP to use your SSL cert and key files.
@@ -172,7 +172,7 @@ ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_ALLOW)
 
 See http://www.python-ldap.org/ for more details about these options.
 
-###Configuration with multiple cache, relay and/or aggregator instances
+### Configuration with multiple cache, relay and/or aggregator instances
 
 You could create more than one instance for cache, relay or aggregator using the `gr_cache_instances`,
 `gr_relay_instances` and `gr_aggregator_instances` parameters. These paremeters must be hashes, and the keys are the name of the instances (cache:b, cache:c, relay:b, relay:c, etc.). Every hash must have an array of parameters which will be written as is in the config file. The defaults settings for the additional instances will be the
@@ -201,7 +201,7 @@ ones set for the principal instance.
 
 So in this case you would have 3 cache instances, the first one is `cache` (you can refer to it as `cache:a` too), `cache:b` and `cache:c`. cache:a will listen on ports 2003, 2004 and 7002 for line, pickle and query respectively. But, cache:b will do it on ports 2103, 2104, and 7102, and cache:c on 2203, 2204 and 7202. All other parameters from cache:a will be inherited by cache:b and c.
 
-###Installing with something other than pip and specifying package names and versions
+### Installing with something other than pip and specifying package names and versions
 If you need to install via something other than pip, an internal apt repo with fpm converted packages for instance, you can set `gr_pip_install` to false.
 If you're doing this you'll most likely have to override the default package names and versions as well.
 ```puppet
@@ -231,7 +231,7 @@ Additionally, the Django package is normally installed from a system package, bu
   }
 ```
 
-####Managing system pip and Python development packages
+#### Managing system pip and Python development packages
 
 If gr_pip_install is set to true, both python-pip and Python development packages will need to be installed. If you want to manage those packages separately, set gr_manage_python_packages to false.
 
@@ -240,165 +240,204 @@ If gr_pip_install is set to true, both python-pip and Python development package
     gr_manage_python_packages => false,
   }
 
-##Usage
+### Installing with pip from a non-PyPI source
 
-####Class: `graphite`
+You can also chose to install the pip packages from a source other than PyPI, such as a file on disk or an HTTP server. If you do this you will also have to set the package versions to `'present'` to avoid errors from Puppet:
+```puppet
+  class { '::graphite':
+    gr_django_tagging_ver    => 'present',
+    gr_django_tagging_source => 'http://example.com/django-tagging-0.3.1.tar.gz',
+    gr_twisted_ver           => 'present',
+    gr_twisted_source        => 'http://example.com/Twisted-11.1.0.tar.bz2',
+    gr_txamqp_ver            => 'present',
+    gr_txamqp_source         => 'http://example.com/txAMQP-0.4.tar.gz',
+    gr_graphite_ver          => 'present',
+    gr_graphite_source       => 'http://example.com/graphite-web-0.9.15.tar.gz',
+    gr_carbon_ver            => 'present',
+    gr_carbon_source         => 'http://example.com/carbon-0.9.15.tar.gz',
+    gr_whisper_ver           => 'present',
+    gr_whisper_source        => 'http://example.com/whisper-0.9.15.tar.gz',
+  }
+```
+
+You can also specify an alternate source for all packages (and their dependencies) by passing options to `pip install` using `gr_pip_install_options`:
+```puppet
+  class { '::graphite':
+    gr_pip_install_options => [
+      '--no-index',
+      '--find-links', 'https://example.com/pip_packages/',
+    ],
+  }
+```
+
+For more details on how these options work, see the [documentation for `pip install`](https://pip.pypa.io/en/stable/reference/pip_install/).
+
+## Usage
+
+#### Class: `graphite`
 
 This is the primary class. And the only one which should be used.
 
 **Parameters within `graphite`:**
 
-#####`gr_group`
+##### `gr_group`
 
 Default is empty. The group of the user (see gr_user) who runs graphite.
 
-#####`gr_user`
+##### `gr_user`
 
 Default is empty. The user who runs graphite. If this is empty carbon runs as the user that invokes it.
 
-#####`gr_enable_carbon_cache`
+##### `gr_enable_carbon_cache`
 
 Default is true. Enable carbon cache.
 
-#####`gr_max_cache_size`
+##### `gr_max_cache_size`
 
 Default is 'inf'. Limits the size of the cache to avoid swapping or becoming CPU bound. Use the value "inf" (infinity) for an unlimited cache size.
 
-#####`gr_max_updates_per_second`
+##### `gr_max_updates_per_second`
 
 Default is 500. Limits the number of whisper update_many() calls per second, which effectively means the number of write requests sent to the disk.
 
-#####`gr_max_updates_per_second_on_shutdown`
+##### `gr_max_updates_per_second_on_shutdown`
 
 Default is 'undef' (no limit change on shutdown). Change the limits of gr_max_updates_per_second in case of an stop/shutdown event to speed up/slow down the shutdown process.
 
-#####`gr_max_creates_per_minute`
+##### `gr_max_creates_per_minute`
 
 Default is 50. Softly limits the number of whisper files that get created each minute.
 
-#####`gr_carbon_metric_prefix`
+##### `gr_carbon_metric_prefix`
 
 The prefix to be applied to internal performance metrics. Defaults to 'carbon'.
 
-#####`gr_carbon_metric_interval`
+##### `gr_carbon_metric_interval`
 
 Default is 60. Set the interval between sending internal performance metrics; affects all carbon daemons.
 
-#####`gr_carbon_relay_ulimit`
+##### `gr_carbon_relay_ulimit`
 
 Default is undef. Set the maximum number of file descriptors for
 carbon-relay process.
 
-#####`gr_line_receiver_interface`
+##### `gr_line_receiver_interface`
 
 Default is '0.0.0.0' (string). Interface the line receiver listens.
 
-#####`gr_line_receiver_port`
+##### `gr_line_receiver_port`
 
 Default is 2003. Port of line receiver.
 
-#####`gr_enable_udp_listener`
+##### `gr_enable_udp_listener`
 
 Default is 'False' (string). Set this to True to enable the UDP listener.
 
-#####`gr_udp_receiver_interface`
+##### `gr_udp_receiver_interface`
 
 Default is '0.0.0.0' (string). Its clear, isnt it?
 
-#####`gr_udp_receiver_port`
+##### `gr_udp_receiver_port`
 
 Default is 2003. Self explaining.
 
-#####`gr_pickle_receiver_interface`
+##### `gr_pickle_receiver_interface`
 
 Default is '0.0.0.0' (string). Pickle is a special receiver who handle tuples of data.
 
-#####`gr_pickle_receiver_port`
+##### `gr_pickle_receiver_port`
 
 Default is 2004. Self explaining
 
-#####`gr_log_listener_connections`
+##### `gr_log_listener_connections`
 
 Default is 'True' (string). Logs successful connections
 
-#####`gr_use_insecure_unpickler`
+##### `gr_use_insecure_unpickler`
 
 Default is 'False' (string). Set this to 'True' to revert to the old-fashioned insecure unpickler.
 
-#####`gr_use_whitelist`
+##### `gr_use_whitelist`
 
 Default is 'False' (string). Set this to 'True' to enable whitelists and blacklists.
 
-#####`gr_whitelist`
+##### `gr_whitelist`
 
 List of patterns to be included in whitelist.conf. Default is [ '.*' ].
 
-#####`gr_blacklist`
+##### `gr_blacklist`
 
 List of patterns to be included in blacklist.conf. Default is [ ].
 
-#####`gr_cache_query_interface`
+##### `gr_cache_query_interface`
 
 Default is '0.0.0.0'. Interface to send cache queries to.
 
-#####`gr_cache_query_port`
+##### `gr_cache_query_port`
 
 Default is 7002. Self explaining.
 
-#####`gr_timezone`
+##### `gr_timezone`
 
 Default is 'GMT' (string). Timezone for graphite to be used.
 
-#####`gr_base_dir`
+##### `gr_base_dir`
 
 Default is '/opt/graphite'. Set base install location of Graphite. This forms the base location for installs, predominantly appropriate for pip installations. When not installing using pip a typical location for this may be '/opt/carbon'.
 
-#####`gr_storage_dir`
+#### `gr_base_dir_managed_externally`
+
+Boolean, default to false . Useful if the base install location of Graphite is managed by other Puppet resource (like a mountpoint for example)
+
+##### `gr_storage_dir`
 
 Default is '${gr_base_dir}/storage'. Set location of base storage files.  When not installing using pip a typical location for this may be '/opt/carbon'. This dir is also used as pid dir on RedHat.
 
-#####`gr_local_data_dir`
+##### `gr_local_data_dir`
 
 Default is '${gr_storage_dir}/whisper'. Set location of whisper files.
 
-#####`gr_rrd_dir`
+##### `gr_rrd_dir`
 
 Default is '${gr_storage_dir}/rrd'. Set location of rrd data files.
 
-#####`gr_whitelists_dir`
+##### `gr_whitelists_dir`
 
 Default is '${gr_storage_dir}/rrd'. Set location of whitelist configuration files.
 
-#####`gr_carbon_conf_dir`
+##### `gr_carbon_conf_dir`
 
 Default is '${gr_base_dir}/conf'. Set location of Carbon's configuration files. Most relevant when not using pip for installation. A typical location for this may be '/etc/carbon'.
 
-#####`gr_carbon_log_dir`
+##### `gr_carbon_log_dir`
 
 Default is '${gr_storage_dir}/log/carbon-cache'. Set location of carbon cache log files.
 
-#####`gr_graphiteweb_log_dir`
+##### `gr_carbon_log_rotate`
+
+Default is 'True'. Enable daily log rotation.
+
+##### `gr_graphiteweb_log_dir`
 
 Default is '${gr_storage_dir}/log'. Set location of graphite web log files.
 
-#####`gr_graphiteweb_conf_dir`
+##### `gr_graphiteweb_conf_dir`
 
 Default is '${gr_base_dir}/conf'. Set location of graphite web configuration.
 
-#####`gr_graphiteweb_webapp_dir`
+##### `gr_graphiteweb_webapp_dir`
 
 Default is '${gr_base_dir}/webapp'. Set location of graphite web's webapp files.
 
-#####`gr_graphiteweb_storage_dir`
+##### `gr_graphiteweb_storage_dir`
 
 Default is '/var/lib/graphite-web'. Set location of graphite web's storage, used for graphite.db file.
 
-#####`gr_graphiteweb_install_lib_dir`
+##### `gr_graphiteweb_install_lib_dir`
 
 Default is '${gr_graphiteweb_webapp_dir}/graphite'. Set location of libraries directory for graphite web.
 
-
-#####`gr_storage_schemas`
+##### `gr_storage_schemas`
 
 Default is
 ```
@@ -417,7 +456,7 @@ Default is
 ```
 The storage schemas, which describes how long matching graphs are to be stored in detail.
 
-#####`gr_storage_aggregation_rules`
+##### `gr_storage_aggregation_rules`
 
 Default is the Hashmap:
 ```
@@ -430,7 +469,7 @@ Default is the Hashmap:
 ```
 The storage aggregation rules.
 
-#####`gr_web_server`
+##### `gr_web_server`
 
 Default is 'apache'. The web server to configure. Valid values are 'apache', 'nginx', 'wsgionly' or 'none'.
 
@@ -438,62 +477,63 @@ Apache is configured with mod_wsgi, nginx is configured with gunicorn. 'wsgionly
 
 The value 'none' means that you will manage the webserver yourself.
 
-#####`gr_web_server_port`
+##### `gr_web_server_port`
 
 Default is 80. The HTTP port which the web server will use. Only used for $gr_web_server => 'apache' or 'nginx'.
 
-#####`gr_web_server_port_https`
+##### `gr_web_server_port_https`
 
 Default is 443. The HTTPS port which the web server will use. Only used for $gr_web_server => 'apache'.
 
-#####`gr_web_servername`
+##### `gr_web_servername`
 
 Default is `$::fqdn` (string). Virtualhostname of Graphite webgui.
 
-#####`gr_web_cors_allow_from_all`
+##### `gr_web_cors_allow_from_all`
 
 Default is false (boolean). Include CORS Headers for all hosts (*) in web server config.
 This is needed for tools like Grafana.
 
-#####`gr_use_ssl`
+##### `gr_use_ssl`
 
 If true, alter web server config to enable SSL. Default is false (boolean).
+Only used for apache at the moment.
 
-#####`gr_ssl_cert`
+##### `gr_ssl_cert`
 
 Path to SSL cert file. Default is undef.
 
-#####`gr_ssl_key`
+##### `gr_ssl_key`
 
 Path to SSL key file. Default is undef.
 
-#####`gr_ssl_dir`
+##### `gr_ssl_dir`
 
 Path to SSL dir containing keys and certs. Default is undef.
 
-#####`gr_web_group`
+##### `gr_web_group`
 
 Group name to chgrp the files that will served by webserver. Only necessary for gr_web_server => 'wsgionly' or 'none'.
 
-#####`gr_web_user`
+##### `gr_web_user`
 
 Username to chown the files that will served by webserver. Only necessary for gr_web_server => 'wsgionly' or 'none'.
 
-#####`gr_apache_conf_template`
+##### `gr_apache_conf_template`
 
 Template to use for Apache vhost config. Default is 'graphite/etc/apache2/sites-available/graphite.conf.erb'.
 
-#####`gr_apache_conf_prefix`
+##### `gr_apache_conf_prefix`
 
 Default is '' (String). Prefix of the Apache config file. Useful if you want to change the order of the virtual hosts to be loaded.
 For example: '000-'
 
-#####`gr_apache_24`
+##### `gr_apache_24`
 
 Boolean to enable configuration parts for Apache 2.4 instead of 2.2
 Default is false/true (autodected. see params.pp)
 
-#####`gr_apache_noproxy`
+##### `gr_apache_noproxy`
 
 Optional setting to disable proxying of requests. When set, will supply a value to 'NoProxy'.
 ```
@@ -507,11 +547,11 @@ Will insert:
 ```
 In the /etc/apache2/conf.d/graphite.conf file.
 
-#####`gr_django_1_4_or_less`
+##### `gr_django_1_4_or_less`
 
 Default is false (boolean). Django settings style.
 
-#####`gr_django_db_engine`
+##### `gr_django_db_engine`
 
 Default is 'django.db.backends.sqlite3' (string). Can be set to
 
@@ -521,87 +561,87 @@ Default is 'django.db.backends.sqlite3' (string). Can be set to
 - django.db.backends.sqlite3
 - django.db.backends.oracle
 
-#####`gr_django_db_name`
+##### `gr_django_db_name`
 
 Default is '/opt/graphite/storage/graphite.db' (string). Name of database to be used by django.
 
-#####`gr_django_db_user`
+##### `gr_django_db_user`
 
 Default is '' (string). Name of database user.
 
-#####`gr_django_db_password`
+##### `gr_django_db_password`
 
 Default is '' (string). Password of database user.
 
-#####`gr_django_db_host`
+##### `gr_django_db_host`
 
 Default is '' (string). Hostname/IP of database server.
 
-#####`gr_django_db_port`
+##### `gr_django_db_port`
 
 Default is '' (string). Port of database.
 
-#####`gr_enable_carbon_relay`
+##### `gr_enable_carbon_relay`
 
 Default is false. Enable carbon relay.
 
-#####`gr_relay_line_interface`
+##### `gr_relay_line_interface`
 
 Default is '0.0.0.0' (string)
 
-#####`gr_relay_line_port`
+##### `gr_relay_line_port`
 
 Default is 2013 (integer)
 
-#####`gr_relay_enable_udp_listener`
+##### `gr_relay_enable_udp_listener`
 
 Default is 'False'. Enables the UDP listener for carbon-relay.
 
-#####`gr_relay_udp_receiver_interface`
+##### `gr_relay_udp_receiver_interface`
 
 Default is '0.0.0.0' (string)
 
-#####`gr_relay_udp_receiver_port`
+##### `gr_relay_udp_receiver_port`
 
 Default is 2013 (integer)
 
-#####`gr_relay_pickle_interface`
+##### `gr_relay_pickle_interface`
 
 Default is '0.0.0.0' (string)
 
-#####`gr_relay_pickle_port`
+##### `gr_relay_pickle_port`
 
 Default is 2014 (integer)
 
-#####`gr_relay_log_listener_connections`
+##### `gr_relay_log_listener_connections`
 
 Default is 'True' (string). Logs successful connections
 
-#####`gr_relay_method`
+##### `gr_relay_method`
 
 Default is 'rules'
 
-#####`gr_relay_replication_factor`
+##### `gr_relay_replication_factor`
 
 Default is 1 (integer). Add redundancy by replicating every datapoint to more than one machine.
 
-#####`gr_relay_diverse_replicas`
+##### `gr_relay_diverse_replicas`
 
 Default is 'True' (string). Add to guarantee replicas across distributed hosts.
 
-#####`gr_relay_destinations`
+##### `gr_relay_destinations`
 
 Default  is [ '127.0.0.1:2004' ] (array). Array of backend carbons for relay.
 
-#####`gr_relay_max_queue_size`
+##### `gr_relay_max_queue_size`
 
 Default is 10000 (integer)
 
-#####`gr_relay_use_flow_control`
+##### `gr_relay_use_flow_control`
 
 Default is 'True' (string).
 
-#####`gr_relay_rules`
+##### `gr_relay_rules`
 
 Relay rule set.
 Default is
@@ -614,63 +654,63 @@ Default is
 }
 ```
 
-#####`gr_enable_carbon_aggregator`
+##### `gr_enable_carbon_aggregator`
 
 Default is false (boolean) Enable the carbon aggregator daemon.
 
-#####`gr_aggregator_line_interface`
+##### `gr_aggregator_line_interface`
 
 Default is '0.0.0.0' (string). Address for line interface to listen on.
 
-#####`gr_aggregator_line_port`
+##### `gr_aggregator_line_port`
 
 Default is 2023. TCP port for line interface to listen on.
 
-#####`gr_aggregator_enable_udp_listener`
+##### `gr_aggregator_enable_udp_listener`
 
 Default is 'False' (string). Set this to True to enable the UDP listener.
 
-#####`gr_aggregator_udp_receiver_interface`
+##### `gr_aggregator_udp_receiver_interface`
 
 Default is '0.0.0.0' (string). Its clear, isnt it?
 
-#####`gr_aggregator_udp_receiver_port`
+##### `gr_aggregator_udp_receiver_port`
 
 Default is 2023. Self explaining.
 
-#####`gr_aggregator_pickle_interface`
+##### `gr_aggregator_pickle_interface`
 
 Default is '0.0.0.0' (string). IP address for pickle interface.
 
-#####`gr_aggregator_pickle_port`
+##### `gr_aggregator_pickle_port`
 
 Default is 2024. Pickle port.
 
-#####`gr_aggregator_log_listener_connections`
+##### `gr_aggregator_log_listener_connections`
 
 Default is 'True' (string). Logs successful connections
 
-#####`gr_aggregator_forward_all`
+##### `gr_aggregator_forward_all`
 
 Default is 'True' (string). Forward all metrics to the destination(s) defined in  `gr_aggregator_destinations`.
 
-#####`gr_aggregator_destinations`
+##### `gr_aggregator_destinations`
 
 Default is [ '127.0.0.1:2004' ] (array). Array of backend carbons.
 
-#####`gr_aggregator_max_queue_size`
+##### `gr_aggregator_max_queue_size`
 
 Default is 10000. Maximum queue size.
 
-#####`gr_aggregator_use_flow_control`
+##### `gr_aggregator_use_flow_control`
 
 Default is 'True' (string). Enable flow control Can be True or False.
 
-#####`gr_aggregator_max_intervals`
+##### `gr_aggregator_max_intervals`
 
 Default is 5. Maximum number intervals to keep around.
 
-#####`gr_aggregator_rules`
+##### `gr_aggregator_rules`
 
 Default is
 ```
@@ -681,83 +721,87 @@ Default is
 ```
 Hashmap of carbon aggregation rules.
 
-#####`gr_memcache_hosts`
+##### `gr_memcache_hosts`
 
 Default is undef (array). List of memcache hosts to use. eg ['127.0.0.1:11211','10.10.10.1:11211']
 
-#####`secret_key`
+##### `secret_key`
 
 Default is 'UNSAFE_DEFAULT' (string). CHANGE IT! Secret used as salt for things like hashes, cookies, sessions etc. Has to be the same on all nodes of a graphite cluster.
 
-#####`gr_cluster_servers`
+##### `gr_cluster_servers`
 
 Default is undef (array). Array of webbapp hosts. eg.: ['10.0.2.2:80', '10.0.2.3:80']
 
-#####`gr_carbonlink_hosts`
+##### `gr_carbonlink_hosts`
 
 Default is undef (array). Array of carbonlink hosts. eg.: ['10.0.2.2:80', '10.0.2.3:80']
 
-#####`gr_cluster_fetch_timeout`
+##### `gr_carbonlink_hashing_type`
+
+Default is undef (string). Defines consistent-hashing type for 0.9.16+, e.g.: 'carbon_ch'
+
+##### `gr_cluster_fetch_timeout`
 
 Default is 6. Timeout to fetch series data.
 
-#####`gr_cluster_find_timeout`
+##### `gr_cluster_find_timeout`
 
 Default is 2.5 . Timeout for metric find requests.   
 
-#####`gr_cluster_retry_delay`
+##### `gr_cluster_retry_delay`
 
 Default is 10.  Time before retrying a failed remote webapp.
 
-#####`gr_cluster_cache_duration`
+##### `gr_cluster_cache_duration`
 
 Default is 300. Time to cache remote metric find results.
 
-#####`nginx_htpasswd`
+##### `nginx_htpasswd`
 
 Default is undef (string). The user and salted SHA-1 (SSHA) password for Nginx authentication. If set, Nginx will be configured to use HTTP Basic authentication with the given user & password. e.g.: 'testuser:$jsfak3.c3Fd0i1k2kel/3sdf3'
 
-#####`nginx_proxy_read_timeout`
+##### `nginx_proxy_read_timeout`
 
 Default is 10. Value to use for nginx's proxy_read_timeout setting
 
-#####`manage_ca_certificate`
+##### `manage_ca_certificate`
 
 Default is true (boolean). Used to determine if the module should install ca-certificate on Debian machines during the initial installation.
 
-#####`gr_use_ldap`
+##### `gr_use_ldap`
 
 Default is false (boolean). Turn ldap authentication on/off.
 
-#####`gr_ldap_uri`
+##### `gr_ldap_uri`
 
 Default is '' (string). Set ldap uri.
 
-#####`gr_ldap_search_base`
+##### `gr_ldap_search_base`
 
 Default is '' (string). Set the ldap search base.
 
-#####`gr_ldap_base_user`
+##### `gr_ldap_base_user`
 
 Default is '' (string).Set ldap base user.
 
-#####`gr_ldap_base_pass`
+##### `gr_ldap_base_pass`
 
 Default is '' (string). Set ldap password.
 
-#####`gr_ldap_user_query`
+##### `gr_ldap_user_query`
 
 Default is '(username=%s)' (string). Set ldap user query.
 
-#####`gr_ldap_options`
+##### `gr_ldap_options`
 
 Hash of additional LDAP options to be enabled. For example, `{ 'ldap.OPT_X_TLS_REQUIRE_CERT' => 'ldap.OPT_X_TLS_ALLOW' }`. Default is `{ }`.
 
-#####`gr_use_remote_user_auth`
+##### `gr_use_remote_user_auth`
 
 Default is 'False' (string). Allow use of REMOTE_USER env variable within Django/Graphite.
 
-#####`gr_remote_user_header_name`
+##### `gr_remote_user_header_name`
 
 Default is undef. Allows the use of a custom HTTP header, instead of the REMOTE_USER env variable (mainly for nginx use) to tell Graphite a user is authenticated. Useful when using an external auth handler with X-Accel-Redirect etc.
 Example value - HTTP_X_REMOTE_USER
@@ -767,19 +811,19 @@ combined with the option `gr_web_server` = 'wsgionly' and http://forge.puppetlab
 with some custom vhosts.
 The sample external auth app is available from [here](https://github.com/antoinerg/nginx_auth_backend)
 
-#####`gunicorn_arg_timeout`
+##### `gunicorn_arg_timeout`
 
 Default is 30.  value to pass to gunicorns --timeout arg.
 
-#####`gunicorn_bind`
+##### `gunicorn_bind`
 
 Default is 'unix:/var/run/graphite.sock'.  value to pass to gunicorns --bind arg.
 
-#####`gunicorn_workers`
+##### `gunicorn_workers`
 
 Default is 2. value to pass to gunicorn's --worker arg.
 
-#####`gr_cache_instances`    
+##### `gr_cache_instances`    
 
 Default is empty array. Allow multiple additional cache instances. (beside the default one)
 Example value:
@@ -797,125 +841,168 @@ Example value:
     }
 }
 ```
-#####`gr_relay_instances`
+##### `gr_relay_instances`
 
 Default is empty array. Allow multiple additional relay instances. (beside the default one)
 
 Example: see gr_cache_instances
 
-#####`gr_aggregator_instances`
+##### `gr_aggregator_instances`
 
 Default is empty array. Allow multiple additional aggregator instances. (beside the default one)
 
 Example: see gr_cache_instances
 
-#####`gr_whisper_autoflush`
+##### `gr_whisper_autoflush`
 
 Default is 'False'. Set autoflush for whisper
 
-#####`gr_whisper_lock_writes`
+##### `gr_whisper_lock_writes`
 
 Default is false. Set lock writes for whisper
 
-#####`gr_whisper_fallocate_create`
+##### `gr_whisper_fallocate_create`
 
 Default is false. Set fallocate_create for whisper
 
-#####`gr_log_cache_performance`
+##### `gr_log_cache_performance`
 
 Default is 'False' (string). Logs timings for remote calls to carbon-cache
 
-#####`gr_log_rendering_performance`
+##### `gr_log_rendering_performance`
 
 Default is 'False' (string). Triggers the creation of rendering.log which logs timings for calls to the The Render URL API
 
-#####`gr_log_metric_access`
+##### `gr_log_metric_access`
 
 Default is 'False' (string). Trigges the creation of metricaccess.log which logs access to Whisper and RRD data files
 
-#####`gr_django_tagging_pkg`
+##### `gr_django_tagging_pkg`
 
 Default is 'django-tagging' (string) The name of the django-tagging package that should be installed
 
-#####`gr_django_tagging_ver`
+##### `gr_django_tagging_ver`
 
 Default is '0.3.1' (string) The version of the django-tagging package that should be installed
 
-#####`gr_twisted_pkg`
+##### `gr_django_tagging_source`
+
+Default is `undef` (string). The source of the django-tagging package that should be installed.
+
+##### `gr_twisted_pkg`
 
 Default is 'Twisted' (string) The name of the twisted package that should be installed
 
-#####`gr_twisted_ver`
+##### `gr_twisted_ver`
 
 Default is '11.1.0' (string) The version of the twisted package that should be installed
 
-#####`gr_txamqp_pkg`
+##### `gr_twisted_source`
+
+Default is `undef` (string). The source of the twisted package that should be installed.
+
+##### `gr_txamqp_pkg`
 
 Default is 'txAMQP' (string) The name of the txamqp package that should be installed
 
-#####`gr_txamqp_ver`
+##### `gr_txamqp_ver`
 
 Default is '0.4' (string) The version of the txamqp package that should be installed
 
-#####`gr_graphite_pkg`
+##### `gr_txamqp_source`
+
+Default is `undef` (string). The source of the txamqp package that should be installed.
+
+##### `gr_graphite_pkg`
 
 Default is 'graphite-web' (string) The name of the graphite package that should be installed
 
-#####`gr_graphite_ver`
+##### `gr_graphite_ver`
 
 Default is '0.9.12' (string) The version of the graphite package that should be installed
 
-#####`gr_carbon_pkg`
+##### `gr_graphite_source`
+
+Default is `undef` (string). The source of the graphite package that should be installed.
+
+##### `gr_carbon_pkg`
 
 Default is 'carbon' (string) The name of the carbon package that should be installed
 
-#####`gr_carbon_ver`
+##### `gr_carbon_ver`
 
 Default is '0.9.12' (string) The version of the carbon package that should be installed
 
-#####`gr_whisper_pkg`
+##### `gr_carbon_source`
+
+Default is `undef` (string). The source of the carbon package that should be installed.
+
+##### `gr_whisper_pkg`
 
 Default is 'whisper' (string) The name of the whisper package that should be installed
 
-#####`gr_whisper_ver`
+##### `gr_whisper_ver`
 
 Default is '0.9.12' (string) The version of the whisper package that should be installed
 
-#####`gr_django_pkg`
+##### `gr_whisper_source`
+
+Default is `undef` (string). The source of the whisper package that should be installed.
+
+##### `gr_django_pkg`
 
 Default is a platform-specific name of the django package that should be installed (string).
 
-#####`gr_django_ver`
+##### `gr_django_ver`
 
 Default is 'installed' (string) The version of the django package that should be installed.
 
-#####`gr_django_provider`
+##### `gr_django_source`
+
+Default is `undef` (string). The source of the django package that should be installed.
+
+##### `gr_django_provider`
 
 Default is `undef` (string) The provider of the django package that should be installed.
 
-#####`gr_pip_install`
+##### `gr_pip_install_options`
+
+Default is `undef` (array). An array of options to pass to `pip install` when installing graphite.
+
+For example, to install packages from a repository other than PyPI, you could pass `--index-url` like this:
+
+```puppet
+  class { 'graphite':
+    gr_pip_install_options => ['--index-url', 'https://custom-packge-server/simple/'],
+  }
+```
+
+For details on available options, see the [documentation for `pip install`](https://pip.pypa.io/en/stable/reference/pip_install/).
+
+##### `gr_pip_install`
 
 Default is true (Bool). Should packages be installed via pip
 
-#####`gr_disable_webapp_cache`
+##### `gr_python_binary`
+
+Default is 'python' (string). Can be set to a fully-qualify path or an alternative binary name.
+
+##### `gr_disable_webapp_cache`
 
 Default is false (Bool). Should the caching of the webapp be disabled. This helps with some
 display issues in grafana.
 
-##Requirements
+## Requirements
 
-###Modules needed:
+### Modules needed:
 
 stdlib by puppetlabs
 
-###Software versions needed:
-
-facter > 1.6.2
-puppet > 2.6.2
+### Software versions needed:
 
 On Redhat distributions you need the EPEL or RPMforge repository, because Graphite needs packages, which are not part of the default repos.
 
-##Limitations
+## Limitations
 
 This module is tested on CentOS 6.5 and Debian 7 (Wheezy) and should also run on
 
@@ -926,7 +1013,7 @@ This module is tested on CentOS 6.5 and Debian 7 (Wheezy) and should also run on
 Most settings of Graphite can be set by parameters. So their can be special configurations for you. In this case you should edit
 the file `templates/opt/graphite/webapp/graphite/local_settings.py.erb`.
 
-###Compatibility Notes
+### Compatibility Notes
 * There is currently an [open ticket](https://tickets.puppetlabs.com/browse/PUP-3829) with Puppet about broken pip support in CentOS 6/7. The
 workaround for this bug is to create a symlink from `/usr/bin/pip-python` (which doesn't exist) to `/usr/bin/pip` (which does).
 * CentOS 7's default `nginx.conf` includes a `server` section listening on port 80. Thus, it is not possible to set up graphite without modifying
@@ -934,8 +1021,9 @@ the package-provided configuration file. You will have to either manually remove
 than port 80.
 * nginx/gunicorn requires a `systemctl restart gunicorn` after installing on Ubuntu 15.10
 * SELinux must be disabled
+* Installing on Ubuntu 16.04 Xenial requires Puppet 4.1+ (see commit [71251c9](https://github.com/echocat/puppet-graphite/commit/71251c92c8a1b85b7eb1515a009b7808756c7bee))
 
-##Contributing
+## Contributing
 
 Echocat modules are open projects. So if you want to make this module even better, you can contribute to this module on [Github](https://github.com/echocat/puppet-graphite).
 

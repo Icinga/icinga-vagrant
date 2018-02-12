@@ -1,6 +1,3 @@
-# rubocop:disable RSpec/MultipleExpectations
-# rubocop:disable RSpec/MessageSpies
-
 require 'spec_helper'
 
 wget_provider = Puppet::Type.type(:archive).provider(:wget)
@@ -26,6 +23,7 @@ RSpec.describe wget_provider do
 
     before do
       allow(FileUtils).to receive(:mv)
+      allow(execution).to receive(:execute)
     end
 
     context 'no extra properties specified' do
@@ -37,8 +35,8 @@ RSpec.describe wget_provider do
       end
 
       it 'calls wget with input, output and --max-redirects=5' do
-        expect(execution).to receive(:execute).with(default_options.join(' '))
         provider.download(name)
+        expect(execution).to have_received(:execute).with(default_options.join(' '))
       end
     end
 
@@ -52,8 +50,8 @@ RSpec.describe wget_provider do
       end
 
       it 'calls wget with default options and username' do
-        expect(execution).to receive(:execute).with([default_options, '--user=foo'].join(' '))
         provider.download(name)
+        expect(execution).to have_received(:execute).with([default_options, '--user=foo'].join(' '))
       end
     end
 
@@ -67,8 +65,8 @@ RSpec.describe wget_provider do
       end
 
       it 'calls wget with default options and password' do
-        expect(execution).to receive(:execute).with([default_options, '--password=foo'].join(' '))
         provider.download(name)
+        expect(execution).to have_received(:execute).with([default_options, '--password=foo'].join(' '))
       end
     end
 
@@ -82,8 +80,8 @@ RSpec.describe wget_provider do
       end
 
       it 'calls wget with default options and header containing cookie' do
-        expect(execution).to receive(:execute).with([default_options, '--header="Cookie: foo"'].join(' '))
         provider.download(name)
+        expect(execution).to have_received(:execute).with([default_options, '--header="Cookie: foo"'].join(' '))
       end
     end
 
@@ -97,8 +95,8 @@ RSpec.describe wget_provider do
       end
 
       it 'calls wget with default options and header containing cookie' do
-        expect(execution).to receive(:execute).with([default_options, '--https_proxy=https://home.lan:8080'].join(' '))
         provider.download(name)
+        expect(execution).to have_received(:execute).with([default_options, '-e use_proxy=yes', '-e https_proxy=https://home.lan:8080'].join(' '))
       end
     end
 
@@ -112,12 +110,14 @@ RSpec.describe wget_provider do
       end
 
       it 'calls wget with default options and --no-check-certificate' do
-        expect(execution).to receive(:execute).with([default_options, '--no-check-certificate'].join(' '))
         provider.download(name)
+        expect(execution).to have_received(:execute).with([default_options, '--no-check-certificate'].join(' '))
       end
     end
+
     describe '#checksum' do
       subject { provider.checksum }
+
       let(:url) { nil }
       let(:resource_properties) do
         {
@@ -141,10 +141,12 @@ RSpec.describe wget_provider do
         end
 
         let(:url) { 'http://example.com/checksum' }
+
         context 'responds with hash' do
           let(:remote_hash) { 'a0c38e1aeb175201b0dacd65e2f37e187657050a' }
-          it do
-            expect(Puppet::Util::Execution).to receive(:execute).with(wget_params.join(' ')).and_return("a0c38e1aeb175201b0dacd65e2f37e187657050a README.md\n")
+
+          it 'parses checksum value' do
+            allow(Puppet::Util::Execution).to receive(:execute).with(wget_params.join(' ')).and_return("a0c38e1aeb175201b0dacd65e2f37e187657050a README.md\n")
             expect(provider.checksum).to eq('a0c38e1aeb175201b0dacd65e2f37e187657050a')
           end
         end

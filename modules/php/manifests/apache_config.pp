@@ -9,16 +9,13 @@
 #   Hash with nested hash of key => value to set in inifile
 #
 class php::apache_config(
-  $inifile  = $::php::params::apache_inifile,
-  $settings = {}
+  Stdlib::Absolutepath $inifile = $::php::params::apache_inifile,
+  Hash $settings                = {}
 ) inherits ::php::params {
 
   if $caller_module_name != $module_name {
     warning('php::apache_config is private')
   }
-
-  validate_absolute_path($inifile)
-  validate_hash($settings)
 
   $real_settings = deep_merge($settings, hiera_hash('php::apache::settings', {}))
 

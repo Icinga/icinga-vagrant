@@ -16,24 +16,23 @@
 #
 # Sample usage:
 #   yum::install { 'epel-release':
-#     ensure => present,
+#     ensure => 'present',
 #     source => 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm',
 #   }
 #
 define yum::install (
-  $source,
-  $ensure  = present,
-  $timeout = undef,
+  String                                           $source,
+  Enum['present', 'installed', 'absent', 'purged'] $ensure  = 'present',
+  Optional[Integer]                                $timeout = undef,
 ) {
-  validate_string($source)
 
   Exec {
     path        => '/bin:/usr/bin:/sbin:/usr/sbin',
-    environment => 'LC_ALL=C'
+    environment => 'LC_ALL=C',
   }
 
   case $ensure {
-    present,installed: {
+    'present', 'installed', default: {
       exec { "yum-install-${name}":
         command => "yum -y install '${source}'",
         unless  => "rpm -q '${name}'",
@@ -41,14 +40,10 @@ define yum::install (
       }
     }
 
-    absent,purged: {
+    'absent', 'purged': {
       package { $name:
         ensure => $ensure,
       }
-    }
-
-    default: {
-      fail("Invalid ensure state: ${ensure}")
     }
   }
 }

@@ -30,13 +30,13 @@ describe 'quoted paths' do
     EOS
 
     it 'applies the manifest twice with no stderr' do
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, catch_failures: true)
+      apply_manifest(pp, catch_changes: true)
     end
 
     describe file("#{basedir}/concat test/foo") do
-      it { should be_file }
-      its(:content) { should match /string1string2/ }
+      it { is_expected.to be_file }
+      its(:content) { is_expected.to match %r{string1string2} }
     end
   end
 end

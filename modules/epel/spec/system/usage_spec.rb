@@ -12,23 +12,21 @@ describe 'standage usage tests:' do
     EOS
 
     context puppet_apply pp do
-      its(:stderr) { should be_empty }
-      its(:exit_code) { should_not == 1 }
-      its(:refresh) { should be_nil }
-      its(:stderr) { should be_empty }
-      its(:exit_code) { should be_zero }
+      its(:stderr) { is_expected.to be_empty }
+      its(:refresh) { is_expected.to be_nil }
+      its(:exit_code) { is_expected.to be_zero }
     end
 
     # Only test for EPEL's presence if not Fedora
-    if facts['operatingsystem'] !~ /Fedora/
+    if facts['operatingsystem'] !~ %r{Fedora}
       # Test the yum config to ensure mirrorlist was emptied
       context shell '/usr/bin/yum-config-manager epel | egrep "^mirrorlist ="' do
-        its(:stdout) { should =~ /mirrorlist =\s+/ }
+        its(:stdout) { is_expected.to =~ %r{mirrorlist =\s+} }
       end
 
       # Test the yum config to ensure baseurl was defined
       context shell '/usr/bin/yum-config-manager epel | egrep "^baseurl ="' do
-        its(:stdout) { should =~ /baseurl = http:\/\/dl.fedoraproject.org\/pub\/epel\/#{operatingsystemmajrelease}\/x86_64\// }
+        its(:stdout) { is_expected.to =~ %r{baseurl = http:\/\/dl.fedoraproject.org\/pub\/epel\/#{operatingsystemmajrelease}\/x86_64\/} }
       end
     end
   end
@@ -42,18 +40,16 @@ describe 'standage usage tests:' do
     EOS
 
     context puppet_apply pp do
-      its(:stderr) { should be_empty }
-      its(:exit_code) { should_not == 1 }
-      its(:refresh) { should be_nil }
-      its(:stderr) { should be_empty }
-      its(:exit_code) { should be_zero }
+      its(:stderr) { is_expected.to be_empty }
+      its(:refresh) { is_expected.to be_nil }
+      its(:exit_code) { is_expected.to be_zero }
     end
 
     # Only test for EPEL's presence if not Fedora
-    if facts['operatingsystem'] !~ /Fedora/
+    if facts['operatingsystem'] !~ %r{Fedora}
       # Test the yum config to ensure epel-testing was enabled
       context shell '/usr/bin/yum-config-manager epel-testing | grep -q "enabled = True"' do
-        its(:exit_code) { should be_zero }
+        its(:exit_code) { is_expected.to be_zero }
       end
     end
   end

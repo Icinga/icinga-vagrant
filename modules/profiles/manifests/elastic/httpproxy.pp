@@ -1,5 +1,6 @@
 class profiles::elastic::httpproxy (
-  $listen_ip = '192.168.33.7'
+  $listen_ip = '192.168.33.7',
+  $node_name = 'icinga2'
 ) {
 
   # defaults to icinga:icinga
@@ -21,8 +22,8 @@ class profiles::elastic::httpproxy (
     listen_port => 9200,
     ssl         => true,
     ssl_port    => 9202,
-    ssl_cert    => '/var/lib/icinga2/certs/icinga2-elastic.crt',
-    ssl_key     => '/var/lib/icinga2/certs/icinga2-elastic.key',
+    ssl_cert    => "/var/lib/icinga2/certs/${node_name}.crt",
+    ssl_key     => "/var/lib/icinga2/certs/${node_name}.key",
     ssl_trusted_cert => '/var/lib/icinga2/certs/ca.crt',
     ipv6_listen_port => 9200,
     proxy       => 'http://localhost:9200',
@@ -34,8 +35,8 @@ class profiles::elastic::httpproxy (
     listen_port => 5601,
     ssl         => true,
     ssl_port    => 5602,
-    ssl_cert    => '/var/lib/icinga2/certs/icinga2-elastic.crt',
-    ssl_key     => '/var/lib/icinga2/certs/icinga2-elastic.key',
+    ssl_cert    => "/var/lib/icinga2/certs/${node_name}.crt",
+    ssl_key     => "/var/lib/icinga2/certs/${node_name}.key",
     ssl_trusted_cert => '/var/lib/icinga2/certs/ca.crt',
     ipv6_listen_port => 5601,
     proxy       => 'http://localhost:5601',

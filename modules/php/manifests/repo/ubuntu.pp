@@ -16,11 +16,13 @@ class php::repo::ubuntu (
     $version_real = $version
   }
 
-  validate_re($version_real, '^\d\.\d')
+  if ($version_real == '5.5') {
+    fail('PHP 5.5 is no longer available for download')
+  }
+  assert_type(Pattern[/^\d\.\d/], $version_real)
 
   $version_repo = $version_real ? {
     '5.4' => 'ondrej/php5-oldstable',
-    '5.5' => 'ondrej/php',
     '5.6' => 'ondrej/php',
     '7.0' => 'ondrej/php'
   }

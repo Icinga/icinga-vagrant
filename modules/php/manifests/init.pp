@@ -42,6 +42,12 @@
 # [*fpm_package*]
 #   Name of fpm package to install
 #
+# [*fpm_user*]
+#   The user that php-fpm should run as
+#
+# [*fpm_group*]
+#   The group that php-fpm should run as
+#
 # [*dev*]
 #   Install php header files, needed to install pecl modules
 #
@@ -107,64 +113,39 @@
 # [*settings*]
 #
 class php (
-  $ensure                   = $::php::params::ensure,
-  $manage_repos             = $::php::params::manage_repos,
-  $fpm                      = true,
-  $fpm_service_enable       = $::php::params::fpm_service_enable,
-  $fpm_service_ensure       = $::php::params::fpm_service_ensure,
-  $fpm_service_name         = $::php::params::fpm_service_name,
-  $fpm_service_provider     = undef,
-  $fpm_pools                = { 'www' => {} },
-  $fpm_global_pool_settings = {},
-  $fpm_inifile              = $::php::params::fpm_inifile,
-  $fpm_package              = undef,
-  $embedded                 = false,
-  $dev                      = true,
-  $composer                 = true,
-  $pear                     = true,
-  $pear_ensure              = $::php::params::pear_ensure,
-  $phpunit                  = false,
-  $apache_config            = false,
-  $proxy_type               = undef,
-  $proxy_server             = undef,
-  $extensions               = {},
-  $settings                 = {},
-  $package_prefix           = $::php::params::package_prefix,
-  $config_root_ini          = $::php::params::config_root_ini,
-  $config_root_inifile      = $::php::params::config_root_inifile,
-  $ext_tool_enable          = $::php::params::ext_tool_enable,
-  $ext_tool_query           = $::php::params::ext_tool_query,
-  $ext_tool_enabled         = $::php::params::ext_tool_enabled,
-  $log_owner                = $::php::params::fpm_user,
-  $log_group                = $::php::params::fpm_group,
+  String $ensure                                  = $::php::params::ensure,
+  Boolean $manage_repos                           = $::php::params::manage_repos,
+  Boolean $fpm                                    = true,
+  $fpm_service_enable                             = $::php::params::fpm_service_enable,
+  $fpm_service_ensure                             = $::php::params::fpm_service_ensure,
+  $fpm_service_name                               = $::php::params::fpm_service_name,
+  $fpm_service_provider                           = undef,
+  Hash $fpm_pools                                 = { 'www' => {} },
+  Hash $fpm_global_pool_settings                  = {},
+  $fpm_inifile                                    = $::php::params::fpm_inifile,
+  $fpm_package                                    = undef,
+  $fpm_user                                       = $::php::params::fpm_user,
+  $fpm_group                                      = $::php::params::fpm_group,
+  Boolean $embedded                               = false,
+  Boolean $dev                                    = true,
+  Boolean $composer                               = true,
+  Boolean $pear                                   = true,
+  String $pear_ensure                             = $::php::params::pear_ensure,
+  Boolean $phpunit                                = false,
+  Boolean $apache_config                          = false,
+  $proxy_type                                     = undef,
+  $proxy_server                                   = undef,
+  Hash $extensions                                = {},
+  Hash $settings                                  = {},
+  $package_prefix                                 = $::php::params::package_prefix,
+  Stdlib::Absolutepath $config_root_ini           = $::php::params::config_root_ini,
+  Stdlib::Absolutepath $config_root_inifile       = $::php::params::config_root_inifile,
+  Optional[Stdlib::Absolutepath] $ext_tool_enable = $::php::params::ext_tool_enable,
+  Optional[Stdlib::Absolutepath] $ext_tool_query  = $::php::params::ext_tool_query,
+  Boolean $ext_tool_enabled                       = $::php::params::ext_tool_enabled,
+  String $log_owner                               = $::php::params::fpm_user,
+  String $log_group                               = $::php::params::fpm_group,
 ) inherits ::php::params {
-
-  validate_string($ensure)
-  validate_bool($manage_repos)
-  validate_bool($fpm)
-  validate_bool($embedded)
-  validate_bool($dev)
-  validate_bool($composer)
-  validate_bool($pear)
-  validate_bool($ext_tool_enabled)
-  validate_string($pear_ensure)
-  validate_bool($phpunit)
-  validate_bool($apache_config)
-  validate_hash($extensions)
-  validate_hash($settings)
-  validate_hash($fpm_pools)
-  validate_hash($fpm_global_pool_settings)
-  validate_string($log_owner)
-  validate_string($log_group)
-  validate_absolute_path($config_root_ini)
-  validate_absolute_path($config_root_inifile)
-
-  if $ext_tool_enable != undef {
-    validate_absolute_path($ext_tool_enable)
-  }
-  if $ext_tool_query != undef {
-    validate_absolute_path($ext_tool_query)
-  }
 
   $real_fpm_package = pick($fpm_package, "${package_prefix}${::php::params::fpm_package_suffix}")
 
@@ -181,70 +162,70 @@ class php (
   $real_fpm_global_pool_settings = deep_merge($fpm_global_pool_settings, hiera_hash('php::fpm_global_pool_settings', {}))
 
   if $manage_repos {
-    class { '::php::repo': } ->
-    Anchor['php::begin']
+    class { '::php::repo': }
+    -> Anchor['php::begin']
   }
 
-  anchor { 'php::begin': } ->
-    class { '::php::packages': } ->
-    class { '::php::cli':
+  anchor { 'php::begin': }
+    -> class { '::php::packages': }
+    -> class { '::php::cli':
       settings => $real_settings,
-    } ->
-  anchor { 'php::end': }
+    }
+  -> anchor { 'php::end': }
 
   # Configure global PHP settings in php.ini
-  if $::osfamily != 'Debian' {
-    Class['php::packages'] ->
-    class {'::php::global':
+  if $facts['os']['family'] != 'Debian' {
+    Class['php::packages']
+    -> class {'::php::global':
       settings => $real_settings,
-    } ->
-    Anchor['php::end']
+    }
+    -> Anchor['php::end']
   }
 
   if $fpm { contain '::php::fpm' }
   if $embedded {
-    if $::osfamily == 'RedHat' and $fpm {
+    if $facts['os']['family'] == 'RedHat' and $fpm {
       # Both fpm and embeded SAPIs are using same php.ini
       fail('Enabling both cli and embedded sapis is not currently supported')
     }
 
-    Anchor['php::begin'] ->
-      class { '::php::embedded':
+    Anchor['php::begin']
+      -> class { '::php::embedded':
         settings => $real_settings,
-      } ->
-    Anchor['php::end']
+      }
+    -> Anchor['php::end']
   }
   if $dev {
-    Anchor['php::begin'] ->
-      class { '::php::dev': } ->
-    Anchor['php::end']
+    Anchor['php::begin']
+      -> class { '::php::dev': }
+    -> Anchor['php::end']
   }
   if $composer {
-    Anchor['php::begin'] ->
-      class { '::php::composer':
+    Anchor['php::begin']
+      -> class { '::php::composer':
         proxy_type   => $proxy_type,
         proxy_server => $proxy_server,
-      } ->
-    Anchor['php::end']
+      }
+    -> Anchor['php::end']
   }
   if $pear {
-    Anchor['php::begin'] ->
-      class { '::php::pear':
+    Anchor['php::begin']
+      -> class { '::php::pear':
         ensure => $pear_ensure,
-      } ->
-    Anchor['php::end']
+      }
+    -> Anchor['php::end']
   }
   if $phpunit {
-    Anchor['php::begin'] ->
-      class { '::php::phpunit': } ->
-    Anchor['php::end']
+    Anchor['php::begin']
+      -> class { '::php::phpunit': }
+    -> Anchor['php::end']
   }
   if $apache_config {
-    Anchor['php::begin'] ->
-      class { '::php::apache_config':
+    Anchor['php::begin']
+      -> class { '::php::apache_config':
         settings => $real_settings,
-      } ->
-    Anchor['php::end']
+      }
+    -> Anchor['php::end']
   }
 
   create_resources('::php::extension', $real_extensions, {

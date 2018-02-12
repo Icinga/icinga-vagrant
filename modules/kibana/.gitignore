@@ -12,4 +12,6 @@
 /junit
 /log
 .yardoc
+*.deb
+*.rpm
 coverage

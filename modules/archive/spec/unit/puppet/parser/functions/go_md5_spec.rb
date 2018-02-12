@@ -1,11 +1,12 @@
 require 'spec_helper'
 
-describe :go_md5 do
-  before :all do
+describe :go_md5 do # rubocop:disable RSpec/DescribeSymbol
+  before :all do # rubocop:disable RSpec/BeforeAfterAll
     Puppet::Parser::Functions.autoloader.loadall
   end
 
   let(:scope) { PuppetlabsSpec::PuppetInternals.scope }
+
   example_md5 = File.read(fixtures('checksum', 'gocd.md5'))
 
   it 'retreives file md5' do

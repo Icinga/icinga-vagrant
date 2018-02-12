@@ -7,6 +7,8 @@ Puppet::Type.type(:package).provide :pecl, parent: :pear do
   has_feature :upgradeable
   has_feature :install_options
 
+  commands pear: 'pear'
+
   def self.instances
     pear_packages = super
 

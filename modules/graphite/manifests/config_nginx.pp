@@ -78,10 +78,10 @@ class graphite::config_nginx inherits graphite::params {
       }
 
     } # Finish Debian config
-    
+
     # Config for RedHat
     'RedHat': {
-      
+
       # Ensure that some directories exist first. This is normally handled by the
       # package, but if we uninstall and reinstall nginx and delete /etc/nginx.
       # By default the package manager won't replace the directory.
@@ -119,7 +119,7 @@ class graphite::config_nginx inherits graphite::params {
     default: {
       fail('Only Debian and RedHat-like systems are supported.')
     }
-  
+
   }
 
   service {

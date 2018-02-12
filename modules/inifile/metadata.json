@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-inifile",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "author": "Puppet Labs",
   "summary": "Resource types for managing settings in INI files",
   "license": "Apache-2.0",
@@ -46,7 +46,6 @@
     {
       "operatingsystem": "SLES",
       "operatingsystemrelease": [
-        "10 SP4",
         "11 SP1",
         "12"
       ]
@@ -54,16 +53,14 @@
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
-        "6",
         "7",
-        "8"
+        "8",
+        "9"
       ]
     },
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "10.04",
-        "12.04",
         "14.04",
         "16.04"
       ]
@@ -72,14 +69,12 @@
       "operatingsystem": "Solaris",
       "operatingsystemrelease": [
         "10",
-        "11",
-        "12"
+        "11"
       ]
     },
     {
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
-        "Server 2003 R2",
         "Server 2008 R2",
         "Server 2012",
         "Server 2012 R2"
@@ -97,7 +92,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 3.0.0 < 5.0.0"
+      "version_requirement": ">= 4.7.0 < 6.0.0"
     }
   ]
 }

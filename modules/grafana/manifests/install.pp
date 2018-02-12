@@ -1,11 +1,12 @@
 # == Class grafana::install
 #
 class grafana::install {
+  $base_url = 'https://s3-us-west-2.amazonaws.com/grafana-releases/release'
   if $::grafana::archive_source != undef {
     $real_archive_source = $::grafana::archive_source
   }
   else {
-    $real_archive_source = "https://grafanarel.s3.amazonaws.com/builds/grafana-${::grafana::version}.linux-x64.tar.gz"
+    $real_archive_source = "${base_url}/grafana-${::grafana::version}.linux-x64.tar.gz"
   }
 
   if $::grafana::package_source != undef {
@@ -13,48 +14,47 @@ class grafana::install {
   }
   else {
     $real_package_source = $::osfamily ? {
-      /(RedHat|Amazon)/ => "https://grafanarel.s3.amazonaws.com/builds/grafana-${::grafana::version}-${::grafana::rpm_iteration}.x86_64.rpm",
-      'Debian'          => "https://grafanarel.s3.amazonaws.com/builds/grafana_${::grafana::version}_amd64.deb",
+      /(RedHat|Amazon)/ => "${base_url}/grafana-${::grafana::version}-${::grafana::rpm_iteration}.x86_64.rpm",
+      'Debian'          => "${base_url}/builds/grafana_${::grafana::version}_amd64.deb",
       default           => $real_archive_source,
     }
   }
-  
+
   case $::grafana::install_method {
     'docker': {
       docker::image { 'grafana/grafana':
         image_tag => $::grafana::version,
-        require   => Class['docker']
+        require   => Class['docker'],
       }
     }
     'package': {
       case $::osfamily {
         'Debian': {
           package { 'libfontconfig1':
-            ensure => present
+            ensure => present,
           }
 
-          wget::fetch { 'grafana':
-            source      => $real_package_source,
-            destination => '/tmp/grafana.deb'
+          archive { '/tmp/grafana.deb':
+            source  => $real_package_source,
           }
 
           package { $::grafana::package_name:
             ensure   => present,
             provider => 'dpkg',
             source   => '/tmp/grafana.deb',
-            require  => [Wget::Fetch['grafana'],Package['libfontconfig1']]
+            require  => [Archive['/tmp/grafana.deb'],Package['libfontconfig1']],
           }
         }
         'RedHat': {
           package { 'fontconfig':
-            ensure => present
+            ensure => present,
           }
 
           package { $::grafana::package_name:
             ensure   => present,
             provider => 'rpm',
             source   => $real_package_source,
-            require  => Package['fontconfig']
+            require  => Package['fontconfig'],
           }
         }
         default: {
@@ -66,20 +66,20 @@ class grafana::install {
       case $::osfamily {
         'Debian': {
           package { 'libfontconfig1':
-            ensure => present
+            ensure => present,
           }
 
           if ( $::grafana::manage_package_repo ){
             if !defined( Class['apt'] ) {
-              class { 'apt': }
+              class { '::apt': }
             }
             apt::source { 'grafana':
               location => "https://packagecloud.io/grafana/${::grafana::repo_name}/debian",
-              release  => 'wheezy',
+              release  => 'jessie',
               repos    => 'main',
               key      =>  {
                 'id'     => '418A7F2FB0E1E6E7EABF6FE8C2E73424D59097AB',
-                'source' => 'https://packagecloud.io/gpg.key'
+                'source' => 'https://packagecloud.io/gpg.key',
               },
               before   => Package[$::grafana::package_name],
             }
@@ -88,18 +88,18 @@ class grafana::install {
 
           package { $::grafana::package_name:
             ensure  => $::grafana::version,
-            require => Package['libfontconfig1']
+            require => Package['libfontconfig1'],
           }
         }
         'RedHat': {
           package { 'fontconfig':
-            ensure => present
+            ensure => present,
           }
 
           if ( $::grafana::manage_package_repo ){
             yumrepo { 'grafana':
               descr    => 'grafana repo',
-              baseurl  => 'https://packagecloud.io/grafana/stable/el/6/$basearch',
+              baseurl  => "https://packagecloud.io/grafana/${::grafana::repo_name}/el/${::operatingsystemmajrelease}/\$basearch",
               gpgcheck => 1,
               gpgkey   => 'https://packagecloud.io/gpg.key https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana',
               enabled  => 1,
@@ -107,9 +107,23 @@ class grafana::install {
             }
           }
 
+          if $::grafana::version =~ /(installed|latest|present)/ {
+            $real_version = $::grafana::version
+          } else {
+            $real_version = "${::grafana::version}-${::grafana::rpm_iteration}"
+          }
+
           package { $::grafana::package_name:
-            ensure  => "${::grafana::version}-${::grafana::rpm_iteration}",
-            require => Package['fontconfig']
+            ensure  => $real_version,
+            require => Package['fontconfig'],
+          }
+        }
+        'Archlinux': {
+          if $::grafana::manage_package_repo {
+            fail('manage_package_repo is not supported on Archlinux')
+          }
+          package { $::grafana::package_name:
+            ensure  => 'present', # pacman provider doesn't have feature versionable
           }
         }
         default: {
@@ -123,7 +137,7 @@ class grafana::install {
       if !defined(User['grafana']){
         user { 'grafana':
           ensure => present,
-          home   => $::grafana::install_dir
+          home   => $::grafana::install_dir,
         }
       }
 
@@ -131,7 +145,7 @@ class grafana::install {
         ensure  => directory,
         group   => 'grafana',
         owner   => 'grafana',
-        require => User['grafana']
+        require => User['grafana'],
       }
 
       archive { '/tmp/grafana.tar.gz':
@@ -143,7 +157,7 @@ class grafana::install {
         user            => 'grafana',
         group           => 'grafana',
         cleanup         => true,
-        require         => File[$::grafana::install_dir]
+        require         => File[$::grafana::install_dir],
       }
 
     }

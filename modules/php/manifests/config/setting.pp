@@ -21,14 +21,12 @@
 define php::config::setting(
   $key,
   $value,
-  $file,
+  Stdlib::Absolutepath $file,
 ) {
 
   if $caller_module_name != $module_name {
     warning('php::config::setting is private')
   }
-
-  validate_string($file)
 
   $split_name = split($key, '/')
   if count($split_name) == 1 {

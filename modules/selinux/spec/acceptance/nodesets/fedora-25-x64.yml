@@ -9,7 +9,7 @@ HOSTS:
   fedora-25-x64:
     roles:
       - master
-    platform: fedora-24-x86_64
+    platform: fedora-25-x86_64
     box: fedora/25-cloud-base
     hypervisor: vagrant
 CONFIG:

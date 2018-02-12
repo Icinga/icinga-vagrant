@@ -1,0 +1,5 @@
+---
+NOTICE:
+  unmanaged: true
+appveyor.yml:
+  delete: true

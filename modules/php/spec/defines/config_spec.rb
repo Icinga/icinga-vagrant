@@ -17,6 +17,7 @@ describe 'php::config' do
               config: {}
             }
           end
+
           it { is_expected.to compile }
         end
 
@@ -66,6 +67,7 @@ describe 'php::config' do
               config: {}
             }
           end
+
           it { is_expected.to compile }
         end
 

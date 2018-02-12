@@ -1,29 +1,28 @@
 #! /usr/bin/env ruby -S rspec
 require 'spec_helper_acceptance'
 
-describe 'type function', :unless => (UNSUPPORTED_PLATFORMS.include?(fact('operatingsystem')) || is_future_parser_enabled?) do
+describe 'type function' do
   describe 'success' do
-    it 'types arrays' do
-      pp = <<-EOS
+    pp1 = <<-EOS
       $a = ["the","public","art","galleries"]
       # Anagram: Large picture halls, I bet
       $o = type($a)
-      notice(inline_template('type is <%= @o.inspect %>'))
-      EOS
-
-      apply_manifest(pp, :catch_failures => true) do |r|
-        expect(r.stdout).to match(/type is "array"/)
+      notice(inline_template('type is <%= @o.to_s %>'))
+    EOS
+    it 'types arrays' do
+      apply_manifest(pp1, catch_failures: true) do |r|
+        expect(r.stdout).to match(%r{type is Tuple\[String.*, String.*, String.*, String.*\]})
       end
     end
-    it 'types strings' do
-      pp = <<-EOS
+
+    pp2 = <<-EOS
       $a = "blowzy night-frumps vex'd jack q"
       $o = type($a)
-      notice(inline_template('type is <%= @o.inspect %>'))
-      EOS
-
-      apply_manifest(pp, :catch_failures => true) do |r|
-        expect(r.stdout).to match(/type is "string"/)
+      notice(inline_template('type is <%= @o.to_s %>'))
+    EOS
+    it 'types strings' do
+      apply_manifest(pp2, catch_failures: true) do |r|
+        expect(r.stdout).to match(%r{type is String})
       end
     end
     it 'types hashes'

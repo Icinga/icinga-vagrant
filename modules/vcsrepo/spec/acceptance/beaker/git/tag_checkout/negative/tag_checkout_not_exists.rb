@@ -7,7 +7,7 @@ hosts.each do |host|
   tmpdir = host.tmpdir('vcsrepo')
   step 'setup - create repo' do
     git_pkg = 'git'
-    if host['platform'] =~ /ubuntu-10/
+    if host['platform'] =~ %r{ubuntu-10}
       git_pkg = 'git-core'
     end
     install_package(host, git_pkg)
@@ -30,18 +30,17 @@ hosts.each do |host|
     }
     EOS
 
-    apply_manifest_on(host, pp, :catch_failures => true)
-    apply_manifest_on(host, pp, :catch_changes  => true)
+    apply_manifest_on(host, pp, catch_failures: true)
+    apply_manifest_on(host, pp, catch_changes: true)
   end
 
   step 'verify that master tag is checked out' do
     on(host, "ls #{tmpdir}/#{repo_name}/.git/") do |res|
-      fail_test('checkout not found') unless res.stdout.include? "HEAD"
+      fail_test('checkout not found') unless res.stdout.include? 'HEAD'
     end
 
     on(host, "cat #{tmpdir}/#{repo_name}/.git/HEAD") do |res|
-      fail_test('tag not found') unless res.stdout.include? "ref: refs/heads/master"
+      fail_test('tag not found') unless res.stdout.include? 'ref: refs/heads/master'
     end
   end
-
 end

@@ -9,25 +9,22 @@
 #   The package name for the PHP development files
 #
 class php::dev(
-  $ensure  = $::php::ensure,
-  $package = "${::php::package_prefix}${::php::params::dev_package_suffix}",
+  String $ensure  = $::php::ensure,
+  String $package = "${::php::package_prefix}${::php::params::dev_package_suffix}",
 ) inherits ::php::params {
 
   if $caller_module_name != $module_name {
     warning('php::dev is private')
   }
 
-  validate_string($ensure)
-  validate_string($package)
-
   # On FreeBSD there is no 'devel' package.
-  $real_package = $::osfamily ? {
+  $real_package = $facts['os']['family'] ? {
     'FreeBSD' => [],
     default   => $package,
   }
 
   # Default PHP come with xml module and no seperate package for it
-  if $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '16.04') >= 0  {
+  if $facts['os']['name'] == 'Ubuntu' and versioncmp($facts['os']['release']['full'], '16.04') >= 0  {
     ensure_packages(["${php::package_prefix}xml"], {
       ensure  => present,
       require => Class['::apt::update'],

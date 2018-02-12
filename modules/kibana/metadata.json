@@ -1,20 +1,17 @@
 {
   "name": "elastic-kibana",
-  "version": "0.2.0",
+  "version": "6.0.0",
   "author": "elastic",
   "summary": "Module for installing, configuring, and managing Kibana.",
   "license": "Apache-2.0",
   "source": "https://github.com/elastic/puppet-kibana",
   "project_page": "https://github.com/elastic/puppet-kibana",
   "issues_url": "https://github.com/elastic/puppet-kibana/issues",
+  "data_provider": "hiera",
   "dependencies": [
     {
-      "name": "puppetlabs-apt",
-      "version_requirement": ">= 2.0.0 < 3.0.0"
-    },
-    {
-      "name": "puppetlabs-stdlib",
-      "version_requirement": ">= 4.5.0 < 5.0.0"
+      "name": "puppetlabs/apt",
+      "version_requirement": ">= 2.0.0 < 5.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -42,14 +39,13 @@
     {
       "operatingsystem": "Fedora",
       "operatingsystemrelease": [
-        "25",
-        "24"
+        "24",
+        "25"
       ]
     },
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "12.04",
         "14.04",
         "16.04"
       ]
@@ -57,14 +53,14 @@
     {
       "operatingsystem": "Amazon",
       "operatingsystemrelease": [
-        "2016.09"
+        "2017.03"
       ]
     }
   ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": "> 4.0.0 < 5.0.0"
+      "version_requirement": ">= 4.5.0 < 6.0.0"
     }
   ]
 }
