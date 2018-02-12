@@ -334,7 +334,7 @@ class profiles::icinga::icingaweb2 (
         'section_name'  => 'ui',
         'target'        => "${graphite_module_conf_dir}/config.ini",
         'settings'      => {
-          'default_time_range'      => '1',
+          'default_time_range'      => '5',
           'default_time_range_unit' => 'minutes',
           'disable_no_graphs_found' => '0'
         }
