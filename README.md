@@ -25,30 +25,47 @@ You can use these boxes for your own local demos, or to learn how to use Icinga
 in your environment. The Puppet provisioner uses official upstream modules
 including [puppet-icinga2](https://github.com/icinga/puppet-icinga2) and [puppet-icingaweb2](https://github.com/icinga/puppet-icingaweb2).
 
-* [Icinga 2 Standalone](README.md#boxes-standalone), [Icinga 2 Distributed](README.md#boxes-distributed)
-* [Icinga 2 and InfluxDB](README.md#boxes-influxdb)
-* [Icinga 2 and Elastic](README.md#boxes-elastic)
-* [Icinga 2 and Graylog](README.md#boxes-graylog)
+**Overview**
+
+* [Standalone](README.md#boxes-standalone), [Distributed](README.md#boxes-distributed)
+* [InfluxDB](README.md#boxes-influxdb)
+* [Elastic](README.md#boxes-elastic)
+* [Graylog](README.md#boxes-graylog)
+
+Below are some sample screenshots. Keep in mind that software is under steady
+development, so screenshots and features may change.
 
 ## Icinga Web 2 <a id="about-icingaweb2"></a>
 
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_dashboard.png" alt="Icinga Web 2 Dashboard" height="300">
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x-influxdb/vagrant_icinga2_icingaweb2_grafana_module_influxdb.png" alt="Icinga Web 2 Detail View with Grafana" height="300">
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_maps.png" alt="Icinga Web 2 Maps" height="300">
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_businessprocess.png" alt="Icinga Web 2 Business Process" height="300">
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_icingaweb2_director.png" alt="Icinga Web 2 Director" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_graphite.png" alt="Icinga Web 2 Detail View with Graphite" height="300">
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_maps.png" alt="Icinga Web 2 Maps" height="300">
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_businessprocess.png" alt="Icinga Web 2 Business Process" height="300">
 
 ## Dashing <a id="about-dashing"></a>
 
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_dashing.png" alt="Dashing" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_dashing_icinga2.png" alt="Dashing" height="300">
 
 ## Elastic & Icingabeat <a id="about-elastic"></a>
 
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x-elastic/vagrant_icinga2_elastic_kibana_icingabeat.png" alt="Elastic Stack and Icingabeat" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_elastic_kibana_icingabeat.png" alt="Elastic Stack and Icingabeat" height="300">
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_elasticsearch.png" alt="Icinga Web 2 Elasticsearch" height="300">
+
+<!--
+## Graylog <a id="about-graylog"></a>
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_graylog_icinga2.png" alt="Graylog" height="300">
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_graylog.png" alt="Icinga Web 2 Graylog" height="300">
+-->
 
 ## Grafana <a id="about-grafana"></a>
 
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/icinga2x/vagrant_icinga2_grafana.png" alt="Icinga 2 Grafana with Graphite" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_grafana_icinga2_graphite.png" alt="Icinga 2 Grafana with Graphite" height="300">
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_grafana.png" alt="Icinga Web 2 Detail View with Grafana & Influxdb" height="300">
 
 # License <a id="license"></a>
 
