@@ -198,7 +198,7 @@ $ git clone https://github.com/Icinga/icinga-vagrant && cd icinga-vagrant
 Change into the directory of the scenario and start the box(es).
 
 ```
-$ cd icinga2x
+$ cd standalone
 $ vagrant up
 ```
 
@@ -366,7 +366,7 @@ with CentOS 7, no other distributions are currently supported.
 Example for additional synced folders:
 
 ```
-$ vim icinga2x/Vagrantfile.local
+$ vim standalone/Vagrantfile.local
 
 nodes = {
   'icinga2' => {
@@ -516,17 +516,12 @@ Each box uses a generic Vagrantfile to set the required resources for initial VM
 startup. The `Vagrantfile` includes the `Vagrantfile.nodes` file which defines
 VM specific settings.
 
-The generic `shell_provisioner.sh` script ensures that all VM requirements are fulfilled
+The generic `shell_provisioner.sh` scripts ensure that all VM requirements are fulfilled
 and also takes care about installing Puppet which will be used as provisioner in the next
 step.
 
 The main entry point is the Puppet provisioner which calls the `manifest/default.pp`.
 Anything compiled into this catalog will be installed into the VM.
-
-> **Note**
->
-> The provisioner still uses Puppet 3. A migration to Puppet 5 is planned, see the GitHub issues.
-> This requires major refactoring into roles/profiles too.
 
 ## Base Boxes <a id="contributing-base-boxes"></a>
 
@@ -579,7 +574,7 @@ General:
   puppetlabs-java          | >= 4.7.0         | modules/java              | https://github.com/puppetlabs/puppetlabs-java.git
   puppet-yum               | >= 4.6.1         | modules/yum               | https://github.com/voxpupuli/puppet-yum
   puppet-archive           | >= 4.7.1         | modules/archive           | https://github.com/voxpupuli/puppet-archive.git
-  puppet-vim               | >=4.0.0<5.0.0    | modules/vim               | https://github.com/saz/puppet-vim.git
+  puppet-vim               | >=4.0.0 < 5.0.0  | modules/vim               | https://github.com/saz/puppet-vim.git
   puppet-datacat           | Type for ES      | modules/datacat           | https://github.com/richardc/puppet-datacat.git
   puppet-inifile           | >= 4.7.0         | modules/inifile           | https://github.com/puppetlabs/puppetlabs-inifile.git
   puppet-timezone          | >= 4.0.0         | modules/timezone          | https://github.com/saz/puppet-timezone.git
