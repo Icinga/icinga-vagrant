@@ -546,6 +546,15 @@ Current version via HTTP API:
 curl -sl -I 192.168.33.8:8086/ping
 ```
 
+Show tags on a database:
+
+```
+# influx
+
+use icinga2
+show tag keys on icinga2
+```
+
 
 ## Puppet Module Overview <a id="contributing-puppet-modules"></a>
 
