@@ -1,0 +1,13 @@
+---
+:backends:
+  - yaml
+:yaml:
+   # synced folder in Vagrant
+  :datadir: '/hieradata'
+:hierarchy:
+  - "node/%{::fqdn}"
+  - "os/%{::operatingsystem}-%{::operatingsystemmajrelease}"
+  - "os/%{::operatingsystem}"
+  - "os/%{::osfamily}"
+  - "common"
+
