@@ -1,13 +1,14 @@
 class profiles::grafana::server (
-  $version = '4.6.3-1',
+  $version = '4.6.3',
   $listen_ip = '192.168.33.5',
   $listen_port = 8004,
   $backend = 'graphite',
   $backend_port = 8003
 ) {
-  # https://github.com/bfraser/puppet-grafana
   class { 'grafana':
-    package_source => "https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-${version}.x86_64.rpm",
+    version => $version,
+    install_method => 'repo',
+    manage_package_repo => true,
     cfg => {
       app_mode => 'production',
       server   => {
@@ -28,7 +29,7 @@ class profiles::grafana::server (
   }
 
 
-  # there are no static config files for data sources in grafana2
+  # there are no static config files for data sources in Grafana
   # https://github.com/grafana/grafana/issues/1789
   file { "grafana-${backend}-setup":
     name => "/usr/local/bin/grafana-${backend}-setup",

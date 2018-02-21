@@ -50,7 +50,6 @@ class { '::profiles::influxdb::server':
 class { '::profiles::grafana::server':
   listen_ip => $hostOnlyIP,
   listen_port => $grafanaListenPort,
-  version => '4.6.2-1',
   backend => "influxdb",
   backend_port => $influxdbListenPort
 }
