@@ -7,6 +7,6 @@ icon = "chart-bar"
 [Grafana]
 type = "menu-item"
 target = "_main"
-url = "/icingaweb2/iframe?url=http://<%= @listen_ip -%>:<%= @listen_port -%>/dashboard/db/icinga2"
+url = "/icingaweb2/iframe?url=http://<%= @grafana_listen_ip -%>:<%= @grafana_listen_port -%>/dashboard/db/icinga2"
 icon = "chart-bar"
 parent = "Graphing"
