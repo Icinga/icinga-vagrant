@@ -71,7 +71,7 @@ development, so screenshots and features may change.
 
 Box specific code is licensed under the terms of the GNU General Public License Version 2, you will find a copy of this license in the LICENSE file included in the source package.
 
-Included Puppet modules in the `modules` directory provide their own license details.
+Included Puppet modules in the `.puppet/modules` directory provide their own license details.
 
 # Support <a id="support"></a>
 
@@ -570,41 +570,41 @@ with this Vagrant environment.
 
 General:
 
-  Name                     | Puppet Version   | Path                      | Url
-  -------------------------|------------------|---------------------------|-------------------------------
-  puppetlabs-stdlib        | >= 2.7.20        | modules/stdlib            | https://github.com/puppetlabs/puppetlabs-stdlib.git
-  puppetlabs-concat        | >= 4.7.0         | modules/concat            | https://github.com/puppetlabs/puppetlabs-concat.git
-  puppetlabs-apache        | >= 4.7.0         | modules/apache            | https://github.com/puppetlabs/puppetlabs-apache.git
-  puppetlabs-mysql         | >= 4.7.0         | modules/mysql             | https://github.com/puppetlabs/puppetlabs-mysql.git
-  puppetlabs-vcsrepo       | >= 4.7.0         | modules/vcsrepo           | https://github.com/puppetlabs/puppetlabs-vcsrepo.git
-  puppet-module-epel       | >= 3.0.0         | modules/epel              | https://github.com/stahnma/puppet-module-epel.git
-  puppet-php               | >= 4.7.0 < 5.0.0 | modules/php               | https://github.com/voxpupuli/puppet-php.git
-  puppet-selinux           | >= 4.7.1         | modules/selinux           | https://github.com/voxpupuli/puppet-selinux.git
-  puppetlabs-java          | >= 4.7.0         | modules/java              | https://github.com/puppetlabs/puppetlabs-java.git
-  puppet-yum               | >= 4.6.1         | modules/yum               | https://github.com/voxpupuli/puppet-yum
-  puppet-archive           | >= 4.7.1         | modules/archive           | https://github.com/voxpupuli/puppet-archive.git
-  puppet-vim               | >=4.0.0 < 5.0.0  | modules/vim               | https://github.com/saz/puppet-vim.git
-  puppet-datacat           | Type for ES      | modules/datacat           | https://github.com/richardc/puppet-datacat.git
-  puppet-inifile           | >= 4.7.0         | modules/inifile           | https://github.com/puppetlabs/puppetlabs-inifile.git
-  puppet-timezone          | >= 4.0.0         | modules/timezone          | https://github.com/saz/puppet-timezone.git
+  Name                     | Puppet Version   | Path                              | Url
+  -------------------------|------------------|-----------------------------------|-------------------------------
+  puppetlabs-stdlib        | >= 2.7.20        | .puppet/modules/stdlib            | https://github.com/puppetlabs/puppetlabs-stdlib.git
+  puppetlabs-concat        | >= 4.7.0         | .puppet/modules/concat            | https://github.com/puppetlabs/puppetlabs-concat.git
+  puppetlabs-apache        | >= 4.7.0         | .puppet/modules/apache            | https://github.com/puppetlabs/puppetlabs-apache.git
+  puppetlabs-mysql         | >= 4.7.0         | .puppet/modules/mysql             | https://github.com/puppetlabs/puppetlabs-mysql.git
+  puppetlabs-vcsrepo       | >= 4.7.0         | .puppet/modules/vcsrepo           | https://github.com/puppetlabs/puppetlabs-vcsrepo.git
+  puppet-module-epel       | >= 3.0.0         | .puppet/modules/epel              | https://github.com/stahnma/puppet-module-epel.git
+  puppet-php               | >= 4.7.0 < 5.0.0 | .puppet/modules/php               | https://github.com/voxpupuli/puppet-php.git
+  puppet-selinux           | >= 4.7.1         | .puppet/modules/selinux           | https://github.com/voxpupuli/puppet-selinux.git
+  puppetlabs-java          | >= 4.7.0         | .puppet/modules/java              | https://github.com/puppetlabs/puppetlabs-java.git
+  puppet-yum               | >= 4.6.1         | .puppet/modules/yum               | https://github.com/voxpupuli/puppet-yum
+  puppet-archive           | >= 4.7.1         | .puppet/modules/archive           | https://github.com/voxpupuli/puppet-archive.git
+  puppet-vim               | >=4.0.0 < 5.0.0  | .puppet/modules/vim               | https://github.com/saz/puppet-vim.git
+  puppet-datacat           | Type for ES      | .puppet/modules/datacat           | https://github.com/richardc/puppet-datacat.git
+  puppet-inifile           | >= 4.7.0         | .puppet/modules/inifile           | https://github.com/puppetlabs/puppetlabs-inifile.git
+  puppet-timezone          | >= 4.0.0         | .puppet/modules/timezone          | https://github.com/saz/puppet-timezone.git
 
 Specific projects:
 
-  Name                     | Puppet Version   | Path                      | Url
-  -------------------------|------------------|---------------------------|-------------------------------
-  puppet-elastic-stack     | >= 4.6.1         | modules/elastic\_stack    | https://github.com/elastic/puppet-elastic-stack
-  puppet-icinga2           | 4.x              | modules/icinga2           | https://github.com/Icinga/puppet-icinga2 (Patch for Elasticsearch)
-  puppet-icingaweb2        | >= 4.7.0         | modules/icingaweb2        | https://github.com/Icinga/puppet-icingaweb2 (Patch for icingaadmin user)
-  puppet-graylog           | 4.x              | modules/graylog           | https://github.com/Graylog2/puppet-graylog.git
-  puppet-elasticsearch     | >= 4.5.0         | modules/elasticsearch     | https://github.com/elasticsearch/puppet-elasticsearch.git
-  puppet-nginx             | >= 4.7.0         | modules/nginx             | https://github.com/voxpupuli/puppet-nginx.git
-  puppet-logstash          | >= 4.6.1         | modules/logstash          | https://github.com/elastic/puppet-logstash.git
-  puppet-kibana            | >= 4.5.0         | modules/kibana            | https://github.com/elastic/puppet-kibana.git
-  puppet-filebeat          | >= 4.0.0         | modules/filebeat          | https://github.com/pcfens/puppet-filebeat.git
-  puppetlabs-mongodb       | >= 4.7.1         | modules/mongodb           | https://github.com/puppetlabs/puppetlabs-mongodb.git
-  golja-influxdb           | >= 3.0.0 < 5.0.0 | modules/influxdb          | https://github.com/n1tr0g/golja-influxdb.git
-  puppet-graphite          | >= 3.0.0 < 5.0.0 | modules/graphite          | https://github.com/echocat/puppet-graphite.git
-  puppet-grafana           | >= 4.7.1         | modules/grafana           | https://github.com/voxpupuli/puppet-grafana.git
+  Name                     | Puppet Version   | Path                              | Url
+  -------------------------|------------------|-----------------------------------|-------------------------------
+  puppet-elastic-stack     | >= 4.6.1         | .puppet/modules/elastic\_stack    | https://github.com/elastic/puppet-elastic-stack
+  puppet-icinga2           | 4.x              | .puppet/modules/icinga2           | https://github.com/Icinga/puppet-icinga2 (Patch for Elasticsearch)
+  puppet-icingaweb2        | >= 4.7.0         | .puppet/modules/icingaweb2        | https://github.com/Icinga/puppet-icingaweb2 (Patch for icingaadmin user)
+  puppet-graylog           | 4.x              | .puppet/modules/graylog           | https://github.com/Graylog2/puppet-graylog.git
+  puppet-elasticsearch     | >= 4.5.0         | .puppet/modules/elasticsearch     | https://github.com/elasticsearch/puppet-elasticsearch.git
+  puppet-nginx             | >= 4.7.0         | .puppet/modules/nginx             | https://github.com/voxpupuli/puppet-nginx.git
+  puppet-logstash          | >= 4.6.1         | .puppet/modules/logstash          | https://github.com/elastic/puppet-logstash.git
+  puppet-kibana            | >= 4.5.0         | .puppet/modules/kibana            | https://github.com/elastic/puppet-kibana.git
+  puppet-filebeat          | >= 4.0.0         | .puppet/modules/filebeat          | https://github.com/pcfens/puppet-filebeat.git
+  puppetlabs-mongodb       | >= 4.7.1         | .puppet/modules/mongodb           | https://github.com/puppetlabs/puppetlabs-mongodb.git
+  golja-influxdb           | >= 3.0.0 < 5.0.0 | .puppet/modules/influxdb          | https://github.com/n1tr0g/golja-influxdb.git
+  puppet-graphite          | >= 3.0.0 < 5.0.0 | .puppet/modules/graphite          | https://github.com/echocat/puppet-graphite.git
+  puppet-grafana           | >= 4.7.1         | .puppet/modules/grafana           | https://github.com/voxpupuli/puppet-grafana.git
 
 
 ### Puppet Module Git Subtree <a id="contributing-puppet-module-git-subtree"></a>
@@ -613,8 +613,8 @@ Specific projects:
 
 Add subtree:
 
-    $ git subtree add --prefix modules/vim https://github.com/saz/puppet-vim master --squash
+    $ git subtree add --prefix .puppet/modules/vim https://github.com/saz/puppet-vim master --squash
 
 Update subtree:
 
-    $ git subtree pull --prefix modules/postgresql https://github.com/puppetlabs/puppetlabs-postgresql.git master --squash
+    $ git subtree pull --prefix .puppet/modules/postgresql https://github.com/puppetlabs/puppetlabs-postgresql.git master --squash
