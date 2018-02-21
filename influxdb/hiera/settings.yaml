@@ -1,4 +1,0 @@
----
-servers:
-  - hostname: icinga2-influxdb
-    ipaddress: 192.168.33.8
