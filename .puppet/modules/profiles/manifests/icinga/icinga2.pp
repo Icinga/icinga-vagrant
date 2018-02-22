@@ -75,8 +75,17 @@ class profiles::icinga::icinga2 (
     require       => Mysql::Db['icinga'],
   }
 
-  # Only the master is allowed to have its own CA
-  if ($ca_cert) and ($ca_key) {
+  if (!$ca_cert and !$ca_key) {
+    class { '::icinga2::pki::ca': }
+
+    class { '::icinga2::feature::api':
+      pki             => 'none', # manage them.
+      accept_commands => true,
+      accept_config   => true,
+    }
+
+  } elsif ($zone_name == 'master') {
+    # Only the master is allowed to have its own CA
     class { '::icinga2::pki::ca': # this automatically creates a new node certificate
       ca_cert => $ca_cert,
       ca_key  => $ca_key
@@ -90,6 +99,7 @@ class profiles::icinga::icinga2 (
     }
 
   } else {
+    # satellite
     class { '::icinga2::feature::api':
       pki             => 'none', # only manage certificate files
       ssl_cacert      => $ca_cert, # use the configured satellite certificates
