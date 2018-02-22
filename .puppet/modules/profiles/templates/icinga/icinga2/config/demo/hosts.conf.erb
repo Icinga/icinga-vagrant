@@ -1,4 +1,4 @@
-object Host NodeName {
+object Host "<%= @node_name-%>" {
   /* Import the default host template defined in `templates.conf`. */
   import "generic-host"
 
@@ -9,13 +9,13 @@ object Host NodeName {
   vars.os = "Linux"
 
   var node_notes = "This is Icinga 2 running"
-  if (NodeName.contains("docker")) {
+  if (name.contains("docker")) {
     notes = node_notes + " inside Docker :)"
-  } else if (NodeName == "icinga2a") {
-    notes = node_notes + " as cluster master :)"
-  } else if (NodeName == "icinga2b") {
-    notes = node_notes + " as cluster checker :)"
-  } else if (regex("^icinga2*", NodeName)) {
+  } else if (name.contains("master")) {
+    notes = node_notes + " as master :)"
+  } else if (name.contains("satellite")) {
+    notes = node_notes + " as satellite :)"
+  } else if (regex("^icinga2*", name)) {
     notes = node_notes + " inside Vagrant :)"
   }
 
