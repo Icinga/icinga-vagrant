@@ -1,15 +1,14 @@
 class profiles::icinga::icinga2 (
   $features = {},
   $packages = [],
-  $has_ca = true,
   $node_name = 'icinga2',
-  $zone_name = undef,
-  $ticket_salt = undef,       # needed on the master, keep this secret
+  $zone_name = undef, # optional for cluster setups - begin
+  $ca_cert = undef,
+  $ca_key = undef,
+  $node_cert = undef,
+  $node_key = undef,
   $zones = undef,
-  $endpoints = undef,
-  $api_pki = 'none',  # override for satellites
-  $api_ca_host = undef,       # satellite
-  $api_ticket_salt = undef,   # satellite
+  $endpoints = undef, # optional for cluster setups - end
   $api_users = {
     'root' => {
       password => 'icinga',
@@ -42,7 +41,6 @@ class profiles::icinga::icinga2 (
     features    => $basic_features, # all other features are specifically invoked below.
     constants   => {
       'NodeName'    => $node_name,
-      'TicketSalt'  => $ticket_salt, # this is needed for CSR signing on the master
     },
 #    require     => Yumrepo['icinga-snapshot-builds']
     require     => Class['::profiles::base::system']
@@ -77,19 +75,31 @@ class profiles::icinga::icinga2 (
     require       => Mysql::Db['icinga'],
   }
 
-  class { '::icinga2::feature::api':
-    pki             => $api_pki,
-    ca_host         => $api_ca_host,
-    ticket_salt     => $api_ticket_salt,
-    accept_commands => true,
-    accept_config   => true,
-    endpoints       => $endpoints,
-    zones           => $zones
-  }
-
   # Only the master is allowed to have its own CA
-  if ($has_ca == true) {
-    class { '::icinga2::pki::ca': }
+  if ($ca_cert) and ($ca_key) {
+    class { '::icinga2::pki::ca': # this automatically creates a new node certificate
+      ca_cert => $ca_cert,
+      ca_key  => $ca_key
+    }
+    class { '::icinga2::feature::api':
+      pki             => 'none', # manage them.
+      accept_commands => true,
+      accept_config   => true,
+      endpoints       => $endpoints,
+      zones           => $zones
+    }
+
+  } else {
+    class { '::icinga2::feature::api':
+      pki             => 'none', # only manage certificate files
+      ssl_cacert      => $ca_cert, # use the configured satellite certificates
+      ssl_key         => $node_key,
+      ssl_cert        => $node_cert,
+      accept_commands => true,
+      accept_config   => true,
+      endpoints       => $endpoints,
+      zones           => $zones
+    }
   }
 
   icinga2::object::zone { 'global-templates':
