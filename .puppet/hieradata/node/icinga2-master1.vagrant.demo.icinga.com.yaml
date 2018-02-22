@@ -1,0 +1,36 @@
+icinga::icinga2::zone_name:             "master"
+icinga::icinga2::zones:
+  master:
+    endpoints:
+      - 'icinga2-master1.vagrant.demo.icinga.com'
+  satellite:
+    endpoints:
+      - 'icinga2-satellite1.vagrant.demo.icinga.com'
+    parent: 'master'
+icinga::icinga2::endpoints:
+  'icinga2-master1.vagrant.demo.icinga.com': {}
+  'icinga2-satellite1.vagrant.demo.icinga.com':
+    host: '192.168.33.102'
+
+icinga::icinga2::ca_cert: |
+  -----BEGIN CERTIFICATE-----
+  MIIBejCCAQCgAwIBAgIUGEU9afDMesCuEg4qLbDLHP934+4wCgYIKoZIzj0EAwIw
+  FDESMBAGA1UEAwwJSWNpbmdhIENBMB4XDTE4MDIyMjE2MDYxM1oXDTMzMDIxODE2
+  MDYxM1owFDESMBAGA1UEAwwJSWNpbmdhIENBMHYwEAYHKoZIzj0CAQYFK4EEACID
+  YgAE+y3XxCVndaUZiyZ1L0lDTCxXmID4kA+GFO7Nk5e3929zUkeF06nbKn9Nmel0
+  OVtdCjd2tTiHDNXOmMxozxWZyfUeoyuEbe5txzkHzgGCSkaAO93nA9VoiDeglG1K
+  UlwVoxMwETAPBgNVHRMBAf8EBTADAQH/MAoGCCqGSM49BAMCA2gAMGUCMQCRBrTI
+  N+UTy5tdhAQYkUb2l3RUA01Jt44RHHBhNdjaPHMpQ56aIr6yA3ayCylIXt0CME/8
+  CYMezFsMqlLEhoS6rnuoylNvmVO6K9kdfUmZpqdwyZdRO/oyuh43IsFfnI67tg==
+  -----END CERTIFICATE-----
+icinga::icinga2::ca_key: |
+  -----BEGIN PRIVATE KEY-----
+  MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDC3A34zUly/yRXlwiZ7
+  zO8eNaV4nFcctmTY/6p1D2aObz01UOknOQL0RKFtGYX9t4+hZANiAAT7LdfEJWd1
+  pRmLJnUvSUNMLFeYgPiQD4YU7s2Tl7f3b3NSR4XTqdsqf02Z6XQ5W10KN3a1OIcM
+  1c6YzGjPFZnJ9R6jK4Rt7m3HOQfOAYJKRoA73ecD1WiIN6CUbUpSXBU=
+  -----END PRIVATE KEY-----
+
+# created by Puppet module with the above CA
+icinga::icinga2::node_cert: NULL
+icinga::icinga2::node_key: NULL
