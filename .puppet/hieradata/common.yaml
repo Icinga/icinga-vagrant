@@ -1,0 +1,44 @@
+---
+icinga::icingaweb2::listen_ip:          "%{ipaddress_eth1}"
+icinga::icingaweb2::fqdn:               "%{fqdn}"
+icinga::icinga2::node_name:             "%{fqdn}"
+
+graphite::carbon::listen_ip:            "%{ipaddress_eth1}"
+graphite::carbon::listen_port:          "2003"
+graphite::web::listen_ip:               "%{ipaddress_eth1}"
+graphite::web::listen_port:             "8003"
+
+influxdb::server::listen_ip:            "%{ipaddress_eth1}"
+influxdb::server::listen_port:          "8086"
+
+grafana::server::listen_ip:             "%{ipaddress_eth1}"
+grafana::server::listen_port:           "8004"
+
+elastic::elasticsearch::listen_ip:      "localhost"
+elastic::elasticsearch::listen_port:    "9200"
+elastic::kibana::listen_ip:             "localhost"
+elastic::kibana::listen_port:           "5601"
+
+graylog::gelf::listen_ip:               "%{ipaddress_eth1}"
+graylog::gelf::listen_port:             "12201"
+graylog::web::listen_ip:                "%{ipaddress_eth1}"
+graylog::web::listen_port:               "9000"
+
+#dashing::server::listen_ip:             "%{::ipaddress_eth1}"
+#dashing::server::listen_port:           "8005"
+
+# Versions
+grafana::version:                       "4.6.3"
+graphite::version:                      "1.1.1"
+icinga::director::version:              "v1.4.3"
+
+elastic::repo::version:                 "6.x"
+elastic::elasticsearch::version:        "6.2.0"
+elastic::kibana::version:               "6.2.0-1" # revision is important
+elastic::icingabeat::version:           "6.1.1"
+# keep this in sync with the icingabeat dashboard ids!
+elastic::kibana::default_app_id:        "dashboard/34e97340-e4ce-11e7-b4d1-8383451ae5a4"
+
+graylog::repo::version:                 "2.4"
+graylog::elasticsearch::repo_version:   "5.x"
+

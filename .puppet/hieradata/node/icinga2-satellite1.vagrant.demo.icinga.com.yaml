@@ -1,0 +1,50 @@
+icinga::icinga2::zone_name:             "satellite"
+icinga::icinga2::zones:
+  master:
+    endpoints:
+      - 'icinga2-master1.vagrant.demo.icinga.com'
+  satellite:
+    endpoints:
+      - 'icinga2-satellite1.vagrant.demo.icinga.com'
+    parent: 'master'
+icinga::icinga2::endpoints:
+  'icinga2-master1.vagrant.demo.icinga.com': {}
+  'icinga2-satellite1.vagrant.demo.icinga.com':
+    host: '192.168.33.102'
+
+icinga::icinga2::ca_cert: |
+  -----BEGIN CERTIFICATE-----
+  MIIBejCCAQCgAwIBAgIUGEU9afDMesCuEg4qLbDLHP934+4wCgYIKoZIzj0EAwIw
+  FDESMBAGA1UEAwwJSWNpbmdhIENBMB4XDTE4MDIyMjE2MDYxM1oXDTMzMDIxODE2
+  MDYxM1owFDESMBAGA1UEAwwJSWNpbmdhIENBMHYwEAYHKoZIzj0CAQYFK4EEACID
+  YgAE+y3XxCVndaUZiyZ1L0lDTCxXmID4kA+GFO7Nk5e3929zUkeF06nbKn9Nmel0
+  OVtdCjd2tTiHDNXOmMxozxWZyfUeoyuEbe5txzkHzgGCSkaAO93nA9VoiDeglG1K
+  UlwVoxMwETAPBgNVHRMBAf8EBTADAQH/MAoGCCqGSM49BAMCA2gAMGUCMQCRBrTI
+  N+UTy5tdhAQYkUb2l3RUA01Jt44RHHBhNdjaPHMpQ56aIr6yA3ayCylIXt0CME/8
+  CYMezFsMqlLEhoS6rnuoylNvmVO6K9kdfUmZpqdwyZdRO/oyuh43IsFfnI67tg==
+  -----END CERTIFICATE-----
+
+icinga::icinga2::ca_key: NULL
+
+# deployed by Puppet on the satellite
+icinga::icinga2::node_cert: |
+  -----BEGIN CERTIFICATE-----
+  MIIB0DCCAVagAwIBAgIVAIK8ET8N5JUDGUukiCFzjqOow6bGMAoGCCqGSM49BAMC
+  MBQxEjAQBgNVBAMMCUljaW5nYSBDQTAeFw0xODAyMjIxNjM3MzhaFw0zMzAyMTgx
+  NjM3MzhaMDUxMzAxBgNVBAMMKmljaW5nYTItc2F0ZWxsaXRlMS52YWdyYW50LmRl
+  bW8uaWNpbmdhLmNvbTB2MBAGByqGSM49AgEGBSuBBAAiA2IABP5dshMW2ArKRHkH
+  nUQXwRE9+xF1z3MamCqQtntpzl+CkLBTsSRo415SBHLfBnGQBj7nAR4dxRv/KD5i
+  fx5hUb8ReJfM/fu2/S2icQtQwB0X3BIhQdBZHEHiWppdEFHpbaNHMEUwDAYDVR0T
+  AQH/BAIwADA1BgNVHREELjAsgippY2luZ2EyLXNhdGVsbGl0ZTEudmFncmFudC5k
+  ZW1vLmljaW5nYS5jb20wCgYIKoZIzj0EAwIDaAAwZQIxAPFdloVf5Wtc4SslXzdp
+  WniTOZWr4efg7AgbNF8tJZIUISE78lztzaQmcSQVmdl7nwIwaoNFflIGHchN7rIw
+  DwPIwwuwBKYaWjEPlkPZTA0FhPCCvRZ5SDg+b0aqccvJ/Q+N
+  -----END CERTIFICATE-----
+
+icinga::icinga2::node_key: |
+  -----BEGIN PRIVATE KEY-----
+  MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCIYOSiiAnCcc3JWhs/
+  jP6OWfOy+sNl0wuYxEysdyajkxpQtms/8TXiY5LvB9jI2o2hZANiAAT+XbITFtgK
+  ykR5B51EF8ERPfsRdc9zGpgqkLZ7ac5fgpCwU7EkaONeUgRy3wZxkAY+5wEeHcUb
+  /yg+Yn8eYVG/EXiXzP37tv0tonELUMAdF9wSIUHQWRxB4lqaXRBR6W0=
+  -----END PRIVATE KEY-----

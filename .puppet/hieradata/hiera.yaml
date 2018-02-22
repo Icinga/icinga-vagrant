@@ -1,0 +1,12 @@
+version: 5
+defaults:
+  # synced folder in Vagrant
+  datadir: '/hieradata'
+  data_hash: yaml_data
+hierarchy:
+  - name: "Per-node data (yaml version)"
+    path: "node/%{::fqdn}.yaml"
+
+  - name: "Other YAML hierarchy levels"
+    path: "common.yaml"
+
