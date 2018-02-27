@@ -1,4 +1,6 @@
-class profiles::dashing::icinga2 {
+class profiles::dashing::icinga2 (
+  $icingaweb2_listen_ip,
+){
   package { [ 'rubygems', 'rubygem-bundler',
               'ruby-devel', 'openssl', 'gcc-c++',
               'make', 'nodejs', 'v8'
@@ -19,6 +21,14 @@ class profiles::dashing::icinga2 {
     command => "cd /usr/share/dashing-icinga2 && bundle install --jobs 4 --system", # this already installs the dashing binary
     timeout => 1800
   }->
+  file { 'icinga2.local.json':
+    name => '/usr/share/dashing-icinga2/config/icinga2.local.json',
+    owner => root,
+    group => root,
+    mode => '0644',
+    content => template("profiles/dashing/config/icinga2.local.json.erb")
+  }
+  ->
   file { '/usr/lib/systemd/system/dashing-icinga2.service':
     owner  => root,
     group  => root,
