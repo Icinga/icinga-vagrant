@@ -47,6 +47,7 @@ node default {
   }
   ->
   class { '::profiles::dashing::icinga2':
+    icingaweb2_listen_ip => lookup('icinga::icingaweb2::listen_ip'),
   }
 
 }
