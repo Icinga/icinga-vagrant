@@ -27,6 +27,10 @@ graylog::web::listen_port:               "9000"
 #dashing::server::listen_ip:             "%{::ipaddress_eth1}"
 #dashing::server::listen_port:           "8005"
 
+# Repos
+icinga::repo::type:                     "snapshot" # you can use 'release' too
+#icinga::repo::type:                     "release"
+
 # Versions
 grafana::version:                       "4.6.3"
 graphite::version:                      "1.1.1"

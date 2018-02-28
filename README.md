@@ -391,6 +391,22 @@ nodes = {
 }
 ```
 
+## Configuration: Icinga Package Repository <a id="configuration-icinga-repo"></a>
+
+This requires you to edit the Hiera configuration tracked by Git. The setting below
+allows to control whether the Icinga release or snapshot package repositories are
+enabled by default.
+
+That way you can easily either test the development snapshots or have stable packages
+for demos.
+
+```
+vim .puppet/hieradata/common.yaml
+
+icinga::repo::type:                     "snapshot" # you can use 'release' too
+#icinga::repo::type:                     "release"
+```
+
 
 # FAQ <a id="faq"></a>
 
