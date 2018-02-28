@@ -1,0 +1,10 @@
+---
+HOSTS:
+  debian-7-x64:
+    roles:
+      - master
+    platform: debian-7-amd64
+    box: bento/debian-7
+    hypervisor: vagrant
+CONFIG:
+  type: foss

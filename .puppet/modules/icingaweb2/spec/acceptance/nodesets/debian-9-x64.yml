@@ -1,0 +1,10 @@
+---
+HOSTS:
+  debian-9-x64:
+    roles:
+      - master
+    platform: debian-9-amd64
+    box: bento/debian-9
+    hypervisor: vagrant
+CONFIG:
+  type: foss
