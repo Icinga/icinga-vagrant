@@ -1,5 +1,7 @@
 # This profile must be run before all others
-class profiles::base::system {
+class profiles::base::system (
+  $icinga_repo = 'snapshot'
+){
   class { 'timezone':
      timezone => 'Europe/Berlin', #keep using the same as PHP
   }
@@ -15,7 +17,7 @@ class profiles::base::system {
   yumrepo { 'icinga-snapshot-builds':
     baseurl  => "http://packages.icinga.com/epel/${::operatingsystemmajrelease}/snapshot/",
     descr    => 'ICINGA (snapshot builds for epel)',
-    enabled  => 1,
+    enabled  => $icinga_repo ? { 'snapshot' => 1, default => 0 },
     gpgcheck => 1,
     gpgkey   => 'http://packages.icinga.com/icinga.key',
   }
@@ -23,7 +25,7 @@ class profiles::base::system {
   yumrepo { 'icinga-stable-release':
     baseurl  => "http://packages.icinga.com/epel/${::operatingsystemmajrelease}/release/",
     descr    => 'ICINGA (stable release for epel)',
-    enabled  => 0,
+    enabled  => $icinga_repo ? { 'release' => 1, default => 0 },
     gpgcheck => 1,
     gpgkey   => 'http://packages.icinga.com/icinga.key',
   }
