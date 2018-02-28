@@ -1,8 +1,0 @@
-[<%= @section_name %>]
-<%- @settings.each do |key,value|
-  val = "#{value}"
-  val = '1' if value.is_a?(TrueClass)
-  val = '0' if value.is_a?(FalseClass)
--%>
-<%= key %> = <%= val.dump %>
-<% end %>

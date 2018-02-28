@@ -1,9 +1,0 @@
-fixtures:
-  forge_modules:
-    stdlib: "puppetlabs/stdlib"
-    concat: "puppetlabs/concat"
-    vcsrepo: "puppetlabs/vcsrepo"
-    apt: "puppetlabs/apt"
-    zypprepo: "puppet/zypprepo"
-  symlinks:
-    icingaweb2: "#{source_dir}"
