@@ -1,0 +1,34 @@
+## MAC OS
+.DS_Store
+
+## editor
+*.tmproj
+tmtags
+*~
+\#*
+.\#*
+*.sw[op]
+tags
+.idea/
+
+## Bundler
+Gemfile.lock
+.bundle
+vendor/
+
+## rbenv / rvm
+.rbenv*
+.rvmrc*
+.ruby-*
+
+## rspec
+spec/fixtures/
+
+## acceptance
+.vagrant/
+junit/
+log/
+
+## Puppet module
+pkg/
+coverage/
