@@ -1,0 +1,11 @@
+HOSTS:
+  ubuntu-1604-x64:
+    platform: ubuntu-16.04-amd64
+    hypervisor: docker
+    image: ubuntu:16.04
+    docker_preserve_image: true
+    docker_cmd: '["/sbin/init"]'
+    docker_image_commands:
+      - 'apt-get update && apt-get install -y net-tools wget locales strace lsof && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen'
+CONFIG:
+  trace_limit: 200
