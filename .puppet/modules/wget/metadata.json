@@ -1,0 +1,123 @@
+{
+  "name": "rehan-wget",
+  "version": "1.1.7",
+  "author": "Rehan Mahmood",
+  "summary": "Install, manage and configure wget and retrieve files using it",
+  "license": "Apache-2.0",
+  "source": "https://github.com/rehanone/puppet-wget.git",
+  "project_page": "https://github.com/rehanone/puppet-wget",
+  "issues_url": "https://github.com/rehanone/puppet-wget/issues",
+  "tags": [
+    "wget",
+    "web get",
+    "download",
+    "archive"
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Fedora",
+      "operatingsystemrelease": [
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27"
+      ]
+    },
+    {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "11 SP1",
+        "11 SP2",
+        "11 SP3",
+        "11 SP4",
+        "12 SP1",
+        "12 SP2",
+        "12 SP3"
+      ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "7",
+        "8",
+        "9"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04",
+        "15.10",
+        "16.04",
+        "16.10",
+        "17.04",
+        "17.10"
+      ]
+    },
+    {
+      "operatingsystem": "FreeBSD",
+      "operatingsystemrelease": [
+        "9",
+        "10",
+        "11"
+      ]
+    },
+    {
+      "operatingsystem": "DragonFly",
+      "operatingsystemrelease": [
+        "3.6",
+        "3.8",
+        "4.0",
+        "4.2",
+        "4.4",
+        "4.6",
+        "4.8",
+        "5.0"
+      ]
+    },
+    {
+      "operatingsystem": "ArchLinux"
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.7.0 < 6.0.0"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">= 3.2.0 < 5.0.0"
+    }
+  ],
+  "data_provider": null
+}
