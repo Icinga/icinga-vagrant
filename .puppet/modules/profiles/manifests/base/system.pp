@@ -35,6 +35,13 @@ class profiles::base::system (
     ensure => 'installed',
   }
   ->
+  # wget
+  class { 'wget':
+    package_manage => true,
+    package_ensure => present,
+    package_name   => 'wget'
+  }
+  ->
   # vim is needed
   class { 'vim':
     opt_bg_shading => 'light',
