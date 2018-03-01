@@ -597,8 +597,9 @@ General:
   puppet-php               | >= 4.7.0 < 5.0.0 | .puppet/modules/php               | https://github.com/voxpupuli/puppet-php.git
   puppet-selinux           | >= 4.7.1         | .puppet/modules/selinux           | https://github.com/voxpupuli/puppet-selinux.git
   puppetlabs-java          | >= 4.7.0         | .puppet/modules/java              | https://github.com/puppetlabs/puppetlabs-java.git
-  puppet-yum               | >= 4.6.1         | .puppet/modules/yum               | https://github.com/voxpupuli/puppet-yum
+  puppet-yum               | >= 4.6.1         | .puppet/modules/yum               | https://github.com/voxpupuli/puppet-yum.git
   puppet-archive           | >= 4.7.1         | .puppet/modules/archive           | https://github.com/voxpupuli/puppet-archive.git
+  puppet-wget              | >= 4.7.0         | .puppet/modules/wget              | https://github.com/rehanone/puppet-wget.git
   puppet-vim               | >=4.0.0 < 5.0.0  | .puppet/modules/vim               | https://github.com/saz/puppet-vim.git
   puppet-datacat           | Type for ES      | .puppet/modules/datacat           | https://github.com/richardc/puppet-datacat.git
   puppet-inifile           | >= 4.7.0         | .puppet/modules/inifile           | https://github.com/puppetlabs/puppetlabs-inifile.git
@@ -608,9 +609,9 @@ Specific projects:
 
   Name                     | Puppet Version   | Path                              | Url
   -------------------------|------------------|-----------------------------------|-------------------------------
-  puppet-elastic-stack     | >= 4.6.1         | .puppet/modules/elastic\_stack    | https://github.com/elastic/puppet-elastic-stack
-  puppet-icinga2           | 4.x              | .puppet/modules/icinga2           | https://github.com/Icinga/puppet-icinga2 (Patch for Elasticsearch)
-  puppet-icingaweb2        | >= 4.7.0         | .puppet/modules/icingaweb2        | https://github.com/Icinga/puppet-icingaweb2 (Patch for icingaadmin user)
+  puppet-elastic-stack     | >= 4.6.1         | .puppet/modules/elastic\_stack    | https://github.com/elastic/puppet-elastic-stack.git
+  puppet-icinga2           | 4.x              | .puppet/modules/icinga2           | https://github.com/Icinga/puppet-icinga2.git (Patch for Elasticsearch)
+  puppet-icingaweb2        | >= 4.7.0         | .puppet/modules/icingaweb2        | https://github.com/Icinga/puppet-icingaweb2.git
   puppet-graylog           | 4.x              | .puppet/modules/graylog           | https://github.com/Graylog2/puppet-graylog.git
   puppet-elasticsearch     | >= 4.5.0         | .puppet/modules/elasticsearch     | https://github.com/elasticsearch/puppet-elasticsearch.git
   puppet-nginx             | >= 4.7.0         | .puppet/modules/nginx             | https://github.com/voxpupuli/puppet-nginx.git
