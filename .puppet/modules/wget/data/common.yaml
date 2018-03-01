@@ -1,0 +1,4 @@
+---
+wget::package_manage: true
+wget::package_ensure: present
+wget::package_name: 'wget'

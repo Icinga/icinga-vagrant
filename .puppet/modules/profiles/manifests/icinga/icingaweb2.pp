@@ -4,7 +4,8 @@ class profiles::icinga::icingaweb2 (
   $node_name = 'icinga2',
   $api_username = 'root',
   $api_password = 'icinga',
-  $modules = {}
+  $modules = {},
+  $themes = {}
 ) {
   apache::vhost { "${icingaweb2_fqdn}-http":
     priority        => 5,
@@ -139,7 +140,8 @@ class profiles::icinga::icingaweb2 (
 
   $conf_dir        = $::icingaweb2::params::conf_dir
 
-  # Module handling
+  # Modules
+
   if ('director' in $modules) {
     $director_git_revision = $modules['director']['git_revision']
 
@@ -384,6 +386,56 @@ class profiles::icinga::icingaweb2 (
       git_repository => 'https://github.com/icinga/icingaweb2-module-elasticsearch.git',
       git_revision   => 'master',
       settings       => $elasticsearch_settings,
+    }
+  }
+
+  # Themes
+
+  if ('company' in $themes) {
+    icingaweb2::module { 'company':
+      install_method => 'git',
+      git_repository => 'https://github.com/Icinga/icingaweb2-theme-company',
+      git_revision   => 'master',
+    }
+  }
+
+  if ('always-green' in $themes) {
+    icingaweb2::module { 'always-green':
+      install_method => 'git',
+      git_repository => 'https://github.com/xam-stephan/icingaweb2-module-theme-always-green',
+      git_revision   => 'master',
+    }
+  }
+
+  if ('lsd' in $themes) {
+    icingaweb2::module { 'lsd':
+      install_method => 'git',
+      git_repository => 'https://github.com/Mikesch-mp/icingaweb2-theme-lsd',
+      git_revision   => 'master',
+    }
+  }
+
+  if ('unicorn' in $themes) {
+    icingaweb2::module { 'unicorn':
+      install_method => 'git',
+      git_repository => 'https://github.com/Mikesch-mp/icingaweb2-theme-unicorn',
+      git_revision   => 'master',
+    }
+    ->
+    wget::retrieve { 'retrieve-unicorn-image':
+      source      => 'http://i.imgur.com/SCfMd.png',
+      destination => '/usr/share/icingaweb2/modules/unicorn/public/img/unicorn.png',
+      timeout     => 180,
+      verbose     => false,
+      unless      => "test $(ls -A /usr/share/icingaweb2/modules/unicorn/public/img/unicorn.png 2>/dev/null)",
+    }
+  }
+
+  if ('batman' in $themes) {
+    icingaweb2::module { 'batman':
+      install_method => 'git',
+      git_repository => 'https://github.com/jschanz/icingaweb2-theme-batman',
+      git_revision   => 'master',
     }
   }
 }

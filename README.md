@@ -35,37 +35,39 @@ including [puppet-icinga2](https://github.com/icinga/puppet-icinga2) and [puppet
 Below are some sample screenshots. Keep in mind that software is under steady
 development, so screenshots and features may change.
 
-## Icinga Web 2 <a id="about-icingaweb2"></a>
-
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_graphite.png" alt="Icinga Web 2 Detail View with Graphite" height="300">
+## Visualization <a id="about-visualization"></a>
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_maps.png" alt="Icinga Web 2 Maps" height="300">
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_businessprocess.png" alt="Icinga Web 2 Business Process" height="300">
 
-## Dashing <a id="about-dashing"></a>
+## Graphing <a id="about-graphing"></a>
 
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_dashing_icinga2.png" alt="Dashing" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_grafana_icinga2_graphite.png" alt="Icinga 2 Grafana with Graphite" height="300">
 
-## Elastic & Icingabeat <a id="about-elastic"></a>
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_graphite.png" alt="Icinga Web 2 Detail View with Graphite" height="300">
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_grafana.png" alt="Icinga Web 2 Detail View with Grafana & Influxdb" height="300">
+
+## Logs and Events <a id="about-log-events"></a>
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_elastic_kibana_icingabeat.png" alt="Elastic Stack and Icingabeat" height="300">
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_elasticsearch.png" alt="Icinga Web 2 Elasticsearch" height="300">
 
 <!--
-## Graylog <a id="about-graylog"></a>
-
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_graylog_icinga2.png" alt="Graylog" height="300">
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_graylog.png" alt="Icinga Web 2 Graylog" height="300">
 -->
 
-## Grafana <a id="about-grafana"></a>
+## Dashboards and Themes <a id="about-dashboards-themes"></a>
 
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_grafana_icinga2_graphite.png" alt="Icinga 2 Grafana with Graphite" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_dashing_icinga2.png" alt="Dashing" height="300">
 
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_grafana.png" alt="Icinga Web 2 Detail View with Grafana & Influxdb" height="300">
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_theme_unicorn.png" alt="Icinga Web 2 Theme Unicorn" height="300">
+
+
 
 # License <a id="license"></a>
 
@@ -227,7 +229,8 @@ Proceed here for an overview about all available [boxes](#boxes).
 * 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Icinga Director](https://github.com/Icinga/icingaweb2-module-director), [Graphite](https://github.com/Icinga/icingaweb2-module-graphite), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Cube](https://github.com/Icinga/icingaweb2-module-cube), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
+  * [Director](https://github.com/Icinga/icingaweb2-module-director), [Graphite](https://github.com/Icinga/icingaweb2-module-graphite), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Cube](https://github.com/Icinga/icingaweb2-module-cube), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
+  * [Community](https://exchange.icinga.com/search?q=category%3A%22Themes%22) themes
 * [Graphite](https://graphiteapp.org/)
 * [Grafana](https://grafana.com/)
 * [Dashing](https://github.com/Icinga/dashing-icinga2) for Icinga 2
@@ -597,8 +600,9 @@ General:
   puppet-php               | >= 4.7.0 < 5.0.0 | .puppet/modules/php               | https://github.com/voxpupuli/puppet-php.git
   puppet-selinux           | >= 4.7.1         | .puppet/modules/selinux           | https://github.com/voxpupuli/puppet-selinux.git
   puppetlabs-java          | >= 4.7.0         | .puppet/modules/java              | https://github.com/puppetlabs/puppetlabs-java.git
-  puppet-yum               | >= 4.6.1         | .puppet/modules/yum               | https://github.com/voxpupuli/puppet-yum
+  puppet-yum               | >= 4.6.1         | .puppet/modules/yum               | https://github.com/voxpupuli/puppet-yum.git
   puppet-archive           | >= 4.7.1         | .puppet/modules/archive           | https://github.com/voxpupuli/puppet-archive.git
+  puppet-wget              | >= 4.7.0         | .puppet/modules/wget              | https://github.com/rehanone/puppet-wget.git
   puppet-vim               | >=4.0.0 < 5.0.0  | .puppet/modules/vim               | https://github.com/saz/puppet-vim.git
   puppet-datacat           | Type for ES      | .puppet/modules/datacat           | https://github.com/richardc/puppet-datacat.git
   puppet-inifile           | >= 4.7.0         | .puppet/modules/inifile           | https://github.com/puppetlabs/puppetlabs-inifile.git
@@ -608,9 +612,9 @@ Specific projects:
 
   Name                     | Puppet Version   | Path                              | Url
   -------------------------|------------------|-----------------------------------|-------------------------------
-  puppet-elastic-stack     | >= 4.6.1         | .puppet/modules/elastic\_stack    | https://github.com/elastic/puppet-elastic-stack
-  puppet-icinga2           | 4.x              | .puppet/modules/icinga2           | https://github.com/Icinga/puppet-icinga2 (Patch for Elasticsearch)
-  puppet-icingaweb2        | >= 4.7.0         | .puppet/modules/icingaweb2        | https://github.com/Icinga/puppet-icingaweb2 (Patch for icingaadmin user)
+  puppet-elastic-stack     | >= 4.6.1         | .puppet/modules/elastic\_stack    | https://github.com/elastic/puppet-elastic-stack.git
+  puppet-icinga2           | 4.x              | .puppet/modules/icinga2           | https://github.com/Icinga/puppet-icinga2.git (Patch for Elasticsearch)
+  puppet-icingaweb2        | >= 4.7.0         | .puppet/modules/icingaweb2        | https://github.com/Icinga/puppet-icingaweb2.git
   puppet-graylog           | 4.x              | .puppet/modules/graylog           | https://github.com/Graylog2/puppet-graylog.git
   puppet-elasticsearch     | >= 4.5.0         | .puppet/modules/elasticsearch     | https://github.com/elasticsearch/puppet-elasticsearch.git
   puppet-nginx             | >= 4.7.0         | .puppet/modules/nginx             | https://github.com/voxpupuli/puppet-nginx.git

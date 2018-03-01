@@ -32,6 +32,13 @@ node default {
       "businessprocess" => {},
       "cube" => {},
       "map" => {}
+    },
+    themes => {
+      "company"       => {},
+      "unicorn"       => {},
+      "always-green"  => {},
+      "lsd"           => {},
+      "batman"        => {}
     }
   }
   ->
