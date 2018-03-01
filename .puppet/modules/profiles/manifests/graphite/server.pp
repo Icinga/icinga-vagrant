@@ -3,7 +3,7 @@ class profiles::graphite::server (
   $listen_port,
   $graphite_fqdn = 'graphite.vagrant.demo.icinga.com',
   # http://graphite.readthedocs.io/en/latest/install.html#dependencies
-  $version = '1.1.1',
+  $version = '1.1.2',
   $twisted_version = '13.2.0', #https://github.com/graphite-project/carbon/issues/688
   $django_version = '1.11',
   $django_tagging_version = '0.4.6' #https://github.com/graphite-project/graphite-web/issues/1249
