@@ -138,7 +138,33 @@ class profiles::icinga::icingaweb2 (
     ensure => latest,
   }
 
+  $default_user    = "icingaadmin"
   $conf_dir        = $::icingaweb2::params::conf_dir
+  $pref_conf_dir   = "${conf_dir}/preferences"
+  $dash_conf_dir   = "${conf_dir}/dashboards"
+  $default_dash_conf_path = "${dash_conf_dir}/${default_user}/dashboard.ini"
+
+  # Preferences. Assume to use 'icingaadmin' as default user, provided by the icingaweb2 class
+  file { [ "${pref_conf_dir}", "${pref_conf_dir}/${default_user}" ]:
+    ensure => directory,
+    owner  => root,
+    group  => icingaweb2,
+    mode => '2770'
+  }
+
+  # Dashboards. Assume to use 'icingaadmin' as default user, provided by the icingaweb2 class
+  file { [ "${dash_conf_dir}", "${dash_conf_dir}/${default_user}" ]:
+    ensure => directory,
+    owner  => root,
+    group  => icingaweb2,
+    mode => '2770'
+  }
+  ->
+  concat { "$default_dash_conf_path":
+    owner => root,
+    group => icingaweb2,
+    mode  => '0660'
+  }
 
   # Modules
 
@@ -196,6 +222,12 @@ class profiles::icinga::icingaweb2 (
       git_revision   => 'master',
       settings       => $map_settings,
     }
+    ->
+    concat::fragment { "module_maps_dashboards":
+      target  => $default_dash_conf_path,
+      content => template("profiles/icinga/icingaweb2/modules/map/dashboard.ini.erb"),
+      order   => '10'
+    }
   }
 
   if ('cube' in $modules) {
@@ -203,6 +235,12 @@ class profiles::icinga::icingaweb2 (
 
     class { 'icingaweb2::module::cube':
       git_revision   => 'master',
+    }
+    ->
+    concat::fragment { "module_cube_dashboards":
+      target  => $default_dash_conf_path,
+      content => template("profiles/icinga/icingaweb2/modules/cube/dashboard.ini.erb"),
+      order   => '01'
     }
   }
 
@@ -252,6 +290,12 @@ class profiles::icinga::icingaweb2 (
       group  => icingaweb2,
       mode => '0660',
       content => template("profiles/icinga/icingaweb2/modules/businessprocess/processes/mysql.conf.erb")
+    }
+    ->
+    concat::fragment { "module_businessprocess_dashboards":
+      target  => $default_dash_conf_path,
+      content => template("profiles/icinga/icingaweb2/modules/businessprocess/dashboard.ini.erb"),
+      order   => '01'
     }
   }
 
@@ -439,3 +483,4 @@ class profiles::icinga::icingaweb2 (
     }
   }
 }
+
