@@ -149,9 +149,10 @@ class profiles::icinga::icingaweb2 (
     ensure => directory,
     owner  => root,
     group  => icingaweb2,
-    mode => '2770'
+    mode => '2770',
+    require => Class['::icingaweb2']
   }
-
+  ->
   # Dashboards. Assume to use 'icingaadmin' as default user, provided by the icingaweb2 class
   file { [ "${dash_conf_dir}", "${dash_conf_dir}/${default_user}" ]:
     ensure => directory,
@@ -168,6 +169,7 @@ class profiles::icinga::icingaweb2 (
 
   # Modules
 
+  # Director
   if ('director' in $modules) {
     $director_git_revision = $modules['director']['git_revision']
 
@@ -202,6 +204,7 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  # Map
   if ('map' in $modules) {
     $map_module_conf_dir = "${conf_dir}/modules/map"
 
@@ -230,6 +233,7 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  # Cube
   if ('cube' in $modules) {
     $cube_module_conf_dir = "${conf_dir}/modules/cube"
 
@@ -244,6 +248,7 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  # Globe
   if ('globe' in $modules) {
     $globe_module_conf_dir = "${conf_dir}/modules/globe"
 
@@ -254,6 +259,7 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  # Business Process
   if ('businessprocess' in $modules) {
     $businessprocess_module_conf_dir = "${conf_dir}/modules/businessprocess"
 
@@ -299,6 +305,7 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  # Grafana
   if ('grafana' in $modules) {
     $grafana_datasource = $modules['grafana']['datasource']
     $grafana_listen_ip = $modules['grafana']['listen_ip']
@@ -360,6 +367,7 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  # Graphite
   if ('graphite' in $modules) {
     $graphite_listen_ip = $modules['graphite']['listen_ip']
     $graphite_listen_port = $modules['graphite']['listen_port']
@@ -395,6 +403,7 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  # Elasticsearch
   if ('elasticsearch' in $modules) {
     $elasticsearch_listen_ip = $modules['elasticsearch']['listen_ip']
     $elasticsearch_listen_port = $modules['elasticsearch']['listen_port']
