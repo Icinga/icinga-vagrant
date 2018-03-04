@@ -34,9 +34,10 @@ node default {
   }
   ->
   class { '::profiles::grafana::server':
-    listen_ip => lookup('grafana::server::listen_ip'),
-    listen_port => lookup('grafana::server::listen_port'),
-    backend => "influxdb",
-    backend_port => lookup('influxdb::server::listen_port')
+    listen_ip     => lookup('grafana::server::listen_ip'),
+    listen_port   => lookup('grafana::server::listen_port'),
+    version       => lookup('grafana::version'),
+    backend       => "influxdb",
+    backend_port  => lookup('influxdb::server::listen_port')
   }
 }
