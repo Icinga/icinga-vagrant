@@ -36,6 +36,11 @@ const GeoLocationShort = {
   "la" = "los angeles"
 }
 
+/* Provide a lookup dictionary for host and service marker icons */
+const MarkerIcons = [
+  "print", "users", "wifi", "cloud", "sitemap", "phone", "database", "flapping", "host", "service"
+]
+
 /*
  * Extract host location from the hostname itself, "sf" is the location
  * "sf" is short for "san francisco", perform a lookup in GeoLocationShort first
@@ -100,16 +105,20 @@ for (location => lat_long in globals.GeoLocation) {
     count = 2
   }
 
+  var icon_idx = Math.floor(Math.random() * 10);
+  var random_icon = MarkerIcons[icon_idx];
+
   for (c in range(count)) {
     /* Avoid white spaces in object names, I just don't like them with auto-completion */
     var location_str = location.replace(" ", "-")
 
     /* Bind location, lat_long via use into the object scope and assign them to notes/custom attr */
-    object Host "map-server-" + location_str + "-" + c use (location, lat_long) {
+    object Host "map-server-" + location_str + "-" + c use (location, lat_long, random_icon) {
       check_command = "random"
 
       notes = "map host in " + location
       vars.geolocation = lat_long
+      vars.map_icon = random_icon
     }
   }
 }
@@ -120,6 +129,8 @@ for (c in range(2)) {
     check_command = "random"
     check_interval = 1m
     retry_interval = 1m
+    var icon_idx = Math.floor(Math.random() * 10);
+    vars.map_icon = MarkerIcons[icon_idx];
     vars.geolocation = host.vars.geolocation
     assign where host.vars.geolocation
   }
