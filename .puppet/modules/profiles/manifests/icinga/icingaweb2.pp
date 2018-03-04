@@ -143,6 +143,7 @@ class profiles::icinga::icingaweb2 (
   $pref_conf_dir   = "${conf_dir}/preferences"
   $dash_conf_dir   = "${conf_dir}/dashboards"
   $default_dash_conf_path = "${dash_conf_dir}/${default_user}/dashboard.ini"
+  $default_menu_conf_path = "${pref_conf_dir}/${default_user}/menu.ini"
 
   # Preferences. Assume to use 'icingaadmin' as default user, provided by the icingaweb2 class
   file { [ "${pref_conf_dir}", "${pref_conf_dir}/${default_user}" ]:
@@ -162,6 +163,12 @@ class profiles::icinga::icingaweb2 (
   }
   ->
   concat { "$default_dash_conf_path":
+    owner => root,
+    group => icingaweb2,
+    mode  => '0660'
+  }
+  ->
+  concat { "$default_menu_conf_path":
     owner => root,
     group => icingaweb2,
     mode  => '0660'
@@ -342,28 +349,10 @@ class profiles::icinga::icingaweb2 (
       settings       => $grafana_settings,
     }
     ->
-    # TODO: Move this somewhere else.
-    file { '/etc/icingaweb2/preferences':
-      ensure => directory,
-      owner  => root,
-      group  => icingaweb2,
-      mode => '2770',
-      require => Package['icingaweb2']
-    }
-    ->
-    file { '/etc/icingaweb2/preferences/icingaadmin':
-      ensure => directory,
-      owner  => root,
-      group  => icingaweb2,
-      mode => '2770',
-    }
-    ->
-    file { '/etc/icingaweb2/preferences/icingaadmin/menu.ini': #TODO: Use Concat::Fragment and do not override it
-      ensure => present,
-      owner  => root,
-      group  => icingaweb2,
-      mode => '0660',
-      content => template("profiles/icinga/icingaweb2/preferences/icingaadmin/menu_grafana.ini.erb")
+    concat::fragment { "module_grafana_menu":
+      target  => $default_menu_conf_path,
+      content => template("profiles/icinga/icingaweb2/modules/grafana/menu.ini.erb"),
+      order   => '01'
     }
   }
 
