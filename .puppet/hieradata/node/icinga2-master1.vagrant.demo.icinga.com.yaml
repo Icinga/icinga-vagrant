@@ -1,3 +1,5 @@
+node::ipaddress:        "192.168.33.101"
+
 icinga::icinga2::zone_name:             "master"
 icinga::icinga2::zones:
   master:
