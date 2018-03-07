@@ -22,12 +22,12 @@ node default {
     icingaweb2_fqdn => lookup('icinga::icingaweb2::fqdn'),
     node_name => lookup('icinga::icinga2::node_name'),
     modules => {
-      "director" => {
-        "git_revision" => lookup('icinga::director::version')
-      },
       "graphite" => {
         "listen_ip"   => lookup('graphite::web::listen_ip'),
         "listen_port" => lookup('graphite::web::listen_port')
+      },
+      "director" => {
+        "git_revision" => lookup('icinga::director::version')
       },
       "businessprocess" => {},
       "cube" => {},

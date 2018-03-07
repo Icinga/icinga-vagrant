@@ -28,6 +28,12 @@ node default {
         "listen_ip"   => lookup('elastic::elasticsearch::listen_ip'),
         "listen_port" => lookup('elastic::elasticsearch::listen_port')
       },
+      "director" => {
+        "git_revision" => lookup('icinga::director::version')
+      },
+      "businessprocess" => {},
+      "cube" => {},
+      "map" => {}
     }
   }
   ->

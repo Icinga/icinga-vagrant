@@ -26,7 +26,13 @@ node default {
         "datasource"  => "influxdb",
         "listen_ip"   => lookup('grafana::server::listen_ip'),
         "listen_port" => lookup('grafana::server::listen_port')
-      }
+      },
+      "director" => {
+        "git_revision" => lookup('icinga::director::version')
+      },
+      "businessprocess" => {},
+      "cube" => {},
+      "map" => {}
     }
   }
   ->
