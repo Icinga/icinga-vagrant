@@ -15,7 +15,7 @@ else
 fi
 
 # TODO: Support more than just CentOS as base box
-if [ "$OSTYPE" != "RedHat" ]; then
+if [ "$OSTYPE" != "RedHat" ] || [ "$OSTYPE" = "CentOS" ]; then
   echo "Unsupported OS!" >&2
   exit 1
 fi
@@ -30,13 +30,13 @@ if [ ! -e /var/initial_update ]; then
     date > /var/initial_update
 fi
 
-if [ ! -e /etc/yum.repos.d/puppetlabs-pc1.repo ]; then
-    echo "Installing Puppet 4 release..."
-    yum install -y https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
+if [ ! -e /etc/yum.repos.d/puppet5.repo ]; then
+    echo "Installing Puppet 5 release repository..."
+    yum install -y https://yum.puppetlabs.com/puppet5/puppet5-release-el-7.noarch.rpm
 fi
 
 if ! rpm -q "puppet-agent" &>/dev/null; then
-    echo "Installing puppet..."
+    echo "Installing Puppet 5..."
     yum install -y puppet-agent
 fi
 
