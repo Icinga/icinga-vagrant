@@ -24,7 +24,8 @@ node default {
     icingaweb2_fqdn => lookup('icinga::icingaweb2::fqdn'),
     node_name => lookup('icinga::icinga2::node_name'),
     modules => {
-      "map" => {},
+      "cube" => {},
+      "map" => {}
     }
   }
 }

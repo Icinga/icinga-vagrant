@@ -27,7 +27,13 @@ node default {
       "graylog" => {
         "listen_ip"   => lookup('graylog::web::listen_ip'),
         "listen_port" => lookup('graylog::web::listen_port')
-      }
+      },
+      "director" => {
+        "git_revision" => lookup('icinga::director::version')
+      },
+      "businessprocess" => {},
+      "cube" => {},
+      "map" => {}
     }
   }
   ->
