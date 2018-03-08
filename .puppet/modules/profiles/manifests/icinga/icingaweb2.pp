@@ -134,6 +134,9 @@ class profiles::icinga::icingaweb2 (
     }
   }
   ->
+  class { '::icingaweb2::module::doc':
+  }
+  ->
   package { 'icingaweb2-selinux':
     ensure => latest,
   }
