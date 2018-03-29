@@ -12,7 +12,7 @@ class profiles::dashing::icinga2 (
     path     => '/usr/share/dashing-icinga2',
     provider => 'git',
     revision => 'master',
-    source   => 'https://github.com/Icinga/dashing-icinga2.git',
+    source   => 'https://github.com/dnsmichi/dashing-icinga2.git',
     force    => true,
     require  => Package['git']
   }->

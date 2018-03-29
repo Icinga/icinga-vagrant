@@ -233,7 +233,7 @@ Proceed here for an overview about all available [boxes](#boxes).
   * [Community](https://exchange.icinga.com/search?q=category%3A%22Themes%22) themes
 * [Graphite](https://graphiteapp.org/)
 * [Grafana](https://grafana.com/)
-* [Dashing](https://github.com/Icinga/dashing-icinga2) for Icinga 2
+* [Dashing](https://github.com/dnsmichi/dashing-icinga2) for Icinga 2
 
 Run Vagrant:
 
