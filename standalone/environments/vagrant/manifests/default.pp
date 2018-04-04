@@ -38,7 +38,10 @@ node default {
       "unicorn"       => {},
       "always-green"  => {},
       "lsd"           => {},
-      "batman"        => {}
+      "april"         => {},
+      "batman"        => {},
+      "nordlicht"     => {},
+      "spring"        => {}
     }
   }
   ->
