@@ -474,7 +474,7 @@ class profiles::icinga::icingaweb2 (
   }
 
   # Themes
-
+  # Example
   if ('company' in $themes) {
     icingaweb2::module { 'company':
       install_method => 'git',
@@ -483,6 +483,7 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  # Max Stephan
   if ('always-green' in $themes) {
     icingaweb2::module { 'always-green':
       install_method => 'git',
@@ -491,6 +492,7 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  # Carsten Köbke
   if ('lsd' in $themes) {
     icingaweb2::module { 'lsd':
       install_method => 'git',
@@ -515,10 +517,37 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  if ('april' in $themes) {
+    icingaweb2::module { 'april':
+      install_method => 'git',
+      git_repository => 'https://github.com/Mikesch-mp/icingaweb2-theme-april',
+      git_revision   => 'master',
+    }
+  }
+
+  # Jens Schanz
   if ('batman' in $themes) {
     icingaweb2::module { 'batman':
       install_method => 'git',
       git_repository => 'https://github.com/jschanz/icingaweb2-theme-batman',
+      git_revision   => 'master',
+    }
+  }
+
+  # Marianne Spiller
+  if ('nordlicht' in $themes) {
+    icingaweb2::module { 'nordlicht':
+      install_method => 'git',
+      git_repository => 'https://github.com/sysadmama/icingaweb2-theme-nordlicht',
+      git_revision   => 'master',
+    }
+  }
+
+  # Michael Friedrich
+  if ('spring' in $themes) {
+    icingaweb2::module { 'spring':
+      install_method => 'git',
+      git_repository => 'https://github.com/dnsmichi/icingaweb2-theme-spring',
       git_revision   => 'master',
     }
   }
