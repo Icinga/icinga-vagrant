@@ -39,8 +39,8 @@ graphite::version:                      "1.1.2"
 icinga::director::version:              "v1.4.3"
 
 elastic::repo::version:                 "6.x"
-elastic::elasticsearch::version:        "6.2.0"
-elastic::kibana::version:               "6.2.0-1" # revision is important
+elastic::elasticsearch::version:        "6.2.3"
+elastic::kibana::version:               "6.2.3-1" # revision is important
 elastic::icingabeat::version:           "6.1.1"
 # keep this in sync with the icingabeat dashboard ids!
 elastic::kibana::default_app_id:        "dashboard/34e97340-e4ce-11e7-b4d1-8383451ae5a4"
