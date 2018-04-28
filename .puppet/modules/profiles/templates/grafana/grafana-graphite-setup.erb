@@ -27,7 +27,7 @@ curl "$GRAFANA_DATASOURCES_URL" -X POST -H 'Content-Type: application/json;chars
     \"name\": \"icinga2-graphite\",
     \"type\": \"graphite\",
     \"url\": \"http://<%= @listen_ip-%>:<%= @backend_port-%>\",
-    \"access\": \"direct\",
+    \"access\": \"proxy\",
     \"isDefault\": true
    }"
 DATASOURCE
