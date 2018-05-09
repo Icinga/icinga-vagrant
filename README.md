@@ -9,7 +9,7 @@
 5. [Installation](#installation)
 6. [Configuration](#configuration)
 7. [FAQ](#faq)
-8. [Thanks](#thanks)
+8. [Authors](#authors)
 9. [Contributing](#contributing)
 
 
@@ -514,7 +514,11 @@ $ export VAGRANT_HTTPS_PROXY=http://proxy:8080
 Vagrant exports the proxy settings into the VM and provisioning
 will then work.
 
-# Thanks <a id="thanks"></a>
+# Authors <a id="authors"></a>
+
+* [dnsmichi](https://github.com/dnsmichi)
+
+Thanks to all [contributors](AUTHORS)! :)
 
 * [lippserd](https://github.com/lippserd) for the initial Vagrant box idea from Icinga Web 2.
 * [gunnarbeutner](https://github.com/gunnarbeutner) for the base setup with Icinga 2.
