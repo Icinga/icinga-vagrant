@@ -36,7 +36,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node_config.vm.box_url = options[:url] if options[:url]
       if options[:forwarded]
         options[:forwarded].each_pair do |guest, local|
-          node_config.vm.network "forwarded_port", guest: guest, host: local
+          node_config.vm.network "forwarded_port", guest: guest, host: local, auto_correct: true
         end
       end
 
