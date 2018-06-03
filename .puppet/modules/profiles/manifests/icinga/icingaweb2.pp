@@ -467,7 +467,7 @@ class profiles::icinga::icingaweb2 (
 
     icingaweb2::module { 'graylog':
       install_method => 'git',
-      git_repository => 'https://github.com/icinga/icingaweb2-module-graylog.git',
+      git_repository => 'https://github.com/dnsmichi/icingaweb2-module-graylog.git',
       git_revision   => 'master',
       settings       => $graylog_settings,
     }
