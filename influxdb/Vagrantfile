@@ -42,7 +42,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       if options[:synced_folders]
         options[:synced_folders].each_pair do |source, target|
-          node_config.vm.synced_folder source, target
+          node_config.vm.synced_folder source, target, nfs_udp: false
         end
       end
 
@@ -102,7 +102,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node_config.vm.provision :shell, :path => "../.puppet/scripts/shell_provisioner_pre.sh"
 
       # sync generic hiera data
-      node_config.vm.synced_folder "../.puppet/hieradata", "/hieradata"
+      node_config.vm.synced_folder "../.puppet/hieradata", "/hieradata", nfs_udp: false
 
       # provisioner: install box using puppet manifest
       node_config.vm.provision :puppet do |puppet|
