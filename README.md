@@ -127,6 +127,17 @@ $ sudo apt-get install vagrant
 $ sudo apt-get install virtualbox
 ```
 
+### libvirt <a id="requirements-linux-libvirt"></a>
+
+libvirt uses NFS for shared folders in the VMs, `nfs_udp: false` is already [set](https://github.com/Icinga/icinga-vagrant/issues/152).
+
+`nfs3` needs to be enabled in your local firewall to allow connections.
+
+```
+# firewall-cmd --permanent --add-service=nfs3
+# firewall-cmd --reload
+```
+
 ## macOS <a id="requirements-macOS"></a>
 
 macOS runs best with the Parallels provider, VirtualBox works as well.
