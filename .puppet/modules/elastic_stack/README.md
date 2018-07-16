@@ -27,3 +27,10 @@ class { 'elastic_stack::repo':
   prerelease => true,
 }
 ```
+
+To access the repository for OSS-only packages, set `oss` to `true`.
+``` puppet
+class { 'elastic_stack::repo':
+  oss => true,
+}
+```

@@ -4,10 +4,9 @@ require 'puppet/file_serving/content'
 require 'puppet/file_serving/metadata'
 
 require 'puppet_x/elastic/deep_implode'
-require 'puppet_x/elastic/deep_to_i'
+require 'puppet_x/elastic/deep_to_s'
 require 'puppet_x/elastic/elasticsearch_rest_resource'
 
-# rubocop:disable Metrics/BlockLength
 Puppet::Type.newtype(:elasticsearch_template) do
   extend ElasticsearchRESTResource
 
@@ -33,15 +32,14 @@ Puppet::Type.newtype(:elasticsearch_template) do
       # `in` and `should` states consistent if the user hasn't
       # provided any.
       #
-      # We use deep_to_i to ensure any numeric values are properly
-      # parsed, whether from user-defined resources or when reading
-      # from the API.
+      # We use deep_to_s to normalize hash values to strings, whether from
+      # user-defined resources or when reading from the API.
       #
       # We also need to fully qualify index settings, since users
       # can define those with the index json key absent, but the API
       # always fully qualifies them.
-      { 'order' => 0, 'aliases' => {}, 'mappings' => {} }.merge(
-        Puppet_X::Elastic.deep_to_i(
+      { 'order' => '0', 'aliases' => {}, 'mappings' => {} }.merge(
+        Puppet_X::Elastic.deep_to_s(
           value.tap do |val|
             if val.key? 'settings'
               val['settings']['index'] = {} unless val['settings'].key? 'index'
@@ -95,15 +93,15 @@ Puppet::Type.newtype(:elasticsearch_template) do
         fail(format('Could not retrieve source %s', self[:source]))
       end
 
-      if !self.catalog.nil? \
-          and self.catalog.respond_to?(:environment_instance)
-        tmp = Puppet::FileServing::Content.indirection.find(
-          self[:source],
-          :environment => self.catalog.environment_instance
-        )
-      else
-        tmp = Puppet::FileServing::Content.indirection.find(self[:source])
-      end
+      tmp = if !catalog.nil? \
+                and catalog.respond_to?(:environment_instance)
+              Puppet::FileServing::Content.indirection.find(
+                self[:source],
+                :environment => catalog.environment_instance
+              )
+            else
+              Puppet::FileServing::Content.indirection.find(self[:source])
+            end
 
       fail(format('Could not find any content at %s', self[:source])) unless tmp
       self[:content] = PSON.load(tmp.content)

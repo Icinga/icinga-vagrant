@@ -3,11 +3,6 @@
 require 'spec_helper'
 
 describe 'kibana', :type => 'class' do
-  let(:repo_baseurl)    { 'https://artifacts.elastic.co/packages' }
-  let(:repo_key_id)     { '46095ACC8548582C1A2699A9D27D666CD88E42B4' }
-  let(:repo_key_source) { 'https://artifacts.elastic.co/GPG-KEY-elasticsearch' }
-  let(:repo_version)    { '6.x' }
-
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
@@ -57,6 +52,11 @@ describe 'kibana', :type => 'class' do
             end
             it { is_expected.to contain_package('kibana').with_ensure('present') }
 
+            it do
+              is_expected.to contain_class('elastic_stack::repo')
+                .that_comes_before('Class[kibana::install]')
+            end
+
             describe "#{facts[:os]['family']} resources" do
               case facts[:os]['family']
               when 'Debian'
@@ -64,54 +64,6 @@ describe 'kibana', :type => 'class' do
                   is_expected.to contain_class('apt::update')
                     .that_comes_before('Package[kibana]')
                 end
-                it 'installs the repo apt source' do
-                  is_expected.to contain_apt__source('kibana')
-                    .with(
-                      :ensure   => 'present',
-                      :location => "#{repo_baseurl}/#{repo_version}/apt",
-                      :release  => 'stable',
-                      :repos    => 'main',
-                      :key      => {
-                        'id'     => repo_key_id,
-                        'source' => repo_key_source
-                      },
-                      :include => {
-                        'src' => false,
-                        'deb' => true
-                      }
-                    )
-                    .that_comes_before('Package[kibana]')
-                end
-              when 'RedHat'
-                it 'installs the yum repository' do
-                  is_expected.to contain_yumrepo('kibana')
-                    .with(
-                      :ensure   => 'present',
-                      :descr    => "Elastic #{repo_version} repository",
-                      :baseurl  => "#{repo_baseurl}/#{repo_version}/yum",
-                      :gpgcheck => 1,
-                      :gpgkey   => repo_key_source,
-                      :enabled  => 1
-                    )
-                    .that_comes_before(
-                      'Package[kibana]'
-                    )
-                    .that_notifies(
-                      'Exec[kibana_yumrepo_yum_clean]'
-                    )
-                  is_expected.to contain_exec('kibana_yumrepo_yum_clean')
-                    .with(
-                      :command     => 'yum clean metadata expire-cache --disablerepo="*" --enablerepo="kibana"',
-                      :path        => ['/bin', '/usr/bin'],
-                      :refreshonly => true,
-                      :returns     => [0, 1]
-                    )
-                    .that_comes_before(
-                      'Package[kibana]'
-                    )
-                end
-              else
-                pending "no tests for #{facts[:os]['family']}"
               end
             end
           end
@@ -159,7 +111,7 @@ describe 'kibana', :type => 'class' do
         describe 'parameter validation for' do
           describe 'ensure' do
             context 'valid parameter' do
-              %w(present absent latest 5.2.1 5.2.2-1 5.2.2-bpo1).each do |param|
+              %w[present absent latest 5.2.1 5.2.2-1 5.2.2-bpo1].each do |param|
                 context param do
                   let(:params) { { :ensure => param } }
                   it { should compile.with_all_deps }
@@ -181,7 +133,7 @@ describe 'kibana', :type => 'class' do
                 'server.host' => 'localhost',
                 'server.port' => 5601,
                 'elasticsearch.ssl.verify' => true,
-                'elasticsearch.requestHeadersWhitelist' => [ 'authorization' ]
+                'elasticsearch.requestHeadersWhitelist' => ['authorization']
               }.each do |key, val|
                 context "'#{val}'" do
                   let(:params) { { :config => { key => val } } }
@@ -205,65 +157,14 @@ describe 'kibana', :type => 'class' do
             end
           end
 
-          describe 'repo_version' do
-            context 'valid parameter' do
-              %w(5.x 4.1 4.4 4.5 4.6).each do |param|
-                let(:params) { { :repo_version => param } }
-                it { should compile.with_all_deps }
-              end
-            end
-
-            context 'invalid parameter' do
-              %w(foo 6.x 4.x 3.x 4.2 4.3).each do |param|
-                let(:params) { { :repo_version => param } }
-                it { should_not compile.with_all_deps }
-              end
-            end
-
-            context '4.x repo URLs' do
-              let(:repo_version) { '4.6' }
-              let(:params) { { :repo_version => repo_version } }
-              let(:repo_baseurl) { 'https://packages.elastic.co/kibana' }
-
-              it { should contain_file('/opt/kibana/config/kibana.yml') }
-
-              case facts[:os]['family']
-              when 'Debian'
-                it 'installs the 4.x repo apt source' do
-                  is_expected
-                    .to contain_apt__source('kibana')
-                    .with(:location => "#{repo_baseurl}/#{repo_version}/debian")
-                end
-              when 'RedHat'
-                it 'installs the 4.x yum repository' do
-                  is_expected
-                    .to contain_yumrepo('kibana')
-                    .with(:baseurl => "#{repo_baseurl}/#{repo_version}/centos")
-                end
-              else
-                pending "no 4.x repo tests for #{facts[:os]['family']}"
-              end
-            end
-          end
-
           describe 'manage_repo' do
             let(:params) { { :manage_repo => false } }
-            case facts[:os]['family']
-            when 'Debian'
-              it { is_expected.not_to contain_class('apt') }
-              it { is_expected.not_to contain_package('apt-transport-https') }
-              it { is_expected.not_to contain_apt__source('kibana') }
-            when 'RedHat'
-              it { is_expected.not_to contain_yumrepo('kibana') }
-              it { is_expected.not_to contain_exec('kibana_yumrepo_yum_clean') }
-            else
-              pending "no tests for #{facts[:os]['family']}"
-            end
+            it { is_expected.not_to contain_class('elastic_stack::repo') }
           end
 
           describe 'package_source' do
             describe 'validation' do
-              [{'foo' => 'bar'}, true, []].each do |param|
+              [{ 'foo' => 'bar' }, true, []].each do |param|
                 context "against #{param.class}" do
                   let(:params) { { :package_source => param } }
                   it { should_not compile.with_all_deps }

@@ -30,7 +30,7 @@ Puppet::Type.newtype(:kibana_plugin) do
 
   validate do
     if self[:ensure] != :absent and !self[:organization].nil? and self[:version].nil?
-      fail('version must be set if organization is set')
+      raise Puppet::Error, 'version must be set if organization is set'
     end
   end
 end

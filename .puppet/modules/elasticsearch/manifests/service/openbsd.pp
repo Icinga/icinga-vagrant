@@ -86,40 +86,29 @@ define elasticsearch::service::openbsd (
     false => undef,
   }
 
-  if ( $status != 'unmanaged' and $ensure == 'present' ) {
-
+  if ($status != 'unmanaged') {
+    # Note that service files are persisted even in the case of absent instances.
+    # This is to ensure that manifest can remain idempotent and have the service
+    # file available in order to permit Puppet to introspect system state.
     # init file from template
     if ($init_template != undef) {
-
       elasticsearch_service_file { "/etc/rc.d/elasticsearch_${name}":
-        ensure       => $ensure,
+        ensure       => 'present',
         content      => file($init_template),
         instance     => $name,
         pid_dir      => $pid_dir,
         notify       => $notify_service,
-        package_name => $elasticsearch::package_name,
+        package_name => 'elasticsearch',
       }
       -> file { "/etc/rc.d/elasticsearch_${name}":
-        ensure => $ensure,
+        ensure => 'file',
         owner  => 'root',
         group  => '0',
         mode   => '0555',
         before => Service["elasticsearch-instance-${name}"],
         notify => $notify_service,
       }
-
     }
-
-  } elsif ($status != 'unmanaged') {
-
-    file { "/etc/rc.d/elasticsearch_${name}":
-      ensure    => 'absent',
-      subscribe => Service["elasticsearch-instance-${name}"],
-    }
-
-  }
-
-  if ( $status != 'unmanaged') {
 
     # action
     service { "elasticsearch-instance-${name}":

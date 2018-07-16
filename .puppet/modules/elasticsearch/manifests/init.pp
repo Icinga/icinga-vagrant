@@ -117,6 +117,9 @@
 # @param jvm_options
 #   Array of options to set in jvm_options.
 #
+# @param license
+#   Optional Elasticsearch license in hash or string form.
+#
 # @param logdir
 #   Directory that will be used for Elasticsearch logging.
 #
@@ -133,6 +136,9 @@
 #
 # @param manage_repo
 #   Enable repo management by enabling official Elastic repositories.
+#
+# @param oss
+#   Whether to use the purely open source Elasticsearch package distribution.
 #
 # @param package_dir
 #   Directory where packages are downloaded to.
@@ -180,31 +186,9 @@
 #   Whether or not keys present in the keystore will be removed if they are not
 #   present in the specified secrets hash.
 #
-# @param repo_baseurl
-#   If a custom repository URL is needed (such as for installations behind
-#   restrictive firewalls), this parameter overrides the upstream repository
-#   URL. Note that any additional changes to the repository metdata (such as
-#   signing keys and so on) will need to be handled appropriately.
-#
-# @param repo_key_id
-#   The apt GPG key id.
-#
-# @param repo_key_source
-#   URL of the repository GPG key.
-#
-# @param repo_priority
-#   Repository priority. yum and apt supported.
-#
-# @param repo_proxy
-#   URL for repository proxy.
-#
 # @param repo_stage
 #   Use stdlib stage setup for managing the repo instead of relationship
 #   ordering.
-#
-# @param repo_version
-#   Elastic repositories are versioned per major version (5.x, 6.x). This
-#   parameter controls which version to use.
 #
 # @param restart_on_change
 #   Determines if the application should be automatically restarted
@@ -268,6 +252,9 @@
 # @param service_provider
 #   The service resource type provider to use when managing elasticsearch instances.
 #
+# @param snapshot_repositories
+#   Define snapshot repositories via a hash. This is mainly used with Hiera's auto binding.
+#
 # @param status
 #   To define the status of the service. If set to `enabled`, the service will
 #   be run and will be started at boot time. If set to `disabled`, the service
@@ -318,7 +305,7 @@ class elasticsearch (
   Elasticsearch::Multipath                        $datadir,
   Boolean                                         $datadir_instance_directories,
   String                                          $default_logging_level,
-  Stdlib::Absolutepath                            $defaults_location,
+  Optional[Stdlib::Absolutepath]                  $defaults_location,
   Optional[String]                                $download_tool,
   String                                          $elasticsearch_group,
   String                                          $elasticsearch_user,
@@ -330,11 +317,13 @@ class elasticsearch (
   String                                          $init_template,
   Hash                                            $instances,
   Array[String]                                   $jvm_options,
+  Optional[Variant[String, Hash]]                 $license,
   Stdlib::Absolutepath                            $logdir,
   Hash                                            $logging_config,
   Optional[String]                                $logging_file,
   Optional[String]                                $logging_template,
   Boolean                                         $manage_repo,
+  Boolean                                         $oss,
   Stdlib::Absolutepath                            $package_dir,
   Integer                                         $package_dl_timeout,
   String                                          $package_name,
@@ -348,13 +337,7 @@ class elasticsearch (
   Boolean                                         $purge_configdir,
   Boolean                                         $purge_package_dir,
   Boolean                                         $purge_secrets,
-  Optional[String]                                $repo_baseurl,
-  String                                          $repo_key_id,
-  Stdlib::HTTPUrl                                 $repo_key_source,
-  Optional[Integer]                               $repo_priority,
-  Optional[String]                                $repo_proxy,
   Variant[Boolean, String]                        $repo_stage,
-  String                                          $repo_version,
   Boolean                                         $restart_on_change,
   Hash                                            $roles,
   Integer                                         $rolling_file_max_backup_index,
@@ -365,6 +348,7 @@ class elasticsearch (
   Optional[String]                                $security_logging_source,
   Optional[Enum['shield', 'x-pack']]              $security_plugin,
   Enum['init', 'openbsd', 'openrc', 'systemd']    $service_provider,
+  Hash                                            $snapshot_repositories,
   Elasticsearch::Status                           $status,
   Optional[String]                                $system_key,
   Stdlib::Absolutepath                            $systemd_service_path,
@@ -406,6 +390,13 @@ class elasticsearch (
     default   => undef,
   }
 
+  # The OSS package distribution's package appends `-oss` to the end of the
+  # canonical package name.
+  $_package_name = $oss ? {
+    true    => "${package_name}-oss",
+    default => $package_name,
+  }
+
   #### Manage actions
 
   contain elasticsearch::package
@@ -417,15 +408,16 @@ class elasticsearch (
   create_resources('elasticsearch::plugin', $::elasticsearch::plugins)
   create_resources('elasticsearch::role', $::elasticsearch::roles)
   create_resources('elasticsearch::script', $::elasticsearch::scripts)
+  create_resources('elasticsearch::snapshot_repository', $::elasticsearch::snapshot_repositories)
   create_resources('elasticsearch::template', $::elasticsearch::templates)
   create_resources('elasticsearch::user', $::elasticsearch::users)
 
   if ($manage_repo == true) {
     if ($repo_stage == false) {
       # Use normal relationship ordering
-      contain elasticsearch::repo
+      contain elastic_stack::repo
 
-      Class['elasticsearch::repo']
+      Class['elastic_stack::repo']
       -> Class['elasticsearch::package']
 
     } else {
@@ -434,10 +426,15 @@ class elasticsearch (
         stage { $repo_stage:  before => Stage['main'] }
       }
 
-      class { 'elasticsearch::repo':
+      include elastic_stack::repo
+      Class<|title == 'elastic_stack::repo'|>{
         stage => $repo_stage,
       }
     }
+  }
+
+  if ($license != undef) {
+    contain elasticsearch::license
   }
 
   #### Manage relationships
@@ -474,6 +471,8 @@ class elasticsearch (
     -> Elasticsearch::Pipeline <| |>
     Class['elasticsearch::config']
     -> Elasticsearch::Index <| |>
+    Class['elasticsearch::config']
+    -> Elasticsearch::Snapshot_repository <| |>
 
   } else {
 
@@ -495,6 +494,8 @@ class elasticsearch (
     Elasticsearch::Pipeline <| |>
     -> Class['elasticsearch::config']
     Elasticsearch::Index <| |>
+    -> Class['elasticsearch::config']
+    Elasticsearch::Snapshot_repository <| |>
     -> Class['elasticsearch::config']
 
   }
@@ -533,6 +534,15 @@ class elasticsearch (
   -> Elasticsearch::Index <| |>
   Elasticsearch::User <| |>
   -> Elasticsearch::Index <| |>
+  Elasticsearch::Role <| |>
+  -> Elasticsearch::Snapshot_repository <| |>
+  Elasticsearch::User <| |>
+  -> Elasticsearch::Snapshot_repository <| |>
+
+  # Ensure that any command-line based user changes are performed before the
+  # file is modified
+  Elasticsearch_user <| |>
+  -> Elasticsearch_user_file <| |>
 
   # Manage users/roles before instances (req'd to keep dir in sync)
   Elasticsearch::Role <| |>
@@ -547,11 +557,15 @@ class elasticsearch (
   -> Elasticsearch::Pipeline <| |>
   Elasticsearch::Instance <| ensure == 'present' |>
   -> Elasticsearch::Index <| |>
+  Elasticsearch::Instance <| ensure == 'present' |>
+  -> Elasticsearch::Snapshot_repository <| |>
   # Ensure instances are stopped after managing REST resources
   Elasticsearch::Template <| |>
   -> Elasticsearch::Instance <| ensure == 'absent' |>
   Elasticsearch::Pipeline <| |>
   -> Elasticsearch::Instance <| ensure == 'absent' |>
   Elasticsearch::Index <| |>
+  -> Elasticsearch::Instance <| ensure == 'absent' |>
+  Elasticsearch::Snapshot_repository <| |>
   -> Elasticsearch::Instance <| ensure == 'absent' |>
 }

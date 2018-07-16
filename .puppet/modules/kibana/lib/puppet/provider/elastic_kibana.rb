@@ -1,5 +1,6 @@
 require 'json'
 
+# Parent class for Kibana plugin providers.
 class Puppet::Provider::ElasticKibana < Puppet::Provider
   class << self
     attr_accessor :home_path

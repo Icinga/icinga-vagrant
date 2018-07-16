@@ -68,24 +68,38 @@ RSpec.configure do |c|
                 'rpm'
               end
 
+  c.add_setting :is_snapshot
+  c.is_snapshot = c.files_to_run.any? { |fn| fn.include? 'snapshot' }
+
+  c.add_setting :oss
+
+  # Copy over the snapshot package if we're running snapshot tests
+  if c.is_snapshot and !c.pkg_ext.nil?
+    c.add_setting :snapshot_file
+    c.snapshot_file = "kibana-snapshot.#{c.pkg_ext}"
+
+    c.add_setting :snapshot_version
+    c.snapshot_version = File.readlink(artifact(c.snapshot_file)).match(/kibana(?:-oss)?-(?<v>.*)[.][a-z]+/)[:v]
+
+    c.oss = (not File.readlink(artifact(c.snapshot_file)).match(/-oss/).nil?)
+  else
+    c.oss = false
+  end
+
   # Configure all nodes in nodeset
   c.before :suite do
     # Install module and dependencies
-    ['kibana', (['apt', 'stdlib'] if c.pkg_ext == 'deb')].flatten.compact.each do |mod|
+    ['kibana', 'elastic_stack', (%w[apt stdlib] if c.pkg_ext == 'deb')].flatten.compact.each do |mod|
       install_dev_puppet_module(
         :module_name => mod,
         :source      => "spec/fixtures/modules/#{mod}"
       )
     end
 
-    # Copy over the snapshot package if we're running snapshot tests
-    if c.files_to_run.any? { |fn| fn.include? 'snapshot' } and !c.pkg_ext.nil?
-      filename = "kibana-snapshot.#{c.pkg_ext}"
+    if c.is_snapshot
       hosts.each do |host|
-        scp_to host, artifact(filename), "/tmp/#{filename}"
+        scp_to host, artifact(c.snapshot_file), "/tmp/#{c.snapshot_file}"
       end
-      c.add_setting :snapshot_version
-      c.snapshot_version = File.readlink(artifact(filename)).match(/kibana-(?<v>.*)[.][a-z]+/)[:v]
     end
   end
 

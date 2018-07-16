@@ -34,6 +34,12 @@ describe Puppet::Type.type(:kibana_plugin).provider(:kibana_plugin) do
   include_examples 'kibana plugin provider'
 
   describe 'url' do
+    before do
+      allow(described_class)
+        .to receive(:command).with(:plugin)
+        .and_return executable
+    end
+
     it 'passes it through to the install command' do
       url = 'https://some.sample.url/directory'
       expect(provider).to(

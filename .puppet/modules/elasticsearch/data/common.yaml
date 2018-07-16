@@ -11,7 +11,7 @@ elasticsearch::api_timeout: 10
 elasticsearch::autoupgrade: false
 elasticsearch::config: {}
 elasticsearch::configdir: /etc/elasticsearch
-elasticsearch::daily_rolling_date_pattern: <
+elasticsearch::daily_rolling_date_pattern: |
   "'.'yyyy-MM-dd"
 elasticsearch::datadir_instance_directories: true
 elasticsearch::default_logging_level: 'INFO'
@@ -24,11 +24,13 @@ elasticsearch::init_defaults_file: ~
 elasticsearch::init_template: "%{module_name}/etc/init.d/elasticsearch.systemd.erb"
 elasticsearch::instances: {}
 elasticsearch::jvm_options: []
+elasticsearch::license: ~
 elasticsearch::logdir: /var/log/elasticsearch
 elasticsearch::logging_config: {}
 elasticsearch::logging_file: ~
 elasticsearch::logging_template: ~
 elasticsearch::manage_repo: true
+elasticsearch::oss: false
 elasticsearch::package_dl_timeout: 600
 elasticsearch::package_name: elasticsearch
 elasticsearch::package_provider: package
@@ -41,13 +43,7 @@ elasticsearch::proxy_url: ~
 elasticsearch::purge_configdir: false
 elasticsearch::purge_package_dir: false
 elasticsearch::purge_secrets: false
-elasticsearch::repo_baseurl: ~
-elasticsearch::repo_key_id: 46095ACC8548582C1A2699A9D27D666CD88E42B4
-elasticsearch::repo_key_source: https://artifacts.elastic.co/GPG-KEY-elasticsearch
-elasticsearch::repo_priority: ~
-elasticsearch::repo_proxy: ~
 elasticsearch::repo_stage: false
-elasticsearch::repo_version: 6.x
 elasticsearch::restart_on_change: false
 elasticsearch::roles: {}
 elasticsearch::rolling_file_max_backup_index: 1
@@ -58,6 +54,7 @@ elasticsearch::security_logging_content: ~
 elasticsearch::security_logging_source: ~
 elasticsearch::security_plugin: ~
 elasticsearch::service_provider: systemd
+elasticsearch::snapshot_repositories: {}
 elasticsearch::status: enabled
 elasticsearch::system_key: ~
 elasticsearch::systemd_service_path: /lib/systemd/system

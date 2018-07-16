@@ -1,6 +1,6 @@
 {
   "name": "elastic-kibana",
-  "version": "6.0.0",
+  "version": "6.3.0",
   "author": "elastic",
   "summary": "Module for installing, configuring, and managing Kibana.",
   "license": "Apache-2.0",
@@ -9,6 +9,10 @@
   "issues_url": "https://github.com/elastic/puppet-kibana/issues",
   "data_provider": "hiera",
   "dependencies": [
+    {
+      "name": "elastic/elastic_stack",
+      "version_requirement": ">= 6.1.0 < 7.0.0"
+    },
     {
       "name": "puppetlabs/apt",
       "version_requirement": ">= 2.0.0 < 5.0.0"

@@ -1,11 +1,24 @@
-# Changelog
+## Release 6.1.0
 
-All notable changes to this project will be documented in this file.
+- Support OSS-only package repositories
 
-## Release 0.1.0
+## Release 6.0.1
 
-**Features**
+- Remove aggressive ordering causing all packages to come after apt::update
 
-**Bugfixes**
+## Release 6.0.0
 
-**Known Issues**
+Version number increase to indicate that this module is considered of reasonable
+quality and is used by version 6.0.0 of elastic/logstash.
+
+- Changed default repository to version to 6
+
+## Release 0.2.1
+
+- Remove some resource defaults that were causing problems on Puppet 5
+
+## Release 0.2.0
+
+- Expand declared OS support
+- Relax minimum Puppet version to 4.6.1
+- Support pre-release artifacts

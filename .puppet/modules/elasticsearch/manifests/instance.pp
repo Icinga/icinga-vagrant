@@ -203,7 +203,7 @@ define elasticsearch::instance (
     # String or array for data dir(s)
     if ($datadir == undef) {
       if ($datadir_instance_directories) {
-        if (is_array($elasticsearch::datadir)) {
+        if $elasticsearch::datadir =~ Array {
           $instance_datadir = array_suffix($elasticsearch::datadir, "/${name}")
         } else {
           $instance_datadir = "${elasticsearch::datadir}/${name}"
@@ -257,7 +257,7 @@ define elasticsearch::instance (
 
     $instance_datadir_config = { 'path.data' => $instance_datadir }
 
-    if(is_array($instance_datadir)) {
+    if $instance_datadir =~ Array {
       $dirs = join($instance_datadir, ' ')
     } else {
       $dirs = $instance_datadir
@@ -319,9 +319,9 @@ define elasticsearch::instance (
 
     file { $logdir:
       ensure  => 'directory',
+      group   => $elasticsearch::elasticsearch_group,
       owner   => $elasticsearch::elasticsearch_user,
-      group   => undef,
-      mode    => '0755',
+      mode    => '0750',
       require => Class['elasticsearch::package'],
       before  => Elasticsearch::Service[$name],
     }
@@ -349,14 +349,41 @@ define elasticsearch::instance (
       require => Class['elasticsearch::package'],
       before  => Elasticsearch::Service[$name],
     }
+    -> file { $configdir:
+      ensure       => 'directory',
+      # Copy files from the stock configuration directory _into_ the instance
+      # configuration directory. This lets us pull in miscellaneous files that
+      # utilities may create (like X-Pack user/role files) into instance
+      # directories without explicitly naming them, since we can't predict all the
+      # files that plugins may create/manage.
+      #
+      # Special care is needed to avoid copying in _some_ directories/files to
+      # avoid overwriting instance-specific configuration files or other instance
+      # directories.
+      ignore       => [
+        "${elasticsearch::configdir}/elasticsearch.yml",
+        "${elasticsearch::configdir}/jvm.options",
+        "${elasticsearch::configdir}/logging.yml",
+        "${elasticsearch::configdir}/log4j2.properties",
+      ],
+      recurse      => 'remote',
+      recurselimit => 1,
+      source       => $elasticsearch::configdir,
+      purge        => $elasticsearch::purge_configdir,
+      force        => $elasticsearch::purge_configdir,
+      tag          => [
+        'elasticsearch_instance_configdir',
+      ],
+      require      => Class['elasticsearch::package'],
+      before       => Elasticsearch::Service[$name],
+      notify       => $notify_service,
+    }
 
-    file { $configdir:
-      ensure  => 'directory',
-      mode    => '0755',
-      purge   => $elasticsearch::purge_configdir,
-      force   => $elasticsearch::purge_configdir,
-      require => [ Exec["mkdir_configdir_elasticsearch_${name}"], Class['elasticsearch::package'] ],
-      before  => Elasticsearch::Service[$name],
+    # Do _not_ copy in instance directories. This avoids a) recursing
+    # indefinitely by copying our own instance directory and b) copying in any
+    # other potential instance directories.
+    File <| tag == 'elasticsearch_instance_configdir' |> {
+      ignore +> $name
     }
 
     file { "${configdir}/jvm.options":
@@ -386,19 +413,14 @@ define elasticsearch::instance (
         before  => Elasticsearch::Service[$name];
     }
 
-    file { "${configdir}/scripts":
-      ensure => 'link',
-      target => "${elasticsearch::homedir}/scripts",
-    }
-
     if $security_plugin != undef {
       file { "${configdir}/${security_plugin}":
         ensure  => 'directory',
-        mode    => '0755',
+        mode    => '0750',
         source  => "${elasticsearch::configdir}/${security_plugin}",
         recurse => 'remote',
         owner   => 'root',
-        group   => '0',
+        group   => $elasticsearch::elasticsearch_group,
         before  => Elasticsearch::Service[$name],
         notify  => $notify_service,
       }

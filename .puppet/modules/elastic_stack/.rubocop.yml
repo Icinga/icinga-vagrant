@@ -66,6 +66,9 @@ Style/CollectionMethods:
   Enabled: true
 Style/MethodCalledOnDoEndBlock:
   Enabled: true
+Style/MixinUsage:
+ Exclude:
+ - spec/spec_helper.rb
 Style/StringMethods:
   Enabled: true
 Metrics/AbcSize:
@@ -100,3 +103,6 @@ Style/IfUnlessModifier:
   Enabled: false
 Style/SymbolProc:
   Enabled: false
+Naming/FileName:
+ Exclude:
+ - Vagrantfile

@@ -38,7 +38,6 @@ distributions).
 * The `kibana` system package and service
 * `/etc/kibana/kibana.yml`
 * `/usr/share/kibana/plugins/*`
-* `/opt/kibana` (if using Kibana 4.x)
 
 ### Setup Requirements
 
@@ -90,6 +89,34 @@ The `kibana` class also supports removal through use of `ensure => absent`:
 
 ```puppet
 class { 'kibana': ensure => absent }
+```
+
+### OSS Packages and Repository Management
+
+This module uses the [elastic/elastic_stack](https://forge.puppet.com/elastic/elastic_stack) module to manage the elastic package repositories.
+In order to control which major version of package repository to manage, declare the associated repository version in the `elastic_stack::repo` class.
+For example, to explicitly set the repository version to 5 instead of the default (which, at the time of this writing, is 6):
+
+```puppet
+class { 'elastic_stack::repo':
+  version => 5,
+}
+
+class { 'kibana':
+  ensure => latest
+}
+```
+
+This module defaults to the upstream package repositories, which as of 6.3, includes X-Pack. In order to use the purely OSS (open source) package and repository, the appropriate `oss` flag must be set on the `elastic_stack::repo` and `kibana` classes:
+
+```puppet
+class { 'elastic_stack::repo':
+  oss => true,
+}
+
+class { 'kibana':
+  oss => true,
+}
 ```
 
 ### Plugins

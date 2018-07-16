@@ -8,7 +8,7 @@ shared_examples 'kibana plugin provider' do
 
     context 'without plugins' do
       before do
-        allow(Dir).to receive(:[]).and_return %w(. ..)
+        allow(Dir).to receive(:[]).and_return %w[. ..]
       end
 
       it 'should return no resources' do
@@ -21,7 +21,7 @@ shared_examples 'kibana plugin provider' do
         allow(Dir).to receive(:[]).and_return [File.join(plugin_path, plugin_one[:name])]
         allow(File).to receive(:read)
           .with(File.join(plugin_path, plugin_one[:name], 'package.json'))
-          .and_return JSON.dump({:name => plugin_one[:name], :version => plugin_one[:version]})
+          .and_return JSON.dump(:name => plugin_one[:name], :version => plugin_one[:version])
         allow(File).to receive(:exist?)
           .with(File.join(plugin_path, plugin_one[:name], 'package.json'))
           .and_return true
@@ -42,7 +42,7 @@ shared_examples 'kibana plugin provider' do
         [plugin_one, plugin_two].each do |plugin|
           allow(File).to receive(:read)
             .with(File.join(plugin_path, plugin[:name], 'package.json'))
-            .and_return JSON.dump({:name => plugin[:name], :verison => plugin[:version]})
+            .and_return JSON.dump(:name => plugin[:name], :verison => plugin[:version])
           allow(File).to receive(:exist?)
             .with(File.join(plugin_path, plugin[:name], 'package.json'))
             .and_return true
@@ -63,9 +63,9 @@ shared_examples 'kibana plugin provider' do
 
   describe 'flush' do
     before do
-      described_class
-        .stubs(:command).with(:plugin)
-        .returns executable
+      allow(described_class)
+        .to receive(:command).with(:plugin)
+        .and_return executable
       @install_name = if resource[:organization].nil?
                         resource[:name]
                       else
@@ -138,7 +138,7 @@ shared_examples 'kibana plugin provider' do
         Puppet::Util::Execution::ProcessOutput.new('failed', 70)
       )
       resource[:ensure] = :present
-      expect{ provider.flush }.to raise_error(Puppet::Error)
+      expect { provider.flush }.to raise_error(Puppet::Error)
     end
   end
 end

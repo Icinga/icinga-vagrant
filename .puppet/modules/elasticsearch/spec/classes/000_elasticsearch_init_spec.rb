@@ -58,18 +58,26 @@ describe 'elasticsearch', :type => 'class' do
 
       # Varies depending on distro
       it { should contain_augeas("#{defaults_path}/elasticsearch") }
+      it do
+        should contain_file("#{defaults_path}/elasticsearch").with(
+          :ensure => 'file',
+          :group  => 'elasticsearch',
+          :owner  => 'elasticsearch',
+          :mode   => '0640'
+        )
+      end
 
       # Systemd-specific files
       if test_pid == true
-        it { should contain_service('elasticsearch').with(:enable => 'mask') }
+        it { should contain_service('elasticsearch').with(:ensure => false).with(:enable => 'mask') }
         it { should contain_file('/usr/lib/tmpfiles.d/elasticsearch.conf') }
       end
 
       context 'java installation' do
         let(:pre_condition) do
-          <<~EOS
+          <<-MANIFEST
             include ::java
-          EOS
+          MANIFEST
         end
 
         it { should contain_class('elasticsearch::config')
@@ -209,65 +217,11 @@ describe 'elasticsearch', :type => 'class' do
       context 'When managing the repository' do
         let(:params) do
           default_params.merge(
-            :manage_repo => true,
-            :repo_version => '1.0'
+            :manage_repo => true
           )
         end
 
-        case facts[:os]['family']
-        when 'Debian'
-          it { should contain_class('elasticsearch::repo') }
-          it { should contain_class('apt') }
-          it { should contain_apt__source('elasticsearch')
-            .with(
-              :release => 'stable',
-              :repos => 'main',
-              :location => 'http://packages.elastic.co/elasticsearch/1.0/debian'
-            ) }
-        when 'RedHat'
-          it { should contain_class('elasticsearch::repo') }
-          it { should contain_yumrepo('elasticsearch')
-            .with(
-              :baseurl => 'http://packages.elastic.co/elasticsearch/1.0/centos',
-              :gpgkey  => 'https://artifacts.elastic.co/GPG-KEY-elasticsearch',
-              :enabled => 1
-            ) }
-          it { should contain_exec('elasticsearch_yumrepo_yum_clean') }
-        when 'SuSE'
-          it { should contain_class('elasticsearch::repo') }
-          it { should contain_exec('elasticsearch_suse_import_gpg') }
-          it { should contain_zypprepo('elasticsearch')
-            .with(
-              :baseurl => 'http://packages.elastic.co/elasticsearch/1.0/centos') }
-          it { should contain_exec(
-            'elasticsearch_zypper_refresh_elasticsearch'
-          ) }
-        end
-      end
-
-      context 'repository priority pinning' do
-        let(:params) do
-          default_params.merge(
-            :manage_repo => true,
-            :repo_priority => 10,
-            :repo_version => '2.x'
-          )
-        end
-
-        case facts[:os]['family']
-        when 'Debian'
-          context 'is supported' do
-            it { should contain_apt__source('elasticsearch').with(
-              :pin => 10
-            ) }
-          end
-        when 'RedHat'
-          context 'is supported' do
-            it { should contain_yumrepo('elasticsearch').with(
-              :priority => 10
-            ) }
-          end
-        end
+        it { should contain_class('elastic_stack::repo') }
       end
     end
   end
@@ -305,12 +259,10 @@ describe 'elasticsearch', :type => 'class' do
         it { should contain_exec('remove_plugin_dir') }
 
         # file removal from package
-        it { should contain_file('/etc/init.d/elasticsearch')
-          .with(:ensure => 'absent') }
         it { should contain_file('/etc/elasticsearch/elasticsearch.yml')
           .with(:ensure => 'absent') }
         it { should contain_file('/etc/elasticsearch/jvm.options')
-            .with(:ensure => 'absent') }
+          .with(:ensure => 'absent') }
         it { should contain_file('/etc/elasticsearch/logging.yml')
           .with(:ensure => 'absent') }
         it { should contain_file('/etc/elasticsearch/log4j2.properties')
@@ -334,10 +286,10 @@ describe 'elasticsearch', :type => 'class' do
             )
           end
 
-          it { should contain_package('my-elasticsearch')
-            .with(:ensure => 'present') }
+          it { should contain_package('elasticsearch')
+            .with(:ensure => 'present', :name => 'my-elasticsearch') }
           it { should_not contain_package('elasticsearch')
-            .with(:ensure => 'present') }
+            .with(:ensure => 'present', :name => 'elasticsearch') }
         end
 
         context 'with auto upgrade enabled' do
@@ -352,18 +304,6 @@ describe 'elasticsearch', :type => 'class' do
         end
       end
 
-      context 'when not supplying a repo_version' do
-        let(:params) do
-          default_params.merge(
-            :manage_repo => true
-          )
-        end
-
-        it { expect { should raise_error(
-          Puppet::Error, 'Please fill in a repository version at $repo_version'
-        ) } }
-      end
-
       context 'running a a different user' do
         let(:params) do
           default_params.merge(
@@ -373,7 +313,7 @@ describe 'elasticsearch', :type => 'class' do
         end
 
         it { should contain_file('/etc/elasticsearch')
-          .with(:owner => 'myesuser', :group => 'myesgroup') }
+          .with(:owner => 'root', :group => 'myesgroup') }
         it { should contain_file('/var/log/elasticsearch')
           .with(:owner => 'myesuser') }
         it { should contain_file('/usr/share/elasticsearch')
@@ -388,8 +328,16 @@ describe 'elasticsearch', :type => 'class' do
       context 'create_resource' do
         # Helper for these tests
         def singular(s)
-          s == 'indices' ? 'index' : s[0..-2]
+          case s
+          when 'indices'
+            'index'
+          when 'snapshot_repositories'
+            'snapshot_repository'
+          else
+            s[0..-2]
+          end
         end
+
         {
           'indices' => { 'test-index' => {} },
           'instances' => { 'es-instance' => {} },
@@ -399,6 +347,7 @@ describe 'elasticsearch', :type => 'class' do
           'scripts' => {
             'foo' => { 'source' => 'puppet:///path/to/foo.groovy' }
           },
+          'snapshot_repositories' => { 'backup' => { 'location' => '/backups' } },
           'templates' => { 'foo' => { 'content' => {} } },
           'users' => { 'elastic' => { 'password' => 'foobar' } }
         }.each_pair do |deftype, params|
@@ -414,6 +363,18 @@ describe 'elasticsearch', :type => 'class' do
               "contain_elasticsearch__#{singular(deftype)}", params.keys.first
             ) }
           end
+        end
+      end
+
+      describe 'oss' do
+        let(:params) do
+          default_params.merge(:oss => true)
+        end
+
+        it do
+          should contain_package('elasticsearch').with(
+            :name => 'elasticsearch-oss'
+          )
         end
       end
     end

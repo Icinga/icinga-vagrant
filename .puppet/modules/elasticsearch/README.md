@@ -32,10 +32,12 @@ This module is actively tested against Elasticsearch 2.x, 5.x, and 6.x.
 * Elasticsearch configuration file.
 * Elasticsearch service.
 * Elasticsearch plugins.
+* Elasticsearch snapshot repositories.
 * Elasticsearch templates.
 * Elasticsearch ingest pipelines.
 * Elasticsearch index settings.
 * Elasticsearch Shield/X-Pack users, roles, and certificates.
+* Elasticsearch licenses.
 * Elasticsearch keystores.
 
 ### Requirements
@@ -52,7 +54,8 @@ We recommend managing your Java installation with the [puppetlabs-java](https://
 
 When using the repository management, the following module dependencies are required:
 
-* Debian/Ubuntu: [Puppetlabs/apt](http://forge.puppetlabs.com/puppetlabs/apt)
+* General: [Elastic/elastic_stack](https://forge.puppet.com/elastic/elastic_stack)
+* Debian/Ubuntu: [Puppetlabs/apt](https://forge.puppetlabs.com/puppetlabs/apt)
 * OpenSuSE/SLES: [Darin/zypprepo](https://forge.puppetlabs.com/darin/zypprepo)
 
 ### Beginning with Elasticsearch
@@ -406,6 +409,35 @@ elasticsearch::index { 'foo':
 }
 ```
 
+### Snapshot Repositories
+
+By default snapshot_repositories use the top-level `elasticsearch::api_*` settings to communicate with Elasticsearch.
+The following is an example of how to override these settings:
+
+```puppet
+elasticsearch::snapshot_repository { 'backups':
+  api_protocol            => 'https',
+  api_host                => $::ipaddress,
+  api_port                => 9201,
+  api_timeout             => 60,
+  api_basic_auth_username => 'admin',
+  api_basic_auth_password => 'adminpassword',
+  api_ca_file             => '/etc/ssl/certs',
+  api_ca_path             => '/etc/pki/certs',
+  validate_tls            => false,
+  location                => '/backups',
+}
+```
+
+#### Delete a snapshot repository
+
+```puppet
+elasticsearch::snapshot_repository { 'backups':
+  ensure   => 'absent',
+  location => '/backup'
+}
+```
+
 ### Connection Validator
 
 This module offers a way to make sure an instance has been started and is up and running before
@@ -431,32 +463,41 @@ There are two different ways of installing Elasticsearch:
 
 #### Repository
 
-This option allows you to use an existing repository for package installation.
-The `repo_version` corresponds with the `major.minor` version of Elasticsearch for versions before 2.x.
+
+##### Choosing an Elasticsearch major version
+
+This module uses the `elastic/elastic_stack` module to manage package repositories. Because there is a separate repository for each major version of the Elastic stack, selecting which version to configure is necessary to change the default repository value, like this:
+
 
 ```puppet
+class { 'elastic_stack::repo':
+  version => 5,
+}
+
 class { 'elasticsearch':
-  manage_repo  => true,
-  repo_version => '1.4',
+  version => '5.6.4',
 }
 ```
 
-For 2.x versions of Elasticsearch onward, use the major version of Elasticsearch suffixed by an `x`.
-For example:
+This module defaults to the upstream package repositories, which as of Elasticsearch 6.3, includes X-Pack. In order to use the purely OSS (open source) package and repository, the appropriate `oss` flag must be set on the `elastic_stack::repo` and `elasticsearch` classes:
 
 ```puppet
+class { 'elastic_stack::repo':
+  oss => true,
+}
+
 class { 'elasticsearch':
-  manage_repo  => true,
-  repo_version => '6.x',
+  oss => true,
 }
 ```
 
-For users who may wish to install via a local repository (for example, through a mirror), the `repo_baseurl` parameter is available:
+##### Manual repository management
+
+You may want to manage repositories manually. You can disable automatic repository management like this:
 
 ```puppet
 class { 'elasticsearch':
-  manage_repo => true,
-  repo_baseurl => 'https://repo.local/yum'
+  manage_repo => false,
 }
 ```
 
@@ -563,8 +604,6 @@ For example, the following manifest will install Elasticseach with a single inst
 
 ```puppet
 class { 'elasticsearch':
-  manage_repo     => true,
-  repo_version    => '6.x',
   security_plugin => 'x-pack',
 }
 
@@ -576,8 +615,6 @@ The following manifest will do the same, but with Shield:
 
 ```puppet
 class { 'elasticsearch':
-  manage_repo     => true,
-  repo_version    => '2.x',
   security_plugin => 'shield',
 }
 
@@ -736,6 +773,26 @@ elasticsearch::instance { 'es-01':
   system_key => '/local/path/to/key',
 }
 ```
+
+### Licensing
+
+If you use the aforementioned Shield/X-Pack plugins, you may need to install a user license to leverage particular features outside of a trial license.
+This module can handle installation of licenses without the need to write custom `exec` or `curl` code to install license data.
+
+You may instruct the module to install a license through the `elasticsearch::license` parameter:
+
+```puppet
+class { 'elasticsearch':
+  license => $license,
+  security_plugin => 'x-pack',
+}
+```
+
+The `license` parameter will accept either a Puppet hash representation of the license file json or a plain json string that will be parsed into a native Puppet hash.
+Although dependencies are automatically created to ensure that any `elasticsearch::instance` resources are listening and ready before API calls are made, you may need to set the appropriate `api_*` parameters to ensure that the module can interact with the Elasticsearch API over the appropriate port, protocol, and with sufficient user rights to install the license.
+
+The native provider for licenses will _not_ print license signatures as part of Puppet's changelog to ensure that sensitive values are not included in console output or Puppet reports.
+Any fields present in the `license` parameter that differ from the license installed in a cluster will trigger a flush of the resource and new `POST` to the Elasticsearch API with the license content, though the sensitive `signature` field is not compared as it is not returned from the Elasticsearch licensing APIs.
 
 ### Data directories
 

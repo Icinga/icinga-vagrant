@@ -25,17 +25,17 @@ class elasticsearch::config {
       $elasticsearch::configdir:
         ensure => 'directory',
         group  => $elasticsearch::elasticsearch_group,
-        owner  => $elasticsearch::elasticsearch_user,
-        mode   => '0755';
+        owner  => 'root',
+        mode   => '2750';
       $elasticsearch::datadir:
         ensure => 'directory',
         group  => $elasticsearch::elasticsearch_group,
         owner  => $elasticsearch::elasticsearch_user;
       $elasticsearch::logdir:
         ensure  => 'directory',
-        group   => undef,
+        group   => $elasticsearch::elasticsearch_group,
         owner   => $elasticsearch::elasticsearch_user,
-        mode    => '0755',
+        mode    => '0750',
         recurse => true;
       $elasticsearch::plugindir:
         ensure => 'directory',
@@ -61,6 +61,13 @@ class elasticsearch::config {
         group  => $elasticsearch::elasticsearch_group,
         owner  => $elasticsearch::elasticsearch_user,
         mode   => '0755';
+      "${elasticsearch::configdir}/scripts":
+        ensure  => 'directory',
+        source  => "${elasticsearch::homedir}/scripts",
+        mode    => '0755',
+        recurse => 'remote',
+        owner   => $elasticsearch::elasticsearch_user,
+        group   => $elasticsearch::elasticsearch_group;
       '/etc/elasticsearch/elasticsearch.yml':
         ensure => 'absent';
       '/etc/elasticsearch/jvm.options':
@@ -68,8 +75,6 @@ class elasticsearch::config {
       '/etc/elasticsearch/logging.yml':
         ensure => 'absent';
       '/etc/elasticsearch/log4j2.properties':
-        ensure => 'absent';
-      '/etc/init.d/elasticsearch':
         ensure => 'absent';
     }
 
@@ -98,7 +103,13 @@ class elasticsearch::config {
     if ($elasticsearch::service_provider == 'systemd') {
       # Mask default unit (from package)
       service { 'elasticsearch' :
+        ensure => false,
         enable => 'mask',
+      }
+    } else {
+      service { 'elasticsearch':
+        ensure => false,
+        enable => false,
       }
     }
 
@@ -112,11 +123,21 @@ class elasticsearch::config {
           'rm ES_PATH_CONF',
         ],
       }
+
+      file { "${elasticsearch::defaults_location}/elasticsearch":
+        ensure => 'file',
+        group  => $elasticsearch::elasticsearch_group,
+        owner  => $elasticsearch::elasticsearch_user,
+        mode   => '0640';
+      }
     }
 
     if $::elasticsearch::security_plugin != undef and ($::elasticsearch::security_plugin in ['shield', 'x-pack']) {
-      file { "/etc/elasticsearch/${::elasticsearch::security_plugin}" :
+      file { "${::elasticsearch::configdir}/${::elasticsearch::security_plugin}" :
         ensure => 'directory',
+        owner  => 'root',
+        group  => $elasticsearch::elasticsearch_group,
+        mode   => '0750',
       }
     }
 

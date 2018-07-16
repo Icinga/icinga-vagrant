@@ -3,6 +3,9 @@ fixtures:
     apt:
       repo: puppetlabs/apt
       ref: 2.0.0
+    elastic_stack:
+      repo: elastic/elastic_stack
+      ref: 6.1.0
     stdlib:
       repo: puppetlabs/stdlib
       ref: 4.21.0

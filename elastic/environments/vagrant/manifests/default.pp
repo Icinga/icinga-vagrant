@@ -43,7 +43,6 @@ node default {
   }
   ->
   class { '::profiles::elastic::kibana':
-    repo_version => lookup('elastic::repo::version'),
     kibana_revision => lookup('elastic::kibana::version'),
     kibana_host => lookup('elastic::kibana::listen_ip'),
     kibana_port => lookup('elastic::kibana::listen_port'),

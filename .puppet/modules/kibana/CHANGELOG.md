@@ -1,3 +1,29 @@
+## x.x.x (Month Day, Year)
+
+#### Features
+
+#### Fixes
+
+## 6.3.0 (June 18, 2018)
+
+This release deprecates Kibana 4.x, which is end-of-life.
+
+### Migration Guide
+
+* Support for 4.x has been deprecated, so consider upgrading to Kibana 5 or later before upgrading this module since only versions 5 and later are supported.
+* The module defaults to the upstream package repositories, which now include X-Pack bundled by default. To preserve previous behavior which does _not_ include X-Pack, follow the `README` instructions to configure `oss`-only repositories/packages.
+* Use of the `elastic_stack::repo` class for managing package repositories may mean that leftover yum/apt/etc. repositories named `kibana` may persist after upgrade.
+
+#### Features
+* Support for 6.3 style repositories using elastic_stack module
+
+#### Fixes
+
+## 6.0.1 (March 13, 2018)
+
+#### Fixes
+* Fixed language compatibility errors that could arise when using JRuby 1.7 on Puppet Servers.
+
 ## 6.0.0 (November 14, 2017)
 
 Major version upgrade with important deprecations:

@@ -1,10 +1,74 @@
 ## x.x.x (Month Day, Year)
 
 #### Features
-* Removed `tea` module dependency for pre-existing types in `stdlib` module.
-* Support `file` as a `file_rolling_type`.
 
 #### Fixes
+* REST-based resources are now coerced to string values to uniformly compare user defined values and Elasticsearch API responses.
+* Resolve deprecation warnings related to use of the deprecated is_array() function.
+* Fixed an erroneous inclusion of '<' in logging.yml
+* Resolve deprecation warnings related to use of the deprecated is_string() function.
+
+## 6.3.0 (June 18, 2018)
+
+### Migration Guide
+
+Elasticsearch 6.3 includes several big changes that are reflected in this module.
+When upgrading from module versions prior to 6.3, there are a number of upgrade considerations to take into account:
+
+* This module defaults to the upstream package repositories, which now include X-Pack bundled by default. To preserve previous behavior which does _not_ include X-Pack, follow the `README` instructions to configure `oss`-only repositories/packages.
+  * Note that if your system was previously using the `elasticsearch` package and you instead choose to move to the `oss` distribution, the `elasticsearch` and `elasticsearch-oss` packages may conflict. If that occurs, consider ensuring that the `elasticsearch` package is absent before the `::elasticsearch` class runs. This module does not explicitly remove the conflicting package to avoid unexpected package removal.
+* Use of the `elastic_stack::repo` class for managing package repositories brings a couple changes:
+  * All repository-level parameters and settings have been removed from the `::elasticsearch` class. These parameters can now be set on the `elastic_stack::repo` class.
+  * This may mean that leftover yum/apt/etc. repositories named `elasticsearch` may persist after upgrade.
+* Some changes have been made to align this module's file-level permissions with upstream defaults on some configuration, data, and logging directories. Though these have been tested, operators should be aware that some permissions may change on-disk after upgrading to version >= 6.3.x of this module.
+
+#### Features
+* Added support for managing Elasticsearch licenses.
+* This module now uses the elastic-stack module to manage package repositories.
+* Supports OSS packaging distribution.
+* X-Pack bundled with 6.3 support.
+
+#### Fixes
+* Ensure that the stock Elasticsearch service is not running.
+* Service files for removed instances were previously set to ensure => absent on removal. Because this limits Puppet's ability to verify that the named service is running or not, these service files are always present now whether an instance is set to present or absent.
+* The service defaults file now enforces user/group ownership inline with the service user runtime.
+* The `scripts` configuration directory is now recursively copied instead of symlinked to avoid Elasticsearch security manager permission errors.
+* X-Pack and other meta-plugins are now properly detected as installed by the native plugin provider.
+
+## 6.2.2 (March 13, 2018)
+
+#### Fixes
+* Fixed language compatibility errors that could arise when using JRuby 1.7 on Puppet Servers.
+
+## 6.2.1 (February 14, 2018)
+
+This is primarily a bugfix release to address an issue when installing Elasticsearch 6.2.x plugins such as X-Pack that use the new meta-plugin architecture.
+While the change has been tested with several plugins and versions of Elasticsearch, if any unexpected behavior arises, help is available on the [Elastic forums](https://discuss.elastic.co/) or via [an issue in the puppet-elasticsearch Github repository](https://github.com/elastic/puppet-elasticsearch/issues).
+
+#### Fixes
+* Rewrote the `exists?` logic for the `elasticsearch_plugin` provider. This fundamentally changes how the module detects the presence of plugins but should be backwards compatible.
+
+## 6.2.0 (February 9, 2018)
+
+#### Features
+* Add support for Amazon Linux 2
+* Add support for managing Elasticsearch Snapshot Repository resources
+
+#### Fixes
+* Fixed an issue when setting `file_rolling_type => file` in Elasticsearch 6.
+* Removed ExecStartPre=- from systemd template
+
+## 6.1.0 (December 18, 2017)
+
+#### Features
+* Removed `tea` module dependency for pre-existing types in `stdlib` module.
+* Support `file` as a `file_rolling_type`.
+* Added `java_opts` parameter to `elasticsearch::plugin` resource.
+* Brought some options in `jvm.options` up-to-date with upstream.
+* Plugins can now have their `JAVA_HOME` set through the `java_home` parameter.
+
+#### Fixes
+* Fixed issue with `ES_PATH_CONF` being unset in SysV init files.
 
 ## 6.0.0 (November 14, 2017)
 

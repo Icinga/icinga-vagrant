@@ -1,11 +1,11 @@
 {
   "name": "elastic-elastic_stack",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "author": "toby@jarpy.net",
   "summary": "Helpers for installing and configuring components of the Elastic Stack.",
   "license": "Apache-2.0",
-  "source": "https://github.com/jarpy/puppet-elastic-stack",
-  "issues_url": "https://github.com/jarpy/puppet-elastic-stack/issues",
+  "source": "https://github.com/elastic/puppet-elastic-stack",
+  "issues_url": "https://github.com/elastic/puppet-elastic-stack/issues",
   "dependencies": [
     {
       "name": "puppetlabs-stdlib",
@@ -30,10 +30,23 @@
       ]
     },
     {
+      "operatingsystem": "OpenSuSE",
+      "operatingsystemrelease": [
+        "42.2"
+      ]
+    },
+    {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
         "6.0",
         "7.0"
+      ]
+    },
+    {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "12.1",
+        "12.2"
       ]
     },
     {

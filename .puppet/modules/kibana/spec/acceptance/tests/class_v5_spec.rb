@@ -9,13 +9,16 @@ describe 'kibana class v5' do
 
   let(:manifest) do
     <<-MANIFEST
+        class { 'elastic_stack::repo':
+          version => 5,
+        }
+
         class { 'kibana':
           ensure => '#{version}',
           config => {
             'server.host' => '0.0.0.0',
             'server.port' => #{port},
           },
-          repo_version => '5.x',
         }
 
         kibana_plugin { '#{plugin}':

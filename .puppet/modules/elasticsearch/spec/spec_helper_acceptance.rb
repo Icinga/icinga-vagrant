@@ -3,20 +3,53 @@ require 'securerandom'
 require 'thread'
 require 'infrataster/rspec'
 require 'rspec/retry'
+require 'vault'
 
 require_relative 'spec_helper_tls'
 require_relative 'spec_utilities'
-
-def test_settings
-  RSpec.configuration.test_settings
-end
+require_relative '../lib/puppet_x/elastic/deep_to_s'
 
 def f
   RSpec.configuration.fact
 end
 
 RSpec.configure do |c|
-  c.add_setting :test_settings, :default => {}
+  # General-purpose spec-global variables
+  c.add_setting :v, :default => {}
+
+  unless ENV['snapshot_version'].nil?
+    v[:snapshot_version] = ENV['snapshot_version']
+    v[:is_snapshot] = ENV['SNAPSHOT_TEST'] == 'true'
+  end
+
+  unless ENV['ELASTICSEARCH_VERSION'].nil? and v[:snapshot_version].nil?
+    v[:elasticsearch_full_version] = ENV['ELASTICSEARCH_VERSION'] || v[:snapshot_version]
+    v[:elasticsearch_major_version] = v[:elasticsearch_full_version].split('.').first.to_i
+    v[:elasticsearch_package] = {}
+    v[:template] = if v[:elasticsearch_major_version] < 6
+                     JSON.load(File.new('spec/fixtures/templates/pre_6.0.json'))
+                   else
+                     JSON.load(File.new('spec/fixtures/templates/post_6.0.json'))
+                   end
+    v[:template] = Puppet_X::Elastic.deep_to_s(v[:template])
+
+    v[:elasticsearch_plugins] = Dir[
+      artifact("*#{v[:elasticsearch_full_version]}.zip", ['plugins'])
+    ].map do |plugin|
+      plugin_filename = File.basename(plugin)
+      plugin_name = plugin_filename.match(/^(?<name>.+)-#{v[:elasticsearch_full_version]}.zip/)[:name]
+      [
+        plugin_name,
+        {
+          :path => plugin,
+          :url => derive_plugin_urls_for(v[:elasticsearch_full_version], [plugin_name]).keys.first
+        }
+      ]
+    end.to_h
+  end
+
+  v[:oss] = (not ENV['OSS_PACKAGE'].nil?) and ENV['OSS_PACKAGE'] == 'true'
+  v[:cluster_name] = SecureRandom.hex(10)
 
   # rspec-retry
   c.display_try_failure_messages = true
@@ -36,6 +69,7 @@ RSpec.configure do |c|
       class { 'elasticsearch':
         ensure      => 'absent',
         manage_repo => true,
+        oss         => #{v[:oss]},
       }
       elasticsearch::instance { 'es-01': ensure => 'absent' }
 
@@ -63,13 +97,35 @@ RSpec.configure do |c|
     end
   end
 
+  c.before :context, :with_license do
+    Vault.address = ENV['VAULT_ADDR']
+    Vault.auth.approle ENV['VAULT_APPROLE_ROLE_ID'], ENV['VAULT_APPROLE_SECRET_ID']
+    licenses = Vault.with_retries(Vault::HTTPConnectionError) do
+      Vault.logical.read(ENV['VAULT_PATH'])
+    end.data
+
+    raise 'No license found!' unless licenses
+
+    license = case v[:elasticsearch_major_version]
+              when 2
+                licenses[:v2]
+              else
+                licenses[:v5]
+              end
+    create_remote_file hosts, '/tmp/license.json', license
+    v[:elasticsearch_license_path] = '/tmp/license.json'
+  end
+
   c.after :context, :then_purge do
+    shell 'rm -rf {/usr/share,/etc,/var/lib}/elasticsearch*'
+  end
+
+  c.before :context, :first_purge do
     shell 'rm -rf {/usr/share,/etc,/var/lib}/elasticsearch*'
   end
 end
 
 files_dir = ENV['files_dir'] || './spec/fixtures/artifacts'
-RSpec.configuration.test_settings['files_dir'] = files_dir
 
 # General bootstrapping steps for each host
 hosts.each do |host|
@@ -88,7 +144,7 @@ hosts.each do |host|
   end
 
   case host.name
-  when /debian-9/, /opensuse/
+  when /debian-9/
     # A few special cases need to be installed from gems (if the distro is
     # very new and has no puppet repo package or has no upstream packages).
     install_puppet_from_gem(
@@ -116,33 +172,22 @@ hosts.each do |host|
     on host, 'gem install ruby-augeas --no-ri --no-rdoc'
   end
 
-  ext = case f['os']['family']
-        when 'Debian'
-          'deb'
-        else
-          'rpm'
-        end
+  v[:ext] = case f['os']['family']
+            when 'Debian'
+              'deb'
+            else
+              'rpm'
+            end
 
-  snapshot_package = {
-    :src => "#{files_dir}/elasticsearch-2.3.5.#{ext}",
-    :dst => "/tmp/elasticsearch-2.3.5.#{ext}"
-  }
-
-  scp_to host,
-         snapshot_package[:src],
-         snapshot_package[:dst]
-  scp_to host,
-         "#{files_dir}/elasticsearch-kopf.zip",
-         '/tmp/elasticsearch-kopf.zip'
-
-  RSpec.configuration.test_settings['snapshot_package'] = \
-    "file:#{snapshot_package[:dst]}"
-
-  test_settings['integration_package'] = {
-    :src => "#{files_dir}/elasticsearch-snapshot.#{ext}",
-    :dst => "/tmp/elasticsearch-snapshot.#{ext}",
-    :file => "file:/tmp/elasticsearch-snapshot.#{ext}"
-  }
+  if v[:elasticsearch_package]
+    v[:elasticsearch_package].merge!(
+      derive_full_package_url(
+        v[:elasticsearch_full_version], [v[:ext]]
+      ).flat_map do |url, filename|
+        [[:url, url], [:filename, filename], [:path, artifact(filename)]]
+      end.to_h
+    )
+  end
 
   Infrataster::Server.define(:docker) do |server|
     server.address = host[:ip]
@@ -155,6 +200,15 @@ hosts.each do |host|
 end
 
 RSpec.configure do |c|
+  if v[:is_snapshot]
+    c.before :suite do
+      scp_to default,
+             "#{files_dir}/elasticsearch-snapshot.#{v[:ext]}",
+             "/tmp/elasticsearch-snapshot.#{v[:ext]}"
+      v[:snapshot_package] = "file:/tmp/elasticsearch-snapshot.#{v[:ext]}"
+    end
+  end
+
   c.before :suite do
     # Install module and dependencies
     install_dev_puppet_module :ignore_list => [
@@ -162,22 +216,22 @@ RSpec.configure do |c|
     ] + Beaker::DSL::InstallUtils::ModuleUtils::PUPPET_MODULE_INSTALL_IGNORE
 
     hosts.each do |host|
-      copy_hiera_data_to(host, 'spec/fixtures/hiera/hieradata/')
-
-      modules = %w[archive datacat java java_ks stdlib]
+      modules = %w[archive datacat java java_ks stdlib elastic_stack]
 
       dist_module = {
         'Debian' => ['apt'],
         'Suse'   => ['zypprepo'],
-        'RedHat' => ['yum', 'concat']
+        'RedHat' => ['concat']
       }[f['os']['family']]
 
       modules += dist_module unless dist_module.nil?
 
       modules.each do |mod|
-        copy_module_to host,
+        copy_module_to(
+          host,
           :module_name => mod,
           :source      => "spec/fixtures/modules/#{mod}"
+        )
       end
 
       on(host, 'mkdir -p etc/puppet/modules/another/files/')
@@ -187,12 +241,21 @@ RSpec.configure do |c|
     end
 
     # Use the Java class once before the suite of tests
-    apply_manifest <<~EOS
-      class { "java" :
-        distribution => "jre",
-        #{'package => "java-1.8.0-openjdk-headless",' if f['os']['name'] == 'CentOS' and f['os']['release']['major'].to_i == 6}
-      }
-    EOS
+    unless shell('command -v java', :accept_all_exit_codes => true).exit_code.zero?
+      java = case f['os']['name']
+             when 'OpenSuSE'
+               'package => "java-1_8_0-openjdk-headless",'
+             else
+               ''
+             end
+
+      apply_manifest <<-MANIFEST
+        class { "java" :
+          distribution => "jre",
+          #{java}
+        }
+      MANIFEST
+    end
   end
 
   c.after :suite do
@@ -206,8 +269,6 @@ RSpec.configure do |c|
     end
   end
 end
-
-require_relative 'spec_acceptance_common'
 
 # Java 8 is only easy to manage on recent distros
 def v5x_capable?

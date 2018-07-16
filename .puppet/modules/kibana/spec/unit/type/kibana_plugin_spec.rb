@@ -5,7 +5,7 @@ describe Puppet::Type.type(:kibana_plugin) do
 
   describe 'input validation' do
     it 'should default to being installed' do
-      plugin = described_class.new(:name => resource_name )
+      plugin = described_class.new(:name => resource_name)
       expect(plugin.should(:ensure)).to eq(:present)
     end
 
@@ -29,7 +29,7 @@ describe Puppet::Type.type(:kibana_plugin) do
 
     describe 'validate' do
       it 'should require version when organization is set' do
-        expect{described_class.new(:name => 'marvel', :organization => 'elasticsearch')}
+        expect { described_class.new(:name => 'marvel', :organization => 'elasticsearch') }
           .to raise_error(Puppet::Error, /version must be set if organization is set/)
       end
 
