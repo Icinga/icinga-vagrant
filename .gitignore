@@ -1,0 +1,17 @@
+.*.sw?
+/pkg
+/coverage
+/doc
+/spec/fixtures/manifests
+/spec/fixtures/modules
+/.rspec_system
+/.vagrant
+/.bundle
+/vendor
+/Gemfile.lock
+/junit
+/log
+.yardoc
+*.deb
+*.rpm
+coverage
