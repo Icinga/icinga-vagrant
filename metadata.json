@@ -1,0 +1,69 @@
+{
+  "name": "elastic-elastic_stack",
+  "version": "6.1.0",
+  "author": "toby@jarpy.net",
+  "summary": "Helpers for installing and configuring components of the Elastic Stack.",
+  "license": "Apache-2.0",
+  "source": "https://github.com/elastic/puppet-elastic-stack",
+  "issues_url": "https://github.com/elastic/puppet-elastic-stack/issues",
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">= 4.13.1 < 5.0.0"
+    },
+    {
+      "name": "puppetlabs/apt",
+      "version_requirement": ">= 2.0.0 < 5.0.0"
+    },
+    {
+      "name": "puppet/yum",
+      "version_requirement": ">= 0.9.6 < 3.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "7",
+        "8",
+        "9"
+      ]
+    },
+    {
+      "operatingsystem": "OpenSuSE",
+      "operatingsystemrelease": [
+        "42.2"
+      ]
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6.0",
+        "7.0"
+      ]
+    },
+    {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "12.1",
+        "12.2"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "14.04",
+        "16.04"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.6.1 < 6.0.0"
+    }
+  ],
+  "pdk-version": "1.0.1",
+  "template-url": "file:///opt/puppetlabs/pdk/share/cache/pdk-module-template.git",
+  "template-ref": "heads/master-0-g5db7961"
+}
