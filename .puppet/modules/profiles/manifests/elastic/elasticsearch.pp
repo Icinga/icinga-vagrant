@@ -1,9 +1,14 @@
 class profiles::elastic::elasticsearch (
-  $repo_version = '5.x',
-  $elasticsearch_revision = '5.6.1',
+  $repo_version = 6,
+  $elasticsearch_revision = '6.3.1',
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200
 ) {
+  class { 'elastic_stack::repo':
+    version => $repo_version,
+    oss     => true,
+  }
+
   file { '/etc/security/limits.d/99-elasticsearch.conf':
     ensure  => present,
     owner   => 'root',
@@ -13,9 +18,8 @@ class profiles::elastic::elasticsearch (
   }
   ->
   class { 'elasticsearch':
-    manage_repo  => true,
-    repo_version => $repo_version,
-    version      => $elasticsearch_revision,
+    oss         => true,
+    version     => $elasticsearch_revision,
     jvm_options => [
       '-Xms256m',
       '-Xmx256m'
