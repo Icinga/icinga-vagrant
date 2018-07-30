@@ -39,6 +39,7 @@ node default {
   ->
   class { '::profiles::graylog::elasticsearch':
     repo_version => lookup('graylog::elasticsearch::repo_version'),
+    elasticsearch_revision => lookup('graylog::elasticsearch::version')
   }
   ->
   class { '::profiles::graylog::mongodb': }

@@ -47,4 +47,5 @@ elastic::kibana::default_app_id:        "dashboard/34e97340-e4ce-11e7-b4d1-83834
 
 graylog::repo::version:                 "2.4"
 graylog::elasticsearch::repo_version:   5
+graylog::elasticsearch::version:        "5.6.10"
 
