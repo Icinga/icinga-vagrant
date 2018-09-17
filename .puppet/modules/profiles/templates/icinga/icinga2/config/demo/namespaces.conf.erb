@@ -1,0 +1,58 @@
+/* namespace begin: ApplyFunctionsBE. */
+namespace ApplyFunctionsBE {
+  const MysqlUsername = "icinga-be"
+
+  /* Flatten a dictionary with unique keys for service apply for rules. */
+  function flattenDictionary2ndLevel(d) {
+    var res = {}
+
+    if (typeof(d) != Dictionary) {
+      log(LogWarning, "config", "ERROR: flattenDictionary2ndLevel parameter is not a dictionary.")
+      return {} // return an empty result set on error, including the log above
+    }
+
+    for (k1 => v1 in d) {
+      if (typeof(v1) != Dictionary) {
+        log(LogWarning, "config", "ERROR: First level with key " + k1 + " is not a dictionary value.")
+        continue;
+      }
+
+      for (k2 => v2 in v1) {
+        var new_key = k1 + "-" + k2 /* Generate a unique name. */
+        var new_val = v2.clone()
+
+        /* Add a namespace specific variable. */
+        new_val["username"] = MysqlUsername /* This pulls in the namespace local constant. */
+
+        res[new_key] = new_val
+      }
+    }
+
+    return res
+  }
+
+  Mysql.databases["production"] = { "app1" = { "port" = 3306 }, "app2" = { "port" = 3307 } }
+  Mysql.databases["staging"] = { "app1" = { "port" = 3306 }, "app2" = { "port" = 3307 } }
+
+/* namespace end: ApplyFunctionsBE. */
+}
+
+/* Load namespaces. */
+using ApplyFunctionsBE
+
+
+object Host "namespace01" {
+  check_command = "dummy"
+
+  vars.mysql_databases["production"] = { "app1" = { "port" = 3306 }, "app2" = { "port" = 3307 } }
+  vars.mysql_databases["staging"] = { "app1" = { "port" = 3306 }, "app2" = { "port" = 3307 } }
+}
+
+/* This explicitly accesses the namespace. */
+//apply Service "mysql-" for (db_key => config in ApplyFunctionsBE.flattenDictionary2ndLevel(host.vars.mysql_databases)) {
+/* This requires using the namespace globally. */
+apply Service "mysql-" for (db_key => config in flattenDictionary2ndLevel(host.vars.mysql_databases)) {
+  check_command = "dummy"
+
+  vars += config
+}
