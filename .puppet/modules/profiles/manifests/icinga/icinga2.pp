@@ -198,6 +198,12 @@ class profiles::icinga::icinga2 (
     tag     => icinga2::config::file
   }
   ->
+  file { "$config_path/namespaces.conf":
+    ensure  => present,
+    content => template("profiles/icinga/icinga2/config/demo/namespaces.conf.erb"),
+    tag     => icinga2::config::file
+  }
+  ->
   file { "$config_path/hosts.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/hosts.conf.erb"),
