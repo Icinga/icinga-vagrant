@@ -1,0 +1,14 @@
+export I2_GENERIC="-DCMAKE_INSTALL_PREFIX=/usr/local/icinga2"
+#export I2_GENERIC="-DCMAKE_INSTALL_PREFIX=/usr/local/icinga2 -DICINGA2_LTO_BUILD=ON -DICINGA2_WITH_TESTS=OFF"
+
+export I2_DEBUG="-DCMAKE_BUILD_TYPE=Debug -DICINGA2_UNITY_BUILD=OFF $I2_GENERIC"
+export I2_RELEASE="-DCMAKE_BUILD_TYPE=RelWithDebInfo -DICINGA2_WITH_TESTS=ON -DICINGA2_UNITY_BUILD=ON $I2_GENERIC"
+
+alias i2_debug="cd /root/icinga2; mkdir -p debug; cd debug; cmake $I2_DEBUG ..; make -j2; sudo make -j2 install; cd .."
+alias i2_release="cd /root/icinga2; mkdir -p release; cd release; cmake $I2_RELEASE ..; make -j2; sudo make -j2 install; cd .."
+
+export PATH=/usr/local/icinga2/sbin/:$PATH
+
+if [ -e "/usr/local/icinga2/etc/bash_completion.d/icinga2" ]; then
+  source /usr/local/icinga2/etc/bash_completion.d/icinga2
+fi
