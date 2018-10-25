@@ -37,7 +37,7 @@ fi
 
 if ! rpm -q "puppet-agent" &>/dev/null; then
     echo "Installing Puppet 5..."
-    yum install -y puppet-agent
+    yum install -y puppet-agent-5.5.6
 fi
 
 if [ `getenforce` = 'Enforcing' ]; then
