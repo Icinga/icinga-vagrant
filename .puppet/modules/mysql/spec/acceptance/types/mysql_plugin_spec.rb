@@ -15,19 +15,8 @@ if fact('osfamily') =~ %r{RedHat}
     plugin_lib = 'auth_pam.so'
   end
 elsif fact('osfamily') =~ %r{Debian}
-  if fact('operatingsystem') =~ %r{Debian}
-    if fact('operatingsystemrelease') =~ %r{^6\.}
-      # Only available plugin is innodb which is already loaded and not unload- or reload-able
-      plugin = nil
-    elsif fact('operatingsystemrelease') =~ %r{^7\.}
-      plugin     = 'example'
-      plugin_lib = 'ha_example.so'
-    end
-  elsif fact('operatingsystem') =~ %r{Ubuntu}
-    if fact('operatingsystemrelease') =~ %r{^10\.04}
-      # Only available plugin is innodb which is already loaded and not unload- or reload-able
-      plugin = nil
-    elsif fact('operatingsystemrelease') =~ %r{^16\.04}
+  if fact('operatingsystem') =~ %r{Ubuntu}
+    if fact('operatingsystemrelease') =~ %r{^16\.04|^18\.04}
       # On Xenial running 5.7.12, the example plugin does not appear to be available.
       plugin = 'validate_password'
       plugin_lib = 'validate_password.so'
@@ -44,29 +33,32 @@ describe 'mysql_plugin' do
   if plugin # if plugins are supported
     describe 'setup' do
       it 'works with no errors' do
-        pp = <<-EOS
+        pp = <<-MANIFEST
           class { 'mysql::server': }
-        EOS
+        MANIFEST
 
-        apply_manifest(pp, catch_failures: true)
+        execute_manifest(pp, catch_failures: true)
       end
     end
 
     describe 'load plugin' do
-      it 'works without errors' do
-        pp = <<-EOS
+      pp = <<-MANIFEST
           mysql_plugin { #{plugin}:
             ensure => present,
             soname => '#{plugin_lib}',
           }
-        EOS
-
-        apply_manifest(pp, catch_failures: true)
+      MANIFEST
+      it 'works without errors' do
+        execute_manifest(pp, catch_failures: true)
       end
 
-      it 'finds the plugin' do
+      it 'finds the plugin #stdout' do
         shell("mysql -NBe \"select plugin_name from information_schema.plugins where plugin_name='#{plugin}'\"") do |r|
           expect(r.stdout).to match(%r{^#{plugin}$}i)
+        end
+      end
+      it 'finds the plugin #stderr' do
+        shell("mysql -NBe \"select plugin_name from information_schema.plugins where plugin_name='#{plugin}'\"") do |r|
           expect(r.stderr).to be_empty
         end
       end

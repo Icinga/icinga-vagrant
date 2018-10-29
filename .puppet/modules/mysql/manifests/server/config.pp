@@ -1,4 +1,8 @@
-# See README.me for options.
+# @summary
+#   Private class for MySQL server configuration.
+#
+# @api private
+#
 class mysql::server::config {
 
   $options = $mysql::server::options
@@ -20,7 +24,7 @@ class mysql::server::config {
 
     # on some systems this is /etc/my.cnf.d, while Debian has /etc/mysql/conf.d and FreeBSD something in /usr/local. For the latter systems,
     # managing this basedir is also required, to have it available before the package is installed.
-    $includeparentdir = mysql_dirname($includedir)
+    $includeparentdir = mysql::dirname($includedir)
     if $includeparentdir != '/' and $includeparentdir != '/etc' {
       file { $includeparentdir:
         ensure => directory,
@@ -39,8 +43,9 @@ class mysql::server::config {
 
     # on mariadb systems, $includedir is not defined, but /etc/my.cnf.d has
     # to be managed to place the server.cnf there
-    $configparentdir = mysql_dirname($mysql::server::config_file)
-    if $configparentdir != '/' and $configparentdir != '/etc' and $configparentdir != $includedir and $configparentdir != mysql_dirname($includedir) {
+    $configparentdir = mysql::dirname($mysql::server::config_file)
+    if $configparentdir != '/' and $configparentdir != '/etc' and $configparentdir
+        != $includedir and $configparentdir != mysql::dirname($includedir) {
       file { $configparentdir:
         ensure => directory,
         mode   => '0755',
@@ -50,7 +55,8 @@ class mysql::server::config {
 
   if $options['mysqld']['ssl-disable'] {
     notify {'ssl-disable':
-      message =>'Disabling SSL is evil! You should never ever do this except if you are forced to use a mysql version compiled without SSL support'
+      message =>'Disabling SSL is evil! You should never ever do this except
+                if you are forced to use a mysql version compiled without SSL support'
     }
   }
 }

@@ -1,13 +1,12 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mysql'))
 Puppet::Type.type(:mysql_user).provide(:mysql, parent: Puppet::Provider::Mysql) do
   desc 'manage users for a mysql database.'
-  commands mysql: 'mysql'
+  commands mysql_raw: 'mysql'
 
   # Build a property_hash containing all the discovered information about MySQL
   # users.
   def self.instances
-    users = mysql([defaults_file, '-NBe',
-                   "SELECT CONCAT(User, '@',Host) AS User FROM mysql.user"].compact).split("\n")
+    users = mysql_caller("SELECT CONCAT(User, '@',Host) AS User FROM mysql.user", 'regular').split("\n")
     # To reduce the number of calls to MySQL we collect all the properties in
     # one big swoop.
     users.map do |name|
@@ -15,14 +14,14 @@ Puppet::Type.type(:mysql_user).provide(:mysql, parent: Puppet::Provider::Mysql) 
         ## Default ...
         # rubocop:disable Metrics/LineLength
         query = "SELECT MAX_USER_CONNECTIONS, MAX_CONNECTIONS, MAX_QUESTIONS, MAX_UPDATES, SSL_TYPE, SSL_CIPHER, X509_ISSUER, X509_SUBJECT, PASSWORD /*!50508 , PLUGIN */ FROM mysql.user WHERE CONCAT(user, '@', host) = '#{name}'"
-      elsif (mysqld_type == 'mysql' || mysqld_type == 'percona') && Puppet::Util::Package.versioncmp(mysqld_version, '5.7.6') >= 0
+      elsif newer_than('mysql' => '5.7.6', 'percona' => '5.7.6', 'mariadb' => '10.2.16')
         query = "SELECT MAX_USER_CONNECTIONS, MAX_CONNECTIONS, MAX_QUESTIONS, MAX_UPDATES, SSL_TYPE, SSL_CIPHER, X509_ISSUER, X509_SUBJECT, AUTHENTICATION_STRING, PLUGIN FROM mysql.user WHERE CONCAT(user, '@', host) = '#{name}'"
       else
         query = "SELECT MAX_USER_CONNECTIONS, MAX_CONNECTIONS, MAX_QUESTIONS, MAX_UPDATES, SSL_TYPE, SSL_CIPHER, X509_ISSUER, X509_SUBJECT, PASSWORD /*!50508 , PLUGIN */ FROM mysql.user WHERE CONCAT(user, '@', host) = '#{name}'"
       end
       @max_user_connections, @max_connections_per_hour, @max_queries_per_hour,
       @max_updates_per_hour, ssl_type, ssl_cipher, x509_issuer, x509_subject,
-      @password, @plugin = mysql([defaults_file, '-NBe', query].compact).split(%r{\s})
+      @password, @plugin = mysql_caller(query, 'regular').split(%r{\s})
       @tls_options = parse_tls_options(ssl_type, ssl_cipher, x509_issuer, x509_subject)
       # rubocop:enable Metrics/LineLength
       new(name: name,
@@ -63,20 +62,28 @@ Puppet::Type.type(:mysql_user).provide(:mysql, parent: Puppet::Provider::Mysql) 
     # Use CREATE USER to be compatible with NO_AUTO_CREATE_USER sql_mode
     # This is also required if you want to specify a authentication plugin
     if !plugin.nil?
-      if plugin == 'sha256_password' && !password_hash.nil?
-        mysql([defaults_file, system_database, '-e', "CREATE USER '#{merged_name}' IDENTIFIED WITH '#{plugin}' AS '#{password_hash}'"].compact)
+      if !password_hash.nil?
+        self.class.mysql_caller("CREATE USER '#{merged_name}' IDENTIFIED WITH '#{plugin}' AS '#{password_hash}'", 'system')
       else
-        mysql([defaults_file, system_database, '-e', "CREATE USER '#{merged_name}' IDENTIFIED WITH '#{plugin}'"].compact)
+        self.class.mysql_caller("CREATE USER '#{merged_name}' IDENTIFIED WITH '#{plugin}'", 'system')
       end
       @property_hash[:ensure] = :present
       @property_hash[:plugin] = plugin
+    elsif newer_than('mysql' => '5.7.6', 'percona' => '5.7.6', 'mariadb' => '10.1.3')
+      self.class.mysql_caller("CREATE USER IF NOT EXISTS '#{merged_name}' IDENTIFIED WITH 'mysql_native_password' AS '#{password_hash}'", 'system')
+      @property_hash[:ensure] = :present
+      @property_hash[:password_hash] = password_hash
     else
-      mysql([defaults_file, system_database, '-e', "CREATE USER '#{merged_name}' IDENTIFIED BY PASSWORD '#{password_hash}'"].compact)
+      self.class.mysql_caller("CREATE USER '#{merged_name}' IDENTIFIED BY PASSWORD '#{password_hash}'", 'system')
       @property_hash[:ensure] = :present
       @property_hash[:password_hash] = password_hash
     end
     # rubocop:disable Metrics/LineLength
-    mysql([defaults_file, system_database, '-e', "GRANT USAGE ON *.* TO '#{merged_name}' WITH MAX_USER_CONNECTIONS #{max_user_connections} MAX_CONNECTIONS_PER_HOUR #{max_connections_per_hour} MAX_QUERIES_PER_HOUR #{max_queries_per_hour} MAX_UPDATES_PER_HOUR #{max_updates_per_hour}"].compact)
+    if newer_than('mysql' => '5.7.6', 'percona' => '5.7.6')
+      self.class.mysql_caller("ALTER USER IF EXISTS '#{merged_name}' WITH MAX_USER_CONNECTIONS #{max_user_connections} MAX_CONNECTIONS_PER_HOUR #{max_connections_per_hour} MAX_QUERIES_PER_HOUR #{max_queries_per_hour} MAX_UPDATES_PER_HOUR #{max_updates_per_hour}", 'system')
+    else
+      self.class.mysql_caller("GRANT USAGE ON *.* TO '#{merged_name}' WITH MAX_USER_CONNECTIONS #{max_user_connections} MAX_CONNECTIONS_PER_HOUR #{max_connections_per_hour} MAX_QUERIES_PER_HOUR #{max_queries_per_hour} MAX_UPDATES_PER_HOUR #{max_updates_per_hour}", 'system')
+    end
     # rubocop:enable Metrics/LineLength
     @property_hash[:max_user_connections] = max_user_connections
     @property_hash[:max_connections_per_hour] = max_connections_per_hour
@@ -84,11 +91,10 @@ Puppet::Type.type(:mysql_user).provide(:mysql, parent: Puppet::Provider::Mysql) 
     @property_hash[:max_updates_per_hour] = max_updates_per_hour
 
     merged_tls_options = tls_options.join(' AND ')
-    if ((mysqld_type == 'mysql' || mysqld_type == 'percona') && Puppet::Util::Package.versioncmp(mysqld_version, '5.7.6') >= 0) ||
-       (mysqld_type == 'mariadb' && Puppet::Util::Package.versioncmp(mysqld_version, '10.2.0') >= 0)
-      mysql([defaults_file, system_database, '-e', "ALTER USER '#{merged_name}' REQUIRE #{merged_tls_options}"].compact)
+    if newer_than('mysql' => '5.7.6', 'percona' => '5.7.6', 'mariadb' => '10.2.0')
+      self.class.mysql_caller("ALTER USER '#{merged_name}' REQUIRE #{merged_tls_options}", 'system')
     else
-      mysql([defaults_file, system_database, '-e', "GRANT USAGE ON *.* TO '#{merged_name}' REQUIRE #{merged_tls_options}"].compact)
+      self.class.mysql_caller("GRANT USAGE ON *.* TO '#{merged_name}' REQUIRE #{merged_tls_options}", 'system')
     end
     @property_hash[:tls_options] = tls_options
 
@@ -97,7 +103,13 @@ Puppet::Type.type(:mysql_user).provide(:mysql, parent: Puppet::Provider::Mysql) 
 
   def destroy
     merged_name = @resource[:name].sub('@', "'@'")
-    mysql([defaults_file, system_database, '-e', "DROP USER '#{merged_name}'"].compact)
+    if_exists = if newer_than('mysql' => '5.7', 'percona' => '5.7', 'mariadb' => '10.1.3')
+                  'IF EXISTS '
+                else
+                  ''
+                end
+
+    self.class.mysql_caller("DROP USER #{if_exists}'#{merged_name}'", 'system')
 
     @property_hash.clear
     exists? ? (return false) : (return true)
@@ -120,12 +132,12 @@ Puppet::Type.type(:mysql_user).provide(:mysql, parent: Puppet::Provider::Mysql) 
     # We have a fact for the mysql version ...
     if mysqld_version.nil?
       # default ... if mysqld_version does not work
-      mysql([defaults_file, system_database, '-e', "SET PASSWORD FOR #{merged_name} = '#{string}'"].compact)
-    elsif (mysqld_type == 'mysql' || mysqld_type == 'percona') && Puppet::Util::Package.versioncmp(mysqld_version, '5.7.6') >= 0
-      raise ArgumentError, _('Only mysql_native_password (*ABCD...XXX) hashes are supported.') unless string =~ %r{^\*}
-      mysql([defaults_file, system_database, '-e', "ALTER USER #{merged_name} IDENTIFIED WITH mysql_native_password AS '#{string}'"].compact)
+      self.class.mysql_caller("SET PASSWORD FOR #{merged_name} = '#{string}'", 'system')
+    elsif newer_than('mysql' => '5.7.6', 'percona' => '5.7.6')
+      raise ArgumentError, _('Only mysql_native_password (*ABCD...XXX) hashes are supported.') unless string =~ %r{^\*|^$}
+      self.class.mysql_caller("ALTER USER #{merged_name} IDENTIFIED WITH mysql_native_password AS '#{string}'", 'system')
     else
-      mysql([defaults_file, system_database, '-e', "SET PASSWORD FOR #{merged_name} = '#{string}'"].compact)
+      self.class.mysql_caller("SET PASSWORD FOR #{merged_name} = '#{string}'", 'system')
     end
 
     (password_hash == string) ? (return true) : (return false)
@@ -133,40 +145,56 @@ Puppet::Type.type(:mysql_user).provide(:mysql, parent: Puppet::Provider::Mysql) 
 
   def max_user_connections=(int)
     merged_name = self.class.cmd_user(@resource[:name])
-    mysql([defaults_file, system_database, '-e', "GRANT USAGE ON *.* TO #{merged_name} WITH MAX_USER_CONNECTIONS #{int}"].compact).chomp
+    self.class.mysql_caller("GRANT USAGE ON *.* TO #{merged_name} WITH MAX_USER_CONNECTIONS #{int}", 'system').chomp
 
     (max_user_connections == int) ? (return true) : (return false)
   end
 
   def max_connections_per_hour=(int)
     merged_name = self.class.cmd_user(@resource[:name])
-    mysql([defaults_file, system_database, '-e', "GRANT USAGE ON *.* TO #{merged_name} WITH MAX_CONNECTIONS_PER_HOUR #{int}"].compact).chomp
+    self.class.mysql_caller("GRANT USAGE ON *.* TO #{merged_name} WITH MAX_CONNECTIONS_PER_HOUR #{int}", 'system').chomp
 
     (max_connections_per_hour == int) ? (return true) : (return false)
   end
 
   def max_queries_per_hour=(int)
     merged_name = self.class.cmd_user(@resource[:name])
-    mysql([defaults_file, system_database, '-e', "GRANT USAGE ON *.* TO #{merged_name} WITH MAX_QUERIES_PER_HOUR #{int}"].compact).chomp
+    self.class.mysql_caller("GRANT USAGE ON *.* TO #{merged_name} WITH MAX_QUERIES_PER_HOUR #{int}", 'system').chomp
 
     (max_queries_per_hour == int) ? (return true) : (return false)
   end
 
   def max_updates_per_hour=(int)
     merged_name = self.class.cmd_user(@resource[:name])
-    mysql([defaults_file, system_database, '-e', "GRANT USAGE ON *.* TO #{merged_name} WITH MAX_UPDATES_PER_HOUR #{int}"].compact).chomp
+    self.class.mysql_caller("GRANT USAGE ON *.* TO #{merged_name} WITH MAX_UPDATES_PER_HOUR #{int}", 'system').chomp
 
     (max_updates_per_hour == int) ? (return true) : (return false)
+  end
+
+  def plugin=(string)
+    merged_name = self.class.cmd_user(@resource[:name])
+
+    if newer_than('mysql' => '5.7.6', 'percona' => '5.7.6')
+      sql = "ALTER USER #{merged_name} IDENTIFIED WITH '#{string}'"
+      sql << " AS '#{@resource[:password_hash]}'" if string == 'mysql_native_password'
+    else
+      # See https://bugs.mysql.com/bug.php?id=67449
+      sql = "UPDATE mysql.user SET plugin = '#{string}'"
+      sql << ((string == 'mysql_native_password') ? ", password = '#{@resource[:password_hash]}'" : ", password = ''")
+      sql << " WHERE CONCAT(user, '@', host) = '#{@resource[:name]}'"
+    end
+
+    self.class.mysql_caller(sql, 'system')
+    (plugin == string) ? (return true) : (return false)
   end
 
   def tls_options=(array)
     merged_name = self.class.cmd_user(@resource[:name])
     merged_tls_options = array.join(' AND ')
-    if ((mysqld_type == 'mysql' || mysqld_type == 'percona') && Puppet::Util::Package.versioncmp(mysqld_version, '5.7.6') >= 0) ||
-       (mysqld_type == 'mariadb' && Puppet::Util::Package.versioncmp(mysqld_version, '10.2.0') >= 0)
-      mysql([defaults_file, system_database, '-e', "ALTER USER #{merged_name} REQUIRE #{merged_tls_options}"].compact)
+    if newer_than('mysql' => '5.7.6', 'percona' => '5.7.6', 'mariadb' => '10.2.0')
+      self.class.mysql_caller("ALTER USER #{merged_name} REQUIRE #{merged_tls_options}", 'system')
     else
-      mysql([defaults_file, system_database, '-e', "GRANT USAGE ON *.* TO #{merged_name} REQUIRE #{merged_tls_options}"].compact)
+      self.class.mysql_caller("GRANT USAGE ON *.* TO #{merged_name} REQUIRE #{merged_tls_options}", 'system')
     end
 
     (tls_options == array) ? (return true) : (return false)

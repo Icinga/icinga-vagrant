@@ -1,7 +1,7 @@
 require 'spec_helper_acceptance'
 require 'beaker/i18n_helper'
 
-describe 'mysql localization', if: (fact('osfamily') == 'Debian' || fact('osfamily') == 'RedHat') && puppet_version =~ %r{(^4\.10\.[56789]|5\.\d\.\d)} do
+describe 'mysql localization', if: (fact('osfamily') == 'Debian' || fact('osfamily') == 'RedHat') && (Gem::Version.new(puppet_version) >= Gem::Version.new('4.10.5')) do
   before :all do
     hosts.each do |host|
       on(host, "sed -i \"96i FastGettext.locale='ja'\" /opt/puppetlabs/puppet/lib/ruby/vendor_ruby/puppet.rb")
@@ -10,8 +10,16 @@ describe 'mysql localization', if: (fact('osfamily') == 'Debian' || fact('osfami
   end
 
   context 'when triggering puppet simple string error' do
+    # 'service_enabled' being set to false can cause random failures in Debian 9
+    let(:os_variant) do
+      if fact('operatingsystem') =~ %r{Debian} && fact('operatingsystemrelease') =~ %r{^9\.}
+        'true'
+      else
+        'false'
+      end
+    end
     let(:pp) do
-      <<-EOS
+      <<-MANIFEST
     class { 'mysql::server':
             config_file             => '/tmp/mysql.sFlJdV/my.cnf',
             includedir              => '/tmp/mysql.sFlJdV/include',
@@ -24,13 +32,13 @@ describe 'mysql localization', if: (fact('osfamily') == 'Debian' || fact('osfami
             root_group              => 'root',
             root_password           => 'test',
             old_root_password       => 'kittensnmittens',
-            service_enabled         => 'false'
+            service_enabled         => '#{os_variant}',
           }
-      EOS
+      MANIFEST
     end
 
     it 'displays Japanese error' do
-      apply_manifest(pp, catch_error: true) do |r|
+      execute_manifest(pp, catch_error: true) do |r|
         expect(r.stderr).to match(%r{`old_root_password`属性は廃止予定であり、今後のリリースで廃止されます。}i)
       end
     end
@@ -38,7 +46,7 @@ describe 'mysql localization', if: (fact('osfamily') == 'Debian' || fact('osfami
 
   context 'when triggering puppet interpolated string failure' do
     let(:pp) do
-      <<-EOS
+      <<-MANIFEST
     class { 'mysql::server': root_password => 'password' }
     class { 'mysql::server::backup':
               backupuser     => 'myuser',
@@ -49,11 +57,11 @@ describe 'mysql localization', if: (fact('osfamily') == 'Debian' || fact('osfami
               provider       => 'mysqldump',
               execpath       => '/usr/bin:/usr/sbin:/bin:/sbin:/opt/zimbra/bin',
           }
-      EOS
+      MANIFEST
     end
 
     it 'displays Japanese failure' do
-      apply_manifest(pp, catch_failures: true) do |r|
+      execute_manifest(pp, catch_failures: true) do |r|
         expect(r.stderr).to match(%r{'prescript'オプションは、現在、mysqldumpバックアッププロバイダ向けには実装されていません。}i)
       end
     end
@@ -61,18 +69,18 @@ describe 'mysql localization', if: (fact('osfamily') == 'Debian' || fact('osfami
 
   context 'when triggering ruby simple string failure' do
     let(:pp) do
-      <<-EOS
+      <<-MANIFEST
       mysql::db { 'mydb':
-        user     => 'thisisalongusernametestfortodayandtomorrowandthenextday',
+        user     => 'thisisalongusernametestfortodayandtomorrowandthenextdayandthedayafteeeeeeerrrrrrrrrrrrrrr',
         password => 'mypass',
         host     => 'localhost',
         grant    => ['SELECT', 'UPDATE'],
       }
-    EOS
+    MANIFEST
     end
 
     it 'displays Japanese failure' do
-      apply_manifest(pp, expect_failures: true) do |r|
+      execute_manifest(pp, expect_failures: true) do |r|
         expect(r.stderr).to match(%r{MySQLユーザ名は最大\d{2}文字に制限されています。}i)
       end
     end
@@ -80,15 +88,15 @@ describe 'mysql localization', if: (fact('osfamily') == 'Debian' || fact('osfami
 
   context 'when triggering ruby interpolated string error' do
     let(:pp) do
-      <<-EOS
+      <<-MANIFEST
       mysql_user{ '"name@localhost':
         ensure => 'present',
        }
-      EOS
+      MANIFEST
     end
 
     it 'displays Japanese error' do
-      apply_manifest(pp, expect_failures: true) do |r|
+      execute_manifest(pp, expect_failures: true) do |r|
         expect(r.stderr).to match(%r{無効なデータベースのユーザ"name@localhost}i)
       end
     end

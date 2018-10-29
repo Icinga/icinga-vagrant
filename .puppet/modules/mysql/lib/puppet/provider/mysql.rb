@@ -7,7 +7,7 @@ class Puppet::Provider::Mysql < Puppet::Provider
   ENV['PATH'] = ENV['PATH'] + ':/usr/libexec:/usr/local/libexec:/usr/local/bin'
 
   # rubocop:disable Style/HashSyntax
-  commands :mysql      => 'mysql'
+  commands :mysql_raw  => 'mysql'
   commands :mysqld     => 'mysqld'
   commands :mysqladmin => 'mysqladmin'
   # rubocop:enable Style/HashSyntax
@@ -50,12 +50,30 @@ class Puppet::Provider::Mysql < Puppet::Provider
     self.class.mysqld_version
   end
 
+  def self.newer_than(forks_versions)
+    forks_versions.keys.include?(mysqld_type) && Puppet::Util::Package.versioncmp(mysqld_version, forks_versions[mysqld_type]) >= 0
+  end
+
+  def newer_than(forks_versions)
+    self.class.newer_than(forks_versions)
+  end
+
   def defaults_file
     self.class.defaults_file
   end
 
+  def self.mysql_caller(text_of_sql, type)
+    if type.eql? 'system'
+      mysql_raw([defaults_file, system_database, '-e', text_of_sql].flatten.compact)
+    elsif type.eql? 'regular'
+      mysql_raw([defaults_file, '-NBe', text_of_sql].flatten.compact)
+    else
+      raise Puppet::Error, _("#mysql_caller: Unrecognised type '%{type}'" % { type: type })
+    end
+  end
+
   def self.users
-    mysql([defaults_file, '-NBe', "SELECT CONCAT(User, '@',Host) AS User FROM mysql.user"].compact).split("\n")
+    mysql_caller("SELECT CONCAT(User, '@',Host) AS User FROM mysql.user", 'regular').split("\n")
   end
 
   # Optional parameter to run a statement on the MySQL system database.
@@ -79,9 +97,9 @@ class Puppet::Provider::Mysql < Puppet::Provider
     # We can't escape *.* so special case this.
     table_string << if table == '*.*'
                       '*.*'
-                    # Special case also for PROCEDURES
-                    elsif table.start_with?('PROCEDURE ')
-                      table.sub(%r{^PROCEDURE (.*)(\..*)}, 'PROCEDURE `\1`\2')
+                    # Special case also for FUNCTIONs and PROCEDUREs
+                    elsif table.start_with?('FUNCTION ', 'PROCEDURE ')
+                      table.sub(%r{^(FUNCTION|PROCEDURE) (.*)(\..*)}, '\1 `\2`\3')
                     else
                       table.sub(%r{^(.*)(\..*)}, '`\1`\2')
                     end

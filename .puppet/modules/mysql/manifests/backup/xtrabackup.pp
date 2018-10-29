@@ -1,4 +1,7 @@
-# See README.me for usage.
+# @summary
+#   "Provider" for Percona XtraBackup
+# @api private
+#
 class mysql::backup::xtrabackup (
   $xtrabackup_package_name = $mysql::params::xtrabackup_package_name,
   $backupuser              = undef,
@@ -23,16 +26,15 @@ class mysql::backup::xtrabackup (
   $postscript              = false,
   $execpath                = '/usr/bin:/usr/sbin:/bin:/sbin',
   $optional_args           = [],
+  $additional_cron_args    = ''
 ) inherits mysql::params {
 
-  package{ $xtrabackup_package_name:
-    ensure  => $ensure,
-  }
+  ensure_packages($xtrabackup_package_name)
 
   if $backupuser and $backuppassword {
     mysql_user { "${backupuser}@localhost":
       ensure        => $ensure,
-      password_hash => mysql_password($backuppassword),
+      password_hash => mysql::password($backuppassword),
       require       => Class['mysql::server::root_password'],
     }
 
@@ -40,14 +42,14 @@ class mysql::backup::xtrabackup (
       ensure     => $ensure,
       user       => "${backupuser}@localhost",
       table      => '*.*',
-      privileges => [ 'RELOAD', 'LOCK TABLES', 'REPLICATION CLIENT' ],
+      privileges => [ 'RELOAD', 'PROCESS', 'LOCK TABLES', 'REPLICATION CLIENT' ],
       require    => Mysql_user["${backupuser}@localhost"],
     }
   }
 
   cron { 'xtrabackup-weekly':
     ensure  => $ensure,
-    command => "/usr/local/sbin/xtrabackup.sh ${backupdir}",
+    command => "/usr/local/sbin/xtrabackup.sh ${backupdir} ${additional_cron_args}",
     user    => 'root',
     hour    => $time[0],
     minute  => $time[1],
@@ -57,7 +59,7 @@ class mysql::backup::xtrabackup (
 
   cron { 'xtrabackup-daily':
     ensure  => $ensure,
-    command => "/usr/local/sbin/xtrabackup.sh --incremental ${backupdir}",
+    command => "/usr/local/sbin/xtrabackup.sh --incremental ${backupdir} ${additional_cron_args}",
     user    => 'root',
     hour    => $time[0],
     minute  => $time[1],
