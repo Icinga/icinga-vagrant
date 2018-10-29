@@ -2,6 +2,7 @@
 
 set -e
 
+PUPPET_AGENT_VERSION="5.5.7"
 OSTYPE="unknown"
 
 if [ -x /usr/bin/lsb_release ]; then
@@ -37,7 +38,7 @@ fi
 
 if ! rpm -q "puppet-agent" &>/dev/null; then
     echo "Installing Puppet 5..."
-    yum install -y puppet-agent-5.5.6
+    yum install -y puppet-agent-${PUPPET_AGENT_VERSION}
 fi
 
 if [ `getenforce` = 'Enforcing' ]; then
