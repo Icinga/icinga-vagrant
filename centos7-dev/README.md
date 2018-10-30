@@ -3,9 +3,9 @@
 This Vagrant VM comes pre-installed with CentOS 7 and
 all build requirements for Icinga 2.
 
-
 * ccache
 * gdb
+* Build environment with scripts
 
 ## SSH
 
@@ -53,3 +53,18 @@ i2_release
 ```
 make -j2 install -C debug
 ```
+
+### Run
+
+```
+/usr/local/icinga2/lib/icinga2/prepare-dirs /usr/local/icinga2/etc/sysconfig/icinga2
+
+icinga2 daemon
+```
+
+### GDB
+
+```
+gdb --args /usr/local/icinga2/lib64/icinga2/sbin/icinga2 daemon
+```
+

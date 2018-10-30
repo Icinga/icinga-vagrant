@@ -8,7 +8,7 @@
 # load the overridden settings.
 
 nodes = {
-  'icinga2-centos7' => {
+  'icinga2-centos7-dev' => {
     :box_virtualbox => 'bento/centos-7',
     :box_parallels  => 'bento/centos-7',
     :box_libvirt    => 'centos/7',
