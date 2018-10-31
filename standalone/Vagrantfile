@@ -83,7 +83,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # since Vagrant 2.0, sync folder type is SMB on macOS, force it back.
         override.vm.allowed_synced_folder_types = :rsync
 
-        node_config.vm.provision "shell", inline: 'echo "For Openstack provisioned hosts navigate to http://$1"', args: ['@@ssh_ip@@']
+        override.vm.provision "shell", inline: 'echo "For Openstack provisioned hosts navigate to http://$1"', args: ['@@ssh_ip@@']
       end
 
       # provider: libvirt
@@ -104,6 +104,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # sync generic hiera data
       node_config.vm.synced_folder "../.puppet/hieradata", "/hieradata", nfs_udp: false
+
+      # provisioner: prepare Puppet. This is needed for Openstack with node::ipaddress initialized to the assigned floating ip.
+      node_config.vm.provision :shell, :path => "../.puppet/scripts/shell_provisioner_pre_puppet.sh", :args => ['@@ssh_ip@@']
 
       # provisioner: install box using puppet manifest
       node_config.vm.provision :puppet do |puppet|
