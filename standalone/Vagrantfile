@@ -7,7 +7,6 @@ require VAGRANT_HOME + "/../tools/vagrant_helper"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   $nodes.each_pair do |name, options|
     config.vm.define name do |node_config|
-      node_config.vm.box = options[:box_virtualbox]
       node_config.vm.hostname = name + "." + options[:net]
       node_config.vm.box_url = options[:url] if options[:url]
       if options[:forwarded]
@@ -42,6 +41,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # provider: virtualbox
       node_config.vm.provider :virtualbox do |vb, override|
+        override.vm.box = options[:box_virtualbox]
+
         if Vagrant.has_plugin?("vagrant-vbguest")
           node_config.vbguest.auto_update = false
         end
@@ -59,6 +60,30 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ]
         vb.memory = options[:memory] if options[:memory]
         vb.cpus = options[:cpus] if options[:cpus]
+      end
+
+      # provider: openstack
+      node_config.vm.provider :openstack do |os, override|
+        override.ssh.username  = "#{ENV['OS_SSH_USER']}"
+        override.ssh.private_key_path = "#{ENV['OS_SSH_PRIVATE_KEY_PATH']}"
+        os.meta_args_support      = true
+        os.openstack_auth_url     = "#{ENV['OS_AUTH_URL']}"
+        os.username               = "#{ENV['OS_USERNAME']}"
+        os.password               = "#{ENV['OS_PASSWORD']}"
+        os.flavor                 = "#{ENV['OS_FLAVOR']}" # TODO: config
+        os.image                  = "#{ENV['OS_IMAGE']}" # TODO: config
+        os.project_name           = "#{ENV['OS_PROJECT_NAME']}" # TODO: config
+        os.keypair_name           = "#{ENV['OS_KEYPAIR_NAME']}"
+        os.networks               = [ "#{ENV['OS_PROJECT_NAME']}" ]
+        os.floating_ip_pool       = "#{ENV['OS_INTERFACE']}"
+        os.security_groups        = [ 'default', 'vagrant' ] # how to Vagrant escape
+        os.identity_api_version   = "#{ENV['OS_IDENTITY_API_VERSION']}"
+        os.domain_name            = "#{ENV['OS_USER_DOMAIN_NAME']}"
+
+        # since Vagrant 2.0, sync folder type is SMB on macOS, force it back.
+        node_config.vm.allowed_synced_folder_types = :rsync
+
+        node_config.vm.provision "shell", inline: 'echo "For Openstack provisioned hosts navigate to http://$1"', args: ['@@ssh_ip@@']
       end
 
       # provider: libvirt
