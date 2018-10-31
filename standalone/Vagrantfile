@@ -81,7 +81,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         os.domain_name            = "#{ENV['OS_USER_DOMAIN_NAME']}"
 
         # since Vagrant 2.0, sync folder type is SMB on macOS, force it back.
-        node_config.vm.allowed_synced_folder_types = :rsync
+        override.vm.allowed_synced_folder_types = :rsync
 
         node_config.vm.provision "shell", inline: 'echo "For Openstack provisioned hosts navigate to http://$1"', args: ['@@ssh_ip@@']
       end
