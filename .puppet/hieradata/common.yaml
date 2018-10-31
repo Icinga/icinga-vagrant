@@ -1,9 +1,8 @@
 ---
 # node::ipaddress is specified in `node/{::fqdn}.yaml`
 #
-icinga::icingaweb2::listen_ip:          "%{lookup('node::ipaddress')}"
-icinga::icingaweb2::fqdn:               "%{fqdn}"
 icinga::icinga2::node_name:             "%{fqdn}"
+icinga::dashing::icingaweb2::listen_ip: "%{lookup('node::ipaddress')}"
 
 graphite::carbon::listen_ip:            "%{lookup('node::ipaddress')}"
 graphite::carbon::listen_port:          "2003"

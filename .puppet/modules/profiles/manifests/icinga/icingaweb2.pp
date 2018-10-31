@@ -1,13 +1,11 @@
 class profiles::icinga::icingaweb2 (
-  $icingaweb2_listen_ip = '192.168.33.5',
-  $icingaweb2_fqdn = 'icingaweb2.vagrant-demo.icinga.com',
   $node_name = 'icinga2',
   $api_username = 'root',
   $api_password = 'icinga',
   $modules = {},
   $themes = {}
 ) {
-  apache::vhost { "${icingaweb2_fqdn}-http":
+  apache::vhost { "icingaweb2-http":
     priority        => 5,
     port            => '80',
     docroot         => '/var/www/html',
@@ -18,7 +16,7 @@ class profiles::icinga::icingaweb2 (
     ],
   }
 
-  apache::vhost { "${icingaweb2_fqdn}-https":
+  apache::vhost { "icingaweb2-https":
     priority        => 5,
     port            => '443',
     docroot         => '/var/www/html',
