@@ -241,16 +241,24 @@ Proceed here for an overview about all available [boxes](#boxes).
 
 ## Boxes <a id="boxes"></a>
 
-### Standalone <a id="boxes-standalone"></a>
+Each setup comes with the following basic tools installed:
 
-* 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Director](https://github.com/Icinga/icingaweb2-module-director), [Graphite](https://github.com/Icinga/icingaweb2-module-graphite), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Cube](https://github.com/Icinga/icingaweb2-module-cube), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
+  * [Director](https://github.com/Icinga/icingaweb2-module-director), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Cube](https://github.com/Icinga/icingaweb2-module-cube), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
   * [Community](https://exchange.icinga.com/search?q=category%3A%22Themes%22) themes
-* [Graphite](https://graphiteapp.org/)
-* [Grafana](https://grafana.com/)
-* [Dashing](https://github.com/dnsmichi/dashing-icinga2) for Icinga 2
+
+Additionally, specific integrations, tools and modules are prepared for each
+scenario.
+
+### Standalone <a id="boxes-standalone"></a>
+
+* Metrics
+  * [Graphite](https://graphiteapp.org/)
+  * [Graphite](https://github.com/Icinga/icingaweb2-module-graphite) module for Icinga Web 2
+  * [Grafana](https://grafana.com/)
+* Dashboards
+  * [Dashing](https://github.com/dnsmichi/dashing-icinga2) for Icinga 2
 
 Run Vagrant:
 
@@ -278,8 +286,6 @@ $ vagrant ssh -c "sudo systemctl start dashing-icinga2"
 ### Distributed <a id="boxes-distributed"></a>
 
 * 2 VMs as Icinga 2 Master/Satellite scenario
-* [Icinga 2](https://www.icinga.com/products/icinga-2/)
-* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
 
 Run Vagrant:
 
@@ -299,12 +305,9 @@ $ cd distributed && vagrant up
 
 ### InfluxDB <a id="boxes-influxdb"></a>
 
-* 1 VM
-* [Icinga 2](https://www.icinga.com/products/icinga-2/)
-* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Grafana](https://github.com/Mikesch-mp/icingaweb2-module-grafana) module
-* [InfluxDB](https://docs.influxdata.com/influxdb/)
-* [Grafana](https://grafana.com/)
+* Metrics
+  * [InfluxDB](https://docs.influxdata.com/influxdb/)
+  * [Grafana](https://github.com/Mikesch-mp/icingaweb2-module-grafana) module for Icinga Web 2
 
 Run Vagrant:
 
@@ -327,17 +330,13 @@ $ cd influxdb && vagrant up
   * [Elasticsearch](https://www.elastic.co/products/elasticsearch)
   * [icingabeat](https://github.com/icinga/icingabeat), [filebeat](https://www.elastic.co/products/beats/filebeat)
   * [Kibana](https://www.elastic.co/products/kibana)
-* [Icinga 2](https://www.icinga.com/products/icinga-2/)
-* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Elasticsearch](https://github.com/Icinga/icingaweb2-module-elasticsearch) module
+  * [Elasticsearch](https://github.com/Icinga/icingaweb2-module-elasticsearch) module for Icinga Web 2
 
 Run Vagrant:
 
 ```
 $ cd elastic && vagrant up
 ```
-
-Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-vagrant/issues/31).
 
 #### Application Interfaces
 
@@ -353,9 +352,6 @@ Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-
 ### Graylog <a id="boxes-graylog"></a>
 
 * [Graylog](https://www.graylog.org)
-* [Icinga 2](https://www.icinga.com/products/icinga-2/)
-* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Graylog](https://github.com/Icinga/icingaweb2-module-graylog) module
 
 Run Vagrant:
 

@@ -4,7 +4,7 @@ You'll need to have access to your OpenStack cloud platform and
 a ready to use local Vagrant installation.
 
 This documentation does not cover the OpenStack basics, just the
-required fields for one OpenStack setup.
+required fields for an OpenStack "vagrant up" run.
 
 > **Note**
 >
@@ -39,8 +39,6 @@ Open the OpenStack webinterface and navigate to `API Access > Compute > Key Pair
 
 Import a key pair, for demo cases use your own public SSH key.
 
-
-
 Note the private key path. Note the name of the key pair.
 
 Extract the default username from the image, for CentOS 7 that's just "centos".
@@ -61,7 +59,7 @@ export OS_FLAVOR=s2.medium
 
 ### Image
 
-Use the CentOS 7 image. Please do note that other distributions are not supported by the Vagrant boxes.
+Use the CentOS 7 image. **Other distributions are not supported.**
 
 ```
 export OS_IMAGE="Centos 7"
@@ -78,8 +76,8 @@ Specify the default pool for floating ips. Navigate to `Network > Floating IPs` 
 export OS_FLOATING_IP_POOL="public-network"
 ```
 
-Note: Vagrant automated detects the IP address from that pool, and uses this IP
-for automated Puppet/Hiera provisioning for external services (HTTP, Icinga, integrations).
+Note: Vagrant automatically detects the IP address from the specified floating IP pool
+and uses it for Puppet/Hiera provisioning for external services (HTTP, Icinga, integrations).
 
 ```
     icinga2: OpenStack SSH IP address detected: 185.11.255.22 for hostname icinga2.novalocal
