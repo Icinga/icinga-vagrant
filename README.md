@@ -80,7 +80,7 @@ Included Puppet modules in the `.puppet/modules` directory provide their own lic
 These boxes are built for demos and development tests only. Team members and partners
 may use these for their Icinga Camp presentations or any other event too.
 
-Join the [Icinga community channels](https://www.icinga.com/about/get-involved/) for questions.
+Join the [Icinga community channels](https://icinga.com/community) for questions.
 
 > **Note**
 >
@@ -101,10 +101,16 @@ One of these virtualization providers:
 * [Virtualbox](https://www.virtualbox.org/) >= 5.x
 * [Parallels Desktop Pro/Business](https://www.parallels.com/de/products/desktop/) >= 12
 * [libvirt](https://libvirt.org/)
+* [OpenStack](https://www.openstack.org/)
 
 Each Vagrant box setup requires at least 2 Cores and 2 GB RAM.
 The required resources are automatically configured during the
 `vagrant up` run.
+
+> **Note**
+>
+> OpenStack VMs are provisioned remotely in your cloud provider.
+> Please continue [here](doc/25-Openstack.md) for a full documentation.
 
 ## Linux <a id="requirements-linux"></a>
 
@@ -541,6 +547,7 @@ Thanks to all [contributors](AUTHORS)! :)
 * [mightydok](https://github.com/mightydok) for fixes on Virtualbox provider.
 * [joonas](https://github.com/joonas) for Puppet provisioner fixes.
 * [tomdc](https://github.com/tomdc) for his contributions to Icinga 1.x/Jasper.
+* [martbhell](https://github.com/martbhell) for the OpenStack provider.
 
 # Contributing <a id="contributing"></a>
 
@@ -548,13 +555,17 @@ Thanks to all [contributors](AUTHORS)! :)
 
 Each box uses a generic Vagrantfile to set the required resources for initial VM
 startup. The `Vagrantfile` includes the `Vagrantfile.nodes` file which defines
-VM specific settings.
+VM specific settings. In addition to that, `tools/vagrant_helper.rb` loads all
+pre-defined functions for provider and provisioner instantiation.
 
 The generic `shell_provisioner.sh` scripts ensure that all VM requirements are fulfilled
 and also takes care about installing Puppet which will be used as provisioner in the next
 step.
 
-The main entry point is the Puppet provisioner which calls the `manifest/default.pp`.
+For OpenStack, there's a special SSH IP address override in place which provisions Puppet/Hiera
+with an auto-generated config file. This is needed for all integrations to work properly.
+
+The main entry point is the Puppet provisioner which calls the `default.pp` environment resource.
 Anything compiled into this catalog will be installed into the VM.
 
 ## Base Boxes <a id="contributing-base-boxes"></a>
@@ -564,6 +575,7 @@ Provider        | Base Box
 VirtualBox      | [Bento](https://app.vagrantup.com/bento/)
 Parallels       | [Bento](https://app.vagrantup.com/bento/)
 libvirt         | [libvirt](https://app.vagrantup.com/centos/)
+OpenStack       | NWS CentOS 7
 
 Pull updates.
 
