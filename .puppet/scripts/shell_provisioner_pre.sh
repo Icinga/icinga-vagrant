@@ -16,7 +16,7 @@ else
 fi
 
 # TODO: Support more than just CentOS as base box
-if [ "$OSTYPE" != "RedHat" ] || [ "$OSTYPE" = "CentOS" ]; then
+if [ "$OSTYPE" != "RedHat" ] && [ "$OSTYPE" != "CentOS" ]; then
   echo "Unsupported OS!" >&2
   exit 1
 fi
