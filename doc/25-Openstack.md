@@ -99,7 +99,7 @@ Depending on the Vagrant box, you'd need the following opened ports:
 * 8005 for Dashing
 * 2003 for Graphite/Carbon
 * 8086 for InfluxDB
-* 9200 for Elasticsearch
+* 5602 for Kibana
 * 9000 for Graylog
 
 ## Installation

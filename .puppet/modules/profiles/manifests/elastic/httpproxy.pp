@@ -1,6 +1,12 @@
 class profiles::elastic::httpproxy (
   $listen_ip = '192.168.33.7',
-  $node_name = 'icinga2'
+  $node_name = 'icinga2',
+  $listen_ports = {
+     'kibana' => 5602,
+     'kibana_tls' => 5603,
+     'elasticsearch' => 9202,
+     'elasticsearch_tls' => 9203
+  }
 ) {
 
   # defaults to icinga:icinga
@@ -18,10 +24,9 @@ class profiles::elastic::httpproxy (
     content => template("profiles/elastic/elastic.passwd.erb")
   }->
   nginx::resource::server { 'elasticsearch.vagrant-demo.icinga.com':
-    listen_ip   => $listen_ip,
-    listen_port => 9200,
+    listen_port => $listen_ports['elasticsearch'],
     ssl         => true,
-    ssl_port    => 9202,
+    ssl_port    => $listen_ports['elasticsearch_tls'],
     ssl_cert    => "/var/lib/icinga2/certs/${node_name}.crt",
     ssl_key     => "/var/lib/icinga2/certs/${node_name}.key",
     ssl_trusted_cert => '/var/lib/icinga2/certs/ca.crt',
@@ -31,10 +36,9 @@ class profiles::elastic::httpproxy (
     auth_basic_user_file => "$elastic_basic_auth_file",
   }->
   nginx::resource::server { 'kibana.vagrant-demo.icinga.com':
-    listen_ip   => $listen_ip,
-    listen_port => 5601,
+    listen_port => $listen_ports['kibana'],
     ssl         => true,
-    ssl_port    => 5602,
+    ssl_port    => $listen_ports['kibana_tls'],
     ssl_cert    => "/var/lib/icinga2/certs/${node_name}.crt",
     ssl_key     => "/var/lib/icinga2/certs/${node_name}.key",
     ssl_trusted_cert => '/var/lib/icinga2/certs/ca.crt',

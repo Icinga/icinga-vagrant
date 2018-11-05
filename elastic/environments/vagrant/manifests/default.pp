@@ -48,8 +48,13 @@ node default {
   }
   ->
   class { '::profiles::elastic::httpproxy':
-    listen_ip => lookup('icinga::icingaweb2::listen_ip'),
-    node_name => lookup('icinga::icinga2::node_name')
+    node_name => lookup('icinga::icinga2::node_name'),
+    listen_ports => {
+      'kibana' => 5602,
+      'kibana_tls' => 5603,
+      'elasticsearch' => 9202,
+      'elasticsearch_tls' => 9203
+    }
   }
   ->
   class { '::profiles::elastic::filebeat':
