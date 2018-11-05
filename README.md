@@ -80,7 +80,7 @@ Included Puppet modules in the `.puppet/modules` directory provide their own lic
 These boxes are built for demos and development tests only. Team members and partners
 may use these for their Icinga Camp presentations or any other event too.
 
-Join the [Icinga community channels](https://www.icinga.com/about/get-involved/) for questions.
+Join the [Icinga community channels](https://icinga.com/community) for questions.
 
 > **Note**
 >
@@ -101,10 +101,16 @@ One of these virtualization providers:
 * [Virtualbox](https://www.virtualbox.org/) >= 5.x
 * [Parallels Desktop Pro/Business](https://www.parallels.com/de/products/desktop/) >= 12
 * [libvirt](https://libvirt.org/)
+* [OpenStack](https://www.openstack.org/)
 
 Each Vagrant box setup requires at least 2 Cores and 2 GB RAM.
 The required resources are automatically configured during the
 `vagrant up` run.
+
+> **Note**
+>
+> OpenStack VMs are provisioned remotely in your cloud provider.
+> Please continue [here](doc/25-Openstack.md) for a full documentation.
 
 ## Linux <a id="requirements-linux"></a>
 
@@ -235,16 +241,24 @@ Proceed here for an overview about all available [boxes](#boxes).
 
 ## Boxes <a id="boxes"></a>
 
-### Standalone <a id="boxes-standalone"></a>
+Each setup comes with the following basic tools installed:
 
-* 1 VM
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Director](https://github.com/Icinga/icingaweb2-module-director), [Graphite](https://github.com/Icinga/icingaweb2-module-graphite), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Cube](https://github.com/Icinga/icingaweb2-module-cube), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
+  * [Director](https://github.com/Icinga/icingaweb2-module-director), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Cube](https://github.com/Icinga/icingaweb2-module-cube), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
   * [Community](https://exchange.icinga.com/search?q=category%3A%22Themes%22) themes
-* [Graphite](https://graphiteapp.org/)
-* [Grafana](https://grafana.com/)
-* [Dashing](https://github.com/dnsmichi/dashing-icinga2) for Icinga 2
+
+Additionally, specific integrations, tools and modules are prepared for each
+scenario.
+
+### Standalone <a id="boxes-standalone"></a>
+
+* Metrics
+  * [Graphite](https://graphiteapp.org/)
+  * [Graphite](https://github.com/Icinga/icingaweb2-module-graphite) module for Icinga Web 2
+  * [Grafana](https://grafana.com/)
+* Dashboards
+  * [Dashing](https://github.com/dnsmichi/dashing-icinga2) for Icinga 2
 
 Run Vagrant:
 
@@ -272,8 +286,6 @@ $ vagrant ssh -c "sudo systemctl start dashing-icinga2"
 ### Distributed <a id="boxes-distributed"></a>
 
 * 2 VMs as Icinga 2 Master/Satellite scenario
-* [Icinga 2](https://www.icinga.com/products/icinga-2/)
-* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
 
 Run Vagrant:
 
@@ -293,12 +305,9 @@ $ cd distributed && vagrant up
 
 ### InfluxDB <a id="boxes-influxdb"></a>
 
-* 1 VM
-* [Icinga 2](https://www.icinga.com/products/icinga-2/)
-* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Grafana](https://github.com/Mikesch-mp/icingaweb2-module-grafana) module
-* [InfluxDB](https://docs.influxdata.com/influxdb/)
-* [Grafana](https://grafana.com/)
+* Metrics
+  * [InfluxDB](https://docs.influxdata.com/influxdb/)
+  * [Grafana](https://github.com/Mikesch-mp/icingaweb2-module-grafana) module for Icinga Web 2
 
 Run Vagrant:
 
@@ -321,9 +330,7 @@ $ cd influxdb && vagrant up
   * [Elasticsearch](https://www.elastic.co/products/elasticsearch)
   * [icingabeat](https://github.com/icinga/icingabeat), [filebeat](https://www.elastic.co/products/beats/filebeat)
   * [Kibana](https://www.elastic.co/products/kibana)
-* [Icinga 2](https://www.icinga.com/products/icinga-2/)
-* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Elasticsearch](https://github.com/Icinga/icingaweb2-module-elasticsearch) module
+  * [Elasticsearch](https://github.com/Icinga/icingaweb2-module-elasticsearch) module for Icinga Web 2
 
 Run Vagrant:
 
@@ -331,25 +338,20 @@ Run Vagrant:
 $ cd elastic && vagrant up
 ```
 
-Note: Logstash integration is missing in [#31](https://github.com/Icinga/icinga-vagrant/issues/31).
-
 #### Application Interfaces
 
   Application               | Url                               | Credentials
   --------------------------|-----------------------------------|----------------
   Icinga Web 2              | http://192.168.33.7/icingaweb2    | icingaadmin/icinga
   Icinga 2 API              | https://192.168.33.7:5665/v1      | root/icinga
-  Kibana                    | http://192.168.33.7:5601          | icinga/icinga
-  Elasticsearch/Nginx       | http://192.168.33.7:9200	        | icinga/icinga
-  Kibana (TLS)              | https://192.168.33.7:5602         | icinga/icinga
-  Elasticsearch/Nginx (TLS) | https://192.168.33.7:9202	        | icinga/icinga
+  Kibana                    | http://192.168.33.7:5602          | icinga/icinga
+  Elasticsearch/Nginx       | http://192.168.33.7:9202	        | icinga/icinga
+  Kibana (TLS)              | https://192.168.33.7:5603         | icinga/icinga
+  Elasticsearch/Nginx (TLS) | https://192.168.33.7:9203	        | icinga/icinga
 
 ### Graylog <a id="boxes-graylog"></a>
 
 * [Graylog](https://www.graylog.org)
-* [Icinga 2](https://www.icinga.com/products/icinga-2/)
-* [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
-  * [Graylog](https://github.com/Icinga/icingaweb2-module-graylog) module
 
 Run Vagrant:
 
@@ -541,6 +543,7 @@ Thanks to all [contributors](AUTHORS)! :)
 * [mightydok](https://github.com/mightydok) for fixes on Virtualbox provider.
 * [joonas](https://github.com/joonas) for Puppet provisioner fixes.
 * [tomdc](https://github.com/tomdc) for his contributions to Icinga 1.x/Jasper.
+* [martbhell](https://github.com/martbhell) for the OpenStack provider.
 
 # Contributing <a id="contributing"></a>
 
@@ -548,13 +551,17 @@ Thanks to all [contributors](AUTHORS)! :)
 
 Each box uses a generic Vagrantfile to set the required resources for initial VM
 startup. The `Vagrantfile` includes the `Vagrantfile.nodes` file which defines
-VM specific settings.
+VM specific settings. In addition to that, `tools/vagrant_helper.rb` loads all
+pre-defined functions for provider and provisioner instantiation.
 
 The generic `shell_provisioner.sh` scripts ensure that all VM requirements are fulfilled
 and also takes care about installing Puppet which will be used as provisioner in the next
 step.
 
-The main entry point is the Puppet provisioner which calls the `manifest/default.pp`.
+For OpenStack, there's a special SSH IP address override in place which provisions Puppet/Hiera
+with an auto-generated config file. This is needed for all integrations to work properly.
+
+The main entry point is the Puppet provisioner which calls the `default.pp` environment resource.
 Anything compiled into this catalog will be installed into the VM.
 
 ## Base Boxes <a id="contributing-base-boxes"></a>
@@ -564,6 +571,7 @@ Provider        | Base Box
 VirtualBox      | [Bento](https://app.vagrantup.com/bento/)
 Parallels       | [Bento](https://app.vagrantup.com/bento/)
 libvirt         | [libvirt](https://app.vagrantup.com/centos/)
+OpenStack       | NWS CentOS 7
 
 Pull updates.
 
