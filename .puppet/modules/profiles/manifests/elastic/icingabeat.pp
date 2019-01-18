@@ -8,7 +8,7 @@ class profiles::elastic::icingabeat (
 ) {
   yum::install { 'icingabeat':
     ensure => present,
-    source => "https://github.com/Icinga/icingabeat/releases/download/v${icingabeat_version}/icingabeat-${icingabeat_version}.x86_64.rpm"
+    source => "https://github.com/Icinga/icingabeat/releases/download/v${icingabeat_version}/icingabeat-${icingabeat_version}-x86_64.rpm"
   }
   ->
   file { '/etc/icingabeat/icingabeat.yml':
@@ -27,19 +27,9 @@ class profiles::elastic::icingabeat (
     timeout => 1800
   }
   ->
-  archive { '/tmp/icingabeat-dashboards.zip':
-    ensure => present,
-    extract => true,
-    extract_path => '/tmp',
-    source => "https://github.com/Icinga/icingabeat/releases/download/v${icingabeat_version}/icingabeat-dashboards-${icingabeat_version}.zip",
-    creates => "/tmp/icingabeat-dashboards-${icingabeat_version}",
-    cleanup => true,
-    require => Package['unzip']
-  }
-  ->
-  exec { 'icingabeat-kibana-dashboards':
+  exec { 'icingabeat-setup':
     path => '/bin:/usr/bin:/sbin:/usr/sbin',
-    command => '/usr/share/icingabeat/bin/icingabeat -c /etc/icingabeat/icingabeat.yml -path.home /usr/share/icingabeat -path.config /etc/icingabeat -path.data /var/lib/icingabeat -path.logs /var/log/icingabeat setup',
+    command => 'icingabeat setup',
     require => Yum::Install['icingabeat']
   }
   ->

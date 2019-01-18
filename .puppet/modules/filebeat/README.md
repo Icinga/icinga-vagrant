@@ -38,7 +38,7 @@ with required configurations.
 
 ### Upgrading to Filebeat 6.x
 
-To upgrade to Filebeat 6.x, simply set `$filebeat::major_version` to `6` and `$filebeat::package_ensure` to `latest`.
+To upgrade to Filebeat 6.x, simply set `$filebeat::major_version` to `6` and `$filebeat::package_ensure` to `latest` (or whichever version of 6.x you want, just not present).
 
 
 ### Setup Requirements
@@ -66,7 +66,6 @@ class { 'filebeat':
        'http://anotherserver:9200'
      ],
      'loadbalance' => true,
-     'index'       => 'packetbeat',
      'cas'         => [
         '/etc/pki/root/ca.pem',
      ],
@@ -155,7 +154,7 @@ To drop the offset and input_type fields from all events:
 class{"filebeat":
   processors => {
     "drop_fields" => {
-      "params" => {"fields" => ["input_type", "offset"]}
+      "fields" => ["input_type", "offset"],
     },
   },
 }
@@ -225,14 +224,15 @@ Installs and configures filebeat.
   prospectors and processors passed as parameters are ignored and everything managed by
   puppet will be removed. (default: present)
 - `manage_repo`: [Boolean] Whether or not the upstream (elastic) repo should be configured or not (default: true)
-- `major_version`: [Enum] The major version of Filebeat to install. Should be either `5` or `6`. The default value is `5`.
+- `major_version`: [Enum] The major version of Filebeat to install. Should be either `'5'` or `'6'`. The default value is `'6'`, except
+   for OpenBSD 6.3 and earlier, which has a default value of `'5'`.
 - `service_ensure`: [String] The ensure parameter on the filebeat service (default: running)
 - `service_enable`: [String] The enable parameter on the filebeat service (default: true)
 - `param repo_priority`: [Integer] Repository priority.  yum and apt supported (default: undef)
 - `service_provider`: [String] The provider parameter on the filebeat service (default: on RedHat based systems use redhat, otherwise undefined)
 - `spool_size`: [Integer] How large the spool should grow before being flushed to the network (default: 2048)
 - `idle_timeout`: [String] How often the spooler should be flushed even if spool size isn't reached (default: 5s)
-- `publish_async`: [Boolean] If set to true filebeat will publish while preparing the next batch of lines to transmit (defualt: false)
+- `publish_async`: [Boolean] If set to true filebeat will publish while preparing the next batch of lines to transmit (default: false)
 - `registry_file`: [String] The registry file used to store positions, must be an absolute path (default is OS dependent - see params.pp)
 - `config_file`: [String] Where the configuration file managed by this module should be placed. If you think
   you might want to use this, read the [limitations](#using-config_file) first. Defaults to the location
@@ -248,6 +248,7 @@ Installs and configures filebeat.
 - `outputs`: [Hash] Will be converted to YAML for the required outputs section of the configuration (see documentation, and above)
 - `shipper`: [Hash] Will be converted to YAML to create the optional shipper section of the filebeat config (see documentation)
 - `logging`: [Hash] Will be converted to YAML to create the optional logging section of the filebeat config (see documentation)
+- `modules`: [Array] Will be converted to YAML to create the optional modules section of the filebeat config (see documentation)
 - `conf_template`: [String] The configuration template to use to generate the main filebeat.yml config file.
 - `download_url`: [String] The URL of the zip file that should be downloaded to install filebeat (windows only)
 - `install_dir`: [String] Where filebeat should be installed (windows only)
@@ -262,6 +263,8 @@ Installs and configures filebeat.
 - `disable_config_test`: [Boolean] If set to true, configuration tests won't be run on config files before writing them.
 - `processors`: [Hash] Processors that should be configured.
 - `prospectors`: [Hash] Prospectors that will be created. Commonly used to create prospectors using hiera
+- `setup`: [Hash] Setup that will be created. Commonly used to create setup using hiera
+- `xpack`: [Hash] XPack configuration to pass to filebeat
 
 ### Private Classes
 
@@ -304,10 +307,15 @@ to fully understand what these parameters do.
 
 **Parameters for `filebeat::prospector`**
   - `ensure`: The ensure parameter on the prospector configuration file. (default: present)
-  - `paths`: [Array] The paths, or blobs that should be handled by the prospector. (required)
+  - `paths`: [Array] The paths, or blobs that should be handled by the prospector. (required only if input_type is not _docker_)
+  - `containers_ids`: [Array] If input_type is _docker_, the list of Docker container ids to read the logs from. (default: '*')
+  - `containers_path`: [String] If input_type is _docker_, the path from where the logs should be read from. (default: /var/log/docker/containers)
+  - `containers_stream`: [String] If input_type is _docker_, read from the specified stream only. (default: all)
+  - `combine_partial`: [Boolean] If input_type is _docker_, enable partial messages joining. (default: false)
+  - `cri_parse_flags`: [Boolean] If input_type is _docker_, enable CRI flags parsing from the log file. (default: false)
   - `exclude_files`: [Array] Files that match any regex in the list are excluded from filebeat (default: [])
   - `encoding`: [String] The file encoding. (default: plain)
-  - `input_type`: [String] log or stdin - where filebeat reads the log from (default:log)
+  - `input_type`: [String] log, docker or stdin - where filebeat reads the log from (default:log)
   - `fields`: [Hash] Optional fields to add information to the output (default: {})
   - `fields_under_root`: [Boolean] Should the `fields` parameter fields be stored at the top level of indexed documents.
   - `ignore_older`: [String] Files older than this field will be ignored by filebeat (default: ignore nothing)

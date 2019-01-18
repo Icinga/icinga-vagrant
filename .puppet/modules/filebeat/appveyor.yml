@@ -1,3 +1,4 @@
+---
 version: 1.1.x.{build}
 skip_commits:
   message: /^\(?doc\)?.*/
@@ -9,38 +10,38 @@ init:
   - 'mkdir C:\ProgramData\PuppetLabs\hiera && exit 0'
   - 'mkdir C:\ProgramData\PuppetLabs\puppet\var && exit 0'
 environment:
-  PUPPET_GEM_VERSION: ~> 4.0
   matrix:
     -
       RUBY_VERSION: 24-x64
-      CHECK: syntax lint
+      CHECK: syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop
     -
-      RUBY_VERSION: 24-x64
-      CHECK: metadata_lint
+      PUPPET_GEM_VERSION: ~> 4.0
+      RUBY_VERSION: 21
+      CHECK: parallel_spec
     -
-      RUBY_VERSION: 24-x64
-      CHECK: rubocop
-    -
-      RUBY_VERSION: 24-x64
-      CHECK: spec
-    -
+      PUPPET_GEM_VERSION: ~> 4.0
       RUBY_VERSION: 21-x64
-      CHECK: spec
+      CHECK: parallel_spec
+    -
+      PUPPET_GEM_VERSION: ~> 5.0
+      RUBY_VERSION: 24
+      CHECK: parallel_spec
+    -
+      PUPPET_GEM_VERSION: ~> 5.0
+      RUBY_VERSION: 24-x64
+      CHECK: parallel_spec
+    -
+      PUPPET_GEM_VERSION: ~> 6.0
+      RUBY_VERSION: 25
+      CHECK: parallel_spec
+    -
+      PUPPET_GEM_VERSION: ~> 6.0
+      RUBY_VERSION: 25-x64
+      CHECK: parallel_spec
 matrix:
   fast_finish: true
 install:
   - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
-  # Due to a bug in the version of OpenSSL shipped with Ruby 2.4.1 on Windows
-  # (https://bugs.ruby-lang.org/issues/11033). Errors are ignored because the
-  # mingw gem calls out to pacman to install OpenSSL which is already
-  # installed, causing gem to raise a warning that powershell determines to be
-  # a fatal error.
-  - ps: |
-      $ErrorActionPreference = "SilentlyContinue"
-      if($env:RUBY_VERSION -eq "24-x64") {
-        gem install openssl "~> 2.0.4" --no-rdoc --no-ri -- --with-openssl-dir=C:\msys64\mingw64
-      }
-      $host.SetShouldExit(0)
   - bundle install --jobs 4 --retry 2 --without system_tests
   - type Gemfile.lock
 build: off

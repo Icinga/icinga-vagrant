@@ -38,11 +38,11 @@ graphite::version:                      "1.1.2"
 icinga::director::version:              "v1.5.2"
 
 elastic::repo::version:                 6
-elastic::elasticsearch::version:        "6.3.1"
-elastic::kibana::version:               "6.3.1-1" # revision is important
-elastic::icingabeat::version:           "6.1.1"
+elastic::elasticsearch::version:        "6.5.4"
+elastic::kibana::version:               "6.5.4-1" # revision is important
+elastic::icingabeat::version:           "6.5.4"
 # keep this in sync with the icingabeat dashboard ids!
-elastic::kibana::default_app_id:        "dashboard/34e97340-e4ce-11e7-b4d1-8383451ae5a4"
+elastic::kibana::default_app_id:        "dashboard/a13f1a80-e4cf-11e7-b4d1-8383451ae5a4"
 
 graylog::repo::version:                 "2.4"
 graylog::elasticsearch::repo_version:   5

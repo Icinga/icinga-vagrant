@@ -19,7 +19,7 @@ describe 'filebeat::install' do
       case os_facts[:kernel]
       when 'Linux'
         it { is_expected.to contain_class('filebeat::install::linux') }
-        it { is_expected.to contain_class('filebeat::repo') }
+        it { is_expected.to contain_class('filebeat::repo') } unless os_facts[:os]['family'] == 'Archlinux'
         it { is_expected.not_to contain_class('filebeat::install::windows') }
 
       when 'Windows'

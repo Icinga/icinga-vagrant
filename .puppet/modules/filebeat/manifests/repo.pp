@@ -9,7 +9,9 @@ class filebeat::repo {
 
   case $::osfamily {
     'Debian': {
-      include ::apt
+      if $::filebeat::manage_apt == true {
+        include ::apt
+      }
 
       Class['apt::update'] -> Package['filebeat']
 
@@ -54,13 +56,13 @@ class filebeat::repo {
           autorefresh => 1,
           name        => 'beats',
           gpgcheck    => 1,
-          gpgkey      => 'http://packages.elastic.co/GPG-KEY-elasticsearch',
+          gpgkey      => 'https://packages.elastic.co/GPG-KEY-elasticsearch',
           type        => 'yum',
         }
       }
     }
     default: {
-      fail($filebeat::kernel_fail_message)
+      fail($filebeat::osfamily_fail_message)
     }
   }
 

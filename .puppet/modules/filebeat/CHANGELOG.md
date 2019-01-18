@@ -2,8 +2,87 @@ Changelog
 =========
 
 ## Unreleased
-[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v2.3.0...HEAD)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.3.2...HEAD)
 
+
+## [v3.3.3](https://github.com/pcfens/puppet-filebeat/tree/v3.3.3)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.3.2...v3.3.3)
+
+- Add a harvester limit [\#196](https://github.com/pcfens/puppet-filebeat/pull/196)
+- Fix documentaion error [\#198](https://github.com/pcfens/puppet-filebeat/issues/198)
+- Fix Puppet 4.10 undefined method error [\#199](https://github.com/pcfens/puppet-filebeat/pull/199)
+
+## [v3.3.2](https://github.com/pcfens/puppet-filebeat/tree/v3.3.2)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.3.1...v3.3.2)
+
+- Produce valid YAML for prospectors [\#193](https://github.com/pcfens/puppet-filebeat/pull/193)
+- Upgrade to PDK 1.7.1
+- Add tests for Puppet 6
+- Add Puppet 6 support to metadata
+
+## [v3.3.1](https://github.com/pcfens/puppet-filebeat/tree/v3.3.1)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.3.0...v3.3.1)
+
+- Add a new `manage_apt` flag for disabling the inclusion of puppetlabs/apt [\#185](https://github.com/pcfens/puppet-filebeat/pull/185)
+
+## [v3.3.0](https://github.com/pcfens/puppet-filebeat/tree/v3.3.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.2.2...v3.3.0)
+
+- Allow use of puppet/archive 3.x [\#190](https://github.com/pcfens/puppet-filebeat/pull/190)
+- Add support for Docker inputs [\#191](https://github.com/pcfens/puppet-filebeat/pull/191)
+- Support puppetlabs/stdlib 5.x
+
+## [v3.2.2](https://github.com/pcfens/puppet-filebeat/tree/v3.2.2)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.2.1...v3.2.2)
+
+- Don't add xpack configuration when it's undef [\#187](https://github.com/pcfens/puppet-filebeat/pull/187)
+- Don't disallow using puppetlabs/apt 6.x (check their [changelog](https://forge.puppet.com/puppetlabs/apt/changelog#600-2018-08-24) as this release drops support for Puppet pre 4.7) [\#186](https://github.com/pcfens/puppet-filebeat/pull/186)
+- Use the latest PDK
+
+## [v3.2.1](https://github.com/pcfens/puppet-filebeat/tree/v3.2.1)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.2.0...v3.2.1)
+
+- Fetch the suse repository signing key over https [\#176](https://github.com/pcfens/puppet-filebeat/issues/176)
+
+## [v3.2.0](https://github.com/pcfens/puppet-filebeat/tree/v3.2.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.1.0...v3.2.0)
+
+- Add support for xpack monitoring [\#172](https://github.com/pcfens/puppet-filebeat/pull/172)
+- Add support for OpenBSD [\#173](https://github.com/pcfens/puppet-filebeat/pull/173)
+- Set filebeat_version to false when filebeat isn't installed [\#175](https://github.com/pcfens/puppet-filebeat/pull/175)
+
+## [v3.1.0](https://github.com/pcfens/puppet-filebeat/tree/v3.1.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.0.1...v3.1.0)
+
+- Manage filebeat modules as an array [\#168](https://github.com/pcfens/puppet-filebeat/pull/168)
+
+## [v3.0.1](https://github.com/pcfens/puppet-filebeat/tree/v3.0.1)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.0.0...v3.0.1)
+
+- Fix array validation in prospector defined resource [\#166](https://github.com/pcfens/puppet-filebeat/pull/166)
+
+## [v3.0.0](https://github.com/pcfens/puppet-filebeat/tree/v3.0.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v2.4.0...v3.0.0)
+
+Potentially Breaking Change:
+- Make filebeat 6 the default version.
+
+Non-breaking changes:
+- Allow setup entries in configuration [\#152](https://github.com/pcfens/puppet-filebeat/pull/152), [\#146](https://github.com/pcfens/puppet-filebeat/issues/146)
+- Processors should be an array of hashes [\#157](https://github.com/pcfens/puppet-filebeat/pull/157), [\#156](https://github.com/pcfens/puppet-filebeat/issues/156)
+- Validate URLs using stdlib [\#158](https://github.com/pcfens/puppet-filebeat/pull/158)
+- Use external configuration setup for Filebeat 6+  [\#153](https://github.com/pcfens/puppet-filebeat/issues/153)
+- Use version subcommand when determining version [\#159](https://github.com/pcfens/puppet-filebeat/issues/159)
+- Add processors support to prospectors [\#162](https://github.com/pcfens/puppet-filebeat/pull/162)
+- Update unsupported OS Family notice [\#161](https://github.com/pcfens/puppet-filebeat/pull/161)
+- Use Puppet 4+ data types for prospectors [\#165](https://github.com/pcfens/puppet-filebeat/pull/165)
+- Fix windows validation command [\#164](https://github.com/pcfens/puppet-filebeat/pull/164), [\#163](https://github.com/pcfens/puppet-filebeat/issues/163)
+
+## [v2.4.0](https://github.com/pcfens/puppet-filebeat/tree/v2.4.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v2.3.0...v2.4.0)
+
+- Add support for FreeBSD [\#130](https://github.com/pcfens/puppet-filebeat/pull/130)
+- Add support for Archlinux [\#147](https://github.com/pcfens/puppet-filebeat/pull/147)
 
 ## [v2.3.0](https://github.com/pcfens/puppet-filebeat/tree/v2.3.0)
 [Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v2.2.0...v2.3.0)

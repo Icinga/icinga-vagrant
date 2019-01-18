@@ -7,94 +7,126 @@
 # @example
 #   filebeat::prospector { 'namevar': }
 define filebeat::prospector (
-  $ensure                = present,
-  $paths                 = [],
-  $exclude_files         = [],
-  $encoding              = 'plain',
-  $input_type            = 'log',
-  $fields                = {},
-  $fields_under_root     = false,
-  $ignore_older          = undef,
-  $close_older           = undef,
-  $doc_type              = 'log',
-  $scan_frequency        = '10s',
-  $harvester_buffer_size = 16384,
-  $tail_files            = false,
-  $backoff               = '1s',
-  $max_backoff           = '10s',
-  $backoff_factor        = 2,
-  $close_inactive        = '5m',
-  $close_renamed         = false,
-  $close_removed         = true,
-  $close_eof             = false,
-  $clean_inactive        = 0,
-  $clean_removed         = true,
-  $close_timeout         = 0,
-  $force_close_files     = false,
-  $include_lines         = [],
-  $exclude_lines         = [],
-  $max_bytes             = '10485760',
-  $multiline             = {},
-  $json                  = {},
-  $tags                  = [],
-  $symlinks              = false,
-  $pipeline              = undef,
+  Enum['absent', 'present'] $ensure  = present,
+  Array[String] $paths               = [],
+  Array[String] $exclude_files       = [],
+  Array[String] $containers_ids      = ['\'*\''],
+  String $containers_path            = '/var/lib/docker/containers',
+  String $containers_stream          = 'all',
+  Boolean $combine_partial           = false,
+  Boolean $cri_parse_flags           = false,
+  String $encoding                   = 'plain',
+  String $input_type                 = 'log',
+  Hash $fields                       = {},
+  Boolean $fields_under_root         = false,
+  Optional[String] $ignore_older     = undef,
+  Optional[String] $close_older      = undef,
+  String $doc_type                   = 'log',
+  String $scan_frequency             = '10s',
+  Integer $harvester_buffer_size     = 16384,
+  Optional[Integer] $harvester_limit = undef,
+  Boolean $tail_files                = false,
+  String $backoff                    = '1s',
+  String $max_backoff                = '10s',
+  Integer $backoff_factor            = 2,
+  String $close_inactive             = '5m',
+  Boolean $close_renamed             = false,
+  Boolean $close_removed             = true,
+  Boolean $close_eof                 = false,
+  Integer $clean_inactive            = 0,
+  Boolean $clean_removed             = true,
+  Integer $close_timeout             = 0,
+  Boolean $force_close_files         = false,
+  Array[String] $include_lines       = [],
+  Array[String] $exclude_lines       = [],
+  String $max_bytes                  = '10485760',
+  Hash $multiline                    = {},
+  Hash $json                         = {},
+  Array[String] $tags                = [],
+  Boolean $symlinks                  = false,
+  Optional[String] $pipeline         = undef,
+  Array $processors                  = [],
 ) {
 
-  validate_hash($fields, $multiline, $json)
-  validate_array($paths, $exclude_files, $include_lines, $exclude_lines, $tags)
-  validate_bool($tail_files, $close_renamed, $close_removed, $close_eof, $clean_removed, $symlinks)
+  $prospector_template = $filebeat::major_version ? {
+    '5'     => 'prospector5.yml.erb',
+    default => 'prospector.yml.erb',
+  }
 
-  $prospector_template = 'prospector.yml.erb'
+  if $::filebeat_version {
+    $skip_validation = versioncmp($::filebeat_version, $filebeat::major_version) ? {
+      -1      => true,
+      default => false,
+    }
+  } else {
+    $skip_validation = false
+  }
 
   case $::kernel {
-    'Linux' : {
-      if !$filebeat::disable_config_test {
-        file { "filebeat-${name}":
-          ensure       => $ensure,
-          path         => "${filebeat::config_dir}/${name}.yml",
-          owner        => 'root',
-          group        => 'root',
-          mode         => $::filebeat::config_file_mode,
-          content      => template("${module_name}/${prospector_template}"),
-          validate_cmd => '/usr/share/filebeat/bin/filebeat -N -configtest -c %',
-          notify       => Service['filebeat'],
-        }
-      } else {
-        file { "filebeat-${name}":
-          ensure  => $ensure,
-          path    => "${filebeat::config_dir}/${name}.yml",
-          owner   => 'root',
-          group   => 'root',
-          mode    => $::filebeat::config_file_mode,
-          content => template("${module_name}/${prospector_template}"),
-          notify  => Service['filebeat'],
-        }
-
+    'Linux', 'OpenBSD' : {
+      $validate_cmd = ($filebeat::disable_config_test or $skip_validation) ? {
+        true    => undef,
+        default => $filebeat::major_version ? {
+          '5'     => "\"${filebeat::filebeat_path}\" -N -configtest -c \"%\"",
+          default => "\"${filebeat::filebeat_path}\" -c \"${filebeat::config_file}\" test config",
+        },
+      }
+      file { "filebeat-${name}":
+        ensure       => $ensure,
+        path         => "${filebeat::config_dir}/${name}.yml",
+        owner        => 'root',
+        group        => '0',
+        mode         => $::filebeat::config_file_mode,
+        content      => template("${module_name}/${prospector_template}"),
+        validate_cmd => $validate_cmd,
+        notify       => Service['filebeat'],
+        before       => File['filebeat.yml'],
       }
     }
+
+    'FreeBSD' : {
+      $validate_cmd = ($filebeat::disable_config_test or $skip_validation) ? {
+        true    => undef,
+        default => '/usr/local/sbin/filebeat -N -configtest -c %',
+      }
+      file { "filebeat-${name}":
+        ensure       => $ensure,
+        path         => "${filebeat::config_dir}/${name}.yml",
+        owner        => 'root',
+        group        => 'wheel',
+        mode         => $::filebeat::config_file_mode,
+        content      => template("${module_name}/${prospector_template}"),
+        validate_cmd => $validate_cmd,
+        notify       => Service['filebeat'],
+        before       => File['filebeat.yml'],
+      }
+    }
+
     'Windows' : {
-      $filebeat_path = 'c:\Program Files\Filebeat\filebeat.exe'
+      $cmd_install_dir = regsubst($filebeat::install_dir, '/', '\\', 'G')
+      $filebeat_path = join([$cmd_install_dir, 'Filebeat', 'filebeat.exe'], '\\')
 
-      if !$filebeat::disable_config_test {
-        file { "filebeat-${name}":
-          ensure       => $ensure,
-          path         => "${filebeat::config_dir}/${name}.yml",
-          content      => template("${module_name}/${prospector_template}"),
-          validate_cmd => "\"${filebeat_path}\" -N -configtest -c \"%\"",
-          notify       => Service['filebeat'],
-        }
-      } else {
-        file { "filebeat-${name}":
-          ensure  => $ensure,
-          path    => "${filebeat::config_dir}/${name}.yml",
-          content => template("${module_name}/${prospector_template}"),
-          notify  => Service['filebeat'],
-        }
+      $validate_cmd = ($filebeat::disable_config_test or $skip_validation) ? {
+        true    => undef,
+        default => $::filebeat_version ? {
+          '5'     => "\"${filebeat_path}\" -N -configtest -c \"%\"",
+          default => "\"${filebeat_path}\" -c \"${filebeat::config_file}\" test config",
+        },
+      }
+
+      file { "filebeat-${name}":
+        ensure       => $ensure,
+        path         => "${filebeat::config_dir}/${name}.yml",
+        content      => template("${module_name}/${prospector_template}"),
+        validate_cmd => $validate_cmd,
+        notify       => Service['filebeat'],
+        before       => File['filebeat.yml'],
       }
     }
+
     default : {
       fail($filebeat::kernel_fail_message)
     }
+
   }
 }

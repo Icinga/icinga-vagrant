@@ -17,6 +17,16 @@ class filebeat::install {
         Class['filebeat::repo'] -> Class['filebeat::install::linux']
       }
     }
+    'FreeBSD': {
+      class{ '::filebeat::install::freebsd':
+        notify => Class['filebeat::service'],
+      }
+      Anchor['filebeat::install::begin'] -> Class['filebeat::install::freebsd'] -> Anchor['filebeat::install::end']
+    }
+    'OpenBSD': {
+      class{'filebeat::install::openbsd':}
+      Anchor['filebeat::install::begin'] -> Class['filebeat::install::openbsd'] -> Anchor['filebeat::install::end']
+    }
     'Windows': {
       class{'::filebeat::install::windows':
         notify => Class['filebeat::service'],

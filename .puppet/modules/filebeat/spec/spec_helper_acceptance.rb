@@ -7,7 +7,7 @@ run_puppet_install_helper
 install_module_on(hosts)
 install_module_dependencies_on(hosts)
 
-UNSUPPORTED_PLATFORMS = %w[aix Solaris BSD].freeze
+UNSUPPORTED_PLATFORMS = ['aix', 'Solaris', 'BSD'].freeze
 
 RSpec.configure do |c|
   module_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))

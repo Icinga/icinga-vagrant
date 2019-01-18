@@ -19,7 +19,7 @@ end
 
 describe 'filebeat class' do
   let(:pp) do
-    <<-EOS
+    <<-HEREDOC
     if $::osfamily == 'Debian' {
       include ::apt
 
@@ -73,7 +73,7 @@ describe 'filebeat class' do
         }
       }
     }
-    EOS
+    HEREDOC
   end
 
   context 'with $major_version = 5' do

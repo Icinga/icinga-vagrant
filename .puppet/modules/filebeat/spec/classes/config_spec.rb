@@ -15,11 +15,18 @@ describe 'filebeat::config' do
           let(:major_version) { version }
 
           let(:validate_cmd) do
+            path = case os_facts[:os]['family']
+                   when 'Archlinux'
+                     '/usr/bin/filebeat'
+                   else
+                     '/usr/share/filebeat/bin/filebeat'
+                   end
+
             case major_version
             when 5
-              '/usr/share/filebeat/bin/filebeat -N -configtest -c %'
+              "#{path} -N -configtest -c %"
             else
-              '/usr/share/filebeat/bin/filebeat -c % test config'
+              "#{path} -c % test config"
             end
           end
 
