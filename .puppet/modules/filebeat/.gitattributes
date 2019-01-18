@@ -1,0 +1,4 @@
+*.rb eol=lf linguist-language=Puppet
+*.erb eol=lf
+*.pp eol=lf
+*.sh eol=lf
