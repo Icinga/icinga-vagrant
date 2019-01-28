@@ -48,16 +48,16 @@ object Host "<%= @node_name-%>" {
     http_uri = "/icingaweb2"
   }
   vars.http_vhosts["http Icinga Website"] = {
-    http_address = "www.icinga.com"
-    http_vhost = "www.icinga.com"
+    http_address = "icinga.com"
+    http_vhost = "icinga.com"
+  }
+  vars.http_vhosts["http Icinga Discourse"] = {
+    http_address = "community.icinga.com"
+    http_vhost = "community.icinga.com"
   }
   vars.http_vhosts["http Icinga RT"] = {
     http_address = "rt.icinga.com"
     http_vhost = "rt.icinga.com"
-  }
-  vars.http_vhosts["http Icinga Docs"] = {
-    http_address = "docs.icinga.com"
-    http_vhost = "docs.icinga.com"
   }
   vars.http_vhosts["http Icinga Exchange"] = {
     http_address = "exchange.icinga.com"
@@ -67,11 +67,6 @@ object Host "<%= @node_name-%>" {
     http_address = "github.com"
     http_vhost = "github.com"
     http_uri = "/Icinga"
-  }
-  vars.http_vhosts["http Icinga Docker Hub"] = {
-    http_address = "registry.hub.docker.com"
-    http_vhost = "registry.hub.docker.com"
-    http_uri = "/repos/icinga/"
   }
 
   /* database checks */
