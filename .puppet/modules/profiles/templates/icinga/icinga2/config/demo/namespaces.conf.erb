@@ -4,6 +4,10 @@ namespace ApplyFunctionsBE {
 
   /* Flatten a dictionary with unique keys for service apply for rules. */
   function flattenDictionary2ndLevel(d) {
+    if (!d) {
+      return;
+    }
+
     var res = {}
 
     if (typeof(d) != Dictionary) {
