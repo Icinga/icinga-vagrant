@@ -17,6 +17,7 @@
 1. [Usage](#usage)
     * [Classes and Defined Types](#classes-and-defined-types)
     * [Advanced usage](#advanced-usage)
+1. [Tasks](#tasks)
 1. [Limitations](#limitations)
 1. [Copyright and License](#copyright-and-license)
 
@@ -288,6 +289,47 @@ The download location of a package to be used with the 'package' install method.
 Defaults to the URL of the latest version of Grafana available at the time of
 module release.
 
+##### `provisioning_datasources`
+
+A Hash which is converted to YAML for grafana to provision data
+sources. See [provisioning
+grafana](http://docs.grafana.org/administration/provisioning/) for
+details and example config file. Requires grafana > v5.0.0.
+
+This is very useful with Hiera as you can provide a yaml
+hash/dictionary which will effectively 'passthrough' to grafana. See
+**Advanced Usage** for examples.
+
+##### `provisioning_dashboards`
+
+A Hash which is converted to YAML for grafana to provision
+dashboards. See [provisioning
+grafana](http://docs.grafana.org/administration/provisioning/) for
+details and example config file.  Requires grafana > v5.0.0.
+
+This is very useful with Hiera as you can provide a yaml
+hash/dictionary which will effectively 'passthrough' to grafana. See
+**Advanced Usage** for examples.
+
+N.B. A option named `puppetsource` may be given in the `options` hash
+which is not part of grafana's syntax. This option will be extracted
+from the hash, and used to "source" a directory of dashboards. See
+**Advanced Usage** for details.
+
+#### `provisioning_dashboards_file`
+
+A String that is used as the target file name for the dashabords
+provisioning file. This way the module can be used to generate placeholder
+files so password can be sepecified in a different iteration, avoiding them
+to be put in the module code.
+
+#### `provisioning_datasources_file`
+
+A String that is used as the target file name for the datasources
+provisioning file. This way the module can be used to generate placeholder
+files so password can be sepecified in a different iteration, avoiding them
+to be put in the module code.
+
 ##### `rpm_iteration`
 
 Used when installing Grafana from package ('package' or 'repo' install methods)
@@ -301,8 +343,26 @@ Defaults to 'grafana-server'.
 
 ##### `version`
 
-The version of Grafana to install and manage. Defaults to the latest version of
-Grafana available at the time of module release.
+The version of Grafana to install and manage. Defaults to 'installed'
+
+##### `sysconfig_location`
+
+The RPM and DEB packages bring with them the default environment files for the
+services. The default location of this file for Debian is /etc/default/grafana-server
+and for RedHat /etc/sysconfig/grafana-server.
+
+##### `sysconfig`
+
+A hash of environment variables for the service. This only has an effect for installations
+with RPM and DEB packages (if install_method is set to 'package' or 'repo').
+
+Example:
+
+```puppet
+sysconfig => {
+  'http_proxy' => 'http://proxy.example.com',
+}
+```
 
 ### Advanced usage
 
@@ -317,8 +377,8 @@ Example:
 
 ```puppet
     user { 'grafana':
-      ensure   => present,
-      uid      => '1234',
+      ensure => present,
+      uid    => '1234',
     }
     ->
     class { 'grafana':
@@ -336,11 +396,43 @@ Example:
 
 ```
 
+
+#### Using a sub-path for Grafana API
+
+If you are using a sub-path for the Grafana API, you will need to set the `grafana_api_path` parameter for the following custom types:
+- `grafana_dashboard`
+- `grafana_datasource`
+- `grafana_organization`
+- `grafana_user`
+
+For instance, if your sub-path is `/grafana`, the `grafana_api_path` must
+be set to `/grafana/api`. Do not add a trailing `/` (slash) at the end of the value.
+
+If you are not using sub-paths, you do not need to set this parameter.
+
 #### Custom Types and Providers
 
 The module includes several custom types:
 
-##### `grafana_dashboard`
+#### `grafana_organization`
+
+In order to use the organization resource, add the following to your manifest:
+
+```puppet
+grafana_organization { 'example_org':
+  grafana_url      => 'http://localhost:3000',
+  grafana_user     => 'admin',
+  grafana_password => '5ecretPassw0rd',
+}
+```
+
+`grafana_url`, `grafana_user`, and `grafana_password` are required to create organizations via the API.
+
+`name` is optional if the name will differ from example_org above.
+
+`address` is an optional parameter that requires a hash. Address settings are `{"address1":"","address2":"","city":"","zipCode":"","state":"","country":""}`
+
+#### `grafana_dashboard`
 
 In order to use the dashboard resource, add the following to your manifest:
 
@@ -349,13 +441,15 @@ grafana_dashboard { 'example_dashboard':
   grafana_url       => 'http://localhost:3000',
   grafana_user      => 'admin',
   grafana_password  => '5ecretPassw0rd',
+  grafana_api_path  => '/grafana/api',
+  organization      => 'NewOrg',
   content           => template('path/to/exported/file.json'),
 }
 ```
 
 `content` must be valid JSON, and is parsed before imported.
 `grafana_user` and `grafana_password` are optional, and required when
-authentication is enabled in Grafana.
+authentication is enabled in Grafana. `grafana_api_path` is optional, and only used when using sub-paths for the API. `organization` is optional, and used when creating a dashboard for a specific organization.
 
 Example:
 Make sure the `grafana-server` service is up and running before creating the `grafana_dashboard` definition. One option is to use the `http_conn_validator` from the [healthcheck](https://forge.puppet.com/puppet/healthcheck) module
@@ -382,27 +476,33 @@ In order to use the datasource resource, add the following to your manifest:
 
 ```puppet
 grafana_datasource { 'influxdb':
-  grafana_url       => 'http://localhost:3000',
-  grafana_user      => 'admin',
-  grafana_password  => '5ecretPassw0rd',
-  type              => 'influxdb',
-  url               => 'http://localhost:8086',
-  user              => 'admin',
-  password          => '1nFlux5ecret',
-  database          => 'graphite',
-  access_mode       => 'proxy',
-  is_default        => true,
-  json_data         => template('path/to/additional/config.json'),
+  grafana_url      => 'http://localhost:3000',
+  grafana_user     => 'admin',
+  grafana_password => '5ecretPassw0rd',
+  grafana_api_path => '/grafana/api',
+  type             => 'influxdb',
+  organization     => 'NewOrg',
+  url              => 'http://localhost:8086',
+  user             => 'admin',
+  password         => '1nFlux5ecret',
+  database         => 'graphite',
+  access_mode      => 'proxy',
+  is_default       => true,
+  json_data        => template('path/to/additional/config.json'),
+  secure_json_data => template('path/to/additional/secure/config.json')
 }
 ```
 
-Available default types are: influxdb, elasticsearch, graphite, kairosdb, opentsdb, prometheus
+Available types are: influxdb, elasticsearch, graphite, cloudwatch, mysql, opentsdb, postgres and prometheus
+
+`organization` is used to set which organization a datasource will be created on. If this parameter is not set, it will default to organization ID 1 (Main Org. by default). If the default org is deleted, organizations will need to be specified.
 
 Access mode determines how Grafana connects to the datasource, either `direct`
 from the browser, or `proxy` to send requests via grafana.
 
-Authentication is optional, as is `database`; additional `json_data` can be
-provided to allow custom configuration options.
+Setting `basic_auth` to `true` will allow use of the `basic_auth_user` and `basic_auth_password` params.
+
+Authentication is optional, as are `database` and `grafana_api_path`; additional `json_data` and `secure_json_data` can be provided to allow custom configuration options.
 
 Example:
 Make sure the `grafana-server` service is up and running before creating the `grafana_datasource` definition. One option is to use the `http_conn_validator` from the [healthcheck](https://forge.puppet.com/puppet/healthcheck) module
@@ -430,6 +530,96 @@ http_conn_validator { 'grafana-conn-validator' :
 }
 ```
 
+Note that the `database` is dynamic, setting things other than "database" for separate types. Ex: for Elasticsearch it will set the Index Name.
+
+**`jsonData` Settings**
+
+Note that there are separate options for json_data / secure_json_data based on the type of datasource you create.
+
+##### **Elasticsearch**
+
+`esVersion` - Required, either 2 or 5, set as a bare number.
+
+`timeField` - Required. By default this is @timestamp, but without setting it in jsonData, the datasource won't work without refreshing it in the GUI.
+
+`timeInterval` - Optional. A lower limit for the auto group by time interval. Recommended to be set to write frequency, for example "1m" if your data is written every minute.
+
+Example:
+```puppet
+json_data => {"esVersion":5,"timeField":"@timestamp","timeInterval":"1m"}
+```
+
+##### **CloudWatch**
+
+`authType` - Required. Options are `Access & Secret Key`, `Credentials File`, or `ARN`.
+
+-"keys" = Access & Secret Key
+
+-"credentials" = Credentials File
+
+-"arn" = ARN
+
+*When setting authType to `credentials`, the `database` param will set the Credentials Profile Name.*
+
+*When setting authType to `arn`, another jsonData value of `assumeRoleARN` is available, which is not required for other authType settings*
+
+`customMetricsNamespaces` - Optional. Namespaces of Custom Metrics, separated by commas within double quotes.
+
+`defaultRegion` - Required. Options are "ap-northeast-(1 or 2)", "ap-southeast-(1 or 2)", "ap-south-1", "ca-central-1", "cn-north-1", "eu-central-1", "eu-west-(1 or 2)", "sa-east-(1 or 2)", "us-east-(1 or 2)", "us-gov-west-1", "us-west-(1 or 2)".
+
+`timeField`
+
+Example:
+```puppet
+{"authType":"arn","assumeRoleARN":"arn:aws:iam:*","customMetricsNamespaces":"Namespace1,Namespace2","defaultRegion":"us-east-1","timeField":"@timestamp"}
+```
+
+##### **Graphite**
+
+`graphiteVersion` - Required. Available versions are `0.9` or `1.0`.
+
+`tlsAuth` - Set to `true` or `false`
+
+`tlsAuthWithCACert` - Set to `true` or `false`
+
+Example:
+```puppet
+{"graphiteVersion":"0.9","tlsAuth":true,"tlsAuthWithCACert":false}
+```
+
+##### **OpenTSDB**
+
+`tsdbResolution` - Required. Options are `1` or `2`.
+
+  `1` = second
+
+  `2` = millisecond
+
+`tsdbVersion` - Required. Options are `1`, `2`, or `3`.
+
+  `1` &nbsp;&nbsp; = &nbsp;&nbsp; <=2.1
+
+  `2` &nbsp;&nbsp; = &nbsp;&nbsp; ==2.2
+
+  `3` &nbsp;&nbsp; = &nbsp;&nbsp; ==2.3
+
+Example:
+```puppet
+{"tsdbResolution:1,"tsdbVersion":3}
+```
+
+##### **InfluxDB**
+
+N/A
+
+##### **MySQL**
+
+N/A
+
+##### **Prometheus**
+
+N/A
+
 ##### `grafana_plugin`
 
 An example is provided for convenience; for more details, please view the
@@ -441,6 +631,15 @@ grafana_plugin { 'grafana-simple-json-datasource':
 }
 ```
 
+It is possible to specify a custom plugin repository to install a plugin. This will use the --repo option for plugin installation with grafana_cli.
+
+```puppet
+grafana_plugin { 'grafana-simple-json-datasource':
+  ensure    => present,
+  repo => 'https://nexus.company.com/grafana/plugins',
+}
+```
+
 ##### `grafana::user`
 
 Creates and manages a global grafana user via the API.
@@ -448,6 +647,7 @@ Creates and manages a global grafana user via the API.
 ```puppet
 grafana_user { 'username':
   grafana_url       => 'http://localhost:3000',
+  grafana_api_path  => '/grafana/api',
   grafana_user      => 'admin',
   grafana_password  => '5ecretPassw0rd',
   full_name         => 'John Doe',
@@ -455,6 +655,229 @@ grafana_user { 'username':
   email             => 'john@example.com',
 }
 ```
+`grafana_api_path` is only required if using sub-paths for the API
+
+##### `grafana::notification`
+
+Creates and manages a global alert notification channel via the API.
+
+```puppet
+grafana_notification { 'channelname':
+  grafana_url       => 'http://localhost:3000',
+  grafana_api_path  => '/grafana/api',
+  grafana_user      => 'admin',
+  grafana_password  => '5ecretPassw0rd',
+
+  name              => 'channelname',
+  type              => 'email',
+  is_default        => false,
+  send_reminder     => false,
+  frequency         => '20m',
+  settings          => {
+              addresses    => "alerts@example.com; it@example.com"
+  }
+}
+```
+`grafana_api_path` is only required if using sub-paths for the API
+
+Notification types and related settingsi (cf doc Grafana : https://github.com/grafana/grafana/blob/master/docs/sources/alerting/notifications.md ) :
+   - email:
+       - addresses: "example.com"
+   - hipchat:
+       - apikey       : "0a0a0a0a0a0a0a0a0a0a0a"
+       - autoResolve  : true
+       - httpMethod   : "POST"
+       - uploadImage  : true
+       - url          : "https://grafana.hipchat.com"
+   - kafka:
+       - autoResolve   : true
+       - httpMethod    : "POST"
+       - kafkaRestProxy: "http://localhost:8082"
+       - kafkaTopic    : "topic1"
+       - uploadImage   : true
+   - LINE:
+       - autoResolve: true
+       - httpMethod : "POST"
+       - token      : "token"
+       - uploadImage: true
+   - teams (Microsoft Teams):
+       - autoResolve : true
+       - httpMethod  : "POST"
+       - uploadImage :true
+       - url         : "http://example.com"
+   - pagerduty:
+       - autoResolve    : true
+       - httpMethod     : POST
+       - integrationKey :"0a0a0a0a0a"
+       - uploadImage    : true
+   - prometheus-alertmanager:
+       - autoResolve : true
+       - httpMethod  : "POST"
+       - uploadImage : true
+       - url         : "http://localhost:9093"
+   - sensu:
+       - autoResolve : true
+       - handler     : "default",
+       - httpMethod  : "POST"
+       - uploadImage : true
+       - url         : "http://sensu-api.local:4567/results"
+   - slack:
+       - autoResolve : true
+       - httpMethod  : "POST"
+       - uploadImage : true
+       - url         : "http://slack.com/"
+       - token       : "0a0a0a0a0a0a0a0a0a0a0a"
+   - threema:
+       - api_secret  : "0a0a0a0a0a0a0a0a0a0a0a"
+       - autoResolve : true
+       - gateway_id  : "*3MAGWID"
+       - httpMethod  : "POST"
+       - recipient_id: "YOUR3MID"
+       - uploadImage : true
+   - discord:
+       - autoResolve : true,
+       - httpMethod  : "POST"
+       - uploadImage : true
+       - url         : "https://example.com"
+   - webhook:
+       - autoResolve : true
+       - httpMethod  : "POST"
+       - uploadImage : false
+       - url         : "http://localhost:8080"
+   - telegram:
+       - autoResolve : true
+       - bottoken    : "0a0a0a0a0a0a"
+       - chatid      : "789789789"
+       - httpMethod  : "POST"
+       - uploadImage : true
+
+#### Provisioning Grafana
+
+[Grafana documentation on
+provisioning](http://docs.grafana.org/administration/provisioning/).
+
+This module will provision grafana by placing yaml files into
+`/etc/grafana/provisioning/datasources` and
+`/etc/grafana/provisioning/dashboards` by default.
+
+##### Example datasource
+
+A puppet hash example for Prometheus. The module will place the hash
+as a yaml file into `/etc/gafana/provisioning/datasources/puppetprovisioned.yaml`.
+
+```puppet
+class { 'grafana':
+  provisioning_datasources => {
+    apiVersion  => 1,
+    datasources => [
+      {
+        name      => 'Prometheus',
+        type      => 'prometheus',
+        access    => 'proxy',
+        url       => 'http://localhost:9090/prometheus',
+        isDefault => true,
+      },
+    ],
+  }
+}
+```
+
+Here is the same configuration example as a hiera hash.
+
+```yaml
+grafana::provisioning_datasources:
+  apiVersion: 1
+  datasources:
+    - name: 'Prometheus'
+      type: 'prometheus'
+      access: 'proxy'
+      url: 'http://localhost:9090/prometheus'
+      isDefault: true
+```
+
+##### Example dashboard
+
+An example puppet hash for provisioning dashboards. The module will
+place the hash as a yaml file into
+`/etc/grafana/provisioning/dashboards/puppetprovisioned.yaml` by default. More details follow the examples.
+
+```puppet
+class { 'grafana':
+  provisioning_dashboards => {
+    apiVersion => 1,
+    providers  => [
+      {
+        name            => 'default',
+        orgId           => 1,
+        folder          => '',
+        type            => 'file',
+        disableDeletion => true,
+        options         => {
+          path         => '/var/lib/grafana/dashboards',
+          puppetsource => 'puppet:///modules/my_custom_module/dashboards',
+        },
+      },
+    ],
+  }
+}
+```
+
+Here is the same configuraiton example as a hiera hash.
+
+```yaml
+grafana::provisioning_dashboards:
+  apiVersion: 1
+  providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: true
+      options:
+        path: '/var/lib/grafana/dashboards'
+        puppetsource: 'puppet:///modules/my_custom_module/dashboards'
+```
+
+In both examples above a non-grafana option named `puppetsource` has
+been used. When this module finds that the provisioning_dashboards hash
+contains keys `path` and `puppetsource` in the `options` subhash, it
+will do the following.
+* It will create the path found in `options['path']`. Note: puppet
+  will only create the final directory of the path unless the
+  parameter `create_subdirs_provisioning` is set to true: this defaults
+  to false.
+* It will use `puppetsource` as the file resource's 'source' for the
+  directory.
+* It removes the `puppetsource` key from the `options` subhash, so the
+  subsequent yaml file for gafana does not contain this key. (The
+  `path` key will remain.)
+
+This feature allows you to define a custom module, and place any
+dashboards you want provisioned in the its `files/` directory. In the
+example above you would put dashboards into
+`my_custom_module/files/dashboards` and puppet-grafana will create
+`/var/lib/grafana/dashboards` and provision it with the contents of
+`my_custom_module/files/dashboards`.
+
+Puppet's file resource may also be given a `file://` URI which may
+point to a locally available directory on the filesystem, typically
+the filesystem of the puppetserver/master. Thus you may specify a
+local directory with grafana dashboards you wish to provision into
+grafana.
+
+## Tasks
+
+### `change_grafana_admin_password`
+
+`old_password`: the old admin password
+
+`new_password`: the password you want to use for the admin user
+
+`uri`: `http` or `https`
+
+`port`: the port Grafana runs on locally
+
+This task can be used to change the password for the admin user in grafana
 
 ## Limitations
 

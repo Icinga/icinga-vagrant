@@ -37,7 +37,8 @@ describe 'grafana' do
       context 'with parameter install_method is set to package' do
         let(:params) do
           {
-            install_method: 'package'
+            install_method: 'package',
+            version: '4.5.1'
           }
         end
 
@@ -79,13 +80,18 @@ describe 'grafana' do
             plugins:
             {
               'grafana-wizzle' => { 'ensure' => 'present' },
-              'grafana-woozle' => { 'ensure' => 'absent' }
+              'grafana-woozle' => { 'ensure' => 'absent' },
+              'grafana-plugin' => { 'ensure' => 'present', 'repo' => 'https://nexus.company.com/grafana/plugins' }
             }
           }
         end
 
         it { is_expected.to contain_grafana_plugin('grafana-wizzle').with(ensure: 'present') }
         it { is_expected.to contain_grafana_plugin('grafana-woozle').with(ensure: 'absent').that_notifies('Class[grafana::service]') }
+
+        describe 'install plugin with pluginurl' do
+          it { is_expected.to contain_grafana_plugin('grafana-plugin').with(ensure: 'present', repo: 'https://nexus.company.com/grafana/plugins') }
+        end
       end
 
       context 'with parameter install_method is set to repo' do
@@ -99,7 +105,7 @@ describe 'grafana' do
         when 'Debian'
           describe 'install apt repo dependencies first' do
             it { is_expected.to contain_class('apt') }
-            it { is_expected.to contain_apt__source('grafana').with(release: 'jessie', repos: 'main', location: 'https://packagecloud.io/grafana/stable/debian') }
+            it { is_expected.to contain_apt__source('grafana').with(release: 'stable', repos: 'main', location: 'https://packages.grafana.com/oss/deb') }
             it { is_expected.to contain_apt__source('grafana').that_comes_before('Package[grafana]') }
           end
 
@@ -108,11 +114,11 @@ describe 'grafana' do
           end
 
           describe 'install the package' do
-            it { is_expected.to contain_package('grafana').with_ensure('4.5.1') }
+            it { is_expected.to contain_package('grafana').with_ensure('installed') }
           end
         when 'RedHat'
           describe 'yum repo dependencies first' do
-            it { is_expected.to contain_yumrepo('grafana').with(baseurl: 'https://packagecloud.io/grafana/stable/el/' + facts[:operatingsystemmajrelease] + '/$basearch', gpgkey: 'https://packagecloud.io/gpg.key https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana', enabled: 1) }
+            it { is_expected.to contain_yumrepo('grafana').with(baseurl: 'https://packages.grafana.com/oss/rpm', gpgkey: 'https://packages.grafana.com/gpg.key', enabled: 1) }
             it { is_expected.to contain_yumrepo('grafana').that_comes_before('Package[grafana]') }
           end
 
@@ -121,7 +127,7 @@ describe 'grafana' do
           end
 
           describe 'install the package' do
-            it { is_expected.to contain_package('grafana').with_ensure('4.5.1-1') }
+            it { is_expected.to contain_package('grafana').with_ensure('installed') }
           end
         end
       end
@@ -162,7 +168,8 @@ describe 'grafana' do
       context 'with parameter install_method is set to archive' do
         let(:params) do
           {
-            install_method: 'archive'
+            install_method: 'archive',
+            version: '4.5.1'
           }
         end
 
@@ -179,6 +186,10 @@ describe 'grafana' do
         describe 'create grafana user' do
           it { is_expected.to contain_user('grafana').with_ensure('present').with_home(install_dir) }
           it { is_expected.to contain_user('grafana').that_comes_before('File[/usr/share/grafana]') }
+        end
+
+        describe 'create data_dir' do
+          it { is_expected.to contain_file('/var/lib/grafana').with_ensure('directory') }
         end
 
         describe 'manage install_dir' do
@@ -307,6 +318,28 @@ describe 'grafana' do
                            "\n"
 
           it { is_expected.to contain_file('/etc/grafana/ldap.toml').with_content(ldap_expected) }
+        end
+      end
+
+      context 'sysconfig environment variables' do
+        let(:params) do
+          {
+            install_method: 'repo',
+            sysconfig: { http_proxy: 'http://proxy.example.com/' }
+          }
+        end
+
+        case facts[:osfamily]
+        when 'Debian'
+          describe 'Add the environment variable to the config file' do
+            it { is_expected.to contain_augeas('sysconfig/grafana-server').with_context('/files/etc/default/grafana-server') }
+            it { is_expected.to contain_augeas('sysconfig/grafana-server').with_changes(['set http_proxy http://proxy.example.com/']) }
+          end
+        when 'RedHat'
+          describe 'Add the environment variable to the config file' do
+            it { is_expected.to contain_augeas('sysconfig/grafana-server').with_context('/files/etc/sysconfig/grafana-server') }
+            it { is_expected.to contain_augeas('sysconfig/grafana-server').with_changes(['set http_proxy http://proxy.example.com/']) }
+          end
         end
       end
     end

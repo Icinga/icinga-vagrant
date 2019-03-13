@@ -45,7 +45,12 @@ Puppet::Type.type(:grafana_plugin).provide(:grafana_cli) do
   end
 
   def create
-    grafana_cli('plugins', 'install', resource[:name])
+    if resource[:repo]
+      repo = "--repo #{resource[:repo]}"
+      grafana_cli(repo, 'plugins', 'install', resource[:name])
+    else
+      grafana_cli('plugins', 'install', resource[:name])
+    end
     @property_hash[:ensure] = :present
   end
 

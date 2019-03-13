@@ -50,4 +50,18 @@ EOT
     provider.expects(:grafana_cli).with('plugins', 'uninstall', 'grafana-wizzle')
     provider.destroy
   end
+
+  describe 'create with repo' do
+    let(:resource) do
+      Puppet::Type::Grafana_plugin.new(
+        name: 'grafana-plugin',
+        repo: 'https://nexus.company.com/grafana/plugins'
+      )
+    end
+
+    it '#create with repo' do
+      provider.expects(:grafana_cli).with('--repo https://nexus.company.com/grafana/plugins', 'plugins', 'install', 'grafana-plugin')
+      provider.create
+    end
+  end
 end

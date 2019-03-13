@@ -1,10 +1,13 @@
-Puppet::Type.newtype(:grafana_user) do
-  @doc = 'Manage users in Grafana'
+Puppet::Type.newtype(:grafana_organization) do
+  @doc = 'Manage organizations in Grafana'
 
-  ensurable
+  ensurable do
+    defaultvalues
+    defaultto :present
+  end
 
   newparam(:name, namevar: true) do
-    desc 'The username of the user.'
+    desc 'The name of the organization.'
   end
 
   newparam(:grafana_api_path) do
@@ -37,28 +40,19 @@ Puppet::Type.newtype(:grafana_user) do
     desc 'The password for the Grafana server'
   end
 
-  newparam(:full_name) do
-    desc 'The full name of the user.'
+  newproperty(:id) do
+    desc 'The ID of the organization'
   end
 
-  newproperty(:password) do
-    desc 'The password for the user'
-  end
+  newproperty(:address) do
+    desc 'Additional JSON data to configure the organization address (optional)'
 
-  newproperty(:email) do
-    desc 'The email for the user'
+    validate do |value|
+      unless value.nil? || value.is_a?(Hash)
+        raise ArgumentError, 'address should be a Hash!'
+      end
+    end
   end
-
-  newproperty(:theme) do
-    desc 'The theme for the user'
-  end
-
-  newproperty(:is_admin) do
-    desc 'Whether the user is a grafana admin'
-    newvalues(:true, :false)
-    defaultto :false
-  end
-
   autorequire(:service) do
     'grafana-server'
   end

@@ -1,10 +1,12 @@
-Puppet::Type.newtype(:grafana_user) do
-  @doc = 'Manage users in Grafana'
+#    Copyright 2015 Mirantis, Inc.
+#
+Puppet::Type.newtype(:grafana_notification) do
+  @doc = 'Manage notification in Grafana'
 
   ensurable
 
   newparam(:name, namevar: true) do
-    desc 'The username of the user.'
+    desc 'The name of the notification.'
   end
 
   newparam(:grafana_api_path) do
@@ -37,26 +39,34 @@ Puppet::Type.newtype(:grafana_user) do
     desc 'The password for the Grafana server'
   end
 
-  newparam(:full_name) do
-    desc 'The full name of the user.'
+  newproperty(:type) do
+    desc 'The notification type'
   end
 
-  newproperty(:password) do
-    desc 'The password for the user'
-  end
-
-  newproperty(:email) do
-    desc 'The email for the user'
-  end
-
-  newproperty(:theme) do
-    desc 'The theme for the user'
-  end
-
-  newproperty(:is_admin) do
-    desc 'Whether the user is a grafana admin'
+  newproperty(:is_default) do
+    desc 'Whether the notification is the default one'
     newvalues(:true, :false)
     defaultto :false
+  end
+
+  newproperty(:send_reminder) do
+    desc 'Whether automatic message resending is enabled or not'
+    newvalues(:true, :false)
+    defaultto :false
+  end
+
+  newproperty(:frequency) do
+    desc 'The notification reminder frequency'
+  end
+
+  newproperty(:settings) do
+    desc 'Additional JSON data to configure the notification'
+
+    validate do |value|
+      unless value.nil? || value.is_a?(Hash)
+        raise ArgumentError, 'settings should be a Hash!'
+      end
+    end
   end
 
   autorequire(:service) do

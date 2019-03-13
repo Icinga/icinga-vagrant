@@ -2,8 +2,8 @@
 .travis.yml:
   secure: "C+dXd27/doW1JnKqv+UDHL6/HBI5Te+xGsaoPkqhpO4iXfMxJrTi6sBWaEuyNTeHIwN8wOWHaW9qKEqTuYZ0/k+k3SWFmZpi3jSh79Y8WDoYK7+DsbKQ6xZy54Sh56YIYXfkaLQYYYrqKKksZ57h/NYU/hzu9h8oH+PnXfGT6i/KH9C4z8IR9qTxIiErrJHUMni9CryTTbtGV9pIj0QTZP+OQLoE660J8/uMsfTQDK9/NqQ2nsTaQ12SS9xg6MmmOX7W4NhRrOyIi0sd7eR0dRIoVf0TwfYhw8Yi4aDuTZIHNtcHiyfAVsvh3RpAr5d01GjXEr5lj0XyBOu8t1U3BzPU7LrJRrwE+ZmP72L39vrT7rmDRz9pDU7fVIOiRtqRLEJRDIW4I2ISkwBdzFKX8UTozTkPEmt9Iy+uKX5n2y8re2KFaseXWxTeVJbHh+DsJQ/hWsUNrHcl2dKmtgo7xHSonmevnATVV1vUbwvswm1oEiAFRdhF4gNdC8I6OGlVzmzwMbwqiGUk/nRBQeMEbyeRQV54QV3zteuBiHc8neQPR+QiD7diR2d4JhmDbr6xop+Bat2SVQqLg2IdAJ/Qu1Aor7mxhmPqiz35SWkbaaoDJYbWrCBeQ+jos4s2jCDY7OJEXW8ng9gPO71W/lcybMWzihUw6fA9w/riHe37Ez0="
   docker_sets:
-    - set: docker/ubuntu-16.04
-    - set: docker/centos-7
+    - set: ubuntu1604-64
+    - set: centos7-64
 Gemfile:
   optional:
     ':test':

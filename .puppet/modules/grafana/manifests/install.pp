@@ -28,7 +28,7 @@ class grafana::install {
       }
     }
     'package': {
-      case $::osfamily {
+      case $facts['os']['family'] {
         'Debian': {
           package { 'libfontconfig1':
             ensure => present,
@@ -58,12 +58,12 @@ class grafana::install {
           }
         }
         default: {
-          fail("${::operatingsystem} not supported")
+          fail("${facts['os']['family']} not supported")
         }
       }
     }
     'repo': {
-      case $::osfamily {
+      case $facts['os']['family'] {
         'Debian': {
           package { 'libfontconfig1':
             ensure => present,
@@ -71,17 +71,18 @@ class grafana::install {
 
           if ( $::grafana::manage_package_repo ){
             if !defined( Class['apt'] ) {
-              class { '::apt': }
+              include apt
             }
             apt::source { 'grafana':
-              location => "https://packagecloud.io/grafana/${::grafana::repo_name}/debian",
-              release  => 'jessie',
-              repos    => 'main',
-              key      =>  {
-                'id'     => '418A7F2FB0E1E6E7EABF6FE8C2E73424D59097AB',
-                'source' => 'https://packagecloud.io/gpg.key',
+              location     => 'https://packages.grafana.com/oss/deb',
+              release      => $grafana::repo_name,
+              architecture => 'amd64,arm64,armhf',
+              repos        => 'main',
+              key          =>  {
+                'id'     => '4E40DDF6D76E284A4A6780E48C8C34C524098CB6',
+                'source' => 'https://packages.grafana.com/gpg.key',
               },
-              before   => Package[$::grafana::package_name],
+              before       => Package[$::grafana::package_name],
             }
             Class['apt::update'] -> Package[$::grafana::package_name]
           }
@@ -97,11 +98,17 @@ class grafana::install {
           }
 
           if ( $::grafana::manage_package_repo ){
+            # http://docs.grafana.org/installation/rpm/#install-via-yum-repository
+            $baseurl = $grafana::repo_name ? {
+              'stable' => 'https://packages.grafana.com/oss/rpm',
+              'beta'   => 'https://packages.grafana.com/oss/rpm-beta',
+            }
+
             yumrepo { 'grafana':
               descr    => 'grafana repo',
-              baseurl  => "https://packagecloud.io/grafana/${::grafana::repo_name}/el/${::operatingsystemmajrelease}/\$basearch",
+              baseurl  => $baseurl,
               gpgcheck => 1,
-              gpgkey   => 'https://packagecloud.io/gpg.key https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana',
+              gpgkey   => 'https://packages.grafana.com/gpg.key',
               enabled  => 1,
               before   => Package[$::grafana::package_name],
             }

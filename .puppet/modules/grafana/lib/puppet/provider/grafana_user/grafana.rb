@@ -8,7 +8,7 @@ Puppet::Type.type(:grafana_user).provide(:grafana, parent: Puppet::Provider::Gra
   defaultfor kernel: 'Linux'
 
   def users
-    response = send_request('GET', '/api/users')
+    response = send_request('GET', format('%s/users', resource[:grafana_api_path]))
     if response.code != '200'
       raise format('Fail to retrieve users (HTTP response: %s/%s)', response.code, response.body)
     end
@@ -17,7 +17,7 @@ Puppet::Type.type(:grafana_user).provide(:grafana, parent: Puppet::Provider::Gra
       users = JSON.parse(response.body)
 
       users.map { |x| x['id'] }.map do |id|
-        response = send_request 'GET', format('/api/users/%s', id)
+        response = send_request('GET', format('%s/users/%s', resource[:grafana_api_path], id))
         if response.code != '200'
           raise format('Fail to retrieve user %d (HTTP response: %s/%s)', id, response.code, response.body)
         end
@@ -112,12 +112,12 @@ Puppet::Type.type(:grafana_user).provide(:grafana, parent: Puppet::Provider::Gra
     }
 
     if user.nil?
-      response = send_request('POST', '/api/admin/users', data)
+      response = send_request('POST', format('%s/admin/users', resource[:grafana_api_path]), data)
     else
       data[:id] = user[:id]
-      send_request 'PUT', format('/api/admin/users/%s/password', user[:id]), password: data.delete(:password)
-      send_request 'PUT', format('/api/admin/users/%s/permissions', user[:id]), isGrafanaAdmin: data.delete(:isGrafanaAdmin)
-      response = send_request 'PUT', format('/api/users/%s', user[:id]), data
+      send_request 'PUT', format('%s/admin/users/%s/password', resource[:grafana_api_path], user[:id]), password: data.delete(:password)
+      send_request 'PUT', format('%s/admin/users/%s/permissions', resource[:grafana_api_path], user[:id]), isGrafanaAdmin: data.delete(:isGrafanaAdmin)
+      response = send_request('PUT', format('%s/users/%s', resource[:grafana_api_path], user[:id]), data)
     end
 
     if response.code != '200'
@@ -127,7 +127,7 @@ Puppet::Type.type(:grafana_user).provide(:grafana, parent: Puppet::Provider::Gra
   end
 
   def delete_user
-    response = send_request 'DELETE', format('/api/admin/users/%s', user[:id])
+    response = send_request('DELETE', format('%s/admin/users/%s', resource[:grafana_api_path], user[:id]))
 
     if response.code != '200'
       raise format('Failed to delete user %s (HTTP response: %s/%s', resource[:name], response.code, response.body)

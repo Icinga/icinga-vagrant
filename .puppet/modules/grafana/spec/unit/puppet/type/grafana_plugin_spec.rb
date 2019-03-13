@@ -13,4 +13,9 @@ describe Puppet::Type.type(:grafana_plugin) do
       Puppet::Type.type(:grafana_plugin).new({})
     end.to raise_error(Puppet::Error, 'Title or name must be provided')
   end
+
+  it 'accepts a plugin repo' do
+    plugin[:repo] = 'https://nexus.company.com/grafana/plugins'
+    expect(plugin[:repo]).to eq('https://nexus.company.com/grafana/plugins')
+  end
 end

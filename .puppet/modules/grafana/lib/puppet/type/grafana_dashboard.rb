@@ -55,6 +55,22 @@ Puppet::Type.newtype(:grafana_dashboard) do
     desc 'The password for the Grafana server (optional)'
   end
 
+  newparam(:grafana_api_path) do
+    desc 'The absolute path to the API endpoint'
+    defaultto '/api'
+
+    validate do |value|
+      unless value =~ %r{^/.*/?api$}
+        raise ArgumentError, format('%s is not a valid API path', value)
+      end
+    end
+  end
+
+  newparam(:organization) do
+    desc 'The organization name to create the datasource on'
+    defaultto 1
+  end
+
   # rubocop:disable Style/SignalException
   validate do
     fail('content is required when ensure is present') if self[:ensure] == :present && self[:content].nil?

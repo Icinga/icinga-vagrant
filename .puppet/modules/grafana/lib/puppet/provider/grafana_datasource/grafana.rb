@@ -9,8 +9,53 @@ Puppet::Type.type(:grafana_datasource).provide(:grafana, parent: Puppet::Provide
 
   defaultfor kernel: 'Linux'
 
+  def organization
+    resource[:organization]
+  end
+
+  def grafana_api_path
+    resource[:grafana_api_path]
+  end
+
+  def fetch_organizations
+    response = send_request('GET', format('%s/orgs', resource[:grafana_api_path]))
+    if response.code != '200'
+      raise format('Fail to retrieve organizations (HTTP response: %s/%s)', response.code, response.body)
+    end
+
+    begin
+      fetch_organizations = JSON.parse(response.body)
+      fetch_organizations.map { |x| x['id'] }.map do |id|
+        response = send_request 'GET', format('%s/orgs/%s', resource[:grafana_api_path], id)
+        if response.code != '200'
+          raise format('Failed to retrieve organization %d (HTTP response: %s/%s)', id, response.code, response.body)
+        end
+
+        fetch_organization = JSON.parse(response.body)
+
+        {
+          id: fetch_organization['id'],
+          name: fetch_organization['name']
+        }
+      end
+    rescue JSON::ParserError
+      raise format('Failed to parse response: %s', response.body)
+    end
+  end
+
+  def fetch_organization
+    unless @fetch_organization
+      @fetch_organization = if resource[:organization].is_a?(Numeric) || resource[:organization].match(%r{^[0-9]*$})
+                              fetch_organizations.find { |x| x[:id] == resource[:organization] }
+                            else
+                              fetch_organizations.find { |x| x[:name] == resource[:organization] }
+                            end
+    end
+    @fetch_organization
+  end
+
   def datasources
-    response = send_request('GET', '/api/datasources')
+    response = send_request('GET', format('%s/datasources', resource[:grafana_api_path]))
     if response.code != '200'
       raise format('Fail to retrieve datasources (HTTP response: %s/%s)', response.code, response.body)
     end
@@ -19,9 +64,9 @@ Puppet::Type.type(:grafana_datasource).provide(:grafana, parent: Puppet::Provide
       datasources = JSON.parse(response.body)
 
       datasources.map { |x| x['id'] }.map do |id|
-        response = send_request 'GET', format('/api/datasources/%s', id)
+        response = send_request 'GET', format('%s/datasources/%s', resource[:grafana_api_path], id)
         if response.code != '200'
-          raise format('Fail to retrieve datasource %d (HTTP response: %s/%s)', id, response.code, response.body)
+          raise format('Failed to retrieve datasource %d (HTTP response: %s/%s)', id, response.code, response.body)
         end
 
         datasource = JSON.parse(response.body)
@@ -36,11 +81,16 @@ Puppet::Type.type(:grafana_datasource).provide(:grafana, parent: Puppet::Provide
           database: datasource['database'],
           access_mode: datasource['access'],
           is_default: datasource['isDefault'] ? :true : :false,
-          json_data: datasource['jsonData']
+          with_credentials: datasource['withCredentials'] ? :true : :false,
+          basic_auth: datasource['basicAuth'] ? :true : :false,
+          basic_auth_user: datasource['basicAuthUser'],
+          basic_auth_password: datasource['basicAuthPassword'],
+          json_data: datasource['jsonData'],
+          secure_json_data: datasource['secureJsonData']
         }
       end
     rescue JSON::ParserError
-      raise format('Fail to parse response: %s', response.body)
+      raise format('Failed to parse response: %s', response.body)
     end
   end
 
@@ -118,6 +168,42 @@ Puppet::Type.type(:grafana_datasource).provide(:grafana, parent: Puppet::Provide
   end
   # rubocop:enable Style/PredicateName
 
+  def basic_auth
+    datasource[:basic_auth]
+  end
+
+  def basic_auth=(value)
+    resource[:basic_auth] = value
+    save_datasource
+  end
+
+  def basic_auth_user
+    datasource[:basic_auth_user]
+  end
+
+  def basic_auth_user=(value)
+    resource[:basic_auth_user] = value
+    save_datasource
+  end
+
+  def basic_auth_password
+    datasource[:basic_auth_password]
+  end
+
+  def basic_auth_password=(value)
+    resource[:basic_auth_password] = value
+    save_datasource
+  end
+
+  def with_credentials
+    datasource[:with_credentials]
+  end
+
+  def with_credentials=(value)
+    resource[:with_credentials] = value
+    save_datasource
+  end
+
   def json_data
     datasource[:json_data]
   end
@@ -127,7 +213,22 @@ Puppet::Type.type(:grafana_datasource).provide(:grafana, parent: Puppet::Provide
     save_datasource
   end
 
+  def secure_json_data
+    datasource[:secure_json_data]
+  end
+
+  def secure_json_data=(value)
+    resource[:secure_json_data] = value
+    save_datasource
+  end
+
   def save_datasource
+    # change organizations
+    response = send_request 'POST', format('%s/user/using/%s', resource[:grafana_api_path], fetch_organization[:id])
+    unless response.code == '200'
+      raise format('Failed to switch to org %s (HTTP response: %s/%s)', fetch_organization[:id], response.code, response.body)
+    end
+
     data = {
       name: resource[:name],
       type: resource[:type],
@@ -137,16 +238,20 @@ Puppet::Type.type(:grafana_datasource).provide(:grafana, parent: Puppet::Provide
       user: resource[:user],
       password: resource[:password],
       isDefault: (resource[:is_default] == :true),
-      jsonData: resource[:json_data]
+      basicAuth: (resource[:basic_auth] == :true),
+      basicAuthUser: resource[:basic_auth_user],
+      basicAuthPassword: resource[:basic_auth_password],
+      withCredentials: (resource[:with_credentials] == :true),
+      jsonData: resource[:json_data],
+      secureJsonData: resource[:secure_json_data]
     }
 
     if datasource.nil?
-      response = send_request('POST', '/api/datasources', data)
+      response = send_request('POST', format('%s/datasources', resource[:grafana_api_path]), data)
     else
       data[:id] = datasource[:id]
-      response = send_request 'PUT', format('/api/datasources/%s', datasource[:id]), data
+      response = send_request 'PUT', format('%s/datasources/%s', resource[:grafana_api_path], datasource[:id]), data
     end
-
     if response.code != '200'
       raise format('Failed to create save %s (HTTP response: %s/%s)', resource[:name], response.code, response.body)
     end
@@ -154,7 +259,7 @@ Puppet::Type.type(:grafana_datasource).provide(:grafana, parent: Puppet::Provide
   end
 
   def delete_datasource
-    response = send_request 'DELETE', format('/api/datasources/%s', datasource[:id])
+    response = send_request 'DELETE', format('%s/datasources/%s', resource[:grafana_api_path], datasource[:id])
 
     if response.code != '200'
       raise format('Failed to delete datasource %s (HTTP response: %s/%s', resource[:name], response.code, response.body)
