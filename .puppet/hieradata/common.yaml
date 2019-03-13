@@ -35,7 +35,7 @@ icinga::repo::type:                     "snapshot" # you can use 'release' too
 # Versions
 grafana::version:                       "5.4.2"
 graphite::version:                      "1.1.5"
-icinga::director::version:              "v1.6.0"
+icinga::director::version:              "v1.6.2"
 
 elastic::repo::version:                 6
 elastic::elasticsearch::version:        "6.6.2"
