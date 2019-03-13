@@ -2,6 +2,7 @@ class profiles::icinga::icingaweb2 (
   $node_name = 'icinga2',
   $api_username = 'root',
   $api_password = 'icinga',
+  $ipl_version = lookup('icinga::ipl::version'),
   $modules = {},
   $themes = {}
 ) {
@@ -176,6 +177,12 @@ class profiles::icinga::icingaweb2 (
   }
 
   # Modules
+  # Enforce 'ipl' as a base dependency module
+  icingaweb2::module { 'ipl':
+    install_method => 'git',
+    git_repository => 'https://github.com/Icinga/icingaweb2-module-ipl.git',
+    git_revision   => $ipl_version
+  }
 
   # Director
   if ('director' in $modules) {
