@@ -7,6 +7,7 @@ require VAGRANT_HOME + "/../tools/vagrant_helper"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   $nodes.each_pair do |name, options|
     config.vm.define name do |node_config|
+      node_config.vm.box = 'bento/centos-7'
       # main config
       config_main(node_config, name, options)
 
@@ -15,6 +16,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # provider: virtualbox
       provider_virtualbox(node_config, name, options)
+
+      # provider: vmware_workstation
+      provider_vmware(node_config, name, options)
 
       # provider: libvirt
       provider_libvirt(node_config, name, options)

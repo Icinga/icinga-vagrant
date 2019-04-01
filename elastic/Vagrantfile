@@ -16,6 +16,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # provider: virtualbox
       provider_virtualbox(node_config, name, options)
 
+      # provider: vmware_workstation
+      provider_vmware(node_config, name, options)
+
       # provider: libvirt
       provider_libvirt(node_config, name, options)
 
