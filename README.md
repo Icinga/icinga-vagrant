@@ -37,6 +37,8 @@ development, so screenshots and features may change.
 
 ## Visualization <a id="about-visualization"></a>
 
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_reporting.png" alt="Icinga Web 2 Reporting" height="300">
+
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_maps.png" alt="Icinga Web 2 Maps" height="300">
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_businessprocess.png" alt="Icinga Web 2 Business Process" height="300">
@@ -245,6 +247,7 @@ Each setup comes with the following basic tools installed:
 
 * [Icinga 2](https://www.icinga.com/products/icinga-2/)
 * [Icinga Web 2](https://www.icinga.com/products/icinga-web-2/)
+  * [Reporting](https://github.com/icinga/icingaweb2-module-reporting) with the [IDO Reports](https://github.com/icinga/icingaweb2-module-idoreports) data provider
   * [Director](https://github.com/Icinga/icingaweb2-module-director), [Business Process](https://github.com/Icinga/icingaweb2-module-businessprocess), [Cube](https://github.com/Icinga/icingaweb2-module-cube), [Map](https://github.com/nbuchwitz/icingaweb2-module-map) modules
   * [Community](https://exchange.icinga.com/search?q=category%3A%22Themes%22) themes
 
