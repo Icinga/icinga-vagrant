@@ -3,6 +3,10 @@ class profiles::icinga::icingaweb2 (
   $api_username = 'root',
   $api_password = 'icinga',
   $ipl_version = lookup('icinga::ipl::version'),
+  $reactbundle_version = lookup('icinga::reactbundle::version'),
+  $pdfexport_version = lookup('icinga::pdfexport::version'),
+  $reporting_version = lookup('icinga::reporting::version'),
+  $idoreports_version = lookup('icinga::idoreports::version'),
   $modules = {},
   $themes = {}
 ) {
@@ -139,6 +143,8 @@ class profiles::icinga::icingaweb2 (
   package { 'icingaweb2-selinux':
     ensure => latest,
   }
+  ->
+  User <| title == 'icinga' |> { groups +> "icingaweb2" }
 
   $default_user    = "icingaadmin"
   $conf_dir        = $::icingaweb2::params::conf_dir
@@ -183,6 +189,67 @@ class profiles::icinga::icingaweb2 (
     git_repository => 'https://github.com/Icinga/icingaweb2-module-ipl.git',
     git_revision   => $ipl_version
   }
+
+  # Make reporting a first class citizen
+  $reporting_module_conf_dir = "${conf_dir}/modules/reporting"
+  $reporting_resource_name = "icingaweb2-module-reporting"
+
+  $reporting_settings = {
+    'module-reporting' => {
+      'section_name' => 'backend',
+      'target'       => "${reporting_module_conf_dir}/config.ini",
+      'settings'     => {
+        'resource'	=> "${reporting_resource_name}"
+      }
+    }
+  }
+  icingaweb2::module { 'reactbundle':
+    install_method => 'git',
+    git_repository => 'https://github.com/Icinga/icingaweb2-module-reactbundle.git',
+    git_revision   => $reactbundle_version
+  }->
+  icingaweb2::module { 'pdfexport':
+    install_method => 'git',
+    git_repository => 'https://github.com/Icinga/icingaweb2-module-pdfexport.git',
+    git_revision   => $pdfexport_version
+  }->
+  icingaweb2::module { 'reporting':
+    install_method => 'git',
+    git_repository => 'https://github.com/Icinga/icingaweb2-module-reporting.git',
+    git_revision   => $reporting_version,
+    settings	   => $reporting_settings
+  }->
+  mysql::db { 'reporting':
+    user 	=> 'reporting', #TODO deduplicate this with the details for the config resource
+    password	=> 'reporting',
+    host	=> 'localhost',
+    charset     => 'utf8',
+    grant	=> [ 'ALL' ],
+    sql		=> '/usr/share/icingaweb2/modules/reporting/schema/mysql.sql' # TODO: avoid hardcoded path
+  }->
+  icingaweb2::config::resource{ "${reporting_resource_name}":
+    type	=> 'db',
+    db_type	=> 'mysql',
+    host	=> 'localhost',
+    port	=> 3306,
+    db_name	=> 'reporting',
+    db_username => 'reporting',
+    db_password => 'reporting',
+  }->
+  icingaweb2::module { 'idoreports':
+    install_method => 'git',
+    git_repository => 'https://github.com/Icinga/icingaweb2-module-idoreports.git',
+    git_revision   => $idoreports_version
+  }->
+  exec { 'idoreports-import-schema-slaperiods':
+   path => '/bin:/usr/bin:/sbin:/usr/sbin',
+   command => "mysql -f -u icinga -picinga icinga < /usr/share/icingaweb2/modules/idoreports/schema/slaperiods.sql" #TODO: replace -f with a more sane unless condition
+  }->
+  exec { 'idoreports-import-schema-get-sla-ok-percent':
+   path => '/bin:/usr/bin:/sbin:/usr/sbin',
+   command => "mysql -f -u icinga -picinga icinga < /usr/share/icingaweb2/modules/idoreports/schema/get_sla_ok_percent.sql" #TODO
+  }
+
 
   # Director
   if ('director' in $modules) {
