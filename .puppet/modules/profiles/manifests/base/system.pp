@@ -42,6 +42,22 @@ class profiles::base::system (
     package_name   => 'wget'
   }
   ->
+  # Chromium headless for Icinga reporting PDF export
+  #package { 'chromium-headless': # currently doesn't work for me
+  #  require => Class['epel']
+  #}
+  #->
+  yumrepo { 'google-chrome-stable':
+    baseurl 	=> 'http://dl.google.com/linux/chrome/rpm/stable/$basearch',
+    enabled	=> 1,
+    gpgcheck	=> 1,
+    gpgkey 	=> 'https://dl-ssl.google.com/linux/linux_signing_key.pub'
+  }
+  ->
+  package { [ 'google-chrome-stable', 'mesa-libOSMesa', 'mesa-libOSMesa-devel', 'gnu-free-sans-fonts', 'ipa-gothic-fonts', 'ipa-pgothic-fonts' ]:
+    ensure => 'installed'
+  }
+  ->
   # vim is needed
   class { 'vim':
     opt_bg_shading => 'light',
