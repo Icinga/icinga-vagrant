@@ -91,6 +91,14 @@ def provider_virtualbox(node_config, name, options)
   end
 end
 
+def provider_vmware(node_config, name, options)
+  node_config.vm.provider :vmware_workstation do |vw, override|
+     override.vm.box = options[:box_vmware]
+     vw.memory = options[:memory] if options[:memory]
+     vw.cpus = options[:cpus] if options[:cpus]
+  end
+end
+
 def provider_libvirt(node_config, name, options)
   node_config.vm.provider :libvirt do |lv, override|
     override.vm.box = options[:box_libvirt]
