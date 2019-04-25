@@ -102,6 +102,7 @@ One of these virtualization providers:
 
 * [Virtualbox](https://www.virtualbox.org/) >= 5.x
 * [Parallels Desktop Pro/Business](https://www.parallels.com/de/products/desktop/) >= 12
+* [VMWare Workstation](https://www.vmware.com/products/workstation-pro.html)
 * [libvirt](https://libvirt.org/)
 * [OpenStack](https://www.openstack.org/)
 
@@ -183,7 +184,7 @@ too.
 
 If Virtualbox is installed, this will be enabled by default.
 
-The Virtualbox provider uses the [bento](https://app.vagrantup.com/bento/) base box.
+The Virtualbox provider uses the [bento](https://app.vagrantup.com/bento/boxes/centos-7) base box.
 
 ### Parallels <a id="requirements-providers-virtualbox"></a>
 
@@ -194,7 +195,15 @@ plugin first:
 $ vagrant plugin install vagrant-parallels
 ```
 
-The Parallels provider uses the [bento](https://app.vagrantup.com/bento/) base box.
+The Parallels provider uses the [bento](https://app.vagrantup.com/bento/boxes/centos-7) base box.
+
+### VMware <a id="requirements-linux-vmware"></a>
+
+Both VMware Workstation and the Vagrant plugin require their own license.
+
+The Vagrant plugin installation is described [here](https://www.vagrantup.com/docs/vmware/installation.html).
+
+The VMware provider uses the [bento](https://app.vagrantup.com/bento/boxes/centos-7) base box.
 
 ### Libvirt <a id="requirements-providers-libvirt"></a>
 
