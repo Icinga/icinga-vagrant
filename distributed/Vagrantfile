@@ -7,7 +7,7 @@ require VAGRANT_HOME + "/../tools/vagrant_helper"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   $nodes.each_pair do |name, options|
     config.vm.define name do |node_config|
-      node_config.vm.box = 'bento/centos-7'
+
       # main config
       config_main(node_config, name, options)
 
