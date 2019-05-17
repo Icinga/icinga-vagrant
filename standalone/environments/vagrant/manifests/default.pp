@@ -26,7 +26,8 @@ node default {
       },
       "businessprocess" => {},
       "cube" => {},
-      "map" => {}
+      "map" => {},
+      "x509" => {}
     },
     themes => {
       "company"       => {},

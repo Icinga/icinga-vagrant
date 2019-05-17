@@ -1,6 +1,6 @@
 class profiles::base::mysql {
 
-  # Required for Icinga Reporting module
+  # Required for Icinga Reporting & x509 module
   $mysql_server_override_options = {
     'mysqld' => {
       'innodb_file_format' 	=> 'barracuda',

@@ -505,6 +505,54 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  # x509
+  if ('x509' in $modules) {
+    $x509_module_conf_dir = "${conf_dir}/modules/x509"
+    $x509_resource_name = "icingaweb2-module-x509"
+
+    $x509_settings = {
+      'module-x509' => {
+        'section_name' => 'backend',
+        'target'       => "${x509_module_conf_dir}/config.ini",
+        'settings'     => {
+          'resource'	=> "${x509_resource_name}"
+        }
+      }
+    }
+
+    icingaweb2::module { 'x509':
+      install_method => 'git',
+      git_repository => 'https://github.com/icinga/icingaweb2-module-x509.git',
+      git_revision   => 'master',
+      settings       => $x509_settings,
+    }
+    ->
+    mysql::db { 'x509':
+      user 	=> 'x509', #TODO deduplicate this with the details for the config resource
+      password	=> 'x509',
+      host	=> 'localhost',
+      charset     => 'utf8',
+      grant	=> [ 'ALL' ],
+      sql		=> '/usr/share/icingaweb2/modules/x509/etc/schema/mysql.schema.sql' # TODO: avoid hardcoded path
+    }->
+    icingaweb2::config::resource{ "${x509_resource_name}":
+      type	=> 'db',
+      db_type	=> 'mysql',
+      host	=> 'localhost',
+      port	=> 3306,
+      db_name	=> 'x509',
+      db_username => 'x509',
+      db_password => 'x509',
+    }
+    #->
+    #concat::fragment { "module_x509s_dashboards":
+    #  target  => $default_dash_conf_path,
+    #  content => template("profiles/icinga/icingaweb2/modules/x509/dashboard.ini.erb"),
+    #  order   => '10'
+    #}
+  }
+
+  ##########################################################
   # Themes
   # Example
   if ('company' in $themes) {
