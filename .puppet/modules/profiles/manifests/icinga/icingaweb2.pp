@@ -101,6 +101,7 @@ class profiles::icinga::icingaweb2 (
     extensions => {
       pdo => {},
       mysqlnd => {},
+      gmp => {}, #required by x509
     },
     # NOTE for future reference: DO NOT build imagick with PECL. That fails heavily, either with pear not in PATH and then configure & make on missing imagick-devel packages.
     # I'll rather shoot myself before doing so. We'll wait for SCL packages.
@@ -543,6 +544,10 @@ class profiles::icinga::icingaweb2 (
       db_name	=> 'x509',
       db_username => 'x509',
       db_password => 'x509',
+    }->
+    exec { 'x509-import-trust-store':
+     path => '/bin:/usr/bin:/sbin:/usr/sbin',
+     command => "icingacli x509 import --file /etc/ssl/certs/ca-bundle.crt"
     }
     #->
     #concat::fragment { "module_x509s_dashboards":
