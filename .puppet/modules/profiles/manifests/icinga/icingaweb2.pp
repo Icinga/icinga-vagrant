@@ -146,7 +146,10 @@ class profiles::icinga::icingaweb2 (
     ensure => latest,
   }
   ->
-  User <| title == 'icinga' |> { groups +> "icingaweb2" }
+  User <| title == 'icinga' |> {
+    groups +> "icingaweb2",
+    require => Class['::icinga2']
+  }
 
   $default_user    = "icingaadmin"
   $conf_dir        = $::icingaweb2::params::conf_dir
@@ -548,6 +551,13 @@ class profiles::icinga::icingaweb2 (
     exec { 'x509-import-trust-store':
      path => '/bin:/usr/bin:/sbin:/usr/sbin',
      command => "icingacli x509 import --file /etc/ssl/certs/ca-bundle.crt"
+    }->
+    file { "${x509_module_conf_dir}/jobs.ini":
+      ensure => present,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '0660',
+      content => template("profiles/icinga/icingaweb2/modules/x509/jobs.ini.erb")
     }
     #->
     #concat::fragment { "module_x509s_dashboards":
