@@ -22,10 +22,6 @@ node default {
   class { '::profiles::icinga::icingaweb2':
     node_name => lookup('icinga::icinga2::node_name'),
     modules => {
-#      "graylog" => {
-#        "listen_ip"   => lookup('graylog::web::listen_ip'),
-#        "listen_port" => lookup('graylog::web::listen_port')
-#      },
       "director" => {
         "git_revision" => lookup('icinga::director::version')
       },

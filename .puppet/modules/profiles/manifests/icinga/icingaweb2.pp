@@ -506,45 +506,6 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
-  # Graylog
-  if ('graylog' in $modules) {
-    $graylog_listen_ip = $modules['graylog']['listen_ip']
-    $graylog_listen_port = $modules['graylog']['listen_port']
-
-    $graylog_module_conf_dir = "${conf_dir}/modules/graylog"
-
-    $graylog_instance_name = 'graylog'
-
-    $graylog_settings = {
-      'module-graylog-instances' => {
-        'section_name'  => $graylog_instance_name,
-        'target'        => "${graylog_module_conf_dir}/instances.ini",
-        'settings'      => {
-          'user'                  => 'admin',
-          'password'              => 'admin',
-          'uri'                  => "http://${graylog_listen_ip}:${graylog_listen_port}/api",
-        }
-      },
-      'module-graylog-eventtypes' => {
-        'section_name'  => 'icinga2',
-        'target'        => "${graylog_module_conf_dir}/eventtypes.ini",
-        'settings'      => {
-          'instance'              => $graylog_instance_name,
-          'index'                 => 'icinga2-*',
-          'filter'                => 'host={host.name}',
-          'fields'                => '*'
-        }
-      }
-    }
-
-    icingaweb2::module { 'graylog':
-      install_method => 'git',
-      git_repository => 'https://github.com/dnsmichi/icingaweb2-module-graylog.git',
-      git_revision   => 'master',
-      settings       => $graylog_settings,
-    }
-  }
-
   # Themes
   # Example
   if ('company' in $themes) {
