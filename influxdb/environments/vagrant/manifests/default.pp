@@ -25,6 +25,7 @@ node default {
         "listen_ip"   => lookup('grafana::server::listen_ip'),
         "listen_port" => lookup('grafana::server::listen_port')
       },
+      "x509" => {},
       "businessprocess" => {},
       "cube" => {},
       "map" => {}

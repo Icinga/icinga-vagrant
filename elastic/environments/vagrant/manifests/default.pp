@@ -26,6 +26,7 @@ node default {
         "listen_ip"   => lookup('elastic::elasticsearch::listen_ip'),
         "listen_port" => lookup('elastic::elasticsearch::listen_port')
       },
+      "x509" => {},
       "businessprocess" => {},
       "cube" => {},
       "map" => {}

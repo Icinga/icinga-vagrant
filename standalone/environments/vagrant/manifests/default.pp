@@ -24,10 +24,10 @@ node default {
         "listen_ip"   => lookup('graphite::web::listen_ip'),
         "listen_port" => lookup('graphite::web::listen_port')
       },
+      "x509" => {},
       "businessprocess" => {},
       "cube" => {},
-      "map" => {},
-      "x509" => {}
+      "map" => {}
     },
     themes => {
       "company"       => {},
