@@ -2,3 +2,12 @@
 cidrs = "185.11.254.90/32"
 ports = "443"
 schedule = ""
+
+[community.icinga.com]
+cidrs = "185.11.254.93/32"
+ports = "443"
+schedule = ""
+
+[local]
+cidrs = "<%= scope().call_function('hiera', ['node::ipaddress']) -%>/32"
+ports = 5665

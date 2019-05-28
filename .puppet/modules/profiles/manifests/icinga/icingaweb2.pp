@@ -558,6 +558,18 @@ class profiles::icinga::icingaweb2 (
       group  => icingaweb2,
       mode => '0660',
       content => template("profiles/icinga/icingaweb2/modules/x509/jobs.ini.erb")
+    }->
+    exec { 'x509-jobs-icinga-com':
+     path => '/bin:/usr/bin:/sbin:/usr/sbin',
+     command => "icingacli x509 scan --job icinga.com"
+    }->
+    exec { 'x509-jobs-community-icinga-com':
+     path => '/bin:/usr/bin:/sbin:/usr/sbin',
+     command => "icingacli x509 scan --job community.icinga.com"
+    }->
+    exec { 'x509-jobs-local':
+     path => '/bin:/usr/bin:/sbin:/usr/sbin',
+     command => "icingacli x509 scan --job local"
     }
     #->
     #concat::fragment { "module_x509s_dashboards":
