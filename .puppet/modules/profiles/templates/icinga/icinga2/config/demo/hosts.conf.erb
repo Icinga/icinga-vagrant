@@ -3,7 +3,7 @@ object Host "<%= @node_name-%>" {
   import "generic-host"
 
   /* Specify the address attributes for checks e.g. `ssh` or `http`. */
-  address = "127.0.0.1"
+  address = "<%= scope().call_function('hiera', ['node::ipaddress']) -%>"
   address6 = "::1"
 
   vars.os = "Linux"
