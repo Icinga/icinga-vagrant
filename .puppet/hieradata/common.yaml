@@ -43,7 +43,7 @@ icinga::director::version:              "v1.6.2"
 #icinga::idoreports::version:            "v0.9.0"
 icinga::reporting::version:             "fix/shorter-unique-identifiers"
 icinga::idoreports::version:            "master"
-icinga::x509::version:                  "fix/db-relax-large-prefix"
+icinga::x509::version:                  "v1.0.0"
 
 elastic::repo::version:                 6
 elastic::elasticsearch::version:        "6.6.2"
