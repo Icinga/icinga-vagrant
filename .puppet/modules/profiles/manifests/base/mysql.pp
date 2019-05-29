@@ -1,12 +1,6 @@
 class profiles::base::mysql {
 
-  # Required for Icinga Reporting module
   $mysql_server_override_options = {
-    'mysqld' => {
-      'innodb_file_format' 	=> 'barracuda',
-      'innodb_file_per_table' 	=> '1',
-      'innodb_large_prefix'	=> '1'
-    }
   }
 
   class { '::mysql::server':
