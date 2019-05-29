@@ -8,6 +8,7 @@ class profiles::icinga::icingaweb2 (
   $reporting_version = lookup('icinga::reporting::version'),
   $idoreports_version = lookup('icinga::idoreports::version'),
   $director_version = lookup('icinga::director::version'),
+  $x509_version = lookup('icinga::x509::version'),
   $modules = {},
   $themes = {}
 ) {
@@ -527,7 +528,7 @@ class profiles::icinga::icingaweb2 (
     icingaweb2::module { 'x509':
       install_method => 'git',
       git_repository => 'https://github.com/icinga/icingaweb2-module-x509.git',
-      git_revision   => 'master',
+      git_revision   => $x509_version,
       settings       => $x509_settings,
     }
     ->
