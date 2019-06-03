@@ -24,9 +24,6 @@ node default {
         "listen_ip"   => lookup('graphite::web::listen_ip'),
         "listen_port" => lookup('graphite::web::listen_port')
       },
-      "director" => {
-        "git_revision" => lookup('icinga::director::version')
-      },
       "businessprocess" => {},
       "cube" => {},
       "map" => {}

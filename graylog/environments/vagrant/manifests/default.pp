@@ -22,9 +22,6 @@ node default {
   class { '::profiles::icinga::icingaweb2':
     node_name => lookup('icinga::icinga2::node_name'),
     modules => {
-      "director" => {
-        "git_revision" => lookup('icinga::director::version')
-      },
       "businessprocess" => {},
       "cube" => {},
       "map" => {}
