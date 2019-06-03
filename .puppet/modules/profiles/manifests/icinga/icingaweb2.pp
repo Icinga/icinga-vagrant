@@ -7,6 +7,7 @@ class profiles::icinga::icingaweb2 (
   $pdfexport_version = lookup('icinga::pdfexport::version'),
   $reporting_version = lookup('icinga::reporting::version'),
   $idoreports_version = lookup('icinga::idoreports::version'),
+  $director_version = lookup('icinga::director::version'),
   $modules = {},
   $themes = {}
 ) {
@@ -250,41 +251,39 @@ class profiles::icinga::icingaweb2 (
    command => "mysql -f -u icinga -picinga icinga < /usr/share/icingaweb2/modules/idoreports/schema/get_sla_ok_percent.sql" #TODO
   }
 
-
   # Director
-  if ('director' in $modules) {
-    $director_git_revision = $modules['director']['git_revision']
-
-    mysql::db { 'director':
-      user      => 'director',
-      password  => 'director',
-      host      => 'localhost',
-      charset   => 'utf8',
-      grant     => [ 'ALL' ]
-    }
-
-    # wait until Icinga 2 and the REST API is fully available.
-    exec { 'http-conn-validator-icinga-api':
-      path => '/bin:/usr/bin:/sbin:/usr/sbin',
-      command => "/usr/local/bin/http-conn-validator \"https://$api_username:$api_password@localhost:5665/v1\"",
-      timeout => 1800,
-      require => Class['icinga2::service']
-    }
-    ->
-    class {'icingaweb2::module::director':
-      git_revision  => $director_git_revision,
-      db_host       => 'localhost',
-      db_name       => 'director',
-      db_username   => 'director',
-      db_password   => 'director',
-      import_schema => true,
-      kickstart     => true,
-      endpoint      => $node_name,
-      api_username  => $api_username,
-      api_password  => $api_password,
-      require       => Mysql::Db['director']
-    }
+  mysql::db { 'director':
+    user      => 'director',
+    password  => 'director',
+    host      => 'localhost',
+    charset   => 'utf8',
+    grant     => [ 'ALL' ]
   }
+
+  # wait until Icinga 2 and the REST API is fully available.
+  exec { 'http-conn-validator-icinga-api':
+    path => '/bin:/usr/bin:/sbin:/usr/sbin',
+    command => "/usr/local/bin/http-conn-validator \"https://$api_username:$api_password@localhost:5665/v1\"",
+    timeout => 1800,
+    require => Class['icinga2::service']
+  }
+  ->
+  class {'icingaweb2::module::director':
+    git_revision  => $director_version,
+    db_host       => 'localhost',
+    db_name       => 'director',
+    db_username   => 'director',
+    db_password   => 'director',
+    import_schema => true,
+    kickstart     => true,
+    endpoint      => $node_name,
+    api_username  => $api_username,
+    api_password  => $api_password,
+    require       => Mysql::Db['director']
+  }
+
+  ##########################################################
+  # Modules
 
   # Map
   if ('map' in $modules) {
