@@ -70,6 +70,10 @@ object Host "<%= @node_name-%>" {
   }
 
   /* database checks */
+
+  // Database listens locally, not external
+  vars.mysql_health_hostname = "127.0.0.1"
+
   vars.databases["icinga"] = {
     mysql_health_warning = 4096 //MB
     mysql_health_critical = 8192 //MB
