@@ -22,6 +22,7 @@ node default {
   class { '::profiles::icinga::icingaweb2':
     node_name => lookup('icinga::icinga2::node_name'),
     modules => {
+      "x509" => {},
       "businessprocess" => {},
       "cube" => {},
       "map" => {}

@@ -8,6 +8,7 @@ class profiles::icinga::icingaweb2 (
   $reporting_version = lookup('icinga::reporting::version'),
   $idoreports_version = lookup('icinga::idoreports::version'),
   $director_version = lookup('icinga::director::version'),
+  $x509_version = lookup('icinga::x509::version'),
   $modules = {},
   $themes = {}
 ) {
@@ -101,6 +102,7 @@ class profiles::icinga::icingaweb2 (
     extensions => {
       pdo => {},
       mysqlnd => {},
+      gmp => {}, #required by x509
     },
     # NOTE for future reference: DO NOT build imagick with PECL. That fails heavily, either with pear not in PATH and then configure & make on missing imagick-devel packages.
     # I'll rather shoot myself before doing so. We'll wait for SCL packages.
@@ -145,7 +147,10 @@ class profiles::icinga::icingaweb2 (
     ensure => latest,
   }
   ->
-  User <| title == 'icinga' |> { groups +> "icingaweb2" }
+  User <| title == 'icinga' |> {
+    groups +> "icingaweb2",
+    require => Class['::icinga2']
+  }
 
   $default_user    = "icingaadmin"
   $conf_dir        = $::icingaweb2::params::conf_dir
@@ -505,6 +510,77 @@ class profiles::icinga::icingaweb2 (
     }
   }
 
+  # x509
+  if ('x509' in $modules) {
+    $x509_module_conf_dir = "${conf_dir}/modules/x509"
+    $x509_resource_name = "icingaweb2-module-x509"
+
+    $x509_settings = {
+      'module-x509' => {
+        'section_name' => 'backend',
+        'target'       => "${x509_module_conf_dir}/config.ini",
+        'settings'     => {
+          'resource'	=> "${x509_resource_name}"
+        }
+      }
+    }
+
+    icingaweb2::module { 'x509':
+      install_method => 'git',
+      git_repository => 'https://github.com/icinga/icingaweb2-module-x509.git',
+      git_revision   => $x509_version,
+      settings       => $x509_settings,
+    }
+    ->
+    mysql::db { 'x509':
+      user 	=> 'x509', #TODO deduplicate this with the details for the config resource
+      password	=> 'x509',
+      host	=> 'localhost',
+      charset     => 'utf8',
+      grant	=> [ 'ALL' ],
+      sql		=> '/usr/share/icingaweb2/modules/x509/etc/schema/mysql.schema.sql' # TODO: avoid hardcoded path
+    }->
+    icingaweb2::config::resource{ "${x509_resource_name}":
+      type	=> 'db',
+      db_type	=> 'mysql',
+      host	=> 'localhost',
+      port	=> 3306,
+      db_name	=> 'x509',
+      db_username => 'x509',
+      db_password => 'x509',
+    }->
+    exec { 'x509-import-trust-store':
+     path => '/bin:/usr/bin:/sbin:/usr/sbin',
+     command => "icingacli x509 import --file /etc/ssl/certs/ca-bundle.crt"
+    }->
+    file { "${x509_module_conf_dir}/jobs.ini":
+      ensure => present,
+      owner  => root,
+      group  => icingaweb2,
+      mode => '0660',
+      content => template("profiles/icinga/icingaweb2/modules/x509/jobs.ini.erb")
+    }->
+    exec { 'x509-jobs-icinga-com':
+     path => '/bin:/usr/bin:/sbin:/usr/sbin',
+     command => "icingacli x509 scan --job icinga.com"
+    }->
+    exec { 'x509-jobs-community-icinga-com':
+     path => '/bin:/usr/bin:/sbin:/usr/sbin',
+     command => "icingacli x509 scan --job community.icinga.com"
+    }->
+    exec { 'x509-jobs-local':
+     path => '/bin:/usr/bin:/sbin:/usr/sbin',
+     command => "icingacli x509 scan --job local"
+    }
+    #->
+    #concat::fragment { "module_x509s_dashboards":
+    #  target  => $default_dash_conf_path,
+    #  content => template("profiles/icinga/icingaweb2/modules/x509/dashboard.ini.erb"),
+    #  order   => '10'
+    #}
+  }
+
+  ##########################################################
   # Themes
   # Example
   if ('company' in $themes) {

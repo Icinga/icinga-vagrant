@@ -43,7 +43,7 @@ development, so screenshots and features may change.
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_businessprocess.png" alt="Icinga Web 2 Business Process" height="300">
 
-## Graphing <a id="about-graphing"></a>
+## Metrics <a id="about-metrics"></a>
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_grafana_icinga2_graphite.png" alt="Icinga 2 Grafana with Graphite" height="300">
 
@@ -62,6 +62,11 @@ development, so screenshots and features may change.
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_graylog.png" alt="Icinga Web 2 Graylog" height="300">
 -->
+
+## Certificates <a id="about-certs"></a>
+
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_certificates.png" alt="Certificate Monitoring" height="300">
+
 
 ## Dashboards and Themes <a id="about-dashboards-themes"></a>
 
