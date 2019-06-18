@@ -2,7 +2,7 @@ class profiles::base::dev (
 ){
   $icinga_dev_tools = [ 'rpmdevtools', 'ccache',
                         'cmake', 'make', 'gcc-c++', 'flex', 'bison',
-                        'openssl-devel', 'boost-devel', 'systemd-devel',
+                        'openssl-devel', 'boost169-devel', 'systemd-devel',
                         'mysql-devel', 'postgresql-devel', 'libedit-devel',
                         'libstdc++-devel' ]
   package { $icinga_dev_tools:
