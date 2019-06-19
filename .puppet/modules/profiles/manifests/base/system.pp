@@ -35,6 +35,11 @@ class profiles::base::system (
     ensure => 'installed',
   }
   ->
+  # curl/nss for latest TLS
+  package { [ 'curl', 'nss' ]:
+    ensure => 'latest',
+  }
+  ->
   # wget
   class { 'wget':
     package_manage => true,
