@@ -116,6 +116,10 @@ class profiles::icinga::icinga2 (
     global => true,
   }
 
+  icinga2::object::zone { 'director-global':
+    global => true,
+  }
+
 
   # Features
   if (has_key($features, 'graphite')) {
