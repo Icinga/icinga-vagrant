@@ -120,6 +120,10 @@ The required resources are automatically configured during the
 > OpenStack VMs are provisioned remotely in your cloud provider.
 > Please continue [here](doc/25-Openstack.md) for a full documentation.
 
+Optional:
+
+* [vagrant-hostmanager](https://github.com/devopsgroup-io/vagrant-hostmanager) >= 1.8.1
+
 ## Linux <a id="requirements-linux"></a>
 
 ### VirtualBox <a id="requirements-linux-virtualbox"></a>
@@ -424,6 +428,9 @@ nodes = {
 }
 ```
 
+If the `vagrant-hostmanager` plugin is installed an entry in `/etc/hosts` will be created to provide
+access by name.
+
 ## Configuration: Icinga Package Repository <a id="configuration-icinga-repo"></a>
 
 This requires you to edit the Hiera configuration tracked by Git. The setting below
@@ -569,7 +576,8 @@ Thanks to all [contributors](AUTHORS)! :)
 Each box uses a generic Vagrantfile to set the required resources for initial VM
 startup. The `Vagrantfile` includes the `Vagrantfile.nodes` file which defines
 VM specific settings. In addition to that, `tools/vagrant_helper.rb` loads all
-pre-defined functions for provider and provisioner instantiation.
+pre-defined functions for provider and provisioner instantiation. Furthermore it
+configures `vagrant-hostmanager` if the plugin is installed.
 
 The generic `shell_provisioner.sh` scripts ensure that all VM requirements are fulfilled
 and also takes care about installing Puppet which will be used as provisioner in the next
