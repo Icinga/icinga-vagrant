@@ -50,12 +50,24 @@ class profiles::icinga::icinga2 (
     ensure => 'latest',
   }
   ->
+  package { [ 'perl-Net-SNMP', 'perl-Digest-MD5', 'perl-Module-Load' ]:
+   ensure => 'latest'
+  }
+  ->
   file { 'check_mysql_health':
     name => '/usr/lib64/nagios/plugins/check_mysql_health',
     owner => root,
     group => root,
     mode => '0755',
     content => template("profiles/icinga/check_mysql_health.erb")
+  }
+  ->
+  file { 'check_nwc_health':
+    name => '/usr/lib64/nagios/plugins/check_nwc_health',
+    owner => root,
+    group => root,
+    mode => '0755',
+    content => template("profiles/icinga/check_nwc_health.erb")
   }
 
   mysql::db { 'icinga':
@@ -265,6 +277,12 @@ class profiles::icinga::icinga2 (
   file { "$config_path/bp.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/bp.conf.erb"),
+    tag     => icinga2::config::file
+  }
+  ->
+  file { "$config_path/network.conf":
+    ensure  => present,
+    content => template("profiles/icinga/icinga2/config/demo/network.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
