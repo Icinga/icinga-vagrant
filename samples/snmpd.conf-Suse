@@ -1,0 +1,19 @@
+# Please see /usr/share/doc/packages/net-snmp/EXAMPLE.conf for a
+# more complete example and snmpd.conf(5).
+#
+# Writing is disabled by default for security reasons.  If you'd like
+# to enable it uncomment the rwcommunity line and change the community
+# name to something nominally secure (keeping in mind that this is
+# transmitted in clear text).
+
+# don't use ' < > in strings for syslocation or syscontact
+# Note that if you define the following here you won't be able to change
+# them with snmpset
+syslocation Server Room
+syscontact Sysadmin (root@localhost)
+
+# These really aren't meant for production use.  They include all MIBS
+# and can use considerable resources.  See snmpd.conf(5) for information
+# on setting up groups and limiting MIBS.
+rocommunity public 127.0.0.1
+# rwcommunity mysecret 127.0.0.1

@@ -1,0 +1,8 @@
+###
+### File managed by Puppet
+###
+<% if (@snmp_config.is_a?(Array)) and (@snmp_config.count > 0) -%>
+<% @snmp_config.each do |line| -%>
+<%= line %>
+<% end -%>
+<% end -%>

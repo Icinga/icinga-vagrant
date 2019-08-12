@@ -1,0 +1,143 @@
+###
+### File managed by Puppet
+###
+
+################################################################################
+# AGENT BEHAVIOUR
+
+<% if @master != nil -%>
+<% if @master -%>
+master agentx
+
+<% if @agentx_perms != nil -%>
+agentXPerms <%= @agentx_perms %>
+<% end -%>
+<% if @agentx_ping_interval != nil -%>
+agentXPingInterval <%= @agentx_ping_interval %>
+<% end -%>
+<% if @agentx_socket != nil -%>
+agentXSocket <%= @agentx_socket %>
+<% end -%>
+<% if @agentx_timeout != nil -%>
+agentXTimeout <%= @agentx_timeout %>
+<% end -%>
+<% if @agentx_retries != nil -%>
+agentXRetries <%= @agentx_retries %>
+<% end -%>
+<% end -%>
+<% end -%>
+
+<% if (@agentaddress.is_a?(Array)) and (@agentaddress.count > 0) -%>
+agentaddress <%= @agentaddress.join(',') %>
+<% end -%>
+
+################################################################################
+# ACCESS CONTROL
+
+# ------------------------------------------------------------------------------
+# Traditional Access Control
+<%- [*@ro_community].compact.each do |c| -%>
+  <%- [*@ro_network].compact.each do |n| -%>
+rocommunity <%= c %> <%= n %>
+  <%- end -%>
+<%- end -%>
+<%- [*@ro_community6].compact.each do |c| -%>
+  <%- [*@ro_network6].compact.each do |n| -%>
+rocommunity6 <%= c %> <%= n %>
+  <%- end -%>
+<%- end -%>
+<%- [*@rw_community].compact.each do |c| -%>
+  <%- [*@rw_network].compact.each do |n| -%>
+rwcommunity <%= c %> <%= n %>
+  <%- end -%>
+<%- end -%>
+<%- [*@rw_community6].compact.each do |c| -%>
+  <%- [*@rw_network6].compact.each do |n| -%>
+rocommunity6 <%= c %> <%= n %>
+  <%- end -%>
+<%- end -%>
+
+# ------------------------------------------------------------------------------
+# VACM Configuration
+#       sec.name       source        community
+<% if @snmpv2_enable -%>
+<% @com2sec.each do |c| -%>
+com2sec <%= c %>
+<% end -%>
+
+<% @com2sec6.each do |c| -%>
+com2sec6 <%= c %>
+<% end -%>
+
+#       groupName      securityModel securityName
+<% @groups.each do |group| -%>
+group   <%= group %>
+<% end -%>
+
+#       group          context sec.model sec.level prefix read       write notif
+<% @accesses.each do |access| -%>
+access  <%= access %>
+<% end -%>
+<% end -%>
+#       name          incl/excl  subtree             mask(optional)
+<% @views.each do |view| -%>
+view    <%= view %>
+<% end -%>
+# ------------------------------------------------------------------------------
+# Typed-View Configuration
+
+################################################################################
+# SYSTEM INFORMATION
+
+# ------------------------------------------------------------------------------
+# System Group
+sysLocation <%= @location %>
+sysContact <%= @contact %>
+sysServices <%= @services %>
+sysName <%= @sysname %>
+
+################################################################################
+# EXTENDING AGENT FUNCTIONALITY
+<% if @extends -%>
+<%   if @extends.any? -%>
+<%     @extends.each do |extending| -%>
+extend <%= extending %>
+<%     end -%>
+<%   end -%>
+<% end -%>
+
+<% if @dlmod -%>
+<%   if @dlmod.any? -%>
+# ------------------------------------------------------------------------------
+# Dynamically Loadable Modules
+<%     @dlmod.each do |mod| -%>
+dlmod <%= mod %>
+<%     end -%>
+
+<%   end -%>
+<% end -%>
+
+###############################################################################
+## Logging
+##
+
+## We do not want annoying "Connection from UDP: " messages in syslog.
+## If the following option is set to 'no', snmpd will print each incoming
+## connection, which can be useful for debugging.
+
+dontLogTCPWrappersConnects <%= @do_not_log_tcpwrappers %>
+
+################################################################################
+# OTHER CONFIGURATION
+
+<% if @openmanage_enable -%>
+#Allow Systems Management Data Engine SNMP to connect to snmpd using SMUX
+smuxpeer .1.3.6.1.4.1.674.10892.1
+#Allow Systems Management Data Engine SNMP Storageservices to connect to snmpd using SMUX
+smuxpeer .1.3.6.1.4.1.674.10893.1
+<% end -%>
+<% if not @snmpd_config.nil? -%>
+<%   @snmpd_config.each do |line| -%>
+<%= line %>
+<%   end -%>
+<% end -%>
