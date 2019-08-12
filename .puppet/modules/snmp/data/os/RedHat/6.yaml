@@ -1,0 +1,8 @@
+---
+snmp::service_config_perms: '0600'
+snmp::snmpd_options: '-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid'
+snmp::snmptrapd_options: '-Lsd -p /var/run/snmptrapd.pid'
+snmp::sysconfig: '/etc/sysconfig/snmpd'
+snmp::trap_sysconfig: '/etc/sysconfig/snmptrapd'
+snmp::var_net_snmp: '/var/lib/net-snmp'
+snmp::varnetsnmp_perms: '0755'

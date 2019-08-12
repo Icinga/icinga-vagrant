@@ -1,0 +1,6 @@
+--fail-on-warnings
+--relative
+--no-140chars-check
+--no-class_inherits_from_params_class-check
+--no-documentation-check
+--no-single_quote_string_with_variables-check

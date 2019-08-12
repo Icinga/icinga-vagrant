@@ -1,0 +1,11 @@
+###
+### File managed by Puppet
+###
+
+# snmptrapd control (yes means start daemon).  As of net-snmp version
+# 5.0, master agentx support must be enabled in snmpd before snmptrapd
+# can be run.  See snmpd.conf(5) for how to do this.
+TRAPDRUN=<%= @trapdrun %>
+
+# snmptrapd command line options
+TRAPDOPTS="<%= @snmptrapd_options %>"

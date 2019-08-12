@@ -1,0 +1,42 @@
+###
+### File managed by Puppet
+###
+
+################################################################################
+# TRAPD BEHAVIOUR
+
+<% if (@snmptrapdaddr.is_a?(Array)) and (@snmptrapdaddr.count > 0) -%>
+snmpTrapdAddr <%= @snmptrapdaddr.join(',') %>
+<% end -%>
+doNotLogTraps <%= @do_not_log_traps %>
+
+################################################################################
+# ACCESS CONTROL
+
+<%- [*@ro_community].compact.each do |c| -%>
+authCommunity log,execute,net <%= c %>
+<%- end -%>
+disableAuthorization <%= @disable_authorization %>
+
+################################################################################
+# NOTIFICATION PROCESSING
+
+<% if not @trap_handlers.nil? -%>
+<%   @trap_handlers.each do |handler| -%>
+traphandle <%= handler %>
+<%   end -%>
+<% end -%>
+<% if not @trap_forwards.nil? -%>
+<%   @trap_forwards.each do |forward| -%>
+forward <%= forward %>
+<%   end -%>
+<% end -%>
+
+################################################################################
+# OTHER CONFIGURATION
+
+<% if not @snmptrapd_config.nil? -%>
+<%   @snmptrapd_config.each do |line| -%>
+<%= line %>
+<%   end -%>
+<% end -%>
