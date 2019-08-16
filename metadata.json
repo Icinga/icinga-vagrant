@@ -1,0 +1,74 @@
+{
+  "name": "puppet-nginx",
+  "version": "1.0.1-rc0",
+  "author": "Vox Pupuli",
+  "summary": "Puppet NGINX management module",
+  "license": "MIT",
+  "source": "https://github.com/voxpupuli/puppet-nginx.git",
+  "project_page": "http://github.com/voxpupuli/puppet-nginx",
+  "issues_url": "https://github.com/voxpupuli/puppet-nginx/issues",
+  "dependencies": [
+    {
+      "name": "puppetlabs/concat",
+      "version_requirement": ">= 4.1.0 < 7.0.0"
+    },
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 5.0.0 < 7.0.0"
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 5.5.8 < 7.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "8",
+        "9"
+      ]
+    },
+    {
+      "operatingsystem": "OpenBSD"
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "SLES"
+    },
+    {
+      "operatingsystem": "Solaris"
+    },
+    {
+      "operatingsystem": "AIX"
+    },
+    {
+      "operatingsystem": "FreeBSD"
+    },
+    {
+      "operatingsystem": "DragonFly"
+    },
+    {
+      "operatingsystem": "NetBSD"
+    },
+    {
+      "operatingsystem": "Archlinux"
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "14.04",
+        "16.04",
+        "18.04"
+      ]
+    }
+  ]
+}
