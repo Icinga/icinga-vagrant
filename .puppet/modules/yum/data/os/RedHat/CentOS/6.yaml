@@ -1,3 +1,0 @@
----
-yum::os_default_repos:
-    - 'contrib'

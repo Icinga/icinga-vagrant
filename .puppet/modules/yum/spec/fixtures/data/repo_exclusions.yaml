@@ -1,3 +1,0 @@
----
-yum::repo_exclusions:
-    - 'base'
