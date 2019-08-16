@@ -1,0 +1,68 @@
+{
+  "name": "puppet-yum",
+  "version": "4.0.1-rc0",
+  "author": "Vox Pupuli",
+  "summary": "YUM utilities",
+  "license": "MIT",
+  "source": "https://github.com/voxpupuli/puppet-yum.git",
+  "project_page": "https://github.com/voxpupuli/puppet-yum",
+  "issues_url": "https://github.com/voxpupuli/puppet-yum/issues",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.18.0 < 7.0.0"
+    },
+    {
+      "name": "puppetlabs/concat",
+      "version_requirement": ">= 1.2.5 < 7.0.0"
+    }
+  ],
+  "tags": [
+    "yum",
+    "package",
+    "rpm",
+    "voxpupuli"
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "OracleLinux",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Amazon",
+      "operatingsystemrelease": [
+        "2017"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 5.5.8 < 7.0.0"
+    }
+  ]
+}

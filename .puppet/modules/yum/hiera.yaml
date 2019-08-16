@@ -1,0 +1,21 @@
+---
+version: 5
+
+defaults:
+  datadir: data
+  data_hash: yaml_data
+
+hierarchy:
+    - name: 'OS Data'
+      paths:
+        - 'os/%{facts.os.family}/%{facts.os.name}/%{facts.os.release.full}.yaml'
+        - 'os/%{facts.os.family}/%{facts.os.name}/%{facts.os.release.major}/%{facts.os.release.minor}.yaml'
+        - 'os/%{facts.os.family}/%{facts.os.name}/%{facts.os.release.major}.yaml'
+        - 'os/%{facts.os.family}/%{facts.os.name}.yaml'
+        - 'os/%{facts.os.family}.yaml'
+
+    - name: 'Non-OS Yumrepos'
+      path: 'repos.yaml'
+
+    - name: 'Common Data'
+      path: 'common.yaml'
