@@ -1,0 +1,15 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+PIDFile=/run/gunicorn.pid
+WorkingDirectory=<%= scope.lookupvar('graphite::graphiteweb_webapp_dir_REAL') %>
+ExecStart=/usr/bin/gunicorn --pid /run/gunicorn.pid --timeout=<%= scope.lookupvar('graphite::gunicorn_arg_timeout') %> --bind=<%= scope.lookupvar('graphite::gunicorn_bind') %> --workers=<%= scope.lookupvar('graphite::gunicorn_workers') %> --user <%= scope.lookupvar('graphite::config::gr_web_user_REAL') %> --group <%= scope.lookupvar('graphite::config::gr_web_group_REAL') %> --access-logfile <%= scope.lookupvar('graphite::graphiteweb_log_dir_REAL') %>/access-gunicorn.log --error-logfile <%= scope.lookupvar('graphite::graphiteweb_log_dir_REAL') %>/error-gunicorn.log graphite.graphite_wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
