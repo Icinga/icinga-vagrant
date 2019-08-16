@@ -1,0 +1,7 @@
+fixtures:
+  forge_modules:
+    stdlib: "puppetlabs/stdlib"
+    apt: "puppetlabs/apt"
+    yumrepo: "puppetlabs/yumrepo_core"
+  symlinks:
+    influxdb: "#{source_dir}"

@@ -1,0 +1,15 @@
+HOSTS:
+  centos-7:
+    roles:
+      - master
+    platform: el-7-x86_64
+    image: centos:7
+    hypervisor: docker
+    docker_preserve_image: true
+    docker_container_name: "beaker-influxdb-centos-7"
+    docker_image_commands:
+      - 'yum install -y tar'
+    docker_cmd: '["/sbin/init", "/usr/sbin/sshd","-D"]'
+CONFIG:
+  log_level: debug
+  type: foss

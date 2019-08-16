@@ -1,0 +1,16 @@
+HOSTS:
+  ubuntu-trusty:
+    roles:
+      - master
+    platform: ubuntu-16.04-x64
+    image: ubuntu:xenial
+    hypervisor: docker
+    docker_preserve_image: true
+    docker_container_name: "beaker-influxdb-ubuntu-xenial"
+    docker_cmd: '["/sbin/init", "/usr/sbin/sshd", "-D"]'
+    docker_image_commands:
+      # ensure that upstart is booting correctly in the container
+      - 'rm /usr/sbin/policy-rc.d && rm /sbin/initctl && dpkg-divert --rename --remove /sbin/initctl && apt-get update && apt-get install -y net-tools wget && locale-gen en_US.UTF-8'
+CONFIG:
+  log_level: debug
+  type: foss

@@ -1,0 +1,86 @@
+# This config file is managed by Puppet
+<%-
+  def value_parser(v)
+    return v if v =~ /^[\d]+$/
+
+    return v if v.is_a?(Integer)
+
+    return v if v.is_a?(TrueClass)
+
+    return v if v.is_a?(FalseClass)
+
+    return v if v.is_a?(Float)
+
+    return v if v.is_a?(Array)
+
+    # if we get here just return a string
+    return "\"#{v}\""
+  end
+
+  def build_section(section_name, config, show_header=true)
+    result = []
+
+    if config and ! config.empty?
+      result << "[#{section_name}]" if show_header
+      config.sort_by{|key, value| key}.each do |key, value|
+        val = value_parser(value)
+        result << "#{key} = #{val}"
+      end
+    end
+
+    result.empty? ? '' : result.join("\n")
+  end
+
+  def build_sub_section(section_name, config)
+
+    result = []
+
+    if config and ! config.empty?
+
+      result << "[[#{section_name}]]"
+
+      config.each do |name, data|
+        result << build_section(name, data, false)
+      end
+
+    end
+
+    result.empty? ? '' : result.join("\n").chomp
+  end
+
+-%>
+
+# GLOBAL configuration options
+<%= build_section('global', @global_config, false) %>
+
+<%= build_section('meta', @meta_config) %>
+
+<%= build_section('data', @data_config) %>
+
+<%= build_section('logging', @logging_config) %>
+
+<%= build_section('coordinator', @coordinator_config) %>
+
+<%= build_section('retention', @retention_config) %>
+
+<%= build_section('shard-precreation', @shard_precreation_config) %>
+
+<%= build_section('monitor', @monitor_config) %>
+
+<%= build_section('admin', @admin_config) %>
+
+<%= build_section('http', @http_config) %>
+
+<%= build_section('subscriber', @subscriber_config) %>
+
+<%= build_section('hinted-handoff', @hinted_handoff_config) %>
+
+<%= build_sub_section('graphite', @graphite_config) %>
+
+<%= build_sub_section('collectd', @collectd_config) %>
+
+<%= build_sub_section('opentsdb', @opentsdb_config) %>
+
+<%= build_sub_section('udp', @udp_config) %>
+
+<%= build_section('continuous_queries', @continuous_queries_config) %>
