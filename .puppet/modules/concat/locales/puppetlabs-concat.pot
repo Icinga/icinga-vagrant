@@ -1,0 +1,127 @@
+# #-#-#-#-#  puppetlabs-concat.pot (puppetlabs-concat 5.1.0-17-g0f37d63)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018 Puppet, Inc.
+# This file is distributed under the same license as the puppetlabs-concat package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+# #-#-#-#-#  puppetlabs-concat_metadata.pot (PACKAGE VERSION)  #-#-#-#-#
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"#-#-#-#-#  puppet.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-11-30 15:33:30 +0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 2.0.0\n"
+"#-#-#-#-#  puppetlabs-concat.pot (puppetlabs-concat 5.1.0-17-g0f37d63)  #-#-"
+"#-#-#\n"
+"Project-Id-Version: puppetlabs-concat 5.1.0-17-g0f37d63\n"
+"\n"
+"Report-Msgid-Bugs-To: docs@puppet.com\n"
+"POT-Creation-Date: 2018-11-30 15:33+0000\n"
+"PO-Revision-Date: 2018-11-30 15:33+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"#-#-#-#-#  puppetlabs-concat_metadata.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To:\n"
+"POT-Creation-Date: 2018-11-30T14:59:51+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 2.0.0\n"
+
+#. ./manifests/fragment.pp:27
+msgid ""
+"%{_resource}['%{_title}']: 'order' cannot contain '/', ':', or '\n"
+"'."
+msgstr ""
+
+#. ./manifests/fragment.pp:33
+msgid ""
+"%{_resource}['%{_title}']: Can't use 'source' and 'content' at the same time."
+msgstr ""
+
+#: ../lib/puppet/type/concat_file.rb:52
+msgid "File paths must be fully qualified, not '%{_value}'"
+msgstr ""
+
+#: ../lib/puppet/type/concat_file.rb:96
+msgid "Backup must be a Boolean or String"
+msgstr ""
+
+#: ../lib/puppet/type/concat_file.rb:114
+msgid "Validate_cmd must be a String"
+msgstr ""
+
+#: ../lib/puppet/type/concat_file.rb:150
+msgid "Selrange must be a String"
+msgstr ""
+
+#: ../lib/puppet/type/concat_file.rb:157
+msgid "Selrole must be a String"
+msgstr ""
+
+#: ../lib/puppet/type/concat_file.rb:164
+msgid "Seltype must be a String"
+msgstr ""
+
+#: ../lib/puppet/type/concat_file.rb:171
+msgid "Seluser must be a String"
+msgstr ""
+
+#: ../lib/puppet/type/concat_file.rb:306
+msgid "Could not retrieve source(s) %{_array}"
+msgstr ""
+
+#: ../lib/puppet/type/concat_fragment.rb:29
+msgid "Target must be a String"
+msgstr ""
+
+#: ../lib/puppet/type/concat_fragment.rb:39
+msgid "Content must be a String"
+msgstr ""
+
+#: ../lib/puppet/type/concat_fragment.rb:50
+msgid "Content must be a String or Array"
+msgstr ""
+
+#: ../lib/puppet/type/concat_fragment.rb:62
+msgid "$order is not a string or integer."
+msgstr ""
+
+#: ../lib/puppet/type/concat_fragment.rb:63
+msgid "Order cannot contain '/', ':', or '\\n'."
+msgstr ""
+
+#: ../lib/puppet/type/concat_fragment.rb:87
+msgid "No 'target' or 'tag' set"
+msgstr ""
+
+#: ../lib/puppet/type/concat_fragment.rb:90
+msgid "Set either 'source' or 'content'"
+msgstr ""
+
+#: ../lib/puppet/type/concat_fragment.rb:93
+msgid "Can't use 'source' and 'content' at the same time"
+msgstr ""
+
+#. metadata.json
+#: .summary
+msgid "Construct files from multiple fragments."
+msgstr ""

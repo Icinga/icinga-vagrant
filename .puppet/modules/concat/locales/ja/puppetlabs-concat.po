@@ -1,0 +1,110 @@
+# #-#-#-#-#  puppetlabs-concat.pot (puppetlabs-concat 5.1.0-17-g0f37d63)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018 Puppet, Inc.
+# This file is distributed under the same license as the puppetlabs-concat package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# 
+# #-#-#-#-#  puppetlabs-concat_metadata.pot (PACKAGE VERSION)  #-#-#-#-#
+# 
+# Translators:
+# Kojima Ai <ai-kojima@to-in.co.jp>, 2018
+# 下宮 祐子 <meow@ann.hi-ho.ne.jp>, 2018
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-11-30T14:59:51+00:00\n"
+"PO-Revision-Date: 2018-12-15 00:41+0000\n"
+"Last-Translator: 下宮 祐子 <meow@ann.hi-ho.ne.jp>, 2018\n"
+"Language-Team: Japanese (Japan) (https://www.transifex.com/puppet/teams/41915/ja_JP/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja_JP\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Translate Toolkit 2.0.0\n"
+
+#. ./manifests/fragment.pp:27
+msgid ""
+"%{_resource}['%{_title}']: 'order' cannot contain '/', ':', or '\n"
+"'."
+msgstr ""
+"%{_resource}['%{_title}']: 'order'には、'/'、':'、'\n"
+"'を含めることはできません。"
+
+#. ./manifests/fragment.pp:33
+msgid ""
+"%{_resource}['%{_title}']: Can't use 'source' and 'content' at the same "
+"time."
+msgstr "%{_resource}['%{_title}']: 'source'と'content'は同時に使用できません。"
+
+#: ../lib/puppet/type/concat_file.rb:52
+msgid "File paths must be fully qualified, not '%{_value}'"
+msgstr "ファイルパスは'%{_value}'ではなく、完全修飾でなければなりません"
+
+#: ../lib/puppet/type/concat_file.rb:96
+msgid "Backup must be a Boolean or String"
+msgstr "バックアップはブール値または文字列でなければなりません"
+
+#: ../lib/puppet/type/concat_file.rb:114
+msgid "Validate_cmd must be a String"
+msgstr "Validate_cmdは文字列でなければなりません"
+
+#: ../lib/puppet/type/concat_file.rb:150
+msgid "Selrange must be a String"
+msgstr "Selrangeは文字列でなければなりません"
+
+#: ../lib/puppet/type/concat_file.rb:157
+msgid "Selrole must be a String"
+msgstr "Selroleは文字列でなければなりません"
+
+#: ../lib/puppet/type/concat_file.rb:164
+msgid "Seltype must be a String"
+msgstr "Seltypeは文字列でなければなりません"
+
+#: ../lib/puppet/type/concat_file.rb:171
+msgid "Seluser must be a String"
+msgstr "Seluserは文字列でなければなりません"
+
+#: ../lib/puppet/type/concat_file.rb:306
+msgid "Could not retrieve source(s) %{_array}"
+msgstr "ソース%{_array}を取得できませんでした"
+
+#: ../lib/puppet/type/concat_fragment.rb:29
+msgid "Target must be a String"
+msgstr "ターゲットは文字列でなければなりません"
+
+#: ../lib/puppet/type/concat_fragment.rb:39
+msgid "Content must be a String"
+msgstr "コンテンツは文字列でなければなりません"
+
+#: ../lib/puppet/type/concat_fragment.rb:50
+msgid "Content must be a String or Array"
+msgstr "コンテンツは文字列または配列でなければなりません"
+
+#: ../lib/puppet/type/concat_fragment.rb:62
+msgid "$order is not a string or integer."
+msgstr "$orderは文字列ではなく整数でもありません。"
+
+#: ../lib/puppet/type/concat_fragment.rb:63
+msgid "Order cannot contain '/', ':', or '\\n'."
+msgstr "オーダには、'/'、':'、'\\n'を含めることはできません。"
+
+#: ../lib/puppet/type/concat_fragment.rb:87
+msgid "No 'target' or 'tag' set"
+msgstr "'target'または'tag'が設定されていません"
+
+#: ../lib/puppet/type/concat_fragment.rb:90
+msgid "Set either 'source' or 'content'"
+msgstr "'source'または'content'を設定してください"
+
+#: ../lib/puppet/type/concat_fragment.rb:93
+msgid "Can't use 'source' and 'content' at the same time"
+msgstr "'source'と'content'は同時に使用できません"
+
+#. metadata.json
+#: .summary
+msgid "Construct files from multiple fragments."
+msgstr "複数のフラグメントからファイルを構築します。"
