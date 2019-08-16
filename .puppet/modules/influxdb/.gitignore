@@ -1,9 +1,0 @@
-.rvmrc
-.ruby-version
-Gemfile.lock
-spec/fixtures
-pkg/
-log/
-vendor/bundle
-.bundle
-
