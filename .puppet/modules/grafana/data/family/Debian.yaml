@@ -1,0 +1,3 @@
+---
+grafana::install_method: 'repo'
+grafana::sysconfig_location: '/etc/default/grafana-server'
