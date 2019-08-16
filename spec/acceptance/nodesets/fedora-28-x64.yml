@@ -1,12 +1,12 @@
 HOSTS:
-  fedora-24-x64:
+  fedora-28-x64:
     roles:
       - master
     platform: el-7-x86_64
-    image: fedora:24
+    image: fedora:28
     hypervisor: docker
     docker_cmd: ["/sbin/init"]
-    docker_container_name: fedora-24-x64
+    docker_container_name: fedora-28-x64
     docker_preserve_image: true
     docker_image_commands:
       - mkdir -p /etc/selinux/targeted/contexts/

@@ -124,12 +124,13 @@ namespace :artifact do
   end
 
   namespace :snapshot do
-    catalog = JSON.parse(
-      open('https://artifacts-api.elastic.co/v1/branches/6.x').read
-    )['latest']
-    ENV['snapshot_version'] = catalog['version']
+    snapshot_version = JSON.parse(http_retry('https://artifacts-api.elastic.co/v1/versions'))['versions'].reject do |version|
+      version.include? 'alpha'
+    end.last
 
-    downloads = catalog['projects']['kibana']['packages'].select do |pkg, _|
+    ENV['snapshot_version'] = snapshot_version
+
+    downloads = JSON.parse(http_retry("https://artifacts-api.elastic.co/v1/search/#{snapshot_version}/kibana"))['packages'].select do |pkg, _|
       pkg =~ /(?:deb|rpm)/ and (oss_package ? pkg =~ /oss/ : pkg !~ /oss/)
     end.map do |package, urls|
       [package.split('.').last, urls]

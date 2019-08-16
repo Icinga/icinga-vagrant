@@ -1,7 +1,10 @@
 ---
-version: 4
-datadir: data
+version: 5
+
+defaults:
+  datadir: data
+  data_hash: 'yaml_data'
+
 hierarchy:
-  - name: "Default values"
-    backend: yaml
-    path: "common"
+  - name: 'Default values'
+    path: 'common.yaml'

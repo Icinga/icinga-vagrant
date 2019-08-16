@@ -28,8 +28,7 @@ In addition to managing the Kibana system package and service, this module also
 exposes options to control the configuration file for Kibana.
 Kibana plugins are also supported via a native type and provider.
 
-Dependencies are fairly standard (stdlib and apt for Debian-based
-distributions).
+Dependencies are fairly standard (such as stdlib).
 
 ## Setup
 
