@@ -1,0 +1,79 @@
+{
+  "name": "puppetlabs-vcsrepo",
+  "version": "3.0.0",
+  "author": "puppetlabs",
+  "summary": "Puppet module providing a type to manage repositories from various version control systems",
+  "license": "GPL-2.0+",
+  "source": "https://github.com/puppetlabs/puppetlabs-vcsrepo",
+  "project_page": "https://github.com/puppetlabs/puppetlabs-vcsrepo",
+  "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
+  "dependencies": [
+
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "OracleLinux",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "11 SP1",
+        "12",
+        "15"
+      ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "8",
+        "9"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "14.04",
+        "16.04",
+        "18.04"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 5.5.10 < 7.0.0"
+    }
+  ],
+  "template-url": "https://github.com/puppetlabs/pdk-templates#master",
+  "template-ref": "1.12.0-0-g55d9ae2",
+  "pdk-version": "1.12.0"
+}
