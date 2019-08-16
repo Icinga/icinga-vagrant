@@ -10,45 +10,51 @@ describe provider_class do
   let(:provider) { provider_class.new(resource) }
 
   describe '#instances' do
-    # rubocop:disable Layout/TrailingWhitespace
-    provider_class.expects(:grafana_cli).with('plugins', 'ls').returns <<-EOT
+    let(:plugins_ls_two) do
+      # rubocop:disable Layout/TrailingWhitespace
+      <<-PLUGINS
 installed plugins:
 grafana-simple-json-datasource @ 1.3.4 
 jdbranham-diagram-panel @ 1.4.0 
 
 Restart grafana after installing plugins . <service grafana-server restart>
-
-EOT
-    # rubocop:enable Layout/TrailingWhitespace
-    instances = provider_class.instances
-    it 'has the right number of instances' do
-      expect(instances.size).to eq(2)
+      PLUGINS
+      # rubocop:enable Layout/TrailingWhitespace
     end
-
-    it 'has the correct names' do
-      names = instances.map(&:name)
-      expect(names).to include('grafana-simple-json-datasource', 'jdbranham-diagram-panel')
-    end
-
-    it 'does not match if there are no plugins' do
-      provider_class.expects(:grafana_cli).with('plugins', 'ls').returns <<-EOT
+    let(:plugins_ls_none) do
+      <<-PLUGINS
 
 Restart grafana after installing plugins . <service grafana-server restart>
 
-EOT
-      instances = provider_class.instances
-      expect(provider.exists?).to eq(false)
+      PLUGINS
     end
+
+    # rubocop:disable RSpec/MultipleExpectations
+    it 'has the correct names' do
+      allow(provider_class).to receive(:grafana_cli).with('plugins', 'ls').and_return(plugins_ls_two)
+      expect(provider_class.instances.map(&:name)).to match_array(['grafana-simple-json-datasource', 'jdbranham-diagram-panel'])
+      expect(provider_class).to have_received(:grafana_cli)
+    end
+
+    it 'does not match if there are no plugins' do
+      allow(provider_class).to receive(:grafana_cli).with('plugins', 'ls').and_return(plugins_ls_none)
+      expect(provider_class.instances.size).to eq(0)
+      expect(provider.exists?).to eq(false)
+      expect(provider_class).to have_received(:grafana_cli)
+    end
+    # rubocop:enable RSpec/MultipleExpectations
   end
 
   it '#create' do
-    provider.expects(:grafana_cli).with('plugins', 'install', 'grafana-wizzle')
+    allow(provider).to receive(:grafana_cli)
     provider.create
+    expect(provider).to have_received(:grafana_cli).with('plugins', 'install', 'grafana-wizzle')
   end
 
   it '#destroy' do
-    provider.expects(:grafana_cli).with('plugins', 'uninstall', 'grafana-wizzle')
+    allow(provider).to receive(:grafana_cli)
     provider.destroy
+    expect(provider).to have_received(:grafana_cli).with('plugins', 'uninstall', 'grafana-wizzle')
   end
 
   describe 'create with repo' do
@@ -60,8 +66,9 @@ EOT
     end
 
     it '#create with repo' do
-      provider.expects(:grafana_cli).with('--repo https://nexus.company.com/grafana/plugins', 'plugins', 'install', 'grafana-plugin')
+      allow(provider).to receive(:grafana_cli)
       provider.create
+      expect(provider).to have_received(:grafana_cli).with('--repo https://nexus.company.com/grafana/plugins', 'plugins', 'install', 'grafana-plugin')
     end
   end
 end
