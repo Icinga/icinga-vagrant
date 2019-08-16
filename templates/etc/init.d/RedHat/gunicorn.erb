@@ -1,0 +1,103 @@
+#!/bin/sh
+#
+# gunicorn        Startup script for gunicorn
+#
+# chkconfig: - 86 14
+# processname: gunicorn
+# pidfile: /var/run/gunicorn.pid
+# description: Python application server
+#
+### BEGIN INIT INFO
+# Provides: gunicorn
+# Required-Start: $local_fs $remote_fs $network
+# Required-Stop: $local_fs $remote_fs $network
+# Default-Start: 3
+# Default-Stop: 0 1 2 4 5 6
+# Short-Description: start and stop gunicorn
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+prog=gunicorn
+APP_ROOT=<%= scope.lookupvar('graphite::graphiteweb_webapp_dir_REAL') %>
+lockfile=${LOCKFILE-/var/lock/subsys/gunicorn}
+pidfile=/var/run/gunicorn.pid
+pidfile_old=${pidfile}.oldbin
+RETVAL=0
+ENV=production
+
+
+start() {
+    echo -n $"Starting $prog: "
+    cd $APP_ROOT
+    gunicorn --pid $pidfile --daemon graphite.graphite_wsgi:application --timeout=<%= scope.lookupvar('graphite::gunicorn_arg_timeout') %> --bind=<%= scope.lookupvar('graphite::gunicorn_bind') %> --workers=<%= scope.lookupvar('graphite::gunicorn_workers') %> --user <%= scope.lookupvar('graphite::config::gr_web_user_REAL') %> --group <%= scope.lookupvar('graphite::config::gr_web_group_REAL') %> --chdir $APP_ROOT --access-logfile <%= scope.lookupvar('graphite::graphiteweb_log_dir_REAL') %>/access-gunicorn.log --error-logfile /<%= scope.lookupvar('graphite::graphiteweb_log_dir_REAL') %>/error-gunicorn.log
+    RETVAL=$?
+    echo -n
+    [ $RETVAL = 1 ] && echo -e '[\e[31m FAILED \e[m]'
+    [ $RETVAL = 0 ] && echo -e '[\e[32m OK \e[m]'
+    [ $RETVAL = 0 ] && touch ${lockfile}
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc -p ${pidfile} ${prog} -QUIT
+    RETVAL=$?
+    echo
+    [ $RETVAL = 0 ] && rm -f ${lockfile} ${pidfile}
+}
+
+restart() {
+    echo -n $"Restarting $prog: "
+    killproc -p ${pidfile} ${prog} -USR2
+    RETVAL=$?
+    echo
+    echo -n $"Stopping old $prog: "
+    killproc -p ${pidfile_old} ${prog} -QUIT
+    RETVAL=$?
+    echo
+}
+
+reload() {
+    echo -n $"Reloading $prog: "
+    killproc -p ${pidfile} ${prog} -HUP
+    RETVAL=$?
+    echo
+}
+
+rh_status() {
+    status -p ${pidfile} ${prog}
+}
+
+# See how we were called.
+case "$1" in
+    start)
+        rh_status >/dev/null 2>&1 && exit 0
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        restart
+        ;;
+    reload)
+        reload
+        ;;
+    condrestart|try-restart)
+        if rh_status >/dev/null 2>&1; then
+            stop
+            start
+        fi
+        ;;
+    status)
+        rh_status
+        RETVAL=$?
+        ;;
+    *)
+        echo $"Usage: $prog {start|stop|restart|reload|condrestart|try-restart|status|help}"
+        RETVAL=2
+esac
+
+exit $RETVAL

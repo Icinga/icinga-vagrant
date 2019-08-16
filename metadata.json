@@ -1,0 +1,74 @@
+{
+  "name": "dwerder-graphite",
+  "version": "7.4.0",
+  "source": "https://github.com/echocat/puppet-graphite.git",
+  "author": "Daniel Werdermann",
+  "license": "Apache-2.0",
+  "summary": "Installs and configures graphite, carbon (caches,relays,aggregators) and whisper",
+  "project_page": "https://github.com/echocat/puppet-graphite",
+  "issues_url": "https://github.com/echocat/puppet-graphite/issues",
+  "dependencies": [
+    {"name":"puppetlabs/stdlib","version_requirement":">= 4.6.0 < 6.0.0"}
+  ],
+    "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "OracleLinux",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "7",
+        "8",
+        "9"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04",
+        "15.10",
+        "16.04"
+      ]
+    },
+    {
+      "operatingsystem": "Amazon",
+      "operatingsystemrelease": [
+        "2016.03",
+        "2015.09",
+        "2015.03"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 3.0.0 < 6.0.0"
+    }
+  ]
+}

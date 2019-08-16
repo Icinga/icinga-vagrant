@@ -1,0 +1,6 @@
+* text=auto
+
+# Templates need to always use *nix-style line endings, as they can sometimes
+# be copied from a Windows machine to a *nix machine and used there (such as
+# when running Beaker tests on a Windows host).
+templates/** eol=lf
