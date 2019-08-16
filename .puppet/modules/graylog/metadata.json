@@ -1,0 +1,55 @@
+{
+  "name": "graylog-graylog",
+  "version": "0.9.0",
+  "author": "Graylog, Inc.",
+  "summary": "Install and configure a Graylog system",
+  "license": "Apache-2.0",
+  "source": "https://github.com/Graylog2/puppet-graylog",
+  "project_page": "https://github.com/Graylog2/puppet-graylog",
+  "issues_url": "https://github.com/Graylog2/puppet-graylog/issues",
+  "tags": [
+    "graylog2",
+    "graylog",
+    "logging",
+    "logs",
+    "events",
+    "elasticsearch",
+    "mongodb"
+  ],
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.16.0 < 6.0.0"
+    },
+    {
+      "name": "puppetlabs/apt",
+      "version_requirement": ">= 2.2.2 < 7.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "6.0",
+        "7.0"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "14.04",
+        "16.04",
+        "18.04"
+      ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "7",
+        "8",
+        "9"
+      ]
+    }
+  ],
+  "data_provider": null
+}
