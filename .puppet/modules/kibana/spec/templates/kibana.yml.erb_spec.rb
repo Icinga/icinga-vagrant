@@ -36,4 +36,28 @@ describe 'kibana.yml.erb' do
 
     it { expect(harness).to eq(yaml.config) }
   end
+
+  describe 'nested hashes' do
+    let :config do
+      {
+        'tilemap' => {
+          'options' => {
+            'maxZoom' => 18
+          },
+          'url' => 'https://test'
+        }
+      }
+    end
+
+    let :yaml do
+      <<-CONFIG
+        tilemap:
+          options:
+            maxZoom: 18
+          url: https://test
+      CONFIG
+    end
+
+    it { expect(harness).to eq(yaml.config) }
+  end
 end

@@ -1,8 +1,20 @@
 ## x.x.x (Month Day, Year)
 
+### Migration Guide
+
+#### Puppet < 4.10 No Longer Supported
+
+Puppet 4.10.0 is the new minimum required version of Puppet.
+
 #### Features
 
 #### Fixes
+
+## 6.3.1 (October 19, 2018)
+
+#### Fixes
+* This module no longer requires or enforces a version of the puppetlabs/apt module, which is transitively handled through the `elastic/elastic_stack` dependency.
+* Permit hashes to be passed as configuration parameter values.
 
 ## 6.3.0 (June 18, 2018)
 
