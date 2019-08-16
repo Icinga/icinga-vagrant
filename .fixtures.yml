@@ -1,0 +1,5 @@
+fixtures:
+  forge_modules:
+    stdlib: puppetlabs/stdlib
+  symlinks:
+    epel: "#{source_dir}"
