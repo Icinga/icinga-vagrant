@@ -1,0 +1,12 @@
+HOSTS:
+  debian8-64:
+    docker_cmd:
+      - "/sbin/init"
+    image: debian:8
+    platform: debian-8-amd64
+    packaging_platform: debian-8-amd64
+    docker_image_commands:
+      - cp /bin/true /sbin/agetty
+      - rm -f /usr/sbin/policy-rc.d
+      - apt-get update && apt-get install -y cron locales-all net-tools wget
+    hypervisor: docker

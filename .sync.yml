@@ -1,0 +1,60 @@
+---
+appveyor.yml:
+  delete: true
+
+.gitlab-ci.yml:
+  delete: true
+
+.rubocop_todo.yml:
+  delete: true
+
+.travis.yml:
+  simplecov: true
+  deploy: true
+  user: rehanone
+  secure: "WiS9j4aI93DobVH/O/z6aHKOY8UL2hwn4+fflKuhvZzJPxfsYYfvQsyX43qetpVAIW7DCZLfO1QQlLF1/ywhe8Y9XRy923R6E7WckYPCGtGBpeTdS7p3Biss2H+ikxI9/5UFlewrdFxLxqgKz8lGLCt8zL1r7ggPWjJBfWEBtk2J9mj4BRTTGt6SWTSHwkdqjloQsPu32SXWY4nsU+87p+lO49YTOH2cS+54/DRCpccPl2AL+kXISDGiDZtlMyGdL2c0Z1e8etmOxbHN2X80YyOQY2GiKdGhzVfx5TDPElDXkOO5JkkZWmsz2D6BJYvu+s9awIJ6/pzGFDghZIK2MSgfUjJd9Vwt1lm48kHKsJ3DsSRIOHK+2ft/3nUl8y7j7KKQMcKKVN35/0uy/cXnD4acuxCh84e5bc0pmYy0gxLhLF6C9Ahv8pls7HhA+jaoUBNXIgCb685w6EgrkaeGMx1vz7VfZo56viod/zZ7XCXg8o5s7vthKMtYLnuGIEl2DvBC3KKtGvl4RnzFVUcZcB5lHgLZozskcwuWFtqd/AgqdIVRzKc6KmRWo8TkE/qOV79MaUpKGONmLMQfsz01HMn4m/NAmu4J55kFgFYkrkwy+9c/3Z9Ytce7goOnyxYYd0fFfaSM8vJCl7oe8Zb3znK2atMmpQAfDwYBwUNe1jU="
+  docker_sets:
+    - set: docker/ubuntu-18.04
+    - set: docker/ubuntu-16.04
+    - set: docker/ubuntu-14.04
+    - set: docker/debian-9
+    - set: docker/debian-8
+    - set: docker/centos-7
+
+Gemfile:
+  required:
+    ':system_tests':
+      - gem: 'puppet-module-posix-system-r#{minor_version}'
+        platforms: ruby
+      - gem: 'puppet-module-win-system-r#{minor_version}'
+        platforms:
+          - mswin
+          - mingw
+          - x64_mingw
+
+spec/spec.opts:
+  delete: true
+
+spec/spec_helper_local.rb:
+  delete: true
+
+.project:
+  delete: true
+
+locales/config.yaml:
+  copyright_holder: 'Rehan Mahmood'
+  comments_tag: 'TRANSLATOR'
+  bugs_address: 'https://github.com/rehanone'
+  default_locale: 'en'
+  source_files:
+    - './lib/**/*.rb'
+
+spec/acceptance/nodesets/centos-7-x64.yml:
+spec/acceptance/nodesets/debian-8-x64.yml:
+spec/acceptance/nodesets/default.yml:
+spec/acceptance/nodesets/docker/centos-7.yml:
+spec/acceptance/nodesets/docker/debian-8.yml:
+spec/acceptance/nodesets/docker/debian-9.yml:
+spec/acceptance/nodesets/docker/ubuntu-14.04.yml:
+spec/acceptance/nodesets/docker/ubuntu-16.04.yml:
+spec/acceptance/nodesets/docker/ubuntu-18.04.yml:
