@@ -2,8 +2,51 @@ Changelog
 =========
 
 ## Unreleased
-[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.3.2...HEAD)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v4.0.5...HEAD)
 
+## [v4.0.5](https://github.com/pcfens/puppet-filebeat/tree/v4.0.5)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v4.0.4...v4.0.5)
+
+- Update metadata for apt and stdlib modules [\#220](https://github.com/pcfens/puppet-filebeat/pull/220)
+- Fix README typo [\#221](https://github.com/pcfens/puppet-filebeat/pull/221)
+
+
+## [v4.0.4](https://github.com/pcfens/puppet-filebeat/tree/v4.0.4)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v4.0.3...v4.0.4)
+
+- Validate configuration in Windows [\#219](https://github.com/pcfens/puppet-filebeat/pull/219)
+
+## [v4.0.3](https://github.com/pcfens/puppet-filebeat/tree/v4.0.3)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v4.0.2...v4.0.3)
+
+- Fix `filebeat_version` fact on Windows [\#218](https://github.com/pcfens/puppet-filebeat/pull/218)
+
+## [v4.0.2](https://github.com/pcfens/puppet-filebeat/tree/v4.0.2)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v4.0.1...v4.0.2)
+
+- Clear the yum cache whenever we modify the yum repo config [\#217](https://github.com/pcfens/puppet-filebeat/issues/217)
+
+## [v4.0.1](https://github.com/pcfens/puppet-filebeat/tree/v4.0.1)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v4.0.0...v4.0.1)
+
+- Fix unit tests [\#216](https://github.com/pcfens/puppet-filebeat/pull/213)
+- Fix fresh install regression [\#217](https://github.com/pcfens/puppet-filebeat/pull/216)
+
+
+## [v4.0.0](https://github.com/pcfens/puppet-filebeat/tree/v4.0.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.4.0...v4.0.0)
+
+- Switch from `filebeat::prospector` to `filebeat::input` to reflect the changes
+  in the upstream filebeat configuration.
+- Add support for Filebeat 7
+- Remove support for `registry_file` and `registry_flush` settings (removed in 7.x)
+- Remove `queue_size` parameter
+
+## [v3.4.0](https://github.com/pcfens/puppet-filebeat/tree/v3.4.0)
+[Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.3.3...v3.4.0)
+
+- Add filebeat.config.modules section [\#204](https://github.com/pcfens/puppet-filebeat/pull/204)
+- Fix filebeat::prospector::fields_under_root [\#205](https://github.com/pcfens/puppet-filebeat/pull/205)
 
 ## [v3.3.3](https://github.com/pcfens/puppet-filebeat/tree/v3.3.3)
 [Full Changelog](https://github.com/pcfens/puppet-filebeat/compare/v3.3.2...v3.3.3)

@@ -192,7 +192,7 @@
   close_timeout: <%= @close_timeout %>
   <%- end -%>
   <%- if @processors.length > 0 -%>
-  # Managing processors releated only for specified prospector
+  # Managing processors releated only for specified input
   processors:
     <%- %><%= @processors.to_yaml.lines.drop(1).join.gsub(/^/, '  ') -%>
   <%- end -%>
