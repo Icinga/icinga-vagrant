@@ -1,0 +1,15 @@
+---
+default_set: 'centos-64-x64'
+sets:
+  'centos-64-x64':
+    nodes:
+      'main':
+        prefab: 'centos-64-x64'
+  'centos-59-x64':
+    nodes:
+      'main':
+        prefab: 'centos-59-x64'
+  'fedora-18-x64':
+    nodes:
+      "main":
+        prefab: 'fedora-18-x64'
