@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'filebeat::prospector' do
+describe 'filebeat::input' do
   let :pre_condition do
     'class { "filebeat":
         outputs => {

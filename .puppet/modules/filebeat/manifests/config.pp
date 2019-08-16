@@ -15,14 +15,18 @@ class filebeat::config {
       'fields'            => $filebeat::fields,
       'fields_under_root' => $filebeat::fields_under_root,
       'filebeat'          => {
-        'registry_file'      => $filebeat::registry_file,
-        'config.prospectors' => {
+        'config.inputs' => {
           'enabled' => true,
           'path'    => "${filebeat::config_dir}/*.yml",
+        },
+        'config.modules' => {
+          'enabled' => $filebeat::enable_conf_modules,
+          'path'    => "${filebeat::modules_dir}/*.yml",
         },
         'shutdown_timeout'   => $filebeat::shutdown_timeout,
         'modules'           => $filebeat::modules,
       },
+      'http'              => $filebeat::http,
       'output'            => $filebeat::outputs,
       'shipper'           => $filebeat::shipper,
       'logging'           => $filebeat::logging,
@@ -69,16 +73,14 @@ class filebeat::config {
     }
   }
 
-  if $::filebeat_version {
-    $skip_validation = versioncmp($::filebeat_version, $filebeat::major_version) ? {
+  if 'filebeat_version' in $facts and $facts['filebeat_version'] != false {
+    $skip_validation = versioncmp($facts['filebeat_version'], $filebeat::major_version) ? {
       -1      => true,
       default => false,
     }
   } else {
     $skip_validation = false
   }
-
-  Filebeat::Prospector <| |> -> File['filebeat.yml']
 
   case $::kernel {
     'Linux'   : {
@@ -183,7 +185,10 @@ class filebeat::config {
 
       $validate_cmd = ($filebeat::disable_config_test or $skip_validation) ? {
         true    => undef,
-        default => "\"${filebeat_path}\" -N -configtest -c \"%\"",
+        default => $major_version ? {
+          '7'     => "\"${filebeat_path}\" test config -c \"%\"",
+          default => "\"${filebeat_path}\" -N -configtest -c \"%\"",
+        }
       }
 
       file {'filebeat.yml':

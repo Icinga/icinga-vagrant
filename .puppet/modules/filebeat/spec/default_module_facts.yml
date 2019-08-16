@@ -1,0 +1,2 @@
+filebeat_version: undef
+concat_basedir: "/tmp"
