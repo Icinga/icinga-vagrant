@@ -1,8 +1,8 @@
 # Install and configure Puppet and Puppetserver.
 export DEBIAN_FRONTEND=noninteractive
 
-wget https://apt.puppetlabs.com/puppet5-release-xenial.deb
-dpkg -i puppet5-release-xenial.deb
+wget https://apt.puppetlabs.com/puppet6-release-xenial.deb
+dpkg -i puppet6-release-xenial.deb
 apt-get update
 apt-get install -y apt-transport-https
 apt-get install -y puppet-agent puppetserver
@@ -20,8 +20,15 @@ service puppetserver start
 echo '127.0.0.1 localhost puppet vagrant' > /etc/hosts
 
 # Install puppet-elastic-stack dependencies.
-for module in puppetlabs-apt puppet-yum darin-zypprepo; do
+modules=(
+  puppet-yum
+  puppet-zypprepo
+  puppetlabs-apt
+  puppetlabs-yumrepo_core
+)
+
+for module in ${modules[@]}; do
   /opt/puppetlabs/bin/puppet module install \
   --target-dir=/etc/puppetlabs/code/environments/production/modules \
-  $module
+  ${module}
 done

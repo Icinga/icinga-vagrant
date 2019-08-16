@@ -10,15 +10,15 @@
 # @param priority A numeric priority for the repo, passed to the package management system
 # @param proxy The URL of a HTTP proxy to use for package downloads (YUM only)
 # @param version The (major) version of the Elastic Stack for which to configure the repo
-class elastic_stack::repo(
-  Boolean           $oss        = false,
-  Boolean           $prerelease = false,
-  Optional[Integer] $priority   = undef,
-  String            $proxy      = 'absent',
-  Integer           $version    = 6,
-)
-
-{
+# @param base_repo_url The base url for the repo path
+class elastic_stack::repo (
+  Boolean           $oss           = false,
+  Boolean           $prerelease    = false,
+  Optional[Integer] $priority      = undef,
+  String            $proxy         = 'absent',
+  Integer           $version       = 7,
+  Optional[String]  $base_repo_url = undef,
+) {
   if $prerelease {
     $version_suffix = '.x-prerelease'
   } else {
@@ -32,7 +32,10 @@ class elastic_stack::repo(
   }
 
   if $version > 2 {
-    $_repo_url = 'https://artifacts.elastic.co/packages'
+    $_repo_url = $base_repo_url ? {
+      undef   => 'https://artifacts.elastic.co/packages',
+      default => $base_repo_url,
+    }
     case $facts['os']['family'] {
       'Debian': {
         $_repo_path = 'apt'
@@ -42,7 +45,10 @@ class elastic_stack::repo(
       }
     }
   } else {
-    $_repo_url = 'https://packages.elastic.co/elasticsearch'
+    $_repo_url = $base_repo_url ? {
+      undef   => 'https://packages.elastic.co/elasticsearch',
+      default => $base_repo_url,
+    }
     case $facts['os']['family'] {
       'Debian': {
         $_repo_path = 'debian'

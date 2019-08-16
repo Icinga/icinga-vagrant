@@ -1,23 +1,28 @@
 {
   "name": "elastic-elastic_stack",
-  "version": "6.1.0",
+  "version": "7.0.0",
   "author": "toby@jarpy.net",
   "summary": "Helpers for installing and configuring components of the Elastic Stack.",
   "license": "Apache-2.0",
   "source": "https://github.com/elastic/puppet-elastic-stack",
+  "project_page": "https://github.com/elastic/puppet-elastic-stack",
   "issues_url": "https://github.com/elastic/puppet-elastic-stack/issues",
   "dependencies": [
     {
       "name": "puppetlabs-stdlib",
-      "version_requirement": ">= 4.13.1 < 5.0.0"
+      "version_requirement": ">= 4.13.1 < 7.0.0"
     },
     {
       "name": "puppetlabs/apt",
-      "version_requirement": ">= 2.0.0 < 5.0.0"
+      "version_requirement": ">= 2.0.0 < 8.0.0"
     },
     {
       "name": "puppet/yum",
-      "version_requirement": ">= 0.9.6 < 3.0.0"
+      "version_requirement": ">= 0.9.6 < 5.0.0"
+    },
+    {
+      "name": "puppetlabs/yumrepo_core",
+      "version_requirement": ">= 1.0.0 < 2.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -60,7 +65,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.6.1 < 6.0.0"
+      "version_requirement": ">= 4.10.0 < 7.0.0"
     }
   ],
   "pdk-version": "1.0.1",

@@ -1,3 +1,40 @@
+## Release 7.0.0
+- Default to Elastic Stack version 7
+- Drop support for Puppet version < 4.10.0
+
+## Release 6.3.2
+ - Allow puppetlabs-apt version 7.x
+ - Allow puppetlabs-stdlib version 6.x
+ - Allow puppet-yum version 4.x
+ - Constrain puppetlabs-yumrepo_core to puppet 6+
+
+## Release 6.3.1
+- Remove extraneous files from module package
+
+## Release 6.3.0 [Deleted from Forge]
+
+- Support Puppet 6
+
+## Release 6.2.4
+
+- Allow puppetlabs-apt version 6.x
+
+## Release 6.2.3
+
+- Allow puppetlabs-yum version 3.x
+
+## Release 6.2.2
+
+- Allow puppetlabs-stdlib version 5.x
+
+## Release 6.2.1
+
+- Allow puppetlabs-apt version 5.x
+
+## Release 6.2.0
+
+- Add base_repo_url param
+
 ## Release 6.1.0
 
 - Support OSS-only package repositories
