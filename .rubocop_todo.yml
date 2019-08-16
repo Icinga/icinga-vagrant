@@ -1,0 +1,7 @@
+GetText/DecorateString:
+  Enabled: false
+
+RSpec/InstanceVariable:
+  Enabled: true
+  Exclude:
+      - spec/acceptance/*
