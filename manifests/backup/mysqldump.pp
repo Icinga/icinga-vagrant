@@ -12,6 +12,7 @@ class mysql::backup::mysqldump (
   $backupdirgroup     = $mysql::params::root_group,
   $backupcompress     = true,
   $backuprotate       = 30,
+  $backupmethod       = 'mysqldump',
   $ignore_events      = true,
   $delete_before_dump = false,
   $backupdatabases    = [],
@@ -24,6 +25,8 @@ class mysql::backup::mysqldump (
   $postscript         = false,
   $execpath           = '/usr/bin:/usr/sbin:/bin:/sbin',
   $optional_args      = [],
+  $mysqlbackupdir_ensure = 'directory',
+  $mysqlbackupdir_target = undef,
 ) inherits mysql::params {
 
   if $backupcompress {
@@ -51,13 +54,30 @@ class mysql::backup::mysqldump (
     require    => Mysql_user["${backupuser}@localhost"],
   }
 
+  if $::osfamily == 'RedHat' and $::operatingsystemmajrelease == '5' {
+    package {'crontabs':
+      ensure => present,
+    }
+  } elsif $::osfamily == 'RedHat' {
+    package {'cronie':
+      ensure => present,
+    }
+  } elsif $::osfamily != 'FreeBSD' {
+    package {'cron':
+      ensure => present,
+    }
+  }
+
   cron { 'mysql-backup':
-    ensure  => $ensure,
-    command => '/usr/local/sbin/mysqlbackup.sh',
-    user    => 'root',
-    hour    => $time[0],
-    minute  => $time[1],
-    require => File['mysqlbackup.sh'],
+    ensure   => $ensure,
+    command  => '/usr/local/sbin/mysqlbackup.sh',
+    user     => 'root',
+    hour     => $time[0],
+    minute   => $time[1],
+    monthday => $time[2],
+    month    => $time[3],
+    weekday  => $time[4],
+    require  => File['mysqlbackup.sh'],
   }
 
   file { 'mysqlbackup.sh':
@@ -69,12 +89,21 @@ class mysql::backup::mysqldump (
     content => template('mysql/mysqlbackup.sh.erb'),
   }
 
-  file { 'mysqlbackupdir':
-    ensure => 'directory',
-    path   => $backupdir,
-    mode   => $backupdirmode,
-    owner  => $backupdirowner,
-    group  => $backupdirgroup,
+  if $mysqlbackupdir_target {
+    file { $backupdir:
+      ensure => $mysqlbackupdir_ensure,
+      target => $mysqlbackupdir_target,
+      mode   => $backupdirmode,
+      owner  => $backupdirowner,
+      group  => $backupdirgroup,
+    }
+  } else {
+    file { $backupdir:
+      ensure => $mysqlbackupdir_ensure,
+      mode   => $backupdirmode,
+      owner  => $backupdirowner,
+      group  => $backupdirgroup,
+    }
   }
 
 }
