@@ -1,0 +1,28 @@
+---
+language: ruby
+bundler_args: --without system_tests
+before_install: rm Gemfile.lock || true
+script: "bundle exec rake test SPEC_OPTS='--format documentation'"
+matrix:
+  fast_finish: true
+  include:
+    - rvm: 2.4.5
+      env: PUPPET_VERSION="~> 4.0"
+    - rvm: 2.5.5
+      env: PUPPET_VERSION="~> 4.0"
+    - rvm: 2.6.2
+      env: PUPPET_VERSION="~> 4.0"
+    - rvm: 2.4.5
+      env: PUPPET_VERSION="~> 5.0"
+    - rvm: 2.5.5
+      env: PUPPET_VERSION="~> 5.0"
+    - rvm: 2.6.2
+      env: PUPPET_VERSION="~> 5.0"
+    - rvm: 2.4.5
+      env: PUPPET_VERSION="~> 6.0"
+    - rvm: 2.5.5
+      env: PUPPET_VERSION="~> 6.0"
+    - rvm: 2.6.2
+      env: PUPPET_VERSION="~> 6.0" CHECK=rubocop
+notifications:
+  email: dejan@golja.org
