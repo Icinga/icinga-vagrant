@@ -10,6 +10,11 @@
 #     backuppassword => 'mypassword',
 #     backupdir      => '/tmp/backups',
 #   }
+#   class { 'mysql::server::backup':
+#     backupmethod => 'mariabackup',
+#     provider     => 'xtrabackup',
+#     backupdir    => '/tmp/backups',
+#   }
 #
 # @param backupuser
 #   MySQL user with backup administrator privileges.
@@ -25,6 +30,8 @@
 #   Group owner for the backup directory. This parameter is passed directly to the file resource.
 # @param backupcompress
 #   Whether or not to compress the backup (when using the mysqldump provider)
+# @param backupmethod
+#   The execution binary for backing up. ex. mysqldump, xtrabackup, mariabackup 
 # @param backuprotate
 #   Backup rotation interval in 24 hour periods.
 # @param ignore_events
@@ -32,7 +39,7 @@
 # @param delete_before_dump
 #   Whether to delete old .sql files before backing up. Setting to true deletes old files before backing up, while setting to false deletes them after backup.
 # @param backupdatabases
-#   Databases to backup (if using xtrabackup provider).
+#   Databases to backup (required if using xtrabackup provider). By default `[]` will back up all databases.
 # @param file_per_database
 #   Use file per database mode creating one file per database backup.
 # @param include_routines
@@ -64,6 +71,7 @@ class mysql::server::backup (
   $backupdirgroup     = 'root',
   $backupcompress     = true,
   $backuprotate       = 30,
+  $backupmethod       = undef,
   $ignore_events      = true,
   $delete_before_dump = false,
   $backupdatabases    = [],
@@ -95,6 +103,7 @@ class mysql::server::backup (
       'backupdirgroup'     => $backupdirgroup,
       'backupcompress'     => $backupcompress,
       'backuprotate'       => $backuprotate,
+      'backupmethod'       => $backupmethod,
       'ignore_events'      => $ignore_events,
       'delete_before_dump' => $delete_before_dump,
       'backupdatabases'    => $backupdatabases,

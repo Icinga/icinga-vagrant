@@ -1,7 +1,9 @@
+require 'puppet_litmus/rake_tasks' if Bundler.rubygems.find_name('puppet_litmus').any?
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-syntax/tasks/puppet-syntax'
 require 'puppet_blacksmith/rake_tasks' if Bundler.rubygems.find_name('puppet-blacksmith').any?
 require 'github_changelog_generator/task' if Bundler.rubygems.find_name('github_changelog_generator').any?
+require 'puppet-strings/tasks' if Bundler.rubygems.find_name('puppet-strings').any?
 require 'puppet_pot_generator/rake_tasks'
 
 def changelog_user
@@ -14,7 +16,7 @@ end
 
 def changelog_project
   return unless Rake.application.top_level_tasks.include? "changelog"
-  returnVal = nil || JSON.load(File.read('metadata.json'))['name']
+  returnVal = nil || JSON.load(File.read('metadata.json'))['source'].match(%r{.*/([^/]*)})[1]
   raise "unable to find the changelog_project in .sync.yml or the name in metadata.json" if returnVal.nil?
   puts "GitHubChangelogGenerator project:#{returnVal}"
   returnVal
@@ -22,7 +24,7 @@ end
 
 def changelog_future_release
   return unless Rake.application.top_level_tasks.include? "changelog"
-  returnVal = JSON.load(File.read('metadata.json'))['version']
+  returnVal = "v%s" % JSON.load(File.read('metadata.json'))['version']
   raise "unable to find the future_release (version) in metadata.json" if returnVal.nil?
   puts "GitHubChangelogGenerator future_release:#{returnVal}"
   returnVal
