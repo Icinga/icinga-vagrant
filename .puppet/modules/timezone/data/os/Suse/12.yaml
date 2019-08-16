@@ -1,0 +1,3 @@
+---
+timezone::timezone_update: 'timedatectl set-timezone %s'
+timezone::timezone_update_check_cmd: 'timedatectl status | grep "Timezone:\|Time zone:" | grep -q %s'

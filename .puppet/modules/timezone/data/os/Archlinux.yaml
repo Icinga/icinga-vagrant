@@ -1,0 +1,6 @@
+---
+timezone::package: tzdata
+timezone::zoneinfo_dir: /usr/share/zoneinfo
+timezone::localtime_file: /etc/localtime
+timezone::timezone_update: 'timedatectl set-timezone %s'
+timezone::timezone_update_check_cmd: 'timedatectl status | grep "Timezone:\|Time zone:" | grep -q %s'
