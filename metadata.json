@@ -1,0 +1,48 @@
+{
+  "name": "puppet-selinux",
+  "version": "3.0.1-rc0",
+  "author": "Vox Pupuli",
+  "summary": "This class manages SELinux on RHEL based systems",
+  "license": "Apache-2.0",
+  "source": "https://github.com/voxpupuli/puppet-selinux",
+  "project_page": "https://github.com/voxpupuli/puppet-selinux",
+  "issues_url": "https://github.com/voxpupuli/puppet-selinux/issues",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6",
+        "7",
+        "8"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "6",
+        "7",
+        "8"
+      ]
+    },
+    {
+      "operatingsystem": "Fedora",
+      "operatingsystemrelease": [
+        "28",
+        "29",
+        "30"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.18.0 < 7.0.0"
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 5.5.8 < 7.0.0"
+    }
+  ]
+}

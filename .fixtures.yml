@@ -1,0 +1,6 @@
+fixtures:
+  repositories:
+    stdlib: https://github.com/puppetlabs/puppetlabs-stdlib.git
+    selinux_core:
+      repo: https://github.com/puppetlabs/puppetlabs-selinux_core.git
+      puppet_version: ">= 6.0.0"
