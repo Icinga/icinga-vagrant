@@ -1,0 +1,21 @@
+---
+sudo: false
+language: ruby
+before_install:
+  - gem update bundler
+script: "bundle exec rake spec SPEC_OPTS='--format documentation'"
+matrix:
+  fast_finish: true
+  include:
+    - rvm: 2.3.1
+      script: bundle exec kitchen test
+      services: docker
+      sudo: required
+    - rvm: 1.9.3
+      bundler_args: --without integration
+      env: PUPPET_GEM_VERSION="~> 3.0"
+    - rvm: 2.3.1
+      bundler_args: --without integration
+      env: PUPPET_GEM_VERSION="~> 4.0"
+notifications:
+  email: false
