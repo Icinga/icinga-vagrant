@@ -1,6 +1,6 @@
 class profiles::elastic::icingabeat (
-  $icingabeat_version = '6.1.1',
-  $kibana_version = '6.0.0',
+  $icingabeat_version = '7.4.2',
+  $kibana_version = '7.4.2',
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200,
   $kibana_host = '127.0.0.1',
