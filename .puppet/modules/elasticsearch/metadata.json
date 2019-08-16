@@ -1,6 +1,6 @@
 {
   "name": "elastic-elasticsearch",
-  "version": "6.3.0",
+  "version": "6.3.4",
   "source": "https://github.com/elastic/puppet-elasticsearch",
   "author": "elastic",
   "license": "Apache-2.0",
@@ -8,7 +8,6 @@
   "description": "Module for managing and configuring Elasticsearch nodes",
   "project_page": "https://github.com/elastic/puppet-elasticsearch",
   "issues_url": "https://github.com/elastic/puppet-elasticsearch/issues",
-  "data_provider": "hiera",
   "dependencies": [
     {
       "name": "elastic/elastic_stack",
@@ -20,7 +19,7 @@
     },
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 4.13.0 < 5.0.0"
+      "version_requirement": ">= 4.13.0 < 6.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -71,12 +70,6 @@
       ]
     },
     {
-      "operatingsystem": "OpenSuSE",
-      "operatingsystemrelease": [
-        "42.2"
-      ]
-    },
-    {
       "operatingsystem": "SLES",
       "operatingsystemrelease": [
         "12.1",
@@ -87,7 +80,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.5.0 < 6.0.0"
+      "version_requirement": ">= 4.10.0 < 6.0.0"
     }
   ]
 }
