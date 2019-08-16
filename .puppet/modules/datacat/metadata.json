@@ -1,0 +1,12 @@
+{
+  "name": "richardc-datacat",
+  "author": "Richard Clamp",
+  "version": "0.6.2",
+  "license": "Apache-2.0",
+  "summary": "Puppet type for handling data fragments",
+  "description": "A pair of types for handling data fragments and templating",
+  "source": "https://github.com/richardc/puppet-datacat",
+  "project_page": "https://github.com/richardc/puppet-datacat",
+  "issues_url": "https://github.com/richardc/puppet-datacat/issues",
+  "dependencies": []
+}

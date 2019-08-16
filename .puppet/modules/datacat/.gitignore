@@ -1,0 +1,8 @@
+Gemfile.lock
+/spec/fixtures/manifests/site.pp
+/spec/fixtures/modules/datacat
+/pkg
+/.rspec_system
+/.ruby-version
+/.bundle
+/.kitchen
