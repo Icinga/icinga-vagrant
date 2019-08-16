@@ -1,5 +1,0 @@
-pkg/
-*.swp
-.DS_Store
-vendor/
-Gemfile.lock
