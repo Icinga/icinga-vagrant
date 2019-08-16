@@ -1,0 +1,3 @@
+---
+yum::os_default_repos:
+    - 'cr'
