@@ -1,0 +1,9 @@
+fixtures:
+  forge_modules:
+    apt: puppetlabs/apt
+    elastic_stack: elastic/elastic_stack
+    stdlib: puppetlabs/stdlib
+    zypprepo: darin/zypprepo
+
+symlinks:
+    logstash: #{source_dir}
