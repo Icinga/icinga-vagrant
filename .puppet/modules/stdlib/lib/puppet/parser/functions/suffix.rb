@@ -2,16 +2,25 @@
 # suffix.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:suffix, type: :rvalue, doc: <<-EOS
-    This function applies a suffix to all elements in an array, or to the keys
-    in a hash.
+  newfunction(:suffix, :type => :rvalue, :doc => <<-DOC
+    @summary
+      This function applies a suffix to all elements in an array, or to the keys
+      in a hash.
 
-    *Examples:*
+    @return
+      Array or Hash with updated elements containing the passed suffix
 
-        suffix(['a','b','c'], 'p')
+    @example **Usage**
 
-    Will return: ['ap','bp','cp']
-    EOS
+      suffix(['a','b','c'], 'p')
+      Will return: ['ap','bp','cp']
+
+    > *Note:* that since Puppet 4.0.0 the general way to modify values is in array is by using the map
+    function in Puppet. This example does the same as the example above:
+
+    ```['a', 'b', 'c'].map |$x| { "${x}p" }```
+
+    DOC
              ) do |arguments|
 
     # Technically we support two arguments but only first is mandatory ...

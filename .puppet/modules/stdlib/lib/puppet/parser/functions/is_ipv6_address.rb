@@ -2,9 +2,16 @@
 # is_ipv6_address.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:is_ipv6_address, type: :rvalue, doc: <<-EOS
-    Returns true if the string passed to this function is a valid IPv6 address.
-    EOS
+  newfunction(:is_ipv6_address, :type => :rvalue, :doc => <<-DOC
+    @summary
+      **Deprecated:** Returns true if the string passed to this function is a valid IPv6 address.
+
+    @return [Boolean]
+      Returns `true` or `false`
+
+    > **Note:* **Deprecated** Will be removed in a future version of stdlib. See
+    [`validate_legacy`](#validate_legacy).
+    DOC
              ) do |arguments|
 
     function_deprecation([:is_ipv6_address, 'This method is deprecated, please use the stdlib validate_legacy function,

@@ -2,9 +2,16 @@
 # is_email_address.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:is_email_address, type: :rvalue, doc: <<-EOS
-    Returns true if the string passed to this function is a valid email address.
-    EOS
+  newfunction(:is_email_address, :type => :rvalue, :doc => <<-DOC
+    @summary
+      **Deprecated:** Returns true if the string passed to this function is a valid email address.
+
+    @return [Boolean]
+      Returns `true` or `false`
+
+    > **Note:* **Deprecated** Will be removed in a future version of stdlib. See
+    [`validate_legacy`](#validate_legacy).
+    DOC
              ) do |arguments|
     if arguments.size != 1
       raise(Puppet::ParseError, "is_email_address(): Wrong number of arguments given #{arguments.size} for 1")

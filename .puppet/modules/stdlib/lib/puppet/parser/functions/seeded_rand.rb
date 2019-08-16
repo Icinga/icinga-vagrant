@@ -3,15 +3,23 @@
 #
 Puppet::Parser::Functions.newfunction(
   :seeded_rand,
-  arity: 2,
-  type: :rvalue,
-  doc: <<-EOS
-    Usage: `seeded_rand(MAX, SEED)`. MAX must be a positive integer; SEED is any string.
+  :arity => 2,
+  :type => :rvalue,
+  :doc => <<-DOC
+    @summary
+      Generates a random whole number greater than or equal to 0 and less than MAX, using the value of SEED for repeatable randomness.
+
+    @return
+      random number greater than or equal to 0 and less than MAX
+
+    @example **Usage:**
+      seeded_rand(MAX, SEED).
+      MAX must be a positive integer; SEED is any string.
 
     Generates a random whole number greater than or equal to 0 and less
     than MAX, using the value of SEED for repeatable randomness.  If SEED
     starts with "$fqdn:", this is behaves the same as `fqdn_rand`.
-EOS
+DOC
 ) do |args|
   require 'digest/md5'
 

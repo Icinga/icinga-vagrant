@@ -2,24 +2,32 @@
 # validate_ip_address.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:validate_ip_address, doc: <<-ENDHEREDOC
-    Validate that all values passed are valid IP addresses,
-    regardless they are IPv4 or IPv6
-    Fail compilation if any value fails this check.
-    The following values will pass:
-    $my_ip = "1.2.3.4"
-    validate_ip_address($my_ip)
-    validate_ip_address("8.8.8.8", "172.16.0.1", $my_ip)
+  newfunction(:validate_ip_address, :doc => <<-DOC
+    @summary
+      Validate that all values passed are valid IP addresses,
+      regardless they are IPv4 or IPv6
+      Fail compilation if any value fails this check.
 
-    $my_ip = "3ffe:505:2"
-    validate_ip_address(1)
-    validate_ip_address($my_ip)
-    validate_ip_address("fe80::baf6:b1ff:fe19:7507", $my_ip)
+    @return
+      passes when the given values are valid IP addresses or raise an error when they are not and fails compilation
 
-    The following values will fail, causing compilation to abort:
-    $some_array = [ 1, true, false, "garbage string", "3ffe:505:2" ]
-    validate_ip_address($some_array)
-    ENDHEREDOC
+    @example **Usage**
+      The following values will pass:
+
+        $my_ip = "1.2.3.4"
+        validate_ip_address($my_ip)
+        validate_ip_address("8.8.8.8", "172.16.0.1", $my_ip)
+
+        $my_ip = "3ffe:505:2"
+        validate_ip_address(1)
+        validate_ip_address($my_ip)
+        validate_ip_address("fe80::baf6:b1ff:fe19:7507", $my_ip)
+
+      The following values will fail, causing compilation to abort:
+
+        $some_array = [ 1, true, false, "garbage string", "3ffe:505:2" ]
+        validate_ip_address($some_array)
+    DOC
              ) do |args|
 
     require 'ipaddr'

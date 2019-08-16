@@ -2,9 +2,16 @@
 # is_float.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:is_float, type: :rvalue, doc: <<-EOS
-    Returns true if the variable passed to this function is a float.
-    EOS
+  newfunction(:is_float, :type => :rvalue, :doc => <<-DOC
+    @summary
+      **Deprecated:** Returns true if the variable passed to this function is a float.
+
+    @return [Boolean]
+      Returns `true` or `false`
+
+    > **Note:* **Deprecated** Will be removed in a future version of stdlib. See
+    [`validate_legacy`](#validate_legacy).
+    DOC
              ) do |arguments|
 
     function_deprecation([:is_float, 'This method is deprecated, please use the stdlib validate_legacy function,

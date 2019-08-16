@@ -1,0 +1,49 @@
+const SnmpCommunity = "public"
+const CountNwcHosts = 2
+
+# templates
+template Host "network-host" {
+  vars.nwc_health_community = SnmpCommunity
+
+  vars.network_config["nwc-uptime"] = { }
+  vars.network_config["nwc-interface-usage"] = { }
+  vars.network_config["nwc-interface-errors"] = { }
+  vars.network_config["nwc-memory-usage"] = { }
+  vars.network_config["nwc-cpu-load"] = { }
+  vars.network_config["nwc-hardware-health"] = { }
+  vars.os = "Linux"
+}
+
+# network
+for (c in range(CountNwcHosts)) {
+  object Host "c1-network-" + c use(c) {
+    import "network-host"
+    check_command = "hostalive"
+
+    if (c % 2 == 0) {
+      address = "127.0.0.1"
+    } else {
+      address = "1.2.3.4" //fail
+    }
+  }
+}
+
+
+# generate network config services
+apply Service "network-" for (networkname => config in host.vars.network_config) {
+  display_name = networkname
+
+  check_command = "nwc_health"
+  vars.nwc_health_mode = networkname.replace("nwc-", "")
+
+  check_interval = 30s
+  retry_interval = 15s
+
+  vars += config
+}
+
+# groups
+object HostGroup "network-hosts" {
+  display_name = "network Hosts"
+  assign where "network-host" in host.templates
+}

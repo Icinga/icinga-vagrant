@@ -6,19 +6,19 @@ describe 'validate_ipv6_address' do
     it { is_expected.to run.with_params.and_raise_error(Puppet::ParseError, %r{wrong number of arguments}i) }
   end
 
-  context 'Checking for deprecation warning', if: Puppet.version.to_f < 4.0 do
+  context 'Checking for deprecation warning', :if => Puppet.version.to_f < 4.0 do
     after(:each) do
       ENV.delete('STDLIB_LOG_DEPRECATIONS')
     end
     # Checking for deprecation warning, which should only be provoked when the env variable for it is set.
     it 'displays a single deprecation' do
       ENV['STDLIB_LOG_DEPRECATIONS'] = 'true'
-      scope.expects(:warning).with(includes('This method is deprecated'))
+      expect(scope).to receive(:warning).with(include('This method is deprecated'))
       is_expected.to run.with_params('3ffe:0505:0002::')
     end
     it 'displays no warning for deprecation' do
       ENV['STDLIB_LOG_DEPRECATIONS'] = 'false'
-      scope.expects(:warning).with(includes('This method is deprecated')).never
+      expect(scope).to receive(:warning).with(include('This method is deprecated')).never
       is_expected.to run.with_params('3ffe:0505:0002::')
     end
   end
@@ -51,7 +51,7 @@ describe 'validate_ipv6_address' do
     it { is_expected.to run.with_params('::1', {}).and_raise_error(Puppet::ParseError, %r{is not a string}) }
     it { is_expected.to run.with_params('::1', true).and_raise_error(Puppet::ParseError, %r{is not a string}) }
     it { is_expected.to run.with_params('::1', 'one').and_raise_error(Puppet::ParseError, %r{is not a valid IPv6}) }
-    context 'unless running on ruby 1.8.7', if: RUBY_VERSION != '1.8.7' do
+    context 'unless running on ruby 1.8.7', :if => RUBY_VERSION != '1.8.7' do
       it { is_expected.to run.with_params(1).and_raise_error(Puppet::ParseError, %r{is not a string}) }
       it { is_expected.to run.with_params('::1', 1).and_raise_error(Puppet::ParseError, %r{is not a string}) }
     end

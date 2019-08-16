@@ -2,9 +2,13 @@
 # squeeze.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:squeeze, type: :rvalue, doc: <<-EOS
-    Returns a new string where runs of the same character that occur in this set are replaced by a single character.
-  EOS
+  newfunction(:squeeze, :type => :rvalue, :doc => <<-DOC
+    @summary
+      Returns a new string where runs of the same character that occur in this set are replaced by a single character.
+
+    @return
+      a new string where runs of the same character that occur in this set are replaced by a single character.
+  DOC
              ) do |arguments|
 
     if (arguments.size != 2) && (arguments.size != 1)

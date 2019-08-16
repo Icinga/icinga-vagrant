@@ -46,13 +46,13 @@ describe 'deep_merge' do
   arguments = { 'key1' => 'value1' }, { 'key2' => 'value2' }
   originals = [arguments[0].dup, arguments[1].dup]
   it 'does not change the original hashes' do
-    subject.call([arguments[0], arguments[1]])
+    subject.execute(arguments[0], arguments[1])
     arguments.each_with_index do |argument, index|
       expect(argument).to eq(originals[index])
     end
   end
 
-  context 'should run with UTF8 and double byte characters' do
+  context 'with UTF8 and double byte characters' do
     it { is_expected.to run.with_params({ 'ĸέỹ1' => 'ϋǻļủë1' }, 'この文字列' => '万').and_return('ĸέỹ1' => 'ϋǻļủë1', 'この文字列' => '万') }
   end
 end

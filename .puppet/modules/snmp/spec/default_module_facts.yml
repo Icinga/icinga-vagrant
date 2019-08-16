@@ -1,0 +1,22 @@
+# module specific facts used for unit tests
+---
+
+snmpv3_user:
+  md5user:
+    engine:    '0x000000000000000000000002'
+    authproto: 'usmHMACMD5AuthProtocol'
+    authhash:  '0x526f5eed9fcce26f8964c2930787d82b'
+    privproto: 'usmAESPrivProtocol'
+    privhash:  '0x526f5eed9fcce26f8964c2930787d82b'
+  shauser:
+    engine:    '0x000000000000000000000002'
+    authproto: 'usmHMACSHA1AuthProtocol'
+    authhash:  '0x6695febc9288e36282235fc7151f128497b38f3f'
+    privproto: 'usmAESPrivProtocol'
+    privhash:  '0x6695febc9288e36282235fc7151f1284'
+  nonuser:
+    engine:    '0x000000000000000000000002'
+    authproto: 'usmHMACSHA1AuthProtocol'
+    authhash:  '0x6695febc9288e36282235fc7151f128497b38f3f'
+    privproto: 'usmNoPrivProtocol'
+    privhash:  ''

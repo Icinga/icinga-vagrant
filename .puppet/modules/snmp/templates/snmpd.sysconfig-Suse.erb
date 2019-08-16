@@ -1,0 +1,39 @@
+###
+### File managed by Puppet
+###
+## Path:        System/Net-SNMP
+## Description: Log level of the snmp server.
+## Type:        string(!,a,c,e,w,n,i,d,0,1,2,3,4,5,6,7)
+## Default:     d
+#
+# Defines the log level for the snmpd.
+#
+# The default is set to d (7, LOG_DEBUG)
+# This reflects the default for old init script.
+#
+SNMPD_LOGLEVEL="<%= @snmpd_options %>"
+
+## Path:        System/Net-SNMP
+## Description: En-/Disables SNMP SMUX support.
+## Type:        yesno
+## Default:     yes
+#
+# If this setting is set to "no" the snmpd will no longer bind
+# the TCP Port 199.
+#
+# The default is set to "yes" to provide backward compatibility.
+#
+SNMPD_USE_SMUX="yes"
+
+## Path:        System/Net-SNMP
+### Description: Connecion logging.
+### Type:        yesno
+### Default:     yes
+##
+## If this settings is yes, net-snmp will not log any successfull connections.
+## If it is set to no, "--dontLogTCPWrappersConnects" will added to the
+## snmpd cmdline. (see "man 5 snmpd.conf")
+##
+## The default is set to "yes" to provide backward compatibility.
+##
+SNMPD_LOG_SUCCESSFUL_CONNECTIONS="yes"

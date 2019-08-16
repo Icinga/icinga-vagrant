@@ -2,9 +2,16 @@
 #  rstrip.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:rstrip, type: :rvalue, doc: <<-EOS
-    Strips leading spaces to the right of the string.
-    EOS
+  newfunction(:rstrip, :type => :rvalue, :doc => <<-DOC
+    @summary
+      Strips leading spaces to the right of the string.
+
+    @return
+      the string with leading spaces removed
+
+    > *Note:* from Puppet 6.0.0, the compatible function with the same name in Puppet core
+    will be used instead of this function.
+    DOC
              ) do |arguments|
 
     raise(Puppet::ParseError, "rstrip(): Wrong number of arguments given (#{arguments.size} for 1)") if arguments.empty?

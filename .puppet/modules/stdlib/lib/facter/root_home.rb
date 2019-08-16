@@ -1,8 +1,11 @@
-# A facter fact to determine the root home directory.
-# This varies on PE supported platforms and may be
-# reconfigured by the end user.
+# root_home.rb
 module Facter::Util::RootHome
+  # @summary
+  #   A facter fact to determine the root home directory.
+  #   This varies on PE supported platforms and may be
+  #   reconfigured by the end user.
   class << self
+  # determines the root home directory
   def returnt_root_home
     root_ent = Facter::Util::Resolution.exec('getent passwd root')
     # The home directory is the sixth element in the passwd entry
@@ -18,7 +21,7 @@ Facter.add(:root_home) do
 end
 
 Facter.add(:root_home) do
-  confine kernel: :darwin
+  confine :kernel => :darwin
   setcode do
     str = Facter::Util::Resolution.exec('dscacheutil -q user -a name root')
     hash = {}
@@ -31,7 +34,7 @@ Facter.add(:root_home) do
 end
 
 Facter.add(:root_home) do
-  confine kernel: :aix
+  confine :kernel => :aix
   root_home = nil
   setcode do
     str = Facter::Util::Resolution.exec('lsuser -c -a home root')

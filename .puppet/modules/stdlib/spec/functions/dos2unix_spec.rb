@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'dos2unix' do
-  context 'Checking parameter validity' do
+  context 'when checking parameter validity' do
     it { is_expected.not_to eq(nil) }
     it do
       is_expected.to run.with_params.and_raise_error(ArgumentError, %r{Wrong number of arguments})
@@ -10,17 +10,17 @@ describe 'dos2unix' do
       is_expected.to run.with_params('one', 'two').and_raise_error(ArgumentError, %r{Wrong number of arguments})
     end
     it do
-      is_expected.to run.with_params([]).and_raise_error(Puppet::ParseError)
+      is_expected.to run.with_params([]).and_raise_error(Puppet::ParseError, %r{Requires string as argument})
     end
     it do
-      is_expected.to run.with_params({}).and_raise_error(Puppet::ParseError)
+      is_expected.to run.with_params({}).and_raise_error(Puppet::ParseError, %r{Requires string as argument})
     end
     it do
-      is_expected.to run.with_params(1).and_raise_error(Puppet::ParseError)
+      is_expected.to run.with_params(1).and_raise_error(Puppet::ParseError, %r{Requires string as argument})
     end
   end
 
-  context 'Converting from dos to unix format' do
+  context 'when converting from dos to unix format' do
     sample_text    = "Hello\r\nWorld\r\n"
     desired_output = "Hello\nWorld\n"
 
@@ -29,7 +29,7 @@ describe 'dos2unix' do
     end
   end
 
-  context 'Internationalization (i18N) values' do
+  context 'with internationalization (i18N) values' do
     sample_text_utf8    = "Ħ℮ļłǿ\r\nשׁөŕłđ\r\n"
     desired_output_utf8 = "Ħ℮ļłǿ\nשׁөŕłđ\n"
 

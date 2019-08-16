@@ -2,10 +2,11 @@
 # type3x.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:type3x, type: :rvalue, doc: <<-EOS
-    DEPRECATED: This function will be removed when puppet 3 support is dropped; please migrate to the new parser's typing system.
+  newfunction(:type3x, :type => :rvalue, :doc => <<-DOC
+    @summary
+      **DEPRECATED:** This function will be removed when Puppet 3 support is dropped; please migrate to the new parser's typing system.
 
-    Returns the type when passed a value. Type can be one of:
+    @return the type when passed a value. Type can be one of:
 
     * string
     * array
@@ -13,15 +14,15 @@ module Puppet::Parser::Functions
     * float
     * integer
     * boolean
-  EOS
+  DOC
              ) do |args|
-    raise(Puppet::ParseError, "type3x(): Wrong number of arguments given (#{args.size} for 1)") if args.empty?
+    raise(Puppet::ParseError, "type3x(): Wrong number of arguments given (#{args.size} for 1)") unless args.size == 1
 
     value = args[0]
 
     klass = value.class
 
-    unless [TrueClass, FalseClass, Array, Integer, Integer, Float, Hash, String].include?(klass)
+    unless [TrueClass, FalseClass, Array, Bignum, Fixnum, Float, Hash, String].include?(klass) # rubocop:disable Lint/UnifiedInteger
       raise(Puppet::ParseError, 'type3x(): Unknown type')
     end
 

@@ -3,14 +3,18 @@ require 'shellwords'
 # shell_escape.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:shell_escape, type: :rvalue, doc: <<-EOS
-    Escapes a string so that it can be safely used in a Bourne shell command line.
+  newfunction(:shell_escape, :type => :rvalue, :doc => <<-DOC
+    @summary
+      Escapes a string so that it can be safely used in a Bourne shell command line.
 
-    Note that the resulting string should be used unquoted and is not intended for use in double quotes nor in single
+    @return
+      A string of characters with metacharacters converted to their escaped form.
+
+    >* Note:* that the resulting string should be used unquoted and is not intended for use in double quotes nor in single
     quotes.
 
     This function behaves the same as ruby's Shellwords.shellescape() function.
-  EOS
+  DOC
              ) do |arguments|
 
     raise(Puppet::ParseError, "shell_escape(): Wrong number of arguments given (#{arguments.size} for 1)") if arguments.size != 1

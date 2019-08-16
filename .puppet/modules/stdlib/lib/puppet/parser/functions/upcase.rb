@@ -3,17 +3,21 @@
 #  Please note: This function is an implementation of a Ruby class and as such may not be entirely UTF8 compatible. To ensure compatibility please use this function with Ruby 2.4.0 or greater - https://bugs.ruby-lang.org/issues/10085.
 #
 module Puppet::Parser::Functions
-  newfunction(:upcase, type: :rvalue, doc: <<-EOS
-    Converts a string or an array of strings to uppercase.
+  newfunction(:upcase, :type => :rvalue, :doc => <<-DOC
+    @summary
+      Converts a string or an array of strings to uppercase.
 
-    *Examples:*
+    @return
+      converted string ot array of strings to uppercase
 
-        upcase("abcd")
+    @example **Usage**
 
-    Will return:
+      upcase("abcd")
+      Will return ABCD
 
-        ABCD
-  EOS
+    > *Note:* from Puppet 6.0.0, the compatible function with the same name in Puppet core
+    will be used instead of this function.
+  DOC
              ) do |arguments|
 
     raise(Puppet::ParseError, "upcase(): Wrong number of arguments given (#{arguments.size} for 1)") if arguments.size != 1

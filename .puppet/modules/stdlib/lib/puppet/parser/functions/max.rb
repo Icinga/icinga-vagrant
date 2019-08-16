@@ -2,10 +2,18 @@
 # max.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:max, type: :rvalue, doc: <<-EOS
-    Returns the highest value of all arguments.
+  newfunction(:max, :type => :rvalue, :doc => <<-DOC
+    @summary
+      **Deprecated:** Returns the highest value of all arguments.
+
     Requires at least one argument.
-    EOS
+
+    @return
+      The highest value among those passed in
+
+    > **Note:** **Deprecated** from Puppet 6.0.0, this function has been replaced with a
+    built-in [`lstrip`](https://puppet.com/docs/puppet/latest/function.html#lstrip) function.
+    DOC
              ) do |args|
 
     raise(Puppet::ParseError, 'max(): Wrong number of arguments need at least one') if args.empty?

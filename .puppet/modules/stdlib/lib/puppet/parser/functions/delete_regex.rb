@@ -3,26 +3,35 @@
 #  Please note: This function is an implementation of a Ruby class and as such may not be entirely UTF8 compatible. To ensure compatibility please use this function with Ruby 2.4.0 or greater - https://bugs.ruby-lang.org/issues/10085.
 #
 module Puppet::Parser::Functions
-  newfunction(:delete_regex, type: :rvalue, doc: <<-EOS
-    deletes all instances of a given element that match a regular expression
-    from an array or key from a hash. Multiple regular expressions are assumed
-    to be matched as an OR.
+  newfunction(:delete_regex, :type => :rvalue, :doc => <<-DOC
+    @summary
+      Deletes all instances of a given element that match a regular expression
+      from an array or key from a hash.
 
-    *Examples:*
+    Multiple regular expressions are assumed to be matched as an OR.
 
-        delete_regex(['a','b','c','b'], 'b')
-        Would return: ['a','c']
+    @example Example usage
 
-        delete_regex(['a','b','c','b'], ['b', 'c'])
-        Would return: ['a']
+      delete_regex(['a','b','c','b'], 'b')
+      Would return: ['a','c']
 
-        delete_regex({'a'=>1,'b'=>2,'c'=>3}, 'b')
-        Would return: {'a'=>1,'c'=>3}
+      delete_regex(['a','b','c','b'], ['b', 'c'])
+      Would return: ['a']
 
-        delete_regex({'a'=>1,'b'=>2,'c'=>3}, '^a$')
-        Would return: {'b'=>2,'c'=>3}
+      delete_regex({'a'=>1,'b'=>2,'c'=>3}, 'b')
+      Would return: {'a'=>1,'c'=>3}
 
-  EOS
+      delete_regex({'a'=>1,'b'=>2,'c'=>3}, '^a$')
+      Would return: {'b'=>2,'c'=>3}
+
+    > *Note:*
+    Since Puppet 4 this can be done in general with the built-in
+    [`filter`](https://puppet.com/docs/puppet/latest/function.html#filter) function:
+    ["aaa", "aba", "aca"].filter |$val| { $val !~ /b/ }
+    Would return: ['aaa', 'aca']
+
+    @return [Array] The given array now missing all targeted values.
+  DOC
              ) do |arguments|
 
     raise(Puppet::ParseError, "delete_regex(): Wrong number of arguments given #{arguments.size} for 2") unless arguments.size == 2

@@ -2,9 +2,17 @@
 # is_domain_name.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:is_domain_name, type: :rvalue, doc: <<-EOS
-    Returns true if the string passed to this function is a syntactically correct domain name.
-    EOS
+  newfunction(:is_domain_name, :type => :rvalue, :doc => <<-DOC
+    @summary
+      **Deprecated:** Returns true if the string passed to this function is
+      a syntactically correct domain name.
+
+    @return [Boolean]
+      Returns `true` or `false`
+
+    > **Note:* **Deprecated** Will be removed in a future version of stdlib. See
+    [`validate_legacy`](#validate_legacy).
+    DOC
              ) do |arguments|
 
     if arguments.size != 1

@@ -8,7 +8,7 @@ describe 'validate_integer' do
   # Checking for deprecation warning
   it 'displays a single deprecation' do
     ENV['STDLIB_LOG_DEPRECATIONS'] = 'true'
-    scope.expects(:warning).with(includes('This method is deprecated'))
+    expect(scope).to receive(:warning).with(include('This method is deprecated'))
     is_expected.to run.with_params(3)
   end
 
@@ -24,11 +24,11 @@ describe 'validate_integer' do
       it { is_expected.to run.with_params([0, 1, 2, invalid, 3, 4], 10, -10).and_raise_error(Puppet::ParseError, %r{to be an Integer}) }
     end
 
-    context 'when running on modern rubies', unless: RUBY_VERSION == '1.8.7' do
+    context 'when running on modern rubies', :unless => RUBY_VERSION == '1.8.7' do
       it { is_expected.to run.with_params([0, 1, 2, { 1 => 2 }, 3, 4], 10, -10).and_raise_error(Puppet::ParseError, %r{to be an Integer}) }
     end
 
-    context 'when running on ruby, which munges hashes weirdly', if: RUBY_VERSION == '1.8.7' do
+    context 'when running on ruby, which munges hashes weirdly', :if => RUBY_VERSION == '1.8.7' do
       it { is_expected.to run.with_params([0, 1, 2, { 1 => 2 }, 3, 4], 10, -10).and_raise_error(Puppet::ParseError) }
       it { is_expected.to run.with_params([0, 1, 2, { 0 => 2 }, 3, 4], 10, -10).and_raise_error(Puppet::ParseError) }
     end

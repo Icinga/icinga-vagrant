@@ -35,8 +35,8 @@ describe 'seeded_rand' do
   end
 
   it 'does not return different values for different hosts' do
-    val1 = seeded_rand(1000, 'foo', host: 'first.host.com')
-    val2 = seeded_rand(1000, 'foo', host: 'second.host.com')
+    val1 = seeded_rand(1000, 'foo', :host => 'first.host.com')
+    val2 = seeded_rand(1000, 'foo', :host => 'second.host.com')
 
     expect(val1).to eql(val2)
   end
@@ -46,12 +46,12 @@ describe 'seeded_rand' do
 
     # workaround not being able to use let(:facts) because some tests need
     # multiple different hostnames in one context
-    scope.stubs(:lookupvar).with('::fqdn', {}).returns(host)
+    allow(scope).to receive(:lookupvar).with('::fqdn', {}).and_return(host)
 
     scope.function_seeded_rand([max, seed])
   end
 
-  context 'should run with UTF8 and double byte characters' do
+  context 'with UTF8 and double byte characters' do
     it { is_expected.to run.with_params(1000, 'ǿňè') }
     it { is_expected.to run.with_params(1000, '文字列') }
   end

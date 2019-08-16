@@ -2,9 +2,12 @@
 # basename.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:basename, type: :rvalue, doc: <<-EOS
-    Strips directory (and optional suffix) from a filename
-    EOS
+  newfunction(:basename, :type => :rvalue, :doc => <<-DOC
+    @summary
+      Strips directory (and optional suffix) from a filename
+
+    @return [String] The stripped filename
+    DOC
              ) do |arguments|
 
     raise(Puppet::ParseError, 'basename(): No arguments given') if arguments.empty?

@@ -2,21 +2,27 @@
 require 'puppet/parser/functions'
 
 Puppet::Parser::Functions.newfunction(:defined_with_params,
-                                      type: :rvalue,
-                                      doc: <<-'ENDOFDOC'
-    Takes a resource reference and an optional hash of attributes.
+                                      :type => :rvalue,
+                                      :doc => <<-DOC
+    @summary
+      Takes a resource reference and an optional hash of attributes.
 
-    Returns true if a resource with the specified attributes has already been added
-    to the catalog, and false otherwise.
+    Returns `true` if a resource with the specified attributes has already been added
+    to the catalog, and `false` otherwise.
 
-        user { 'dan':
-          ensure => present,
-        }
+      ```
+      user { 'dan':
+        ensure => present,
+      }
 
-        if ! defined_with_params(User[dan], {'ensure' => 'present' }) {
-          user { 'dan': ensure => present, }
-        }
-ENDOFDOC
+      if ! defined_with_params(User[dan], {'ensure' => 'present' }) {
+        user { 'dan': ensure => present, }
+      }
+      ```
+
+    @return [Boolean]
+      returns `true` or `false`
+DOC
                                      ) do |vals|
   reference, params = vals
   raise(ArgumentError, 'Must specify a reference') unless reference
@@ -31,7 +37,7 @@ ENDOFDOC
       type_name, title = Puppet::Resource.type_and_title(reference, nil)
       type = Puppet::Pops::Evaluator::Runtime3ResourceSupport.find_resource_type_or_class(find_global_scope, type_name.downcase)
     elsif reference.is_a?(Puppet::Resource)
-      type = reference.resource_type
+      type = reference.type
       title = reference.title
     else
       raise(ArgumentError, "Reference is not understood: '#{reference.class}'")

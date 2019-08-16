@@ -2,14 +2,17 @@
 # intersection.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:intersection, type: :rvalue, doc: <<-EOS
-    This function returns an array of the intersection of two.
+  newfunction(:intersection, :type => :rvalue, :doc => <<-DOC
+    @summary
+      This function returns an array of the intersection of two.
 
-    *Examples:*
+    @return
+      an array of the intersection of two.
 
-        intersection(["a","b","c"],["b","c","d"])  # returns ["b","c"]
-        intersection(["a","b","c"],[1,2,3,4])      # returns [] (true, when evaluated as a Boolean)
-    EOS
+    @example Example Usage:
+      intersection(["a","b","c"],["b","c","d"])  # returns ["b","c"]
+      intersection(["a","b","c"],[1,2,3,4])      # returns [] (true, when evaluated as a Boolean)
+    DOC
              ) do |arguments|
 
     # Two arguments are required

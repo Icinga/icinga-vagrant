@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'min' do
+describe 'min', :if => Puppet::Util::Package.versioncmp(Puppet.version, '6.0.0') < 0 do
   it { is_expected.not_to eq(nil) }
   it { is_expected.to run.with_params.and_raise_error(Puppet::ParseError, %r{wrong number of arguments}i) }
   it { is_expected.to run.with_params(1).and_return(1) }
@@ -12,6 +12,7 @@ describe 'min' do
   it { is_expected.to run.with_params('one', 'two').and_return('one') }
   it { is_expected.to run.with_params('one', 'two', 'three').and_return('one') }
   it { is_expected.to run.with_params('three', 'two', 'one').and_return('one') }
+  it { is_expected.to run.with_params('the', 'public', 'art', 'galleries').and_return('art') }
 
   describe 'implementation artifacts' do
     it { is_expected.to run.with_params(1, 'one').and_return(1) }

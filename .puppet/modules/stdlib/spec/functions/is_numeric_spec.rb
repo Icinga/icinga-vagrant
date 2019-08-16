@@ -26,20 +26,21 @@ describe 'is_numeric' do
   it { is_expected.to run.with_params(false).and_return(false) }
   it { is_expected.to run.with_params('0001234').and_return(false) }
   it { is_expected.to run.with_params(' - 1234').and_return(false) }
+  it { is_expected.to run.with_params(['aaa.com', 'bbb', 'ccc']).and_return(false) }
 
-  context 'Checking for deprecation warning' do
+  context 'with deprecation warning' do
     after(:each) do
       ENV.delete('STDLIB_LOG_DEPRECATIONS')
     end
     # Checking for deprecation warning, which should only be provoked when the env variable for it is set.
     it 'displays a single deprecation' do
       ENV['STDLIB_LOG_DEPRECATIONS'] = 'true'
-      scope.expects(:warning).with(includes('This method is deprecated'))
+      expect(scope).to receive(:warning).with(include('This method is deprecated'))
       is_expected.to run.with_params(7).and_return(true)
     end
     it 'displays no warning for deprecation' do
       ENV['STDLIB_LOG_DEPRECATIONS'] = 'false'
-      scope.expects(:warning).with(includes('This method is deprecated')).never
+      expect(scope).to receive(:warning).with(include('This method is deprecated')).never
       is_expected.to run.with_params(7).and_return(true)
     end
   end

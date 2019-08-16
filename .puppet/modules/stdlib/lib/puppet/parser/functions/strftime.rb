@@ -3,20 +3,22 @@
 #  Please note: This function is an implementation of a Ruby class and as such may not be entirely UTF8 compatible. To ensure compatibility please use this function with Ruby 2.4.0 or greater - https://bugs.ruby-lang.org/issues/10085.
 #
 module Puppet::Parser::Functions
-  newfunction(:strftime, type: :rvalue, doc: <<-EOS
-    This function returns formatted time.
+  newfunction(:strftime, :type => :rvalue, :doc => <<-DOC
+    @summary
+      This function returns formatted time.
 
-    *Examples:*
+    @return
+      converted time according to the directives in the given format string
 
-    To return the time since epoch:
+    > *Note:* that since Puppet 4.8.0 the function with the same name in Puppet will be used instead of this
+    function. It also supports the Timestamp and Timespan data types in the Puppet language.
 
-        strftime("%s")
+    @example **Usage**
 
-    To return the date:
+      To return the time since epoch: strftime("%s")
+      To return the date: strftime("%Y-%m-%d")
 
-        strftime("%Y-%m-%d")
-
-    *Format meaning:*
+    **Format meaning:**
 
         %a - The abbreviated weekday name (``Sun'')
         %A - The  full  weekday  name (``Sunday'')
@@ -67,7 +69,7 @@ module Puppet::Parser::Functions
         %z - Time zone as  hour offset from UTC (e.g. +0900)
         %Z - Time zone name
         %% - Literal ``%'' character
-    EOS
+    DOC
              ) do |arguments|
 
     # Technically we support two arguments but only first is mandatory ...

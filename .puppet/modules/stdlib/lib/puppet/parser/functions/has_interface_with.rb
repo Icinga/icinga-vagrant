@@ -2,20 +2,22 @@
 # has_interface_with
 #
 module Puppet::Parser::Functions
-  newfunction(:has_interface_with, type: :rvalue, doc: <<-EOS
-    Returns boolean based on kind and value:
-      * macaddress
-      * netmask
-      * ipaddress
-      * network
+  newfunction(:has_interface_with, :type => :rvalue, :doc => <<-DOC
+    @summary
+      Returns boolean based on kind and value.
 
-    has_interface_with("macaddress", "x:x:x:x:x:x")
-    has_interface_with("ipaddress", "127.0.0.1")    => true
-    etc.
+    @return
+      boolean values `true` or `false`
 
-    If no "kind" is given, then the presence of the interface is checked:
-    has_interface_with("lo")                        => true
-    EOS
+    Valid kinds are `macaddress`, `netmask`, `ipaddress` and `network`.
+
+    @example **Usage**
+      has_interface_with("macaddress", "x:x:x:x:x:x") # Returns `false`
+      has_interface_with("ipaddress", "127.0.0.1") # Returns `true`
+
+    @example If no "kind" is given, then the presence of the interface is checked:
+      has_interface_with("lo") # Returns `true`
+    DOC
              ) do |args|
 
     raise(Puppet::ParseError, "has_interface_with(): Wrong number of arguments given (#{args.size} for 1 or 2)") if args.empty? || args.size > 2

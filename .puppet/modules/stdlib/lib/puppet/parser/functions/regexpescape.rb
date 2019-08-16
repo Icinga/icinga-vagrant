@@ -2,11 +2,14 @@
 #  regexpescape.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:regexpescape, type: :rvalue, doc: <<-EOS
-    Regexp escape a string or array of strings.
-    Requires either a single string or an array as an input.
-    EOS
-  ) do |arguments| # rubocop:disable Style/ClosingParenthesisIndentation
+  newfunction(:regexpescape, :type => :rvalue, :doc => <<-DOC
+    @summary
+      Regexp escape a string or array of strings.
+      Requires either a single string or an array as an input.
+    @return [String]
+      A string of characters with metacharacters converted to their escaped form.
+    DOC
+  ) do |arguments| # rubocop:disable Layout/ClosingParenthesisIndentation
     raise(Puppet::ParseError, "regexpescape(): Wrong number of arguments given (#{arguments.size} for 1)") if arguments.empty?
 
     value = arguments[0]

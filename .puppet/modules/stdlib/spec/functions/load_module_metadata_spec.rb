@@ -7,13 +7,15 @@ describe 'load_module_metadata' do
 
   describe 'when calling with valid arguments' do
     before :each do
-      allow(File).to receive(:read).with(%r{\/(stdlib|test)\/metadata.json}, encoding: 'utf-8').and_return('{"name": "puppetlabs-stdlib"}')
+      allow(File).to receive(:read).with(%r{\/(stdlib|test)\/metadata.json}, :encoding => 'utf-8').and_return('{"name": "puppetlabs-stdlib"}')
       allow(File).to receive(:read).with(%r{\/(stdlib|test)\/metadata.json}).and_return('{"name": "puppetlabs-stdlib"}')
+      # Additional modules used by litmus which are identified while running these dues to being in fixtures
+      allow(File).to receive(:read).with(%r{\/(provision|puppet_agent|facts)\/metadata.json}, :encoding => 'utf-8')
     end
 
     context 'when calling with valid utf8 and double byte character arguments' do
       before :each do
-        allow(File).to receive(:read).with(%r{\/(stdlib|test)\/metadata.json}, encoding: 'utf-8').and_return('{"ĭďèŉţĩƒіểя": "ċơņťęאּť ỡƒ ţħíš -
+        allow(File).to receive(:read).with(%r{\/(stdlib|test)\/metadata.json}, :encoding => 'utf-8').and_return('{"ĭďèŉţĩƒіểя": "ċơņťęאּť ỡƒ ţħíš -
 この文字"}')
         allow(File).to receive(:read).with(%r{\/(stdlib|test)\/metadata.json}).and_return('{"ĭďèŉţĩƒіểя": "ċơņťęאּť ỡƒ ţħíš -
 この文字"}')
@@ -26,7 +28,7 @@ describe 'load_module_metadata' do
         allow(File).to receive(:exists?).with("#{prefix}/path/to/module/metadata.json").and_return(true)
         allow(File).to receive(:read).with("#{prefix}/path/to/module/metadata.json").and_return('{"name": "spencer-science"}')
 
-        result = subject.call(['science'])
+        result = subject.execute('science')
         expect(result['name']).to eq('spencer-science')
       end
 
@@ -39,7 +41,7 @@ describe 'load_module_metadata' do
       it 'returns nil if user allows empty metadata.json' do
         allow(scope).to receive(:function_get_module_path).with(['science']).and_return("#{prefix}/path/to/module/")
         allow(File).to receive(:exists?).with("#{prefix}/path/to/module/metadata.json").and_return(false)
-        result = subject.call(['science', true])
+        result = subject.execute('science', true)
         expect(result).to eq({})
       end
     end

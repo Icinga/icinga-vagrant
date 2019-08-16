@@ -2,22 +2,26 @@
 # validate_ipv4_address.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:validate_ipv4_address, doc: <<-ENDHEREDOC
-    Validate that all values passed are valid IPv4 addresses.
-    Fail compilation if any value fails this check.
+  newfunction(:validate_ipv4_address, :doc => <<-DOC
+    @summary
+      Validate that all values passed are valid IPv4 addresses.
+      Fail compilation if any value fails this check.
 
-    The following values will pass:
+    @return
+      passes when the given values are valid IPv4 addresses or raise an error when they are not and fails compilation
 
-    $my_ip = "1.2.3.4"
-    validate_ipv4_address($my_ip)
-    validate_ipv4_address("8.8.8.8", "172.16.0.1", $my_ip)
+    @example **Usage**
+      The following values will pass:
 
-    The following values will fail, causing compilation to abort:
+        $my_ip = "1.2.3.4"
+        validate_ipv4_address($my_ip)
+        validate_ipv4_address("8.8.8.8", "172.16.0.1", $my_ip)
 
-    $some_array = [ 1, true, false, "garbage string", "3ffe:505:2" ]
-    validate_ipv4_address($some_array)
+      The following values will fail, causing compilation to abort:
 
-    ENDHEREDOC
+        $some_array = [ 1, true, false, "garbage string", "3ffe:505:2" ]
+        validate_ipv4_address($some_array)
+    DOC
              ) do |args|
 
     function_deprecation([:validate_ipv4_address, 'This method is deprecated, please use the stdlib validate_legacy function,

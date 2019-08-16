@@ -8,7 +8,7 @@ describe 'validate_string' do
   # Checking for deprecation warning
   it 'displays a single deprecation' do
     ENV['STDLIB_LOG_DEPRECATIONS'] = 'true'
-    scope.expects(:warning).with(includes('This method is deprecated'))
+    expect(scope).to receive(:warning).with(include('This method is deprecated'))
     is_expected.to run.with_params('', '')
   end
 
@@ -28,6 +28,7 @@ describe 'validate_string' do
       it { is_expected.to run.with_params({}).and_raise_error(Puppet::ParseError, %r{is not a string}) }
       it { is_expected.to run.with_params(1).and_raise_error(Puppet::ParseError, %r{is not a string}) }
       it { is_expected.to run.with_params(true).and_raise_error(Puppet::ParseError, %r{is not a string}) }
+      it { is_expected.to run.with_params('one', 2).and_raise_error(Puppet::ParseError, %r{is not a string}) }
     end
   end
 end

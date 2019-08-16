@@ -2,10 +2,15 @@
 # assert_private.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:assert_private, doc: <<-'EOS'
-    Sets the current class or definition as private.
+  newfunction(:assert_private, :doc => <<-DOC
+    @summary
+      Sets the current class or definition as private.
+
+    @return
+      set the current class or definition as private.
+
     Calling the class or definition from outside the current module will fail.
-    EOS
+    DOC
              ) do |args|
 
     raise(Puppet::ParseError, "assert_private(): Wrong number of arguments given (#{args.size}}) for 0 or 1)") if args.size > 1

@@ -15,7 +15,7 @@ describe 'regexpescape' do
 
   describe 'handling normal strings' do
     it 'calls ruby\'s Regexp.escape function' do
-      Regexp.expects(:escape).with('regexp_string').returns('escaped_regexp_string').once
+      expect(Regexp).to receive(:escape).with('regexp_string').and_return('escaped_regexp_string').once
       is_expected.to run.with_params('regexp_string').and_return('escaped_regexp_string')
     end
   end
@@ -23,7 +23,7 @@ describe 'regexpescape' do
   describe 'handling classes derived from String' do
     it 'calls ruby\'s Regexp.escape function' do
       regexp_string = AlsoString.new('regexp_string')
-      Regexp.expects(:escape).with(regexp_string).returns('escaped_regexp_string').once
+      expect(Regexp).to receive(:escape).with(regexp_string).and_return('escaped_regexp_string').once
       is_expected.to run.with_params(regexp_string).and_return('escaped_regexp_string')
     end
   end
@@ -33,7 +33,7 @@ describe 'regexpescape' do
     it { is_expected.to run.with_params(['one*', 'two']).and_return(['one\*', 'two']) }
     it { is_expected.to run.with_params(['one*', 1, true, {}, 'two']).and_return(['one\*', 1, true, {}, 'two']) }
 
-    context 'should run with UTF8 and double byte characters' do
+    context 'with UTF8 and double byte characters' do
       it { is_expected.to run.with_params(['ŏŉε*']).and_return(['ŏŉε\*']) }
       it { is_expected.to run.with_params(['インターネット*']).and_return(['インターネット\*']) }
     end

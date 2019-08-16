@@ -22,7 +22,7 @@ describe 'try_get_value' do
     }
   end
 
-  context 'single values' do
+  context 'with single values' do
     it 'exists' do
       is_expected.not_to eq(nil)
     end
@@ -44,7 +44,7 @@ describe 'try_get_value' do
     end
   end
 
-  context 'structure values' do
+  context 'with structure values' do
     it 'is able to extracts a single hash value' do
       is_expected.to run.with_params(data, 'd', 'default').and_return('1')
     end
@@ -103,6 +103,10 @@ describe 'try_get_value' do
 
     it 'is able to use a custom path separator: default' do
       is_expected.to run.with_params(data, 'a::c', 'default', '::').and_return('default')
+    end
+
+    it 'is able to throw an error with incorrect params' do
+      is_expected.to run.with_params.and_raise_error(ArgumentError, %r{Wrong number of arguments}i)
     end
   end
 end

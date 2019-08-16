@@ -1,19 +1,23 @@
 {
   "name": "puppetlabs-stdlib",
-  "version": "4.23.0",
+  "version": "6.0.0",
   "author": "puppetlabs",
   "summary": "Standard library of resources for Puppet modules.",
   "license": "Apache-2.0",
   "source": "https://github.com/puppetlabs/puppetlabs-stdlib",
   "project_page": "https://github.com/puppetlabs/puppetlabs-stdlib",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
+  "dependencies": [
+
+  ],
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
         "5",
         "6",
-        "7"
+        "7",
+        "8"
       ]
     },
     {
@@ -35,7 +39,6 @@
     {
       "operatingsystem": "Scientific",
       "operatingsystemrelease": [
-        "5",
         "6",
         "7"
       ]
@@ -43,14 +46,14 @@
     {
       "operatingsystem": "SLES",
       "operatingsystemrelease": [
-        "11 SP1",
-        "12"
+        "11",
+        "12",
+        "15"
       ]
     },
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
-        "7",
         "8",
         "9"
       ]
@@ -59,7 +62,8 @@
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
         "14.04",
-        "16.04"
+        "16.04",
+        "18.04"
       ]
     },
     {
@@ -72,11 +76,15 @@
     {
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
-        "Server 2008",
-        "Server 2008 R2",
-        "Server 2012",
-        "Server 2012 R2",
-        "7"
+        "2008",
+        "2008 R2",
+        "2012",
+        "2012 R2",
+        "2016",
+        "2019",
+        "7",
+        "8.1",
+        "10"
       ]
     },
     {
@@ -91,11 +99,11 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">=2.7.20 < 6.0.0"
+      "version_requirement": ">= 5.5.10 < 7.0.0"
     }
   ],
   "description": "Standard Library for Puppet Modules",
-  "dependencies": [
-
-  ]
+  "pdk-version": "1.11.1",
+  "template-url": "https://github.com/puppetlabs/pdk-templates#master",
+  "template-ref": "heads/master-0-gb096033"
 }

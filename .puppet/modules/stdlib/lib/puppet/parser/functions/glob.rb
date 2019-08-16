@@ -2,10 +2,16 @@
 #  glob.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:glob, type: :rvalue, doc: <<-'EOS'
-    Returns an Array of file entries of a directory or an Array of directories.
-    Uses same patterns as Dir#glob
-    EOS
+  newfunction(:glob, :type => :rvalue, :doc => <<-DOC
+    @summary
+      Uses same patterns as Dir#glob.
+
+    @return
+      Returns an Array of file entries of a directory or an Array of directories.
+
+    @example Example Usage:
+      $confs = glob(['/etc/**/*.conf', '/opt/**/*.conf'])
+    DOC
              ) do |arguments|
 
     unless arguments.size == 1

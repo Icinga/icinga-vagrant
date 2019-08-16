@@ -2,10 +2,18 @@
 # min.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:min, type: :rvalue, doc: <<-EOS
-    Returns the lowest value of all arguments.
+  newfunction(:min, :type => :rvalue, :doc => <<-DOC
+    @summary
+      **Deprecated:** Returns the lowest value of all arguments.
+
     Requires at least one argument.
-    EOS
+
+    @return
+      The lowest value among the given arguments
+
+    > **Note:** **Deprecated** from Puppet 6.0.0, this function has been replaced with a
+    built-in [`min`](https://puppet.com/docs/puppet/latest/function.html#min) function.
+    DOC
              ) do |args|
 
     raise(Puppet::ParseError, 'min(): Wrong number of arguments need at least one') if args.empty?

@@ -2,11 +2,20 @@
 #  chomp.rb
 #
 module Puppet::Parser::Functions
-  newfunction(:chomp, type: :rvalue, doc: <<-'EOS'
-    Removes the record separator from the end of a string or an array of
-    strings, for example `hello\n` becomes `hello`.
+  newfunction(:chomp, :type => :rvalue, :doc => <<-DOC
+    @summary
+      **Deprecated** Removes the record separator from the end of a string or an array of strings.
+
+    For example `hello\n` becomes `hello`.
     Requires a single string or array as an input.
-    EOS
+
+    > *Note:*
+      **Deprecated** from Puppet 6.0.0, this function has been replaced with a
+    built-in [`chomp`](https://puppet.com/docs/puppet/latest/function.html#chomp) function.
+
+    @return [String] The converted String, if it was a String that was given
+    @return [Array[String]] The converted Array, if it was a Array that was given
+    DOC
              ) do |arguments|
 
     raise(Puppet::ParseError, "chomp(): Wrong number of arguments given (#{arguments.size} for 1)") if arguments.empty?

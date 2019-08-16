@@ -16,7 +16,7 @@ describe 'squeeze' do
     it { is_expected.to run.with_params('aaaaaaaaabbbbbbbbbbcccccccccc', 'b-c').and_return('aaaaaaaaabc') }
   end
 
-  context 'should run with UTF8 and double byte characters' do
+  context 'with UTF8 and double byte characters' do
     it { is_expected.to run.with_params('ậậậậậậậậậậậậậậậậậậậậ').and_return('ậ') }
     it { is_expected.to run.with_params('語語語語語語語', '語').and_return('語') }
     it { is_expected.to run.with_params('ậậậậậậậậậậậậậậậậậ語語語語©©©©©', '©').and_return('ậậậậậậậậậậậậậậậậậ語語語語©') }
@@ -43,7 +43,7 @@ describe 'squeeze' do
   context 'when using a class extending String' do
     it 'calls its squeeze method' do
       value = AlsoString.new('aaaaaaaaa')
-      value.expects(:squeeze).returns('foo')
+      expect_any_instance_of(AlsoString).to receive(:squeeze).and_return('foo') # rubocop:disable RSpec/AnyInstance
       expect(subject).to run.with_params(value).and_return('foo')
     end
   end

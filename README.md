@@ -647,6 +647,7 @@ General:
   puppet-datacat           | Type for ES      | .puppet/modules/datacat           | https://github.com/richardc/puppet-datacat.git
   puppet-inifile           | >= 4.7.0         | .puppet/modules/inifile           | https://github.com/puppetlabs/puppetlabs-inifile.git
   puppet-timezone          | >= 4.0.0         | .puppet/modules/timezone          | https://github.com/saz/puppet-timezone.git
+  puppet-snmp              | >= 5.5.8 < 7.0.0 | .puppet/modules/snmp              | https://github.com/voxpupuli/puppet-snmp.git
 
 Specific projects:
 
