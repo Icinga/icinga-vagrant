@@ -20,10 +20,13 @@ matrix:
   include:
     - rvm: 2.4.1
       bundler_args: --without system_tests
-      env: PUPPET_GEM_VERSION="~> 4.0"
-    - rvm: 2.3.1
+      env: PUPPET_GEM_VERSION="~> 6.0"
+    - rvm: 2.4.1
+      bundler_args: --without system_tests
+      env: PUPPET_GEM_VERSION="~> 5.0"
+    - rvm: 2.4.1
       bundler_args: --without system_tests
       env: PUPPET_GEM_VERSION="~> 4.0"
-    - rvm: 2.1.7
+    - rvm: 2.3.1
       bundler_args: --without system_tests
       env: PUPPET_GEM_VERSION="~> 4.0"
