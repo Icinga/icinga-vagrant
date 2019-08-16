@@ -1,0 +1,14 @@
+---
+lookup_options:
+  selinux::boolean:
+    merge: hash
+  selinux::fcontext:
+    merge: hash
+  selinux::module:
+    merge: hash
+  selinux::permissive:
+    merge: hash
+  selinux::port:
+    merge: hash
+  selinux::exec_restorecon:
+    merge: hash
