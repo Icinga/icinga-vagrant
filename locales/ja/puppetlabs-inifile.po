@@ -1,0 +1,76 @@
+# #-#-#-#-#  puppetlabs-inifile.pot (puppetlabs-inifile 2.4.0-7-g89be913)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2018 Puppet, Inc.
+# This file is distributed under the same license as the puppetlabs-inifile package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"#-#-#-#-#  puppetlabs-inifile.pot (puppetlabs-inifile 2.4.0-7-g89be913)  #-#-"
+"#-#-#\n"
+"Project-Id-Version: puppetlabs-inifile 2.4.0-7-g89be913\n"
+"\n"
+"Report-Msgid-Bugs-To: docs@puppet.com\n"
+"POT-Creation-Date: 2018-10-02 16:38+0300\n"
+"PO-Revision-Date: 2018-10-02 16:38+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"#-#-#-#-#  puppet.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-10-02 16:39:00 +0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 2.0.0\n"
+
+#: ../lib/puppet/parser/functions/create_ini_settings.rb:51
+msgid ""
+"create_ini_settings(): Wrong number of arguments given (%{arguments_size} "
+"for 1 or 2)"
+msgstr ""
+"ƈřḗȧŧḗ_īƞī_şḗŧŧīƞɠş(): Ẇřǿƞɠ ƞŭḿƀḗř ǿƒ ȧřɠŭḿḗƞŧş ɠīṽḗƞ (%{arguments_size} "
+"ƒǿř 1 ǿř 2)"
+
+#: ../lib/puppet/parser/functions/create_ini_settings.rb:60
+msgid "create_ini_settings(): Requires all arguments to be a Hash"
+msgstr "ƈřḗȧŧḗ_īƞī_şḗŧŧīƞɠş(): Řḗɋŭīřḗş ȧŀŀ ȧřɠŭḿḗƞŧş ŧǿ ƀḗ ȧ Ħȧşħ"
+
+#: ../lib/puppet/parser/functions/create_ini_settings.rb:66
+msgid "create_ini_settings(): Section %{section} must contain a Hash"
+msgstr "ƈřḗȧŧḗ_īƞī_şḗŧŧīƞɠş(): Şḗƈŧīǿƞ %{section} ḿŭşŧ ƈǿƞŧȧīƞ ȧ Ħȧşħ"
+
+#: ../lib/puppet/parser/functions/create_ini_settings.rb:70
+msgid ""
+"create_ini_settings(): must pass the path parameter to the Ini_setting "
+"resource!"
+msgstr ""
+"ƈřḗȧŧḗ_īƞī_şḗŧŧīƞɠş(): ḿŭşŧ ƥȧşş ŧħḗ ƥȧŧħ ƥȧřȧḿḗŧḗř ŧǿ ŧħḗ Īƞī_şḗŧŧīƞɠ "
+"řḗşǿŭřƈḗ!"
+
+#: ../lib/puppet/provider/ini_setting/ruby.rb:14
+msgid ""
+"Ini_settings only support collecting instances when a file path is hard coded"
+msgstr ""
+"Īƞī_şḗŧŧīƞɠş ǿƞŀẏ şŭƥƥǿřŧ ƈǿŀŀḗƈŧīƞɠ īƞşŧȧƞƈḗş ẇħḗƞ ȧ ƒīŀḗ ƥȧŧħ īş ħȧřḓ ƈǿḓḗḓ"
+
+#: ../lib/puppet/type/ini_setting.rb:19 ../lib/puppet/type/ini_subsetting.rb:18
+msgid "expected a boolean value or :md5"
+msgstr "ḗẋƥḗƈŧḗḓ ȧ ƀǿǿŀḗȧƞ ṽȧŀŭḗ ǿř :ḿḓ5"
+
+#: ../lib/puppet/type/ini_setting.rb:51 ../lib/puppet/type/ini_subsetting.rb:54
+msgid "File paths must be fully qualified, not '%{value}'"
+msgstr "Ƒīŀḗ ƥȧŧħş ḿŭşŧ ƀḗ ƒŭŀŀẏ ɋŭȧŀīƒīḗḓ, ƞǿŧ '%{value}'"
+
+#: ../lib/puppet/type/ini_subsetting.rb:82
+msgid ":quote_char valid values are '', '\"' and \"'\""
+msgstr ":ɋŭǿŧḗ_ƈħȧř ṽȧŀīḓ ṽȧŀŭḗş ȧřḗ '', '\"' ȧƞḓ \"'\""
