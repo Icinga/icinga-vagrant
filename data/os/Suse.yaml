@@ -1,0 +1,5 @@
+---
+timezone::package: timezone
+timezone::zoneinfo_dir: /usr/share/zoneinfo
+timezone::localtime_file: /etc/localtime
+timezone::timezone_update: 'zic -l %s'

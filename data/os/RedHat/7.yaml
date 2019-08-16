@@ -1,0 +1,6 @@
+---
+timezone::timezone_update: 'timedatectl set-timezone %s'
+timezone::timezone_update_check_cmd: 'timedatectl status | grep "Timezone:\|Time zone:" | grep -q %s'
+timezone::check_hwclock_enabled_cmd: 'grep LOCAL /etc/adjtime'
+timezone::check_hwclock_disabled_cmd: 'grep UTC /etc/adjtime'
+timezone::hwclock_cmd: 'timedatectl set-local-rtc %s'
