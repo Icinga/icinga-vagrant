@@ -28,7 +28,7 @@ class profiles::icinga::icinga2 (
   $basic_features = [ 'checker', 'notification', 'mainlog' ]
 
   # Allow to add more packages
-  $real_packages = [ 'nagios-plugins-all', 'vim-icinga2', 'icinga2-debuginfo' ] + $packages
+  $real_packages = [ 'vim-icinga2', 'icinga2-debuginfo' ] + $packages
 
   # standalone environments need a local configuration
   if (!$zone_name) {
@@ -50,24 +50,8 @@ class profiles::icinga::icinga2 (
     ensure => 'latest',
   }
   ->
-  package { [ 'perl-Net-SNMP', 'perl-Digest-MD5', 'perl-Module-Load' ]:
-   ensure => 'latest'
-  }
-  ->
-  file { 'check_mysql_health':
-    name => '/usr/lib64/nagios/plugins/check_mysql_health',
-    owner => root,
-    group => root,
-    mode => '0755',
-    content => template("profiles/icinga/check_mysql_health.erb")
-  }
-  ->
-  file { 'check_nwc_health':
-    name => '/usr/lib64/nagios/plugins/check_nwc_health',
-    owner => root,
-    group => root,
-    mode => '0755',
-    content => template("profiles/icinga/check_nwc_health.erb")
+  class { '::profiles::icinga::plugins':
+
   }
 
   mysql::db { 'icinga':
@@ -283,6 +267,12 @@ class profiles::icinga::icinga2 (
   file { "$config_path/network.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/network.conf.erb"),
+    tag     => icinga2::config::file
+  }
+  ->
+  file { "$config_path/health.conf":
+    ensure  => present,
+    content => template("profiles/icinga/icinga2/config/demo/health.conf.erb"),
     tag     => icinga2::config::file
   }
   ->
