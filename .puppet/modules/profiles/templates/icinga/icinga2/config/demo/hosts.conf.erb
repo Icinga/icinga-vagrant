@@ -83,6 +83,9 @@ object Host "<%= @node_name-%>" {
     mysql_health_critical = 8192 //MB
   }
 
+  /* health checks */
+  vars.sar_perf_profiles = [ "pagestat", "cpu", "memory_util", "memory_stat", "io_transfer", "queueln_load", "task", "kernel" ]
+
   /* random checks */
   vars.random = [ 1, 2, 3, 4, 5 ]
 

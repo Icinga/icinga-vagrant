@@ -1,0 +1,7 @@
+apply Service "perf-" for (profile in host.vars.sar_perf_profiles) {
+  check_command = "sar-perf"
+
+  check_interval = 10s
+
+  vars.sar_perf_profile = profile
+}
