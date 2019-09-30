@@ -1,0 +1,12 @@
+---
+version: 5
+defaults:
+  datadir: 'data'
+  data_hash: 'yaml_data'
+hierarchy:
+  - name: 'Major Version'
+    path: '%{facts.os.name}-%{facts.os.release.major}.yaml'
+  - name: 'Distribution Name'
+    path: '%{facts.os.name}.yaml'
+  - name: 'common'
+    path: 'common.yaml'

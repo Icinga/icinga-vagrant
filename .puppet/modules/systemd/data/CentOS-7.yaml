@@ -1,0 +1,6 @@
+---
+systemd::accounting:
+  DefaultCPUAccounting: 'yes'
+  DefaultBlockIOAccounting: 'yes'
+  DefaultMemoryAccounting: 'yes'
+  DefaultTasksAccounting: 'yes'
