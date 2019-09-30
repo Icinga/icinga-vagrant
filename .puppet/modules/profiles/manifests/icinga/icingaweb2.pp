@@ -293,6 +293,22 @@ class profiles::icinga::icingaweb2 (
     api_password  => $api_password,
     require       => Mysql::Db['director']
   }
+  ->
+  user { 'icingadirector':
+    ensure => 'present',
+    managehome => true,
+    shell => '/bin/false',
+    home => '/var/lib/icingadirector',
+    groups => [ 'icingaweb2' ]
+  }
+  ->
+  systemd::unit_file { 'icinga-director.service':
+    source => '/usr/share/icingaweb2/modules/director/contrib/systemd/icinga-director.service'
+  }
+  ~>
+  service { 'icinga-director':
+    ensure => 'running'
+  }
 
   ##########################################################
   # Modules
