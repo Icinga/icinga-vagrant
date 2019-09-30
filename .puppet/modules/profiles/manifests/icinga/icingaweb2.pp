@@ -296,10 +296,17 @@ class profiles::icinga::icingaweb2 (
   ->
   user { 'icingadirector':
     ensure => 'present',
-    managehome => true,
+    managehome => false, # the directory needs specific permissions
     shell => '/bin/false',
     home => '/var/lib/icingadirector',
     groups => [ 'icingaweb2' ]
+  }
+  ->
+  file { '/var/lib/icingadirector':
+    ensure => 'directory',
+    mode   => '0750',
+    owner  => 'icingadirector',
+    group  => 'icingaweb2'
   }
   ->
   systemd::unit_file { 'icinga-director.service':
