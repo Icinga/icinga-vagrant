@@ -1,0 +1,25 @@
+---
+systemd::service_limits: {}
+systemd::manage_resolved: false
+systemd::resolved_ensure: 'running'
+systemd::dns: ~
+systemd::fallback_dns: ~
+systemd::domains: ~
+systemd::llmnr: ~
+systemd::multicast_dns: ~
+systemd::dnssec: ~
+systemd::dnsovertls: false
+systemd::cache: false
+systemd::dns_stub_listener: ~
+systemd::use_stub_resolver: false
+systemd::manage_networkd: false
+systemd::networkd_ensure: 'running'
+systemd::manage_timesyncd: false
+systemd::timesyncd_ensure: 'running'
+systemd::ntp_server: ~
+systemd::fallback_ntp_server: ~
+systemd::manage_accounting: false
+systemd::accounting: {}
+systemd::purge_dropin_dirs: true
+systemd::manage_journald: true
+systemd::journald_settings: {}
