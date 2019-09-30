@@ -4,6 +4,7 @@ class profiles::icinga::icingaweb2 (
   $api_password = 'icinga',
   $ipl_version = lookup('icinga::ipl::version'),
   $reactbundle_version = lookup('icinga::reactbundle::version'),
+  $incubator_version = lookup('icinga::incubator::version'),
   $pdfexport_version = lookup('icinga::pdfexport::version'),
   $reporting_version = lookup('icinga::reporting::version'),
   $idoreports_version = lookup('icinga::idoreports::version'),
@@ -102,6 +103,7 @@ class profiles::icinga::icingaweb2 (
     extensions => {
       pdo => {},
       mysqlnd => {},
+      process => {}, #required by director
       gmp => {}, #required by x509
     },
     # NOTE for future reference: DO NOT build imagick with PECL. That fails heavily, either with pear not in PATH and then configure & make on missing imagick-devel packages.
@@ -194,6 +196,16 @@ class profiles::icinga::icingaweb2 (
     install_method => 'git',
     git_repository => 'https://github.com/Icinga/icingaweb2-module-ipl.git',
     git_revision   => $ipl_version
+  }->
+  icingaweb2::module { 'incubator':
+    install_method => 'git',
+    git_repository => 'https://github.com/Icinga/icingaweb2-module-incubator.git',
+    git_revision   => $incubator_version
+  }->
+  icingaweb2::module { 'reactbundle':
+    install_method => 'git',
+    git_repository => 'https://github.com/Icinga/icingaweb2-module-reactbundle.git',
+    git_revision   => $reactbundle_version
   }
 
   # Make reporting a first class citizen
@@ -209,11 +221,6 @@ class profiles::icinga::icingaweb2 (
       }
     }
   }
-  icingaweb2::module { 'reactbundle':
-    install_method => 'git',
-    git_repository => 'https://github.com/Icinga/icingaweb2-module-reactbundle.git',
-    git_revision   => $reactbundle_version
-  }->
   icingaweb2::module { 'pdfexport':
     install_method => 'git',
     git_repository => 'https://github.com/Icinga/icingaweb2-module-pdfexport.git',
