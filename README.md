@@ -648,6 +648,7 @@ General:
   puppet-inifile           | >= 4.7.0         | .puppet/modules/inifile           | https://github.com/puppetlabs/puppetlabs-inifile.git
   puppet-timezone          | >= 4.0.0         | .puppet/modules/timezone          | https://github.com/saz/puppet-timezone.git
   puppet-snmp              | >= 5.5.8 < 7.0.0 | .puppet/modules/snmp              | https://github.com/voxpupuli/puppet-snmp.git
+  puppet-systemd           | >= 4.10 < 7.0.0  | .puppet/modules/systemd           | https://github.com/camptocamp/puppet-systemd.git
 
 Specific projects:
 

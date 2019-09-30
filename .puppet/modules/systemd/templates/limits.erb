@@ -1,0 +1,16 @@
+# This file managed by Puppet - DO NOT EDIT
+[Service]
+<%
+  @limits.keys.sort.each do |k|
+
+    # Handles the Path and Option entries
+    if @limits[k].is_a?(Array)
+      output = @limits[k].map{|x|
+        x = %(#{k}=#{x.to_a.flatten.join(' ')})
+      }.join("\n")
+   else
+     output = %(#{k}=#{@limits[k]})
+   end
+-%>
+<%= output %>
+<% end -%>

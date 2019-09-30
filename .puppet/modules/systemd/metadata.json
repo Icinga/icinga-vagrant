@@ -1,0 +1,58 @@
+{
+  "name": "camptocamp-systemd",
+  "version": "2.6.0",
+  "author": "camptocamp",
+  "summary": "Puppet Systemd module",
+  "license": "Apache-2.0",
+  "source": "https://github.com/camptocamp/puppet-systemd",
+  "project_page": "https://github.com/camptocamp/puppet-systemd",
+  "issues_url": "https://github.com/camptocamp/puppet-systemd/issues",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.13.1 < 7.0.0"
+    },
+    {
+      "name": "puppetlabs/inifile",
+      "version_requirement": ">= 1.6.0 <4.0.0"
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.10.10 < 7.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "8",
+        "9",
+        "10"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "16.04",
+        "18.04"
+      ]
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Archlinux"
+    }
+  ]
+}

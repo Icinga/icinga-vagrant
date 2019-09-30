@@ -1,0 +1,10 @@
+---
+systemd-fsck-root.service: enabled-runtime
+systemd-journal-gatewayd.service: indirect
+systemd-journal-remote.service: indirect
+systemd-journal-upload.service: disabled
+systemd-networkd-wait-online.service: enabled
+systemd-networkd.service: enabled
+systemd-nspawn@.service: disabled
+systemd-resolved.service: enabled
+systemd-timesyncd.service: disabled

@@ -1,0 +1,35 @@
+---
+dist: xenial
+language: ruby
+sudo: false
+addons:
+  apt:
+    packages:
+      - libaugeas-dev
+    sources:
+      - augeas
+cache: bundler
+bundler_args: --without system_tests
+script: ["bundle exec rake validate", "bundle exec rake lint", "bundle exec rake spec SPEC_OPTS='--format documentation'"]
+matrix:
+  fast_finish: true
+  include:
+  - rvm: 2.1.9
+    env: PUPPET_GEM_VERSION="~> 4.0"
+  - rvm: 2.4.1
+    env: PUPPET_GEM_VERSION="~> 5.0"
+  - rvm: 2.5.1
+    env: PUPPET_GEM_VERSION="~> 6.0"
+notifications:
+  email: false
+deploy:
+  provider: puppetforge
+  user: camptocamp
+  password:
+    secure: "ASTRdmLjJNa1NvHy2LRGvmvUeth6W3Fh/alYWvcvI8nDDsdkweHk0iXhcXZwtMQReb0NI5vJiRNXNy7a3XySC4+SP3hfHuDU58H2FqC4Ff0EHRPRHTEiXf7xmN53RxXYXZQvrFfqUb6tIsBNVKVmsYWNe01k8NVKPyYDfQB75PQ="
+  on:
+    tags: true
+    # all_branches is required to use tags
+    all_branches: true
+    # Only publish if our main Ruby target builds
+    rvm: 2.1.9
