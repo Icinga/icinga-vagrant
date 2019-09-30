@@ -310,11 +310,9 @@ class profiles::icinga::icingaweb2 (
   }
   ->
   systemd::unit_file { 'icinga-director.service':
-    source => '/usr/share/icingaweb2/modules/director/contrib/systemd/icinga-director.service'
-  }
-  ~>
-  service { 'icinga-director':
-    ensure => 'running'
+    source => '/usr/share/icingaweb2/modules/director/contrib/systemd/icinga-director.service',
+    active => true,
+    enable => true,
   }
 
   ##########################################################
