@@ -1,3 +1,129 @@
+# Change log
+
+All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
+
+## [v5.0.0](https://github.com/puppetlabs/puppetlabs-java/tree/v5.0.0) (2019-07-29)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-java/compare/v4.1.0...v5.0.0)
+
+### Changed
+
+- \[FM-8320\] Remove Oracle download [\#372](https://github.com/puppetlabs/puppetlabs-java/pull/372) ([carabasdaniel](https://github.com/carabasdaniel))
+
+### Added
+
+- \(FM-8223\) converted to use litmus [\#376](https://github.com/puppetlabs/puppetlabs-java/pull/376) ([tphoney](https://github.com/tphoney))
+- Add buster support, default to 11 [\#369](https://github.com/puppetlabs/puppetlabs-java/pull/369) ([mhjacks](https://github.com/mhjacks))
+- Add support for debian buster [\#364](https://github.com/puppetlabs/puppetlabs-java/pull/364) ([TomRitserveldt](https://github.com/TomRitserveldt))
+
+### Fixed
+
+- \(FM-8343\) use release numbers not lsbdistcodename [\#375](https://github.com/puppetlabs/puppetlabs-java/pull/375) ([tphoney](https://github.com/tphoney))
+- Revert "Add support for debian buster" [\#374](https://github.com/puppetlabs/puppetlabs-java/pull/374) ([tphoney](https://github.com/tphoney))
+
+## [v4.1.0](https://github.com/puppetlabs/puppetlabs-java/tree/v4.1.0) (2019-05-29)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-java/compare/v4.0.0...v4.1.0)
+
+### Added
+
+- \(FM-8028\) Add RedHat 8 support [\#363](https://github.com/puppetlabs/puppetlabs-java/pull/363) ([eimlav](https://github.com/eimlav))
+
+## [v4.0.0](https://github.com/puppetlabs/puppetlabs-java/tree/v4.0.0) (2019-05-20)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-java/compare/3.3.0...v4.0.0)
+
+### Changed
+
+- pdksync - \(MODULES-8444\) - Raise lower Puppet bound [\#356](https://github.com/puppetlabs/puppetlabs-java/pull/356) ([david22swan](https://github.com/david22swan))
+
+### Added
+
+- \(FM-7921\) - Implement Puppet Strings [\#353](https://github.com/puppetlabs/puppetlabs-java/pull/353) ([david22swan](https://github.com/david22swan))
+- Update default version & java 8 version from 8u192 to 8u201 [\#347](https://github.com/puppetlabs/puppetlabs-java/pull/347) ([valentinsavenko](https://github.com/valentinsavenko))
+- Add ability to override basedir and package type for oracle java [\#345](https://github.com/puppetlabs/puppetlabs-java/pull/345) ([fraenki](https://github.com/fraenki))
+- MODULES-8613: Add option to set a custom JCE download URL [\#344](https://github.com/puppetlabs/puppetlabs-java/pull/344) ([HielkeJ](https://github.com/HielkeJ))
+
+### Fixed
+
+- MODULES-8698: Fix $install\_path on CentOS with tar.gz package type [\#349](https://github.com/puppetlabs/puppetlabs-java/pull/349) ([fraenki](https://github.com/fraenki))
+
+## [3.3.0](https://github.com/puppetlabs/puppetlabs-java/tree/3.3.0) (2019-01-17)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-java/compare/3.2.0...3.3.0)
+
+### Added
+
+- \(MODULES-8234\) - Add SLES 15 support [\#336](https://github.com/puppetlabs/puppetlabs-java/pull/336) ([eimlav](https://github.com/eimlav))
+- \(MODULES-8234\) - Upgrade Oracle Java version to 8u192 [\#334](https://github.com/puppetlabs/puppetlabs-java/pull/334) ([eimlav](https://github.com/eimlav))
+- Support for installing JCE. Fixes MODULES-1681 [\#326](https://github.com/puppetlabs/puppetlabs-java/pull/326) ([dploeger](https://github.com/dploeger))
+- MODULES-8044: upgrade Oracle Java 8 to 181, make it the default release [\#314](https://github.com/puppetlabs/puppetlabs-java/pull/314) ([ojongerius](https://github.com/ojongerius))
+
+### Fixed
+
+- pdksync - \(FM-7655\) Fix rubygems-update for ruby \< 2.3 [\#338](https://github.com/puppetlabs/puppetlabs-java/pull/338) ([tphoney](https://github.com/tphoney))
+- \(FM-7520\) - Removing Solaris from the support matrix [\#335](https://github.com/puppetlabs/puppetlabs-java/pull/335) ([pmcmaw](https://github.com/pmcmaw))
+- Optimized code for making java::oracle atomic. Fixes MODULES-8085 [\#330](https://github.com/puppetlabs/puppetlabs-java/pull/330) ([dploeger](https://github.com/dploeger))
+- Fix OpenJDK paths on Debian based OS with ARM [\#329](https://github.com/puppetlabs/puppetlabs-java/pull/329) ([mmoll](https://github.com/mmoll))
+- \(MODULES-7050\) - Fix OracleJDK reinstalling on Puppet runs [\#323](https://github.com/puppetlabs/puppetlabs-java/pull/323) ([eimlav](https://github.com/eimlav))
+- \(MODULES-8025\) Switch default for Ubuntu 18.04 to 11 [\#322](https://github.com/puppetlabs/puppetlabs-java/pull/322) ([baurmatt](https://github.com/baurmatt))
+- MODULES-7819 fix set JAVA\_HOME environments on FreeBSD platform [\#315](https://github.com/puppetlabs/puppetlabs-java/pull/315) ([olevole](https://github.com/olevole))
+
+## [3.2.0](https://github.com/puppetlabs/puppetlabs-java/tree/3.2.0) (2018-09-27)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-java/compare/3.1.0...3.2.0)
+
+### Added
+
+- pdksync - \(MODULES-6805\) metadata.json shows support for puppet 6 [\#317](https://github.com/puppetlabs/puppetlabs-java/pull/317) ([tphoney](https://github.com/tphoney))
+
+## [3.1.0](https://github.com/puppetlabs/puppetlabs-java/tree/3.1.0) (2018-09-06)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-java/compare/3.0.0...3.1.0)
+
+### Added
+
+- pdksync - \(MODULES-7705\) - Bumping stdlib dependency from \< 5.0.0 to \< 6.0.0 [\#310](https://github.com/puppetlabs/puppetlabs-java/pull/310) ([pmcmaw](https://github.com/pmcmaw))
+
+## [3.0.0](https://github.com/puppetlabs/puppetlabs-java/tree/3.0.0) (2018-08-13)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-java/compare/2.4.0...3.0.0)
+
+### Changed
+
+- \[FM-6963\] Removal of unsupported OS from java [\#295](https://github.com/puppetlabs/puppetlabs-java/pull/295) ([david22swan](https://github.com/david22swan))
+
+### Added
+
+- \(MODULES-7561\) - Addition of support for Ubuntu 18.04 to java [\#299](https://github.com/puppetlabs/puppetlabs-java/pull/299) ([david22swan](https://github.com/david22swan))
+
+### Fixed
+
+- Remove ensure\_resource to avoid potential conflict [\#287](https://github.com/puppetlabs/puppetlabs-java/pull/287) ([sevencastles](https://github.com/sevencastles))
+
+## 2.4.0
+### Summary
+This release uses the PDK convert functionality which in return makes the module PDK compliant. Also includes a clean up from Rubocop.
+
+#### Changed
+- 1.3.2 PDK convert has been applied [MODULES-6456](https://tickets.puppetlabs.com/browse/MODULES-6456)
+- The modules has undergone a Rubocop cleanup.
+
+#### Fixed
+- $java_home for SLES 11.4 has been updated to the correct location.
+
+## Supported Release [2.3.0]
+### Summary
+This release is in order to implement Rubocop changes into the module.
+
+#### Added
+- Several Modulesync changes have been made.
+- Rubocop has been implemented in the module.
+- CentOS 7 is now supported.
+- Red Hat Enterprise Linux (RHEL) 7 is now supported.
+- Ubuntu artful 1710 now supported.
+- Bionic 1804 now supported.
+
 ## Supported Release [2.2.0]
 ### Summary
 This release is a maintenance release that includes a roll up of minor changes.
@@ -269,4 +395,8 @@ Jeff McCune <jeff@puppetlabs.com>
 Jeff McCune <jeff@puppetlabs.com>
 * Initial release
 
+[2.3.0]:https://github.com/puppetlabs/puppetlabs-java/compare/2.2.0...2.3.0
 [2.2.0]:https://github.com/puppetlabs/puppetlabs-java/compare/2.1.1...2.2.0
+
+
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*

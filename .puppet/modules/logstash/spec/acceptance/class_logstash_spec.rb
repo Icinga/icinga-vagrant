@@ -214,6 +214,23 @@ describe 'class logstash' do
           expect(logstash_process_list.pop).to include(flag)
         end
       end
+
+      context 'when the option is changed' do
+        it 'should restart logstash' do
+          puppet_log = install_logstash_from_local_file(
+            "jvm_options => [ '-Xms512m' ]").stdout
+          expect(puppet_log).to include(service_restart_message)
+        end
+
+        context 'when restart_on_change is false' do
+          it 'should not restart logstash' do
+            puppet_log = install_logstash_from_local_file(
+              "jvm_options       => [ '-Xms256m' ],
+               restart_on_change => false").stdout
+            expect(puppet_log).not_to include(service_restart_message)
+          end
+        end
+      end
     end
   end
 
@@ -238,6 +255,38 @@ describe 'class logstash' do
       it 'should render them to pipelines.yml' do
         expect(pipelines_from_yaml[0]['pipeline.id']).to eq('pipeline_one')
         expect(pipelines_from_yaml[1]['pipeline.id']).to eq('pipeline_two')
+      end
+
+      it 'should remove "path.config" from "logstash.yml"' do
+        expect(logstash_settings['path.config']).to be_nil
+      end
+    end
+  end
+
+  describe 'xpack_management_enabled_parameter' do
+    context 'when set true with dotted notation' do
+      before(:context) do
+        settings_puppet_code = '{"xpack.management.enabled" => true}'
+        install_logstash_from_local_file("settings => #{settings_puppet_code}")
+      end
+
+      it 'should remove "path.config" from "logstash.yml"' do
+        expect(logstash_settings['path.config']).to be_nil
+      end
+    end
+
+    context 'when set true with hierarchical notation' do
+      before(:context) do
+        settings_puppet_code = <<-END
+        {
+          "xpack" => {
+            "management" => {
+              "enabled" => true
+            }
+          }
+        }
+        END
+        install_logstash_from_local_file("settings => #{settings_puppet_code}")
       end
 
       it 'should remove "path.config" from "logstash.yml"' do

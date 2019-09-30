@@ -1,3 +1,109 @@
+# Change log
+
+All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
+
+## [v6.1.0](https://github.com/puppetlabs/puppetlabs-concat/tree/v6.1.0) (2019-07-23)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-concat/compare/v6.0.0...v6.1.0)
+
+### Added
+
+- FM-8049 - add redhat8 support [\#584](https://github.com/puppetlabs/puppetlabs-concat/pull/584) ([lionce](https://github.com/lionce))
+
+### Fixed
+
+- \(MODULES-9479\) Fix nested array merge behavior [\#593](https://github.com/puppetlabs/puppetlabs-concat/pull/593) ([seanmil](https://github.com/seanmil))
+- \(FM-8317\) Updated regex to allow for windows paths with \'s [\#591](https://github.com/puppetlabs/puppetlabs-concat/pull/591) ([pgrant87](https://github.com/pgrant87))
+- \(bugfix\) allow private keys in ssh testing [\#585](https://github.com/puppetlabs/puppetlabs-concat/pull/585) ([tphoney](https://github.com/tphoney))
+
+## [v6.0.0](https://github.com/puppetlabs/puppetlabs-concat/tree/v6.0.0) (2019-05-21)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-concat/compare/5.3.0...v6.0.0)
+
+### Changed
+
+- pdksync - \(MODULES-8444\) - Raise lower Puppet bound [\#575](https://github.com/puppetlabs/puppetlabs-concat/pull/575) ([david22swan](https://github.com/david22swan))
+
+### Added
+
+- \(FM-7606\) enable litmus for concat [\#577](https://github.com/puppetlabs/puppetlabs-concat/pull/577) ([tphoney](https://github.com/tphoney))
+
+### Fixed
+
+- \(FM-8073\) litmus block support [\#580](https://github.com/puppetlabs/puppetlabs-concat/pull/580) ([tphoney](https://github.com/tphoney))
+
+## [5.3.0](https://github.com/puppetlabs/puppetlabs-concat/tree/5.3.0) (2019-02-20)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-concat/compare/5.2.0...5.3.0)
+
+### Added
+
+- \(MODULES-8138\) - Addition of support for SLES 15 [\#545](https://github.com/puppetlabs/puppetlabs-concat/pull/545) ([david22swan](https://github.com/david22swan))
+
+### Fixed
+
+- \(FM-7725\) - Remove OSX testing/support for concat [\#561](https://github.com/puppetlabs/puppetlabs-concat/pull/561) ([lionce](https://github.com/lionce))
+- pdksync - \(FM-7655\) Fix rubygems-update for ruby \< 2.3 [\#550](https://github.com/puppetlabs/puppetlabs-concat/pull/550) ([tphoney](https://github.com/tphoney))
+
+## [5.2.0](https://github.com/puppetlabs/puppetlabs-concat/tree/5.2.0) (2018-12-10)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-concat/compare/5.1.0...5.2.0)
+
+### Added
+
+- \(FM-7339\) - Add i18n implementation [\#537](https://github.com/puppetlabs/puppetlabs-concat/pull/537) ([eimlav](https://github.com/eimlav))
+- \(FM-7341\) - Added REFERENCE.md and updated documentation [\#536](https://github.com/puppetlabs/puppetlabs-concat/pull/536) ([eimlav](https://github.com/eimlav))
+- \(MODULES-5124\) Add support for JSON arrays [\#519](https://github.com/puppetlabs/puppetlabs-concat/pull/519) ([johanfleury](https://github.com/johanfleury))
+
+### Fixed
+
+- \(FM-7581\) - Fix CI failures for Windows 2016 and 10 Enterprise [\#540](https://github.com/puppetlabs/puppetlabs-concat/pull/540) ([eimlav](https://github.com/eimlav))
+- \(MODULES-8287\) - Fix fomat=\>'yaml' allowing only hashes [\#535](https://github.com/puppetlabs/puppetlabs-concat/pull/535) ([eimlav](https://github.com/eimlav))
+-  \(FM-7513\) - Removing Windows 2016-core from our support matrix  [\#534](https://github.com/puppetlabs/puppetlabs-concat/pull/534) ([pmcmaw](https://github.com/pmcmaw))
+- \(MODULES-8088\) - newline\_spec.rb test expectation update [\#531](https://github.com/puppetlabs/puppetlabs-concat/pull/531) ([lionce](https://github.com/lionce))
+- \(MODULES-7717\) ensure\_newline uses unix line ending on windows [\#517](https://github.com/puppetlabs/puppetlabs-concat/pull/517) ([tkishel](https://github.com/tkishel))
+
+## [5.1.0](https://github.com/puppetlabs/puppetlabs-concat/tree/5.1.0) (2018-10-03)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-concat/compare/5.0.0...5.1.0)
+
+### Added
+
+- pdksync - \(FM-7392\) - Puppet 6 Testing Changes [\#525](https://github.com/puppetlabs/puppetlabs-concat/pull/525) ([pmcmaw](https://github.com/pmcmaw))
+- pdksync - \(MODULES-6805\) metadata.json shows support for puppet 6 [\#524](https://github.com/puppetlabs/puppetlabs-concat/pull/524) ([tphoney](https://github.com/tphoney))
+- pdksync - \(MODULES-7658\) use beaker4 in puppet-module-gems [\#518](https://github.com/puppetlabs/puppetlabs-concat/pull/518) ([tphoney](https://github.com/tphoney))
+
+## [5.0.0](https://github.com/puppetlabs/puppetlabs-concat/tree/5.0.0) (2018-08-24)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-concat/compare/4.2.1...5.0.0)
+
+### Changed
+
+- \[FM-6954\] Removal of scientific linux 5 and debian 7 [\#508](https://github.com/puppetlabs/puppetlabs-concat/pull/508) ([david22swan](https://github.com/david22swan))
+
+### Added
+
+- \(FM-7206\) Update concat to support Ubuntu 18.04 [\#510](https://github.com/puppetlabs/puppetlabs-concat/pull/510) ([david22swan](https://github.com/david22swan))
+
+### Fixed
+
+- Handle concat\_file source when not an array [\#493](https://github.com/puppetlabs/puppetlabs-concat/pull/493) ([vicinus](https://github.com/vicinus))
+
+## 4.2.1
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-concat/compare/4.2.0...4.2.1)
+
+### Fixed
+- \(MODULES-6817\) noop =\> false for concat\_file [\#492](https://github.com/puppetlabs/puppetlabs-concat/pull/492) ([hunner](https://github.com/hunner))
+
+## Supported Release 4.2.0
+### Summary
+This release introduces the conversion of the module to use PDK 1.3.2, along with the addition of rubocop with associated fixes.
+
+#### Changed
+- All changes in this release are for enabling rubocop, alongside the module then being converted over to the PDK.
+
+
 ## Supported Releases 4.1.1
 ### Summary
 This release is to update the formatting of the module, rubocop having been run for all ruby files and been set to run automatically on all future commits.
@@ -388,3 +494,6 @@ defining resource defaults.
 - 2012/08/30 - More Puppet Lint cleanup
 - 2012/09/04 - RELEASE 0.2.0
 - 2012/12/12 - Added (file) $replace parameter to concat
+
+
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*

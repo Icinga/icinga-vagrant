@@ -1,3 +1,24 @@
+6.1.5
+  Honour `restart_on_change` for startup files #377
+
+6.1.4
+  Use Upstart for init on Oracle Linux 6
+
+6.1.3
+  Allow puppetlabs-stdlib 5.x
+
+6.1.2
+  Set cwd to "/tmp" during plugin execs.
+
+6.1.1
+  Update init system handling.
+
+6.1.0
+  Support centralized pipeline management.
+
+6.0.1
+  Fix explicit versions like "5.6.2-1.noarch" #353
+
 6.0.0
   Puppet 3 support removed. Minimum Puppet version is now 4.6.1.
   Puppet 5 supported.

@@ -1,3 +1,4 @@
+# install.pp
 
 class wget::install inherits wget {
 

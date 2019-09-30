@@ -7,14 +7,14 @@ describe 'subversion tests' do
     shell("mkdir -p #{tmpdir}") # win test
   end
 
-  context 'plain checkout' do
-    pp = <<-EOS
+  context 'with plain checkout' do
+    pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
         provider => svn,
         source   => "http://svn.apache.org/repos/asf/subversion/svn-logos",
       }
-    EOS
+    MANIFEST
     it 'can checkout svn' do
       # Run it twice and test for idempotency
       apply_manifest(pp, catch_failures: true)
@@ -33,19 +33,18 @@ describe 'subversion tests' do
     end
   end
 
-  context 'handles revisions' do
-    pp = <<-EOS
+  context 'with handles revisions' do
+    pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
         provider => svn,
         source   => "http://svn.apache.org/repos/asf/subversion/developer-resources",
         revision => 1000000,
       }
-    EOS
+    MANIFEST
     it 'can checkout a specific revision of svn' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/svnrepo/.svn") do
@@ -59,19 +58,18 @@ describe 'subversion tests' do
     end
   end
 
-  context 'handles revisions' do
-    pp = <<-EOS
+  context 'with handles revisions' do
+    pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
         provider => svn,
         source   => "http://svn.apache.org/repos/asf/subversion/developer-resources",
         revision => 1700000,
       }
-    EOS
+    MANIFEST
     it 'can switch revisions' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/svnrepo/.svn") do
@@ -86,18 +84,17 @@ describe 'subversion tests' do
     end
   end
 
-  context 'switching sources' do
-    pp = <<-EOS
+  context 'with switching sources' do
+    pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
         provider => svn,
         source   => "http://svn.apache.org/repos/asf/subversion/tags/1.9.0",
       }
-    EOS
+    MANIFEST
     it 'can checkout tag=1.9.0' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
     describe file("#{tmpdir}/svnrepo/.svn") do
       it { is_expected.to be_directory }
@@ -107,18 +104,17 @@ describe 'subversion tests' do
     end
   end
 
-  context 'switching sources' do
-    pp = <<-EOS
+  context 'with switching sources' do
+    pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/svnrepo":
         ensure   => present,
         provider => svn,
         source   => "http://svn.apache.org/repos/asf/subversion/tags/1.9.4",
       }
-    EOS
+    MANIFEST
     it 'can switch to tag=1.9.4' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/svnrepo/.svn") do

@@ -1,8 +1,12 @@
 require 'spec_helper'
 
 describe 'selinux::exec_restorecon' do
-  on_supported_os.each do |os, _facts|
+  on_supported_os.each do |os, facts|
     context "on #{os}" do
+      let :facts do
+        facts
+      end
+
       context 'with resource titled /opt/mycustompath' do
         let(:title) { '/opt/mycustompath' }
 

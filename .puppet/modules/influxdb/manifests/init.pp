@@ -17,6 +17,7 @@ class influxdb(
   $global_config             = $influxdb::params::global_config,
   $meta_config               = $influxdb::params::meta_config,
   $data_config               = $influxdb::params::data_config,
+  $logging_config            = $influxdb::params::logging_config,
   $coordinator_config        = $influxdb::params::coordinator_config,
   $retention_config          = $influxdb::params::retention_config,
   $shard_precreation_config  = $influxdb::params::shard_precreation_config,
@@ -38,10 +39,10 @@ class influxdb(
   $manage_repos              = $influxdb::params::manage_repos,
 ) inherits influxdb::params {
 
-  anchor { 'influxdb::start': }  ->
-  class { 'influxdb::install': } ->
-  class { 'influxdb::config': }  ->
-  class { 'influxdb::service': } ->
-  anchor { 'influxdb::end': }
+  anchor { 'influxdb::start': }
+  -> class { 'influxdb::install': }
+  -> class { 'influxdb::config': }
+  -> class { 'influxdb::service': }
+  -> anchor { 'influxdb::end': }
 
 }

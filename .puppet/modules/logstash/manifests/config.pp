@@ -29,6 +29,7 @@ class logstash::config {
       purge   => $logstash::purge_config,
       recurse => $logstash::purge_config,
       mode    => '0775',
+      notify  => Service['logstash'],
     }
 
     file {     "${logstash::config_dir}/patterns":

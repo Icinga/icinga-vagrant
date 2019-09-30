@@ -1,23 +1,7 @@
-# Class: apache::params
+# @summary
+#   This class manages Apache parameters
 #
-# This class manages Apache parameters
-#
-# Parameters:
-# - The $user that Apache runs as
-# - The $group that Apache runs as
-# - The $apache_name is the name of the package and service on the relevant
-#   distribution
-# - The $php_package is the name of the package that provided PHP
-# - The $ssl_package is the name of the Apache SSL package
-# - The $apache_dev is the name of the Apache development libraries package
-# - The $conf_contents is the contents of the Apache configuration file
-#
-# Actions:
-#
-# Requires:
-#
-# Sample Usage:
-#
+# @api private
 class apache::params inherits ::apache::version {
   if($::fqdn) {
     $servername = $::fqdn
@@ -42,6 +26,9 @@ class apache::params inherits ::apache::version {
   # Default mode for files
   $file_mode = '0644'
 
+  # The default value for host hame lookup
+  $hostname_lookups = 'Off'
+
   # Default options for / directory
   $root_directory_options = ['FollowSymLinks']
 
@@ -52,14 +39,120 @@ class apache::params inherits ::apache::version {
   # no client certs should be trusted for auth by default.
   $ssl_certs_dir          = undef
 
-  if ($::operatingsystem == 'Ubuntu' and $::lsbdistrelease == '10.04') or ($::operatingsystem == 'SLES') {
-    $verify_command = '/usr/sbin/apache2ctl -t'
-  } elsif $::operatingsystem == 'FreeBSD' {
-    $verify_command = '/usr/local/sbin/apachectl -t'
-  } else {
-    $verify_command = '/usr/sbin/apachectl -t'
+  if ($::apache::version::scl_httpd_version) {
+    if $::apache::version::scl_php_version == undef {
+      fail('If you define apache::version::scl_httpd_version, you also need to specify apache::version::scl_php_version')
+    }
+    $_scl_httpd_version_nodot = regsubst($::apache::version::scl_httpd_version, '\.', '')
+    $_scl_httpd_name = "httpd${_scl_httpd_version_nodot}"
+
+    $_scl_php_version_no_dot = regsubst($::apache::version::scl_php_version, '\.', '')
+    $user                 = 'apache'
+    $group                = 'apache'
+    $root_group           = 'root'
+    $apache_name          = "${_scl_httpd_name}-httpd"
+    $service_name         = "${_scl_httpd_name}-httpd"
+    $httpd_root           = "/opt/rh/${_scl_httpd_name}/root"
+    $httpd_dir            = "${httpd_root}/etc/httpd"
+    $server_root          = "${httpd_root}/etc/httpd"
+    $conf_dir             = "${httpd_dir}/conf"
+    $confd_dir            = "${httpd_dir}/conf.d"
+    $mod_dir              = $::apache::version::distrelease ? {
+      '7'     => "${httpd_dir}/conf.modules.d",
+      default => "${httpd_dir}/conf.d",
+    }
+    $mod_enable_dir       = undef
+    $vhost_dir            = "${httpd_dir}/conf.d"
+    $vhost_enable_dir     = undef
+    $conf_file            = 'httpd.conf'
+    $conf_enabled         = undef
+    $ports_file           = "${conf_dir}/ports.conf"
+    $pidfile              = 'run/httpd.pid'
+    $logroot              = "/var/log/${_scl_httpd_name}"
+    $logroot_mode         = undef
+    $lib_path             = 'modules'
+    $mpm_module           = 'prefork'
+    $dev_packages         = "${_scl_httpd_name}-httpd-devel"
+    $default_ssl_cert     = '/etc/pki/tls/certs/localhost.crt'
+    $default_ssl_key      = '/etc/pki/tls/private/localhost.key'
+    $ssl_sessioncache     = '/var/cache/mod_ssl/scache(512000)'
+    $passenger_conf_file  = 'passenger_extra.conf'
+    $passenger_conf_package_file = 'passenger.conf'
+    $passenger_root       = undef
+    $passenger_ruby       = undef
+    $passenger_default_ruby = undef
+    $suphp_addhandler     = 'php5-script'
+    $suphp_engine         = 'off'
+    $suphp_configpath     = undef
+    $php_version          = $::apache::version::scl_php_version
+    $mod_packages         = {
+      'authnz_ldap' => "${_scl_httpd_name}-mod_ldap",
+      'ldap' => "${_scl_httpd_name}-mod_ldap",
+      "php${::apache::version::scl_php_version}" => "rh-php${_scl_php_version_no_dot}-php",
+      'ssl'                   => "${_scl_httpd_name}-mod_ssl",
+    }
+    $mod_libs             = {
+      'nss' => 'libmodnss.so',
+    }
+    $conf_template        = 'apache/httpd.conf.erb'
+    $http_protocol_options  = undef
+    $keepalive            = 'On'
+    $keepalive_timeout    = 15
+    $max_keepalive_requests = 100
+    $fastcgi_lib_path     = undef
+    $mime_support_package = 'mailcap'
+    $mime_types_config    = '/etc/mime.types'
+    $docroot              = "${httpd_root}/var/www/html"
+    $alias_icons_path     = $::apache::version::distrelease ? {
+      '7'     => "${httpd_root}/usr/share/httpd/icons",
+      default => '/var/www/icons',
+    }
+    $error_documents_path = $::apache::version::distrelease ? {
+      '7'     => "${httpd_root}/usr/share/httpd/error",
+      default => '/var/www/error'
+    }
+    if $::osfamily == 'RedHat' {
+      $wsgi_socket_prefix = '/var/run/wsgi'
+    } else {
+      $wsgi_socket_prefix = undef
+    }
+    $cas_cookie_path      = '/var/cache/mod_auth_cas/'
+    $mellon_lock_file     = '/run/mod_auth_mellon/lock'
+    $mellon_cache_size    = 100
+    $mellon_post_directory = undef
+    $modsec_crs_package   = 'mod_security_crs'
+    $modsec_crs_path      = '/usr/lib/modsecurity.d'
+    $modsec_dir           = '/etc/httpd/modsecurity.d'
+    $secpcrematchlimit = 1500
+    $secpcrematchlimitrecursion = 1500
+    $modsec_secruleengine = 'On'
+    $modsec_default_rules = [
+      'base_rules/modsecurity_35_bad_robots.data',
+      'base_rules/modsecurity_35_scanners.data',
+      'base_rules/modsecurity_40_generic_attacks.data',
+      'base_rules/modsecurity_50_outbound.data',
+      'base_rules/modsecurity_50_outbound_malware.data',
+      'base_rules/modsecurity_crs_20_protocol_violations.conf',
+      'base_rules/modsecurity_crs_21_protocol_anomalies.conf',
+      'base_rules/modsecurity_crs_23_request_limits.conf',
+      'base_rules/modsecurity_crs_30_http_policy.conf',
+      'base_rules/modsecurity_crs_35_bad_robots.conf',
+      'base_rules/modsecurity_crs_40_generic_attacks.conf',
+      'base_rules/modsecurity_crs_41_sql_injection_attacks.conf',
+      'base_rules/modsecurity_crs_41_xss_attacks.conf',
+      'base_rules/modsecurity_crs_42_tight_security.conf',
+      'base_rules/modsecurity_crs_45_trojans.conf',
+      'base_rules/modsecurity_crs_47_common_exceptions.conf',
+      'base_rules/modsecurity_crs_49_inbound_blocking.conf',
+      'base_rules/modsecurity_crs_50_outbound.conf',
+      'base_rules/modsecurity_crs_59_outbound_blocking.conf',
+      'base_rules/modsecurity_crs_60_correlation.conf',
+    ]
+    $error_log           = 'error_log'
+    $scriptalias         = "${httpd_root}/var/www/cgi-bin"
+    $access_log_file     = 'access_log'
   }
-  if $::osfamily == 'RedHat' or $::operatingsystem =~ /^[Aa]mazon$/ {
+  elsif $::osfamily == 'RedHat' or $::operatingsystem =~ /^[Aa]mazon$/ {
     $user                 = 'apache'
     $group                = 'apache'
     $root_group           = 'root'
@@ -69,9 +162,15 @@ class apache::params inherits ::apache::version {
     $server_root          = '/etc/httpd'
     $conf_dir             = "${httpd_dir}/conf"
     $confd_dir            = "${httpd_dir}/conf.d"
-    $mod_dir              = $::apache::version::distrelease ? {
-      '7'     => "${httpd_dir}/conf.modules.d",
-      default => "${httpd_dir}/conf.d",
+    $conf_enabled         = undef
+    if $::operatingsystem =~ /^[Aa]mazon$/ and $::operatingsystemmajrelease == '2' {
+      # Amazon Linux 2 uses the /conf.modules.d/ dir
+      $mod_dir            = "${httpd_dir}/conf.modules.d"
+    } else {
+      $mod_dir              = $::apache::version::distrelease ? {
+        '7'     => "${httpd_dir}/conf.modules.d",
+        default => "${httpd_dir}/conf.d",
+      }
     }
     $mod_enable_dir       = undef
     $vhost_dir            = "${httpd_dir}/conf.d"
@@ -100,6 +199,7 @@ class apache::params inherits ::apache::version {
       # NOTE: The auth_cas module isn't available on RH/CentOS without providing dependency packages provided by EPEL.
       'auth_cas'              => 'mod_auth_cas',
       'auth_kerb'             => 'mod_auth_kerb',
+      'auth_gssapi'           => 'mod_auth_gssapi',
       'auth_mellon'           => 'mod_auth_mellon',
       'authnz_ldap'           => $::apache::version::distrelease ? {
         '7'     => 'mod_ldap',
@@ -114,10 +214,7 @@ class apache::params inherits ::apache::version {
       'fcgid'                 => 'mod_fcgid',
       'geoip'                 => 'mod_geoip',
       'intercept_form_submit' => 'mod_intercept_form_submit',
-      'ldap'                  => $::apache::version::distrelease ? {
-        '7'     => 'mod_ldap',
-        default => undef,
-      },
+      'ldap'                  => 'mod_ldap',
       'lookup_identity'       => 'mod_lookup_identity',
       'pagespeed'             => 'mod-pagespeed-stable',
       # NOTE: The passenger module isn't available on RH/CentOS without
@@ -216,6 +313,8 @@ class apache::params inherits ::apache::version {
     $server_root         = '/etc/apache2'
     $conf_dir            = $httpd_dir
     $confd_dir           = "${httpd_dir}/conf.d"
+    # Overwrite conf_enabled causes errors with Shibboleth when enabled on Ubuntu 18.04
+    $conf_enabled        = undef #"${httpd_dir}/conf-enabled.d"
     $mod_dir             = "${httpd_dir}/mods-available"
     $mod_enable_dir      = "${httpd_dir}/mods-enabled"
     $vhost_dir           = "${httpd_dir}/sites-available"
@@ -239,6 +338,7 @@ class apache::params inherits ::apache::version {
       $mod_packages = {
         'auth_cas'              => 'libapache2-mod-auth-cas',
         'auth_kerb'             => 'libapache2-mod-auth-kerb',
+        'auth_gssapi'           => 'libapache2-mod-auth-gssapi',
         'auth_mellon'           => 'libapache2-mod-auth-mellon',
         'authnz_pam'            => 'libapache2-mod-authnz-pam',
         'dav_svn'               => 'libapache2-svn',
@@ -261,12 +361,68 @@ class apache::params inherits ::apache::version {
         'wsgi'                  => 'libapache2-mod-wsgi',
         'xsendfile'             => 'libapache2-mod-xsendfile',
       }
+    } elsif ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemrelease, '9') >= 0) {
+      # Debian stretch uses a different dav_svn from Ubuntu Xenial
+      $php_version = '7.0'
+      $mod_packages = {
+        'auth_cas'              => 'libapache2-mod-auth-cas',
+        'auth_kerb'             => 'libapache2-mod-auth-kerb',
+        'auth_gssapi'           => 'libapache2-mod-auth-gssapi',
+        'auth_mellon'           => 'libapache2-mod-auth-mellon',
+        'authnz_pam'            => 'libapache2-mod-authnz-pam',
+        'dav_svn'               => 'libapache2-mod-svn',
+        'fastcgi'               => 'libapache2-mod-fastcgi',
+        'fcgid'                 => 'libapache2-mod-fcgid',
+        'geoip'                 => 'libapache2-mod-geoip',
+        'intercept_form_submit' => 'libapache2-mod-intercept-form-submit',
+        'lookup_identity'       => 'libapache2-mod-lookup-identity',
+        'nss'                   => 'libapache2-mod-nss',
+        'pagespeed'             => 'mod-pagespeed-stable',
+        'passenger'             => 'libapache2-mod-passenger',
+        'perl'                  => 'libapache2-mod-perl2',
+        'phpXXX'                => 'libapache2-mod-phpXXX',
+        'python'                => 'libapache2-mod-python',
+        'rpaf'                  => 'libapache2-mod-rpaf',
+        'security'              => 'libapache2-mod-security2',
+        'shib2'                 => 'libapache2-mod-shib2',
+        'suphp'                 => 'libapache2-mod-suphp',
+        'wsgi'                  => 'libapache2-mod-wsgi',
+        'xsendfile'             => 'libapache2-mod-xsendfile',
+      }
+    } elsif ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '18.04') >= 0) {
+      # major.minor version used since Debian stretch and Ubuntu Xenial
+      $php_version = '7.2' # different to Ubuntu 16.04
+      # fastcgi and suphp got removed from #mod_packages, they aren't supported anymore
+      $mod_packages = {
+        'auth_cas'              => 'libapache2-mod-auth-cas',
+        'auth_kerb'             => 'libapache2-mod-auth-kerb',
+        'auth_gssapi'           => 'libapache2-mod-auth-gssapi',
+        'auth_mellon'           => 'libapache2-mod-auth-mellon',
+        'authnz_pam'            => 'libapache2-mod-authnz-pam',
+        'dav_svn'               => 'libapache2-mod-svn', # different to Ubuntu16.04
+        'fcgid'                 => 'libapache2-mod-fcgid',
+        'geoip'                 => 'libapache2-mod-geoip',
+        'intercept_form_submit' => 'libapache2-mod-intercept-form-submit',
+        'lookup_identity'       => 'libapache2-mod-lookup-identity',
+        'nss'                   => 'libapache2-mod-nss',
+        'pagespeed'             => 'mod-pagespeed-stable',
+        'passenger'             => 'libapache2-mod-passenger',
+        'perl'                  => 'libapache2-mod-perl2',
+        'phpXXX'                => 'libapache2-mod-phpXXX',
+        'python'                => 'libapache2-mod-python',
+        'rpaf'                  => 'libapache2-mod-rpaf',
+        'security'              => 'libapache2-mod-security2',
+        'shib2'                 => 'libapache2-mod-shib2',
+        'wsgi'                  => 'libapache2-mod-wsgi',
+        'xsendfile'             => 'libapache2-mod-xsendfile',
+      }
     } else {
       # major.minor version used since Debian stretch and Ubuntu Xenial
       $php_version = '7.0'
       $mod_packages = {
         'auth_cas'              => 'libapache2-mod-auth-cas',
         'auth_kerb'             => 'libapache2-mod-auth-kerb',
+        'auth_gssapi'           => 'libapache2-mod-auth-gssapi',
         'auth_mellon'           => 'libapache2-mod-auth-mellon',
         'authnz_pam'            => 'libapache2-mod-authnz-pam',
         'dav_svn'               => 'libapache2-svn',
@@ -302,7 +458,7 @@ class apache::params inherits ::apache::version {
     }
     $conf_template          = 'apache/httpd.conf.erb'
     $http_protocol_options  = undef
-    $keepalive              = 'Off'
+    $keepalive              = 'On'
     $keepalive_timeout      = 15
     $max_keepalive_requests = 100
     $fastcgi_lib_path       = '/var/lib/apache2/fastcgi'
@@ -323,28 +479,52 @@ class apache::params inherits ::apache::version {
     $secpcrematchlimit = 1500
     $secpcrematchlimitrecursion = 1500
     $modsec_secruleengine = 'On'
-    $modsec_default_rules = [
-      'base_rules/modsecurity_35_bad_robots.data',
-      'base_rules/modsecurity_35_scanners.data',
-      'base_rules/modsecurity_40_generic_attacks.data',
-      'base_rules/modsecurity_50_outbound.data',
-      'base_rules/modsecurity_50_outbound_malware.data',
-      'base_rules/modsecurity_crs_20_protocol_violations.conf',
-      'base_rules/modsecurity_crs_21_protocol_anomalies.conf',
-      'base_rules/modsecurity_crs_23_request_limits.conf',
-      'base_rules/modsecurity_crs_30_http_policy.conf',
-      'base_rules/modsecurity_crs_35_bad_robots.conf',
-      'base_rules/modsecurity_crs_40_generic_attacks.conf',
-      'base_rules/modsecurity_crs_41_sql_injection_attacks.conf',
-      'base_rules/modsecurity_crs_41_xss_attacks.conf',
-      'base_rules/modsecurity_crs_42_tight_security.conf',
-      'base_rules/modsecurity_crs_45_trojans.conf',
-      'base_rules/modsecurity_crs_47_common_exceptions.conf',
-      'base_rules/modsecurity_crs_49_inbound_blocking.conf',
-      'base_rules/modsecurity_crs_50_outbound.conf',
-      'base_rules/modsecurity_crs_59_outbound_blocking.conf',
-      'base_rules/modsecurity_crs_60_correlation.conf',
-    ]
+    if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemrelease, '9') >= 0) or ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '18.04') >= 0) {
+      $modsec_default_rules = [
+        'crawlers-user-agents.data',
+        'iis-errors.data',
+        'java-code-leakages.data',
+        'java-errors.data',
+        'lfi-os-files.data',
+        'php-config-directives.data',
+        'php-errors.data',
+        'php-function-names-933150.data',
+        'php-function-names-933151.data',
+        'php-variables.data',
+        'restricted-files.data',
+        'scanners-headers.data',
+        'scanners-urls.data',
+        'scanners-user-agents.data',
+        'scripting-user-agents.data',
+        'sql-errors.data',
+        'sql-function-names.data',
+        'unix-shell.data',
+        'windows-powershell-commands.data',
+      ]
+    } else {
+      $modsec_default_rules = [
+        'base_rules/modsecurity_35_bad_robots.data',
+        'base_rules/modsecurity_35_scanners.data',
+        'base_rules/modsecurity_40_generic_attacks.data',
+        'base_rules/modsecurity_50_outbound.data',
+        'base_rules/modsecurity_50_outbound_malware.data',
+        'base_rules/modsecurity_crs_20_protocol_violations.conf',
+        'base_rules/modsecurity_crs_21_protocol_anomalies.conf',
+        'base_rules/modsecurity_crs_23_request_limits.conf',
+        'base_rules/modsecurity_crs_30_http_policy.conf',
+        'base_rules/modsecurity_crs_35_bad_robots.conf',
+        'base_rules/modsecurity_crs_40_generic_attacks.conf',
+        'base_rules/modsecurity_crs_41_sql_injection_attacks.conf',
+        'base_rules/modsecurity_crs_41_xss_attacks.conf',
+        'base_rules/modsecurity_crs_42_tight_security.conf',
+        'base_rules/modsecurity_crs_45_trojans.conf',
+        'base_rules/modsecurity_crs_47_common_exceptions.conf',
+        'base_rules/modsecurity_crs_49_inbound_blocking.conf',
+        'base_rules/modsecurity_crs_50_outbound.conf',
+        'base_rules/modsecurity_crs_59_outbound_blocking.conf',
+        'base_rules/modsecurity_crs_60_correlation.conf',
+      ]
+    }
     $alias_icons_path     = '/usr/share/apache2/icons'
     $error_documents_path = '/usr/share/apache2/error'
     if ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '13.10') >= 0) or ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemrelease, '8') >= 0) {
@@ -380,6 +560,7 @@ class apache::params inherits ::apache::version {
     $server_root      = '/usr/local'
     $conf_dir         = $httpd_dir
     $confd_dir        = "${httpd_dir}/Includes"
+    $conf_enabled     = undef
     $mod_dir          = "${httpd_dir}/Modules"
     $mod_enable_dir   = undef
     $vhost_dir        = "${httpd_dir}/Vhosts"
@@ -410,24 +591,25 @@ class apache::params inherits ::apache::version {
       # NOTE: 'php' needs to enable APACHE option in make config
       # NOTE: 'dav_svn' needs to enable MOD_DAV_SVN make config
       # NOTE: not sure where the shibboleth should come from
-      'auth_kerb'  => 'www/mod_auth_kerb2',
-      'fcgid'      => 'www/mod_fcgid',
-      'passenger'  => 'www/rubygem-passenger',
-      'perl'       => 'www/mod_perl2',
-      'phpXXX'     => 'www/mod_phpXXX',
-      'proxy_html' => 'www/mod_proxy_html',
-      'python'     => 'www/mod_python3',
-      'wsgi'       => 'www/mod_wsgi',
-      'dav_svn'    => 'devel/subversion',
-      'xsendfile'  => 'www/mod_xsendfile',
-      'rpaf'       => 'www/mod_rpaf2',
-      'shib2'      => 'security/shibboleth2-sp',
+      'auth_kerb'   => 'www/mod_auth_kerb2',
+      'auth_gssapi' => 'www/mod_auth_gssapi',
+      'fcgid'       => 'www/mod_fcgid',
+      'passenger'   => 'www/rubygem-passenger',
+      'perl'        => 'www/mod_perl2',
+      'phpXXX'      => 'www/mod_phpXXX',
+      'proxy_html'  => 'www/mod_proxy_html',
+      'python'      => 'www/mod_python3',
+      'wsgi'        => 'www/mod_wsgi',
+      'dav_svn'     => 'devel/subversion',
+      'xsendfile'   => 'www/mod_xsendfile',
+      'rpaf'        => 'www/mod_rpaf2',
+      'shib2'       => 'security/shibboleth2-sp',
     }
     $mod_libs         = {
     }
     $conf_template        = 'apache/httpd.conf.erb'
     $http_protocol_options = undef
-    $keepalive            = 'Off'
+    $keepalive            = 'On'
     $keepalive_timeout    = 15
     $max_keepalive_requests = 100
     $fastcgi_lib_path     = undef # TODO: revisit
@@ -450,6 +632,7 @@ class apache::params inherits ::apache::version {
     $server_root      = '/var/www'
     $conf_dir         = $httpd_dir
     $confd_dir        = "${httpd_dir}/conf.d"
+    $conf_enabled     = undef
     $mod_dir          = "${httpd_dir}/modules.d"
     $mod_enable_dir   = undef
     $vhost_dir        = "${httpd_dir}/vhosts.d"
@@ -476,6 +659,7 @@ class apache::params inherits ::apache::version {
     $mod_packages     = {
       # NOTE: I list here only modules that are not included in www-servers/apache
       'auth_kerb'       => 'www-apache/mod_auth_kerb',
+      'auth_gssapi'     => 'www-apache/mod_auth_gssapi',
       'authnz_external' => 'www-apache/mod_authnz_external',
       'fcgid'           => 'www-apache/mod_fcgid',
       'passenger'       => 'www-apache/passenger',
@@ -494,7 +678,7 @@ class apache::params inherits ::apache::version {
     }
     $conf_template        = 'apache/httpd.conf.erb'
     $http_protocol_options = undef
-    $keepalive            = 'Off'
+    $keepalive            = 'On'
     $keepalive_timeout    = 15
     $max_keepalive_requests = 100
     $fastcgi_lib_path     = undef # TODO: revisit
@@ -518,6 +702,7 @@ class apache::params inherits ::apache::version {
     $server_root         = '/etc/apache2'
     $conf_dir            = $httpd_dir
     $confd_dir           = "${httpd_dir}/conf.d"
+    $conf_enabled        = undef
     $mod_dir             = "${httpd_dir}/mods-available"
     $mod_enable_dir      = "${httpd_dir}/mods-enabled"
     $vhost_dir           = "${httpd_dir}/sites-available"
@@ -529,8 +714,14 @@ class apache::params inherits ::apache::version {
     $logroot_mode        = undef
     $lib_path            = '/usr/lib64/apache2' #changes for some modules based on mpm
     $mpm_module          = 'prefork'
-    $default_ssl_cert    = '/etc/apache2/ssl.crt/server.crt'
-    $default_ssl_key     = '/etc/apache2/ssl.key/server.key'
+
+    if $::operatingsystemrelease < '15' {
+      $default_ssl_cert    = '/etc/apache2/ssl.crt/server.crt'
+      $default_ssl_key     = '/etc/apache2/ssl.key/server.key'
+    } else {
+      $default_ssl_cert    = '/etc/apache2/ssl.crt/default-server.crt'
+      $default_ssl_key     = '/etc/apache2/ssl.key/default-server.key'
+    }
     $ssl_sessioncache    = '/var/lib/apache2/ssl_scache(512000)'
     $suphp_addhandler    = 'x-httpd-php'
     $suphp_engine        = 'off'
@@ -539,6 +730,8 @@ class apache::params inherits ::apache::version {
     if $::operatingsystemrelease < '11' or $::operatingsystemrelease >= '12' {
       $mod_packages      = {
         'auth_kerb'   => 'apache2-mod_auth_kerb',
+        'auth_gssapi' => 'apache2-mod_auth_gssapi',
+        'dav_svn'     => 'subversion-server',
         'perl'        => 'apache2-mod_perl',
         'php5'        => 'apache2-mod_php5',
         'python'      => 'apache2-mod_python',
@@ -548,6 +741,8 @@ class apache::params inherits ::apache::version {
     } else {
       $mod_packages        = {
         'auth_kerb'   => 'apache2-mod_auth_kerb',
+        'auth_gssapi' => 'apache2-mod_auth_gssapi',
+        'dav_svn'     => 'subversion-server',
         'perl'        => 'apache2-mod_perl',
         'php5'        => 'apache2-mod_php53',
         'python'      => 'apache2-mod_python',
@@ -560,7 +755,7 @@ class apache::params inherits ::apache::version {
     }
     $conf_template          = 'apache/httpd.conf.erb'
     $http_protocol_options  = undef
-    $keepalive              = 'Off'
+    $keepalive              = 'On'
     $keepalive_timeout      = 15
     $max_keepalive_requests = 100
     $fastcgi_lib_path       = '/var/lib/apache2/fastcgi'
@@ -599,5 +794,15 @@ class apache::params inherits ::apache::version {
 
   } else {
     fail("Class['apache::params']: Unsupported osfamily: ${::osfamily}")
+  }
+
+  if ($::operatingsystem == 'Ubuntu' and $::lsbdistrelease == '10.04') or ($::operatingsystem == 'SLES') {
+    $verify_command = '/usr/sbin/apache2ctl -t'
+  } elsif $::operatingsystem == 'FreeBSD' {
+    $verify_command = '/usr/local/sbin/apachectl -t'
+  } elsif ($::apache::version::scl_httpd_version) {
+    $verify_command = "/opt/rh/${_scl_httpd_name}/root/usr/sbin/apachectl -t"
+  } else {
+    $verify_command = '/usr/sbin/apachectl -t'
   }
 }

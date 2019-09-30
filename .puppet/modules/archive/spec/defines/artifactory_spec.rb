@@ -3,10 +3,9 @@ require 'spec_helper'
 describe 'archive::artifactory' do
   let(:facts) { { os: { family: 'RedHat' }, puppetversion: '4.4.0' } }
 
-  before do
-    MockFunction.new('artifactory_sha1') do |f|
-      f.stub.returns('0d4f4b4b039c10917cfc49f6f6be71e4')
-    end
+  # Mock Puppet V4 API ruby function with a puppet language function equivalent
+  let(:pre_condition) do
+    'function archive::artifactory_checksum($url,$type) { return \'0d4f4b4b039c10917cfc49f6f6be71e4\' }'
   end
 
   context 'artifactory archive with defaults' do

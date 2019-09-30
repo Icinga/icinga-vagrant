@@ -1,5 +1,42 @@
 ---
-NOTICE:
+.gitignore:
+  required:
+    - ---.project
+
+.gitlab-ci.yml:
   unmanaged: true
-appveyor.yml:
-  delete: true
+
+.rubocop.yml:
+    require:
+      - rubocop-i18n
+      - rubocop-rspec
+
+.travis.yml:
+  unmanaged: true
+  docker_sets:
+    - set: docker/centos-7
+    - set: docker/ubuntu-14.04
+  docker_defaults:
+    bundler_args: ""
+  secure: ""
+  branches:
+    - release
+
+Gemfile:
+  optional:
+    ':development':
+      - gem: 'github_changelog_generator'
+        git: 'https://github.com/skywinder/github-changelog-generator'
+        ref: '20ee04ba1234e9e83eb2ffb5056e23d641c7a018'
+        condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')"
+  required:
+    ':development':
+      - gem: puppet-lint-i18n
+
+Rakefile:
+  requires:
+   - puppet_pot_generator/rake_tasks
+
+spec/spec_helper.rb:
+  mock_with: ':rspec'
+  coverage_report: true

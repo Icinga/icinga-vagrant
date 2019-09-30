@@ -111,10 +111,18 @@ class logstash::service {
 
     # Invoke 'system-install', which generates startup scripts based on the
     # contents of the 'startup.options' file.
-    exec { 'logstash-system-install':
-      command     => "${logstash::home_dir}/bin/system-install",
-      refreshonly => true,
-      notify      => Service['logstash'],
+    # Only if restart_on_change is not false
+    if $::logstash::restart_on_change {
+      exec { 'logstash-system-install':
+        command     => "${logstash::home_dir}/bin/system-install",
+        refreshonly => true,
+        notify      => Service['logstash'],
+      }
+    } else {
+      exec { 'logstash-system-install':
+        command     => "${logstash::home_dir}/bin/system-install",
+        refreshonly => true,
+      }
     }
   }
 
@@ -133,8 +141,8 @@ class logstash::service {
   elsif($os == 'debian' and $release == '8') {
     $service_provider = 'systemd'
   }
-  # Centos 6 uses Upstart by default, but Puppet can get confused about this too.
-  elsif($os =~ /(redhat|centos)/ and $release == '6') {
+  # RedHat/CentOS/OEL 6 uses Upstart by default, but Puppet can get confused about this too.
+  elsif($os =~ /(redhat|centos|oraclelinux)/ and $release == '6') {
     $service_provider = 'upstart'
   }
   elsif($os =~ /ubuntu/ and $release == '12.04') {
@@ -142,6 +150,12 @@ class logstash::service {
   }
   elsif($os =~ /opensuse/ and $release == '13') {
     $service_provider = 'systemd'
+  }
+  #Older Amazon Linux AMIs has its release based on the year
+  #it came out (2010 and up); the provider needed to be set explicitly;
+  #New Amazon Linux 2 AMIs has the release set to 2, Puppet can handle it 
+  elsif($os =~ /amazon/ and versioncmp($release, '2000') > 0) {
+    $service_provider = 'upstart'
   }
   else {
     # In most cases, Puppet(4) can figure out the correct service

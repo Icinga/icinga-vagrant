@@ -112,6 +112,7 @@ describe 'selinux::module' do
         end
 
         it { is_expected.to contain_file(workdir) }
+        it { is_expected.to contain_class('selinux::build').that_comes_before('Selinux::Module[mymodule]') }
         it { is_expected.to contain_file("#{workdir}/mymodule.te").that_notifies('Exec[clean-module-mymodule]') }
         it { is_expected.to contain_file("#{workdir}/mymodule.fc").with(source: nil, content: '') }
         it { is_expected.to contain_file("#{workdir}/mymodule.if").with(source: nil, content: '') }
@@ -151,6 +152,35 @@ describe 'selinux::module' do
           is_expected.to raise_error(Puppet::Error, %r{simple builder does not support})
         end
       end
+
+      context 'present case with pre-compiled policy package' do
+        let(:params) do
+          {
+            source_pp: 'puppet:///modules/mymodule/selinux/mymodule.pp'
+          }
+        end
+
+        it { is_expected.to contain_file(workdir) }
+        it { is_expected.to contain_file("#{workdir}/mymodule.pp").that_notifies('Exec[clean-module-mymodule]') }
+        it { is_expected.to contain_exec('clean-module-mymodule').with(command: "rm -f '#{module_basepath}.loaded'", cwd: workdir) }
+        it { is_expected.to contain_exec('install-module-mymodule').with(command: "semodule -i #{module_basepath}.pp && touch #{module_basepath}.loaded", cwd: workdir, creates: "#{module_basepath}.loaded") }
+        it { is_expected.to contain_selmodule('mymodule').with_ensure('present', selmodulepath: workdir) }
+      end
+
+      context 'conflicting parameters' do
+        let(:params) do
+          {
+            source_pp: 'puppet:///modules/mymodule/selinux/mymodule.pp',
+            source_te: 'puppet:///modules/mymodule/selinux/mymodule.te',
+            builder: 'simple'
+          }
+        end
+
+        it do
+          is_expected.to raise_error(Puppet::Error, %r{mutually exclusive})
+        end
+      end
+
       context 'absent case' do
         let(:params) do
           {

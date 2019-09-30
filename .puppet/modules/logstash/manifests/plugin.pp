@@ -28,7 +28,7 @@
 #
 # @example Install a plugin, overriding JVM options via the environment.
 #   logstash::plugin { 'logstash-input-jmx':
-#     environment => ['LS_JVM_OPTIONS="-Xms1g -Xmx1g"']
+#     environment => ['LS_JAVA_OPTS=-Xms1g -Xmx1g']
 #   }
 #
 # @param ensure [String] Install or remove with `present` or `absent`.
@@ -45,6 +45,14 @@ define logstash::plugin (
 {
   require logstash::package
   $exe = "${logstash::home_dir}/bin/logstash-plugin"
+
+  Exec {
+    path        => '/bin:/usr/bin',
+    cwd         => '/tmp',
+    user        => $logstash::logstash_user,
+    timeout     => 1800,
+    environment => $environment,
+  }
 
   case $source { # Where should we get the plugin from?
     undef: {
@@ -115,12 +123,5 @@ define logstash::plugin (
     default: {
       fail "'ensure' should be 'present', 'absent', or a version like '1.3.4'."
     }
-  }
-
-  Exec {
-    path        => '/bin:/usr/bin',
-    user        => $logstash::logstash_user,
-    timeout     => 1800,
-    environment => $environment,
   }
 }

@@ -1,7 +1,7 @@
 # Security
 ServerTokens <%= @server_tokens %>
-ServerSignature <%= scope.function_bool2httpd([@server_signature]) %>
-TraceEnable <%= scope.function_bool2httpd([@trace_enable]) %>
+ServerSignature <%= scope.call_function('apache::bool2httpd', [@server_signature]) %>
+TraceEnable <%= scope.call_function('apache::bool2httpd', [@trace_enable]) %>
 
 ServerName "<%= @servername %>"
 ServerRoot "<%= @server_root %>"
@@ -11,9 +11,20 @@ KeepAlive <%= @keepalive %>
 MaxKeepAliveRequests <%= @max_keepalive_requests %>
 KeepAliveTimeout <%= @keepalive_timeout %>
 LimitRequestFieldSize <%= @limitreqfieldsize %>
+LimitRequestFields <%= @limitreqfields %>
 <%# Actually >= 2.4.24, but the minor version is not provided -%>
 <%- if @http_protocol_options and scope.function_versioncmp([@apache_version, '2.4']) >= 0 -%>
 HttpProtocolOptions <%= @http_protocol_options %>
+<%- end -%>
+
+<%# Actually >= 2.4.17, but the minor version is not provided -%>
+<%- if scope.function_versioncmp([@apache_version, '2.4']) >= 0 -%>
+  <%- unless @protocols.empty? -%>
+Protocols <%= @protocols.join(' ') %>
+  <%- end -%>
+  <%- unless @protocols_honor_order.nil? -%>
+ProtocolsHonorOrder <%= scope.call_function('apache::bool2httpd', [@protocols_honor_order]) %>
+  <%- end -%>
 <%- end -%>
 
 <%- if @rewrite_lock and scope.function_versioncmp([@apache_version, '2.2']) <= 0 -%>
@@ -54,7 +65,7 @@ AddDefaultCharset <%= @default_charset %>
 <%- if scope.function_versioncmp([@apache_version, '2.4']) < 0 -%>
 DefaultType <%= @default_type %>
 <%- end -%>
-HostnameLookups Off
+HostnameLookups <%= @hostname_lookups %>
 <%- if /^[|\/]/.match(@error_log) || /^syslog:/.match(@error_log) -%>
 ErrorLog "<%= @error_log %>"
 <%- else -%>
@@ -67,6 +78,9 @@ AllowEncodedSlashes <%= @allow_encoded_slashes %>
 <%- end -%>
 <%- if @file_e_tag -%>
 FileETag <%= @file_e_tag %>
+<%- end -%>
+<%- if @use_canonical_name -%>
+UseCanonicalName <%= @use_canonical_name %>
 <%- end -%>
 
 #Listen 80
@@ -85,10 +99,10 @@ Include "<%= @mod_load_dir %>/*.conf"
 Include "<%= @ports_file %>"
 
 <% unless @log_formats.has_key?('combined') -%>
-LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%a %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
 <% end -%>
 <% unless @log_formats.has_key?('common') -%>
-LogFormat "%h %l %u %t \"%r\" %>s %b" common
+LogFormat "%a %l %u %t \"%r\" %>s %b" common
 <% end -%>
 <% unless @log_formats.has_key?('referer') -%>
 LogFormat "%{Referer}i -> %U" referer
@@ -105,6 +119,9 @@ LogFormat "<%= format -%>" <%= nickname %>
   <%- end -%>
 <% end -%>
 
+<%- if @conf_enabled and scope.function_versioncmp([@apache_version, '2.4']) >= 0 -%>
+IncludeOptional "<%= @conf_enabled %>/*.conf"
+<%- end -%>
 <%- if scope.function_versioncmp([@apache_version, '2.4']) >= 0 -%>
 IncludeOptional "<%= @confd_dir %>/*.conf"
 <%- else -%>
@@ -116,6 +133,12 @@ IncludeOptional "<%= @vhost_load_dir %>/<%= @vhost_include_pattern %>"
 <%- else -%>
 Include "<%= @vhost_load_dir %>/<%= @vhost_include_pattern %>"
 <%- end -%>
+<% end -%>
+<% if @ldap_verify_server_cert -%>
+LDAPVerifyServerCert <%= @ldap_verify_server_cert %>
+<% end -%>
+<% if @ldap_verify_server_cert -%>
+LDAPTrustedMode <%= @ldap_trusted_mode %>
 <% end -%>
 
 <% if @error_documents -%>

@@ -13,46 +13,46 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
   let(:provider) { resource.provider }
 
   before :each do
-    Puppet::Util.stubs(:which).with('cvs').returns('/usr/bin/cvs')
+    allow(Puppet::Util).to receive(:which).with('cvs').and_return('/usr/bin/cvs')
   end
 
   describe 'creating' do
     context 'with a source' do
-      it "executes 'cvs checkout'" do # rubocop:disable RSpec/ExampleLength : Unable to reduce example length
+      it "executes 'cvs checkout'" do
         resource[:source] = ':ext:source@example.com:/foo/bar'
         resource[:revision] = 'an-unimportant-value'
-        expects_chdir('/tmp')
-        Puppet::Util::Execution.expects(:execute).with([:cvs, '-d', resource.value(:source), 'checkout', '-r',
-                                                        'an-unimportant-value', '-d', 'test', '.'], custom_environment: {}, combine: true, failonfail: true)
+        expect_chdir('/tmp')
+        expect(Puppet::Util::Execution).to receive(:execute).with([:cvs, '-d', resource.value(:source), 'checkout', '-r',
+                                                                   'an-unimportant-value', '-d', 'test', '.'], custom_environment: {}, combine: true, failonfail: true)
         provider.create
       end
 
-      it "executes 'cvs checkout' as user 'muppet'" do # rubocop:disable RSpec/ExampleLength : Unable to reduce example length
+      it "executes 'cvs checkout' as user 'muppet'" do
         resource[:source] = ':ext:source@example.com:/foo/bar'
         resource[:revision] = 'an-unimportant-value'
         resource[:user] = 'muppet'
-        expects_chdir('/tmp')
-        Puppet::Util::Execution.expects(:execute).with([:cvs, '-d', resource.value(:source), 'checkout', '-r',
-                                                        'an-unimportant-value', '-d', 'test', '.'], uid: 'muppet', custom_environment: {}, combine: true, failonfail: true)
+        expect_chdir('/tmp')
+        expect(Puppet::Util::Execution).to receive(:execute).with([:cvs, '-d', resource.value(:source), 'checkout', '-r',
+                                                                   'an-unimportant-value', '-d', 'test', '.'], uid: 'muppet', custom_environment: {}, combine: true, failonfail: true)
         provider.create
       end
 
       it "justs execute 'cvs checkout' without a revision" do
         resource[:source] = ':ext:source@example.com:/foo/bar'
         resource.delete(:revision)
-        Puppet::Util::Execution.expects(:execute).with([:cvs, '-d', resource.value(:source), 'checkout', '-d',
-                                                        File.basename(resource.value(:path)), '.'], custom_environment: {}, combine: true, failonfail: true)
+        expect(Puppet::Util::Execution).to receive(:execute).with([:cvs, '-d', resource.value(:source), 'checkout', '-d',
+                                                                   File.basename(resource.value(:path)), '.'], custom_environment: {}, combine: true, failonfail: true)
         provider.create
       end
     end
 
     context 'with a compression' do
-      it "justs execute 'cvs checkout' without a revision" do # rubocop:disable RSpec/ExampleLength : Unable to reduce example length
+      it "justs execute 'cvs checkout' without a revision" do
         resource[:source] = ':ext:source@example.com:/foo/bar'
         resource[:compression] = '3'
         resource.delete(:revision)
-        Puppet::Util::Execution.expects(:execute).with([:cvs, '-d', resource.value(:source), '-z', '3', 'checkout', '-d',
-                                                        File.basename(resource.value(:path)), '.'], custom_environment: {}, combine: true, failonfail: true)
+        expect(Puppet::Util::Execution).to receive(:execute).with([:cvs, '-d', resource.value(:source), '-z', '3', 'checkout', '-d',
+                                                                   File.basename(resource.value(:path)), '.'], custom_environment: {}, combine: true, failonfail: true)
         provider.create
       end
     end
@@ -60,7 +60,7 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
     context 'when a source is not given' do
       it "executes 'cvs init'" do
         resource.delete(:source)
-        Puppet::Util::Execution.expects(:execute).with([:cvs, '-d', resource.value(:path), 'init'], custom_environment: {}, combine: true, failonfail: true)
+        expect(Puppet::Util::Execution).to receive(:execute).with([:cvs, '-d', resource.value(:path), 'init'], custom_environment: {}, combine: true, failonfail: true)
         provider.create
       end
     end
@@ -76,9 +76,9 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
     context 'with a source value' do
       it "runs 'cvs status'" do
         resource[:source] = ':ext:source@example.com:/foo/bar'
-        File.expects(:directory?).with(File.join(resource.value(:path), 'CVS')).returns(true)
-        expects_chdir
-        Puppet::Util::Execution.expects(:execute).with([:cvs, '-nq', 'status', '-l'], custom_environment: {}, combine: true, failonfail: true)
+        expect(File).to receive(:directory?).with(File.join(resource.value(:path), 'CVS')).and_return(true)
+        expect_chdir
+        expect(Puppet::Util::Execution).to receive(:execute).with([:cvs, '-nq', 'status', '-l'], custom_environment: {}, combine: true, failonfail: true)
         provider.exist?
       end
     end
@@ -86,8 +86,8 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
     context 'without a source value' do
       it 'checks for the CVSROOT directory and config file' do
         resource.delete(:source)
-        File.expects(:directory?).with(File.join(resource.value(:path), 'CVSROOT')).returns(true)
-        File.expects(:exist?).with(File.join(resource.value(:path), 'CVSROOT', 'config,v')).returns(true)
+        expect(File).to receive(:directory?).with(File.join(resource.value(:path), 'CVSROOT')).and_return(true)
+        expect(File).to receive(:exist?).with(File.join(resource.value(:path), 'CVSROOT', 'config,v')).and_return(true)
         provider.exist?
       end
     end
@@ -100,17 +100,17 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
       let(:tag) { 'TAG' }
 
       before(:each) do
-        File.expects(:exist?).with(tag_file).returns(true)
+        allow(File).to receive(:exist?).with(tag_file).and_return(true)
       end
       it 'reads CVS/Tag' do
-        File.expects(:read).with(tag_file).returns("T#{tag}")
+        expect(File).to receive(:read).with(tag_file).and_return("T#{tag}")
         expect(provider.revision).to eq(tag)
       end
     end
 
     context 'when CVS/Tag does not exist' do
       before(:each) do
-        File.expects(:exist?).with(tag_file).returns(false)
+        allow(File).to receive(:exist?).with(tag_file).and_return(false)
       end
       it 'assumes HEAD' do
         expect(provider.revision).to eq('HEAD')
@@ -122,22 +122,22 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
     let(:tag) { 'SOMETAG' }
 
     it "uses 'cvs update -dr'" do
-      expects_chdir
-      Puppet::Util::Execution.expects(:execute).with([:cvs, 'update', '-dr', tag, '.'], custom_environment: {}, combine: true, failonfail: true)
+      expect_chdir
+      expect(Puppet::Util::Execution).to receive(:execute).with([:cvs, 'update', '-dr', tag, '.'], custom_environment: {}, combine: true, failonfail: true)
       provider.revision = tag
     end
   end
 
   describe 'checking the source property' do
     it "reads the contents of file 'CVS/Root'" do
-      File.expects(:read).with(File.join(resource.value(:path), 'CVS', 'Root'))
-          .returns(':pserver:anonymous@cvs.sv.gnu.org:/sources/cvs/')
+      expect(File).to receive(:read).with(File.join(resource.value(:path), 'CVS', 'Root'))
+                                    .and_return(':pserver:anonymous@cvs.sv.gnu.org:/sources/cvs/')
       expect(provider.source).to eq(resource.value(:source))
     end
   end
   describe 'setting the source property' do
     it "calls 'create'" do
-      provider.expects(:create)
+      expect(provider).to receive(:create)
       provider.source = resource.value(:source)
     end
   end
@@ -147,14 +147,14 @@ describe Puppet::Type.type(:vcsrepo).provider(:cvs) do
       resource[:module] = 'ccvs'
     end
     it "reads the contents of file 'CVS/Repository'" do
-      File.expects(:read).with(File.join(resource.value(:path), 'CVS', 'Repository'))
-          .returns('ccvs')
+      expect(File).to receive(:read).with(File.join(resource.value(:path), 'CVS', 'Repository'))
+                                    .and_return('ccvs')
       expect(provider.module).to eq(resource.value(:module))
     end
   end
   describe 'setting the module property' do
     it "calls 'create'" do
-      provider.expects(:create)
+      expect(provider).to receive(:create)
       provider.module = resource.value(:module)
     end
   end

@@ -1,7 +1,7 @@
 .travis.yml:
   docker_sets:
-  - set: docker/centos-6
-  - set: docker/centos-7
+  - set: centos6-64
+  - set: centos7-64
   secure: "iItNJ/PlMvdSiYjtXWJkS69mF/4XUriTRC6axFoiTgX8BzGNWA1U/anENNyzmhRKcH/Nc0erVeau+RX8vyJ0HmIJOCvYfq5Q/SQWex1fDXLe/UYJkAEWwmeIOVSF2nTEUPDvDn/d6bNEdULw5yrNn1dT8eLqIIXl6/nThdpiS917BX6CeYdojr/mISrLsvihuB5DQRdVzH+hK1bXcECihnOfNH9lQ0lZ2v2ohJiLJL0DadDg0YMMeJMlP7CnBZzRs7fhTPdLMjzCvysef9nqBYRlGBRUn+CaQ4VoQZlWB1JchJup4qCGeU9ANkb8gdKYTy1kFkBrEDuqlUUuuTTMhDpQ+2fGF32zgnXCSnVY8AIriFfO9c1ljxL6k6vaHpfnsPcMrxuQXNeOPGYpVjNGi/Hz8OjuZ3IT07c8SmZgmGaNp+ZIKErJQV0eob0NeA/1P7HheRS5aPEiN8vj/ZGuIGa+BhbTp2riJ599urrSqGDcJ0YzNeW2BvBZQoXs953X4N4yROz4xKMNqPz/jhyGM9w5SBJ/uLiIvKTu+bSsJ2VNyrOOu25eYqzH1zKc71fKiWa1ZOTHKVM24chlmoq3tZTSpSn6OxpptKLxAYZG0IUdFSMy66m8nss1AxL2djScAptugsqpfLqziMArAoN9iWXCeGiWz1qLRl+5AlMrmMY="
 spec/spec_helper.rb:
   hiera_config: "File.expand_path(File.join(__FILE__, '../fixtures/hiera.yaml'))"

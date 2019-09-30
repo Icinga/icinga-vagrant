@@ -27,14 +27,15 @@ describe 'concat::fragment' do
     end
   end
 
-  context 'title' do
-    %w[0 1 a z].each do |title|
+  context 'when title' do
+    ['0', '1', 'a', 'z'].each do |title|
       it_behaves_like 'fragment', title, target: '/etc/motd',
                                          content: "content for #{title}"
     end
-  end # title
+  end
+  # title
 
-  context 'target =>' do
+  context 'when target =>' do
     ['./etc/motd', 'etc/motd', 'motd_header'].each do |target|
       context target do
         it_behaves_like 'fragment', target, target: '/etc/motd',
@@ -42,7 +43,7 @@ describe 'concat::fragment' do
       end
     end
 
-    context 'false' do
+    context 'when false' do
       let(:title) { 'motd_header' }
       let(:params) { { target: false } }
 
@@ -50,9 +51,10 @@ describe 'concat::fragment' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{parameter 'target' expects a .*String.*})
       end
     end
-  end # target =>
+  end
+  # target =>
 
-  context 'content =>' do
+  context 'when content =>' do
     ['', 'ashp is our hero'].each do |content|
       context content do
         it_behaves_like 'fragment', 'motd_header', content: content,
@@ -60,7 +62,7 @@ describe 'concat::fragment' do
       end
     end
 
-    context 'false' do
+    context 'when false' do
       let(:title) { 'motd_header' }
       let(:params) { { content: false, target: '/etc/motd' } }
 
@@ -68,9 +70,10 @@ describe 'concat::fragment' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{parameter 'content' expects a .*String.*})
       end
     end
-  end # content =>
+  end
+  # content =>
 
-  context 'source =>' do
+  context 'when source =>' do
     ['', '/foo/bar', ['/foo/bar', '/foo/baz']].each do |source|
       context source do
         it_behaves_like 'fragment', 'motd_header',           source: source,
@@ -78,7 +81,7 @@ describe 'concat::fragment' do
       end
     end
 
-    context 'false' do
+    context 'when false' do
       let(:title) { 'motd_header' }
       let(:params) { { source: false, target: '/etc/motd' } }
 
@@ -86,9 +89,10 @@ describe 'concat::fragment' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{parameter 'source' expects a .*String.*Array.*})
       end
     end
-  end # source =>
+  end
+  # source =>
 
-  context 'order =>' do
+  context 'when order =>' do
     ['', '42', 'a', 'z'].each do |order|
       context "'#{order}'" do
         it_behaves_like 'fragment', 'motd_header',           order: order,
@@ -96,7 +100,7 @@ describe 'concat::fragment' do
       end
     end
 
-    context 'false' do
+    context 'when false' do
       let(:title) { 'motd_header' }
       let(:params) { { order: false, target: '/etc/motd' } }
 
@@ -105,7 +109,7 @@ describe 'concat::fragment' do
       end
     end
 
-    context '123:456' do
+    context 'when 123:456' do
       let(:title) { 'motd_header' }
       let(:params) { { order: '123:456', target: '/etc/motd' } }
 
@@ -113,7 +117,7 @@ describe 'concat::fragment' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{cannot contain})
       end
     end
-    context '123/456' do
+    context 'when 23/456' do
       let(:title) { 'motd_header' }
       let(:params) { { order: '123/456', target: '/etc/motd' } }
 
@@ -121,7 +125,7 @@ describe 'concat::fragment' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{cannot contain})
       end
     end
-    context '123\n456' do
+    context 'when 123\n456' do
       let(:title) { 'motd_header' }
       let(:params) { { order: "123\n456", target: '/etc/motd' } }
 
@@ -129,10 +133,11 @@ describe 'concat::fragment' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{cannot contain})
       end
     end
-  end # order =>
+  end
+  # order =>
 
-  context 'more than one content source' do
-    context 'source and content' do
+  context 'with more than one content source' do
+    context 'with source and content' do
       let(:title) { 'motd_header' }
       let(:params) do
         {
@@ -146,5 +151,6 @@ describe 'concat::fragment' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{Can\'t use \'source\' and \'content\' at the same time}m)
       end
     end
-  end # more than one content source
+  end
+  # more than one content source
 end

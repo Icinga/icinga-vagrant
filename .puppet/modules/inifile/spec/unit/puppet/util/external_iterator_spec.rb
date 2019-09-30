@@ -2,34 +2,35 @@ require 'spec_helper'
 require 'puppet/util/external_iterator'
 
 describe Puppet::Util::ExternalIterator do
-  let(:subject) { Puppet::Util::ExternalIterator.new(["a", "b", "c"]) }
+  subject_class = nil
+  expected_values = nil
 
-  context "#next" do
-    it "should iterate over the items" do
-      expect(subject.next).to eq(["a", 0])
-      expect(subject.next).to eq(["b", 1])
-      expect(subject.next).to eq(["c", 2])      
+  before(:each) do
+    subject_class = described_class.new(['a', 'b', 'c'])
+    expected_values = [['a', 0], ['b', 1], ['c', 2]]
+  end
+
+  context '#next' do
+    it 'iterates over the items' do
+      expected_values.each do |expected_pair|
+        expect(subject_class.next).to eq(expected_pair)
+      end
     end
   end
 
-  context "#peek" do
-    it "should return the 0th item repeatedly" do
-      expect(subject.peek).to eq(["a", 0])
-      expect(subject.peek).to eq(["a", 0])
+  context '#peek' do
+    it 'returns the 0th item repeatedly' do
+      (0..2).each do |_i|
+        expect(subject_class.peek).to eq(expected_values[0])
+      end
     end
-    
-    it "should not advance the iterator, but should reflect calls to #next" do
-      expect(subject.peek).to eq(["a", 0])
-      expect(subject.peek).to eq(["a", 0])
-      expect(subject.next).to eq(["a", 0])
-      expect(subject.peek).to eq(["b", 1])
-      expect(subject.next).to eq(["b", 1])
-      expect(subject.peek).to eq(["c", 2])
-      expect(subject.next).to eq(["c", 2])
-      expect(subject.peek).to eq([nil, nil])
-      expect(subject.next).to eq([nil, nil])
+
+    it 'does not advance the iterator, but should reflect calls to #next' do
+      expected_values.each do |expected_pair|
+        expect(subject_class.peek).to eq(expected_pair)
+        expect(subject_class.peek).to eq(expected_pair)
+        expect(subject_class.next).to eq(expected_pair)
+      end
     end
   end
-
-
 end

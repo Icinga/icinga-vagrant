@@ -62,6 +62,9 @@ included with EPEL release, this will not have them.
 
 =======
 
+1.3.1
+ * Remove an Epel::Rpm_gpg_key collector that could cause circular dependencies
+
 1.3.0
  * Add ability to disable and not define any resources from this module. This is useful if another module pulls in this module, but you already have epel managed another way.
  * Ability to specify your own TLS certs

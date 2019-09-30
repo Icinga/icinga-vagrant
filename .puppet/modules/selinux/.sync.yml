@@ -1,3 +1,23 @@
 ---
 .travis.yml:
   secure: "r7NI3OHbyMs/w351LkmkTFFLriDDyWKvgyZt+XYPw7jbaWmqnV4+NSJMQSkXgTS+tq2jNPLOWY1UuPuFJKkyd1m7LteOb2yZ6HJs5BL7QJjJWC2vUjkY60kl2xHn81D6SEXOXoVseGWiimlTlWJM3pKljNgZOZlOMw96vgnd6/I="
+Gemfile:
+  optional:
+    ':system_tests':
+      - gem: beaker-vagrant
+spec/spec_helper.rb:
+  mock_with: ':mocha'
+spec/acceptance/nodesets/archlinux-2-x64.yml:
+  delete: true
+spec/acceptance/nodesets/ec2/sles-12sp2-x64.yml:
+  delete: true
+spec/acceptance/nodesets/ec2/ubuntu-1604-x64.yml:
+  delete: true
+spec/acceptance/nodesets/ec2/windows-2016-base-x64.yml:
+  delete: true
+spec/acceptance/nodesets/ec2/image_templates.yaml:
+  delete: true
+spec/acceptance/nodesets/ec2/rhel-73-x64.yml:
+  delete: true
+spec/acceptance/nodesets/ec2/amazonlinux-2016091.yml:
+  delete: true

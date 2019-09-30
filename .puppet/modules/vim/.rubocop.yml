@@ -1,11 +1,13 @@
 require: rubocop-rspec
 AllCops:
-  TargetRubyVersion: 1.9
+  TargetRubyVersion: 2.2
   Include:
     - ./**/*.rb
   Exclude:
     - files/**/*
     - vendor/**/*
+    - Gemfile
+    - Rakefile
     - .vendor/**/*
     - pkg/**/*
     - spec/fixtures/**/*
@@ -27,9 +29,6 @@ Lint/EnsureReturn:
   Enabled: true
 
 Lint/HandleExceptions:
-  Enabled: true
-
-Lint/LiteralInCondition:
   Enabled: true
 
 Lint/ShadowingOuterLocalVariable:
@@ -194,9 +193,6 @@ Layout/TrailingBlankLines:
 Layout/SpaceInsideBlockBraces:
   Enabled: true
 
-Layout/SpaceInsideBrackets:
-  Enabled: true
-
 Layout/SpaceInsideHashLiteralBraces:
   Enabled: true
 
@@ -301,6 +297,9 @@ Style/EmptyLiteral:
 Metrics/LineLength:
   Enabled: false
 
+Style/MethodCallWithoutArgsParentheses:
+  Enabled: true
+
 Style/MethodDefParentheses:
   Enabled: true
 
@@ -314,9 +313,6 @@ Style/StringLiterals:
   Enabled: true
 
 Style/TrailingCommaInArguments:
-  Enabled: true
-
-Style/TrailingCommaInLiteral:
   Enabled: true
 
 Style/GlobalVars:
@@ -412,9 +408,6 @@ Style/NumericLiterals:
 Style/OneLineConditional:
   Enabled: true
 
-Style/OpMethod:
-  Enabled: true
-
 Style/ParenthesesAroundCondition:
   Enabled: true
 
@@ -500,9 +493,6 @@ Lint/UselessAssignment:
 Layout/ClosingParenthesisIndentation:
   Enabled: false
 
-Metrics/BlockLength:
-  Enabled: false
-
 # RSpec
 
 # We don't use rspec in this way
@@ -512,6 +502,7 @@ RSpec/DescribeClass:
 # Example length is not necessarily an indicator of code quality
 RSpec/ExampleLength:
   Enabled: False
-
 RSpec/NestedGroups:                                                                                                                                                                                              
-  Max: 4 
+  Max: 5 
+RSpec/MultipleExpectations:
+  Max: 3

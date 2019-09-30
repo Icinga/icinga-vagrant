@@ -20,8 +20,6 @@ describe Puppet::Type.type(:mongodb_database).provider(:mongodb) do
     }.to_json
   end
 
-  let(:parsed_dbs) { %w[admin local] }
-
   let(:resource) do
     Puppet::Type.type(:mongodb_database).new(
       ensure: :present,
@@ -38,27 +36,26 @@ describe Puppet::Type.type(:mongodb_database).provider(:mongodb) do
     tmp = Tempfile.new('test')
     mongodconffile = tmp.path
     allow(provider.class).to receive(:mongod_conf_file).and_return(mongodconffile)
-    provider.class.stubs(:mongo_eval).with('printjson(db.getMongo().getDBs())').returns(raw_dbs)
+    allow(provider.class).to receive(:mongo_eval).with('rs.slaveOk();printjson(db.getMongo().getDBs())').and_return(raw_dbs)
     allow(provider.class).to receive(:db_ismaster).and_return(true)
   end
 
   describe 'self.instances' do
     it 'returns an array of dbs' do
-      dbs = provider.class.instances.map(&:name)
-      expect(parsed_dbs).to match_array(dbs)
+      expect(provider.class.instances.map(&:name)).to match_array(%w[admin local])
     end
   end
 
   describe 'create' do
     it 'makes a database' do
-      provider.expects(:mongo_eval)
+      expect(provider).to receive(:mongo_eval)
       provider.create
     end
   end
 
   describe 'destroy' do
     it 'removes a database' do
-      provider.expects(:mongo_eval)
+      expect(provider).to receive(:mongo_eval)
       provider.destroy
     end
   end

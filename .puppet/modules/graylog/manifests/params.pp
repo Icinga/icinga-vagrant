@@ -1,13 +1,14 @@
 class graylog::params {
-  $major_version = '2.3'
+  $major_version = '3.0'
   $package_version = 'installed'
 
   $repository_release = 'stable'
 
   $default_config = {
+    'bin_dir'             => '/usr/share/graylog-server/bin',
+    'data_dir'            => '/var/lib/graylog-server',
     'plugin_dir'          => '/usr/share/graylog-server/plugin',
     'message_journal_dir' => '/var/lib/graylog-server/journal',
-    'content_packs_dir'   => '/usr/share/graylog-server/contentpacks',
     'is_master'           => true,
   }
 

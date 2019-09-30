@@ -74,7 +74,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
     at_path do
       begin
         hg_wrapper('pull', remote: true)
-      rescue
+      rescue StandardError
         next
       end
       begin
@@ -119,6 +119,10 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
     set_ownership if @resource.value(:owner) || @resource.value(:group)
   end
 
+  def sensitive?
+    (@resource.parameters.key?(:basic_auth_password) && @resource.parameters[:basic_auth_password].sensitive) ? true : false # Check if there is a sensitive parameter
+  end
+
   def hg_wrapper(*args)
     options = { remote: false }
     if !args.empty? && args[-1].is_a?(Hash)
@@ -129,7 +133,7 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
       args += [
         '--config', "auth.x.prefix=#{@resource.value(:source)}",
         '--config', "auth.x.username=#{@resource.value(:basic_auth_username)}",
-        '--config', "auth.x.password=#{@resource.value(:basic_auth_password)}",
+        '--config', "auth.x.password=#{sensitive? ? @resource.value(:basic_auth_password).unwrap : @resource.value(:basic_auth_password)}",
         '--config', 'auth.x.schemes=http https'
       ]
     end
@@ -137,11 +141,13 @@ Puppet::Type.type(:vcsrepo).provide(:hg, parent: Puppet::Provider::Vcsrepo) do
     if options[:remote] && @resource.value(:identity)
       args += ['--ssh', "ssh -oStrictHostKeyChecking=no -oPasswordAuthentication=no -oKbdInteractiveAuthentication=no -oChallengeResponseAuthentication=no -i #{@resource.value(:identity)}"]
     end
+
+    args.map! { |a| (a =~ %r{\s}) ? "'#{a}'" : a } # Adds quotes to arguments with whitespaces.
+
     if @resource.value(:user) && @resource.value(:user) != Facter['id'].value
-      args.map! { |a| (a =~ %r{\s}) ? "'#{a}'" : a } # Adds quotes to arguments with whitespaces.
-      Puppet::Util::Execution.execute("hg #{args.join(' ')}", uid: @resource.value(:user), failonfail: true, combine: true)
+      Puppet::Util::Execution.execute("hg #{args.join(' ')}", uid: @resource.value(:user), failonfail: true, combine: true, sensitive: sensitive?)
     else
-      hg(*args)
+      Puppet::Util::Execution.execute("hg #{args.join(' ')}", sensitive: sensitive?)
     end
   end
 end

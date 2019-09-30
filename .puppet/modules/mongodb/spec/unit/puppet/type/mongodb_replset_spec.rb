@@ -14,7 +14,17 @@ describe Puppet::Type.type(:mongodb_replset) do
 
   it 'accepts a members array' do
     replset[:members] = ['mongo1:27017', 'mongo2:27017']
-    expect(replset[:members]).to eq(['mongo1:27017', 'mongo2:27017'])
+    expect(replset[:members]).to eq([{ 'host' => 'mongo1:27017' }, { 'host' => 'mongo2:27017' }])
+  end
+
+  it 'accepts a members array of hashes' do
+    replset[:members] = [{ 'host' => 'mongo1:27017', 'hidden' => false }, { 'host' => 'mongo2:27017' }]
+    expect(replset[:members]).to eq([{ 'host' => 'mongo1:27017', 'hidden' => false }, { 'host' => 'mongo2:27017' }])
+  end
+
+  it 'accepts a members array of hashes and strings' do
+    replset[:members] = [{ 'host' => 'mongo1:27017', 'hidden' => false }, 'mongo2:27017']
+    expect(replset[:members]).to eq([{ 'host' => 'mongo1:27017', 'hidden' => false }, { 'host' => 'mongo2:27017' }])
   end
 
   it 'requires a name' do

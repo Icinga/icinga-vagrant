@@ -1,4 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'util', 'mongodb_md5er'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'util', 'mongodb_scram'))
 Puppet::Type.newtype(:mongodb_user) do
   @doc = 'Manage a MongoDB user. This includes management of users password as well as privileges.'
 
@@ -59,6 +60,19 @@ Puppet::Type.newtype(:mongodb_user) do
       end
     end
     newvalue(%r{^\w+$})
+
+    def insync?(is)
+      # check if computed keys from password_hash, salt and iterations
+      # match the keys of the existing user
+      if is == :absent && @resource.provider.scram_credentials
+        scram = @resource.provider.scram_credentials
+        scram_util = Puppet::Util::MongodbScram.new(should, scram['salt'], scram['iterationCount'])
+        if scram['storedKey'] == scram_util.stored_key && scram['serverKey'] == scram_util.server_key
+          is = should
+        end
+      end
+      should == is
+    end
   end
 
   newproperty(:password) do
@@ -80,12 +94,16 @@ Puppet::Type.newtype(:mongodb_user) do
     end
   end
 
+  newproperty(:scram_credentials) do
+    desc 'The SCRAM-SHA-1 credentials of a user. These are read only and change when password or password_hash changes.'
+  end
+
   autorequire(:package) do
     'mongodb_client'
   end
 
   autorequire(:service) do
-    'mongodb'
+    %w[mongodb mongod]
   end
 
   autorequire(:mongodb_database) do
@@ -97,6 +115,9 @@ Puppet::Type.newtype(:mongodb_user) do
       err("Either 'password_hash' or 'password' should be provided")
     elsif !self[:password_hash].nil? && !self[:password].nil?
       err("Only one of 'password_hash' or 'password' should be provided")
+    end
+    if should(:scram_credentials)
+      raise("The parameter 'scram_credentials' is read-only and cannot be changed")
     end
   end
 end

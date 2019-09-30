@@ -80,9 +80,6 @@ class epel (
   $epel_gpg_managed                       = $epel::params::epel_gpg_managed,
   $os_maj_release                         = $epel::params::os_maj_release,
 ) inherits epel::params {
-
-  Epel::Rpm_gpg_key <| |> -> Yumrepo <| |>
-
   if "${::osfamily}" == 'RedHat' and "${::operatingsystem}" !~ /Fedora|Amazon/ { # lint:ignore:only_variable_string
   if $epel_testing_managed {
     yumrepo { 'epel-testing':

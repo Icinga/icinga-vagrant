@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'mongodb::db', type: :define do
+describe 'mongodb::db' do
   context 'default' do
     let(:title) { 'testdb' }
 

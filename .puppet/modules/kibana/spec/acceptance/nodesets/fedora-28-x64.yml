@@ -1,0 +1,15 @@
+HOSTS:
+  fedora-28-x64:
+    roles:
+      - master
+    platform: el-7-x86_64
+    image: fedora:28
+    hypervisor: docker
+    docker_cmd: ["/sbin/init"]
+    docker_container_name: fedora-28-x64
+    docker_preserve_image: true
+    docker_image_commands:
+      - mkdir -p /etc/selinux/targeted/contexts/
+      - echo '<busconfig><selinux></selinux></busconfig>' > /etc/selinux/targeted/contexts/dbus_contexts
+      - rm /lib/systemd/system/getty.target
+      - dnf install -y libstdc++ && dnf clean all

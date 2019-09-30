@@ -1,4 +1,4 @@
-include '::archive'
+include 'archive'
 
 archive { '/tmp/jta-1.1.jar':
   ensure        => present,

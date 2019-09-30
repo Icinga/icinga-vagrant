@@ -18,6 +18,12 @@
 
 This module can be used to install and configure a Graylog system. (https://www.graylog.org/)
 
+### Native Types
+
+Native types to configure dashboards, inputs, streams and others are provided
+by the community maintained [puppet-graylog_api](https://github.com/magicmemories/puppet-graylog_api)
+module.
+
 ## Setup
 
 ### What graylog affects
@@ -37,8 +43,8 @@ the required dependencies like Java, MongoDB and Elasticsearch.
 You could use the following modules to install dependencies:
 
 * [puppetlabs/java](https://forge.puppet.com/puppetlabs/java)
-* [puppetlabs/mongodb](https://forge.puppet.com/puppetlabs/mongodb)
-* [elasticsearch/elasticsearch](https://forge.puppet.com/elasticsearch/elasticsearch)
+* [puppet/mongodb](https://forge.puppet.com/puppet/mongodb)
+* [elastic/elasticsearch](https://forge.puppet.com/elastic/elasticsearch)
 
 ### Beginning with graylog
 
@@ -87,8 +93,8 @@ class { 'mongodb::server':
 }
 
 class { 'elasticsearch':
-  version      => '5.5.1',
-  repo_version => '5.x',
+  version      => '6.6.0',
+  repo_version => '6.x',
   manage_repo  => true,
 }->
 elasticsearch::instance { 'graylog':
@@ -99,10 +105,10 @@ elasticsearch::instance { 'graylog':
 }
 
 class { 'graylog::repository':
-  version => '2.3'
+  version => '3.0'
 }->
 class { 'graylog::server':
-  package_version => '2.3.0-7',
+  package_version => '3.0.0-12',
   config          => {
     'password_secret' => '...',    # Fill in your password secret
     'root_password_sha2' => '...', # Fill in your root password hash
@@ -114,7 +120,7 @@ class { 'graylog::server':
 
 ```puppet
 class { '::graylog::repository':
-  version => '2.3'
+  version => '3.0'
 }->
 class { '::graylog::server':
   config  => {
@@ -126,18 +132,12 @@ class { '::graylog::server':
     root_timezone                                      => 'Europe/Berlin',
     allow_leading_wildcard_searches                    => true,
     allow_highlighting                                 => true,
-    rest_listen_uri                                    => 'https://graylog01.domain.local:9000/api/',
-    rest_transport_uri                                 => 'https://graylog01.domain.local:9000/api/',
-    rest_enable_tls                                    => true,
-    rest_tls_cert_file                                 => '/etc/ssl/graylog/graylog_cert_chain.crt',
-    rest_tls_key_file                                  => '/etc/ssl/graylog/graylog_key_pkcs8.pem',
-    rest_tls_key_password                              => 'sslkey-password',
-    web_enable                                         => true,
-    web_listen_uri                                     => 'https://graylog01.domain.local:9000/',
-    web_enable_tls                                     => true,
-    web_tls_cert_file                                  => '/etc/ssl/graylog/graylog_cert_chain.crt',
-    web_tls_key_file                                   => '/etc/ssl/graylog/graylog_key_pkcs8.pem',
-    web_tls_key_password                               => 'sslkey-password',
+    http_bind_address                                  => '0.0.0.0:9000',
+    http_external_uri                                  => 'https://graylog01.domain.local:9000/',
+    http_enable_tls                                    => true,
+    http_tls_cert_file                                 => '/etc/ssl/graylog/graylog_cert_chain.crt',
+    http_tls_key_file                                  => '/etc/ssl/graylog/graylog_key_pkcs8.pem',
+    http_tls_key_password                              => 'sslkey-password',
     rotation_strategy                                  => 'time',
     retention_strategy                                 => 'delete',
     elasticsearch_max_time_per_index                   => '1d',
@@ -180,7 +180,7 @@ version.
 
 It defaults to `$graylog::params::major_version`.
 
-Example: `version => '2.3'`
+Example: `version => '3.0'`
 
 ##### `url`
 
@@ -188,6 +188,10 @@ This setting is used to set the package repository url.
 
 **Note:** The module automatically detects the url for your platform so this
 setting should not be changed.
+
+##### `proxy`
+
+This setting is used to facilitate package installation with proxy.
 
 ##### `release`
 
@@ -207,7 +211,7 @@ This setting is used to choose the Graylog package version. It defaults to
 install time. You can also use `latest` so it will always update to the latest
 stable version if a new one is available.
 
-Example: `package_version => '2.3.0-7'`
+Example: `package_version => '3.0.0-12'`
 
 ##### `config`
 
@@ -276,8 +280,8 @@ Please make sure you have these installed before using the `graylog::allinone` c
 
 Requirements:
 
-* [puppetlabs/mongodb](https://forge.puppet.com/puppetlabs/mongodb)
-* [elasticsearch/elasticsearch](https://forge.puppet.com/elasticsearch/elasticsearch)
+* [puppet/mongodb](https://forge.puppet.com/puppet/mongodb)
+* [elastic/elasticsearch](https://forge.puppet.com/elastic/elasticsearch)
 
 ##### `elasticsearch`
 
@@ -292,8 +296,8 @@ Example:
 
 ```
 elasticsearch => {
-  version      => '5.5.1',
-  repo_version => '5.x',
+  version      => '6.5.1',
+  repo_version => '6.x',
 }
 ```
 
@@ -306,7 +310,7 @@ Example:
 
 ```
 graylog => {
-  major_version => '2.3',
+  major_version => '3.0',
   config        => {
     # ... see graylog::server description for details
   },
@@ -318,6 +322,7 @@ graylog => {
 Supported Graylog versions:
 
 * 2.x
+* 3.x
 
 Supported platforms:
 

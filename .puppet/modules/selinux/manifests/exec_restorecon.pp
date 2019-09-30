@@ -1,9 +1,7 @@
-# selinux::exec_restorecon
-#
-# A convenience wrapper around a restorecon exec
-#
 # Will execute after all other SELinux changes have been applied, but before
 # Anchor['selinux::end']
+#
+# @summary A convenience wrapper around a restorecon exec
 #
 # @param path The path to run restorecon on. Defaults to resource title.
 # @param recurse Whether restorecon should recurse. Defaults to true
@@ -21,7 +19,7 @@ define selinux::exec_restorecon(
   Optional[String]     $onlyif      = undef,
 ) {
 
-  include ::selinux
+  include selinux
 
   $opt_recurse = $recurse ? {
     true  => ' -R',

@@ -1,3 +1,15 @@
+## 2019-02-15 - 7.5.0 (Feature release)
+
+#### Features:
+
+- Add support for Ubuntu Xenial (16.04)
+- configure systemd unit for gunicorn also on Debian (Ubuntu)
+
+#### Bugfixes:
+
+- effectively configure specified carbon logs directory
+- fix spec tests
+
 ## 2018-02-01 - 7.3.0 (Feature release)
 
 #### Features:

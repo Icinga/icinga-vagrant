@@ -1,3 +1,66 @@
+## 1.3.4 (June 10, 2019)
+
+Improvements:
+
+- Updated minimum `puppet` version to 5.5.10.
+- Updated os support matrix.
+
+## 1.3.3 (April 29, 2019)
+
+Improvements:
+
+- Updated `pdk` templates.
+
+## 1.3.2 (January 1, 2019)
+
+Improvements:
+
+- Updated `pdk` templates.
+
+## 1.3.1 (December 9, 2018)
+
+Improvements:
+
+- Updated `pdk` templates.
+- Updated os support matrix.
+
+## 1.3.0 (October 14, 2018)
+
+Improvements:
+
+- Updated `pdk` templates.
+- Added support for `puppet` version 6.
+
+## 1.2.3 (August 31, 2018)
+
+Improvements:
+
+- Updated `pdk` templates.
+- Added tests for Debian 9 release.
+- Updated `puppetlabs-stdlib` dependency version.
+- Fixed minor documentation issues.
+
+## 1.2.2 (June 30, 2018)
+
+Improvements:
+
+- Updated `pdk` templates.
+- Added tests for Ubuntu 18.04 release.
+- Fixed minor documentation issues.
+
+## 1.2.1 (May 6, 2018)
+
+Improvements:
+
+- Updated `pdk` templates.
+- Updated minimum required `puppet` version to `4.10.0`.
+
+## 1.2.0 (April 18, 2018)
+
+Improvements:
+
+  - Updated module to be `pdk` compliant.
+
 ## 1.1.7 (February 12, 2018)
 
 Improvements:

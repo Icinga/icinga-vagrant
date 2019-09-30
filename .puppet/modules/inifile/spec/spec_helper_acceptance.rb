@@ -1,18 +1,54 @@
-require 'beaker-rspec/spec_helper'
-require 'beaker-rspec/helpers/serverspec'
-require 'beaker/puppet_install_helper'
-require 'beaker/module_install_helper'
+# frozen_string_literal: true
 
-run_puppet_install_helper
-install_ca_certs unless ENV['PUPPET_INSTALL_TYPE'] =~ /pe/i
-install_module_on(hosts)
-install_module_dependencies_on(hosts)
+require 'serverspec'
+require 'puppet_litmus'
+require 'tmpdir'
+include PuppetLitmus
+require 'spec_helper_acceptance_local' if File.file?(File.join(File.dirname(__FILE__), 'spec_helper_acceptance_local.rb'))
 
-RSpec.configure do |c|
-  c.filter_run :focus => true
-  c.run_all_when_everything_filtered = true
+if ENV['TARGET_HOST'].nil? || ENV['TARGET_HOST'] == 'localhost'
+  puts 'Running tests against this machine !'
+  if Gem.win_platform?
+    set :backend, :cmd
+  else
+    set :backend, :exec
+  end
+else
+  puts "TARGET_HOST #{ENV['TARGET_HOST']}"
+  # load inventory
+  inventory_hash = inventory_hash_from_inventory_file
+  node_config = config_from_node(inventory_hash, ENV['TARGET_HOST'])
 
-  # Readable test descriptions
-  c.formatter = :documentation
-  c.treat_symbols_as_metadata_keys_with_true_values = true
+  if target_in_group(inventory_hash, ENV['TARGET_HOST'], 'ssh_nodes')
+    set :backend, :ssh
+    options = Net::SSH::Config.for(host)
+    options[:user] = node_config.dig('ssh', 'user') unless node_config.dig('ssh', 'user').nil?
+    options[:port] = node_config.dig('ssh', 'port') unless node_config.dig('ssh', 'port').nil?
+    options[:password] = node_config.dig('ssh', 'password') unless node_config.dig('ssh', 'password').nil?
+    host = if ENV['TARGET_HOST'].include?(':')
+             ENV['TARGET_HOST'].split(':').first
+           else
+             ENV['TARGET_HOST']
+           end
+    set :host,        options[:host_name] || host
+    set :ssh_options, options
+  elsif target_in_group(inventory_hash, ENV['TARGET_HOST'], 'winrm_nodes')
+    require 'winrm'
+
+    set :backend, :winrm
+    set :os, family: 'windows'
+    user = node_config.dig('winrm', 'user') unless node_config.dig('winrm', 'user').nil?
+    pass = node_config.dig('winrm', 'password') unless node_config.dig('winrm', 'password').nil?
+    endpoint = "http://#{ENV['TARGET_HOST']}:5985/wsman"
+
+    opts = {
+      user: user,
+      password: pass,
+      endpoint: endpoint,
+      operation_timeout: 300,
+    }
+
+    winrm = WinRM::Connection.new opts
+    Specinfra.configuration.winrm = winrm
+  end
 end

@@ -1,12 +1,15 @@
 HOSTS:
-  ubuntu-1404-x64:
-    platform: ubuntu-14.04-amd64
-    hypervisor: docker
+  ubuntu1404-64:
+    docker_cmd:
+      - "/sbin/init"
     image: ubuntu:14.04
-    docker_preserve_image: true
-    docker_cmd: '["/sbin/init"]'
+    platform: ubuntu-14.04-amd64
+    packaging_platform: ubuntu-14.04-amd64
     docker_image_commands:
-      # ensure that upstart is booting correctly in the container
-      - 'rm /usr/sbin/policy-rc.d && rm /sbin/initctl && dpkg-divert --rename --remove /sbin/initctl && apt-get update && apt-get install -y net-tools wget && locale-gen en_US.UTF-8'
-CONFIG:
-  trace_limit: 200
+      - cp /bin/true /sbin/agetty
+      - rm /usr/sbin/policy-rc.d
+      - rm /sbin/initctl; dpkg-divert --rename --remove /sbin/initctl
+      - apt-get install -y net-tools wget apt-transport-https
+      - locale-gen en_US.UTF-8
+      - echo LANG=en_US.UTF-8 > /etc/default/locale
+    hypervisor: docker

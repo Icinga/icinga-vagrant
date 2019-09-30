@@ -8,8 +8,8 @@ describe Facter::Util::Fact do
   describe 'mongodb_version' do
     context 'with value' do
       before do
-        Facter::Core::Execution.stubs(:which).with('mongo').returns(true)
-        Facter::Core::Execution.stubs(:execute).with('mongo --version 2>&1').returns('MongoDB shell version: 3.2.1')
+        allow(Facter::Core::Execution).to receive(:which).with('mongo').and_return(true)
+        allow(Facter::Core::Execution).to receive(:execute).with('mongo --version 2>&1').and_return('MongoDB shell version: 3.2.1')
       end
       it {
         expect(Facter.fact(:mongodb_version).value).to eq('3.2.1')

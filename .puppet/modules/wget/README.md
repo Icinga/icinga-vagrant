@@ -1,6 +1,6 @@
 # rehan-wget
 
-[![Build Status](https://travis-ci.org/rehanone/puppet-wget.svg?branch=master)](https://travis-ci.org/rehanone/puppet-wget)
+[![Puppet Forge](http://img.shields.io/puppetforge/v/rehan/wget.svg)](https://forge.puppetlabs.com/rehan/wget) [![Build Status](https://travis-ci.org/rehanone/puppet-wget.svg?branch=master)](https://travis-ci.org/rehanone/puppet-wget)
 
 #### Table of Contents
 1. [Overview](#overview)
@@ -34,7 +34,7 @@ The module can be used with `hiera` to provide all configuration options. See [U
 #### Requirements
 This module is designed to be as clean and compliant with latest puppet code guidelines. It works with:
 
-  - `puppet >=4.7.0`
+  - `puppet >=5.5.10`
 
 ## Usage
 
@@ -68,7 +68,6 @@ All of this data can be provided through `Hiera`.
 
 **YAML**
 ```yaml
----
 wget::package_manage: true
 wget::package_ensure: present
 wget::package_name: 'wget'
@@ -179,9 +178,9 @@ If you want to use your own unless condition, you can do it. This example uses w
 
 * [stdlib][1]
 
-[1]:https://github.com/puppetlabs/puppetlabs-stdlib
+[1]:https://forge.puppet.com/puppetlabs/stdlib
 
 ## Development
 
-You can submit pull requests and create issues through the official page of this module: https://github.com/rehanone/puppet-wget. 
+You can submit pull requests and create issues through the official page of this module on [GitHub](https://github.com/rehanone/puppet-wget).
 Please do report any bug and suggest new features/improvements.

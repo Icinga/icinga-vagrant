@@ -1,11 +1,13 @@
 HOSTS:
-  ubuntu-1604-x64:
-    platform: ubuntu-16.04-amd64
-    hypervisor: docker
+  ubuntu1604-64:
+    docker_cmd:
+      - "/sbin/init"
     image: ubuntu:16.04
-    docker_preserve_image: true
-    docker_cmd: '["/sbin/init"]'
+    platform: ubuntu-16.04-amd64
+    packaging_platform: ubuntu-16.04-amd64
     docker_image_commands:
-      - 'apt-get update && apt-get install -y net-tools wget locales strace lsof && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen'
-CONFIG:
-  trace_limit: 200
+      - cp /bin/true /sbin/agetty
+      - apt-get install -y net-tools wget locales apt-transport-https
+      - locale-gen en_US.UTF-8
+      - echo LANG=en_US.UTF-8 > /etc/default/locale
+    hypervisor: docker

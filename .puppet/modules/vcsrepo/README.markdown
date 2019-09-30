@@ -18,14 +18,15 @@
     * [Type: vcsrepo](#type-vcsrepo)
         * [Providers](#providers)
         * [Features](#features)
-        * [Parameters](#parameters)
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Development - Guide for contributing to the module](#development)
 
+<a id="overview"></a>
 ## Overview
 
 The vcsrepo module lets you use Puppet to easily deploy content from your version control system (VCS).
 
+<a id="module-description"></a>
 ## Module description
 
 The vcsrepo module provides a single type with providers to support the following version control systems:
@@ -39,14 +40,17 @@ The vcsrepo module provides a single type with providers to support the followin
 
 **Note:** `git` is the only vcs provider officially [supported by Puppet Inc.](https://forge.puppet.com/supported)
 
+<a id="setup"></a>
 ## Setup
 
+<a id="setup-requirements"></a>
 ### Setup requirements
 
 The vcsrepo module does not install any VCS software for you. You must install a VCS before you can use this module.
 
 Like Puppet in general, the vcsrepo module does not automatically create parent directories for the files it manages. Set up any needed directory structures before you start.
 
+<a id="beginning-with-vcsrepo"></a>
 ### Beginning with vcsrepo
 
 To create and manage a blank repository, define the type `vcsrepo` with a path to your repository and supply the `provider` parameter based on the [VCS you're using](#usage).
@@ -58,10 +62,12 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
+<a id="usage"></a>
 ## Usage
 
 **Note:** `git` is the only vcsrepo provider officially [supported by Puppet Inc.](https://forge.puppet.com/supported)
 
+<a id="git"></a>
 ### Git
 
 #### Create a blank repository
@@ -230,7 +236,7 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
-
+<a id="bazaar"></a>
 ### Bazaar
 
 #### Create a blank repository
@@ -279,6 +285,7 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
+<a id="cvs"></a>
 ### CVS
 
 #### Create a blank repository
@@ -362,6 +369,7 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
+<a id="mercurial"></a>
 ### Mercurial
 
 #### Create a blank repository
@@ -457,6 +465,7 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
+<a id="perforce"></a>
 ### Perforce
 
 #### Create an empty workspace
@@ -507,6 +516,7 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
+<a id="subversion"></a>
 ### Subversion
 
 #### Create a blank repository
@@ -657,12 +667,17 @@ vcsrepo { '/path/to/repo':
 }
 ~~~
 
+<a id="reference"></a> 
 ## Reference
 
+<a id="type-vcsrepo"></a> 
 ### Type: vcsrepo
 
-The vcsrepo module adds only one type with several providers. Each provider abstracts a different VCS, and each provider includes a set of features according to its needs.
+The vcsrepo module adds only one type with several providers.
 
+For information on the classes and types, see the [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-vcsrepo/blob/master/REFERENCE.md)
+
+<a id="providers"></a> 
 #### Providers
 
 **Note:** Not all features are available with all providers.
@@ -703,12 +718,13 @@ Features: `basic_auth`, `configuration`, `conflict`, `depth`, `filesystem_types`
 
 Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conflict`, `ensure`, `excludes`, `force`, `fstype`, `group`, `includes`, `owner`, `path`, `provider`, `revision`, `source`, `trust_server_cert`
 
+<a id="features"></a> 
 #### Features
 
 **Note:** Not all features are available with all providers.
 
 * `bare_repositories` - Differentiates between bare repositories and those with working copies. (Available with `git`.)
-* `basic_auth` - Supports HTTP Basic authentication. (Available with `svn`.)
+* `basic_auth` - Supports HTTP Basic authentication. (Available with `hg` and `svn`.)
 * `conflict` - Lets you decide how to resolve any conflicts between the source repository and your working copy. (Available with `svn`.)
 * `configuration` - Lets you specify the location of your configuration files. (Available with `svn`.)
 * `cvs_rsh` - Understands the `CVS_RSH` environment variable. (Available with `cvs`.)
@@ -724,150 +740,16 @@ Parameters: `basic_auth_password`, `basic_auth_username`, `configuration`, `conf
 * `p4config` - Supports setting the `P4CONFIG` environment. (Available with `p4`.)
 * `submodules` - Supports repository submodules which can be optionally initialized. (Available with `git`.)
 
-#### Parameters
-
-All parameters are optional, except where specified otherwise.
-
-##### `basic_auth_password`
-
-Specifies the password for HTTP Basic authentication. (Requires the `basic_auth` feature.) Valid options: a string. Default: none.
-
-##### `basic_auth_username`
-
-Specifies the username for HTTP Basic authentication. (Requires the `basic_auth` feature.) Valid options: a string. Default: none.
-
-##### `compression`
-
-Sets the GZIP compression level for the repository history. (Requires the `gzip_compression` feature.) Valid options: an integer between 0 and 6. Default: none.
-
-##### `configuration`
-
-Sets the configuration directory to use. (Requires the `configuration` feature.) Valid options: a string containing an absolute path. Default: none.
-
-##### `conflict`
-
-Tells Subversion how to resolve any conflicts between the source repository and your working copy. (Requires the `conflict` feature.) Valid options: 'base', 'mine-full', 'theirs-full', and 'working'. Default: none.
-
-##### `cvs_rsh`
-
-Provides a value for the `CVS_RSH` environment variable. (Requires the `cvs_rsh` feature.) Valid options: a string. Default: none.
-
-##### `depth`
-
-In `git`, `depth` sets the number of commits to include when creating a shallow clone. (Requires the `depth` feature.) Valid options: an integer. Default: none.
-
-In `svn`, `depth` limits the scope of an operation to the specified tree depth. (Requires the `depth` feature.) Valid options: 'empty', 'files', 'immediates', 'infinity'. Default: none.
-
-##### `ensure`
-
-Specifies whether the repository should exist. Valid options: 'present', 'bare', 'absent', and 'latest'. Default: 'present'.
-
-##### `excludes`
-
-Lists any files the repository shouldn't track (similar to .gitignore). Valid options: a string (separate multiple values with the newline character). Default: none.
-
-##### `force`
-
-Specifies whether to delete any existing files in the repository path if creating a new repository. **Use with care.** Valid options: 'true' and 'false'. Default: 'false'.
-
-##### `fstype`
-
-Sets the filesystem type. (Requires the `filesystem_types` feature.) Valid options: 'fsfs' or 'bdb'. Default: none.
-
-##### `group`
-
-Specifies a group to own the repository files. Valid options: a string containing a group name or GID. Default: none.
-
-##### `identity`
-
-Specifies an identity file to use for SSH authentication. (Requires the `ssh_identity` feature.) Valid options: a string containing an absolute path. Default: none.
-
-##### `includes`
-
-Tells Subversion which paths should be checked out at the specified depth; all other paths are not checked out. Default: none (checkout all paths).
-
-##### `module`
-
-Specifies the repository module to manage. (Requires the `modules` feature.) Valid options: a string containing the name of a CVS module. Default: none.
-
-##### `owner`
-
-Specifies a user to own the repository files. Valid options: a string containing a username or UID. Default: none.
-
-##### `p4config`
-
-Specifies a config file that contains settings for connecting to the Perforce service. (Requires the `p4config` feature.) Valid options: a string containing the absolute path to a valid [Perforce config file](http://www.perforce.com/perforce/doc.current/manuals/p4guide/chapter.configuration.html#configuration.process.configfiles). Default: none.
-
-##### `path`
-
-Specifies a location for the managed repository. Valid options: a string containing an absolute path. Default: the title of your declared resource.
-
-##### `provider`
-
-*Required.* Specifies the backend to use for this vcsrepo resource. Valid options: 'bzr', 'cvs', 'git', 'hg', 'p4', and 'svn'.
-
-##### `remote`
-
-Specifies the remote repository to track. (Requires the `multiple_remotes` feature.) Valid options: a string containing one of the remote names specified in `source`. Default: 'origin'.
-
-##### `revision`
-
-Sets the revision of the repository. Valid options vary by provider:
-
-* `git` - A string containing a Git branch name, or a commit SHA or tag.
-* `bzr` - A string containing a Bazaar [revision spec](http://wiki.bazaar.canonical.com/BzrRevisionSpec).
-* `cvs` - A string containing a CVS [tag or revision number](http://www.thathost.com/wincvs-howto/cvsdoc/cvs_4.html).
-* `hg` - A string containing a Mercurial [changeset ID](https://www.mercurial-scm.org/wiki/ChangeSetID) or [tag](https://www.mercurial-scm.org/wiki/Tag).
-* `p4` - A string containing a Perforce [change number, label name, client name, or date spec](http://www.perforce.com/perforce/r12.1/manuals/cmdref/o.fspecs.html).
-* `svn` - A string containing a Subversion [revision number](http://svnbook.red-bean.com/en/1.7/svn.basic.in-action.html#svn.basic.in-action.revs), [revision keyword, or revision date](http://svnbook.red-bean.com/en/1.7/svn.tour.revs.specifiers.html).
-
-Default: none.
-
-##### `source`
-
-Specifies a source repository to serve as the upstream for your managed repository. Default: none. Valid options vary by provider:
-
-* `git` - A string containing a [Git repository URL](https://www.kernel.org/pub/software/scm/git/docs/git-clone.html#_git_urls_a_id_urls_a) or a hash of `name => URL` mappings. See also [`remote`](#remote).
-* `bzr` - A string containing a Bazaar branch location.
-* `cvs` - A string containing a CVS root.
-* `hg` - A string containing the local path or URL of a Mercurial repository.
-* `p4` - A string containing a Perforce depot path.
-* `svn` - A string containing a Subversion repository URL.
-
-Default: none.
-
-##### `submodules`
-
-Specifies whether to initialize and update each submodule in the repository. (Requires the `submodules` feature.) Valid options: 'true' and 'false'. Default: 'true'.
-
-##### `trust_server_cert`
-
-Instructs Subversion to accept SSL server certificates issued by unknown certificate authorities. Valid options: 'true' and 'false'. Default: 'false'.
-
-##### `user`
-
-Specifies the user to run as for repository operations. (Requires the `user` feature.) Valid options: a string containing a username or UID. Default: none.
-
+<a id="limitations"></a>
 ## Limitations
 
-Git is the only VCS provider officially [supported by Puppet Inc.](https://forge.puppet.com/supported)
+Git is the only VCS provider officially [supported by Puppet Inc.](https://forge.puppet.com/supported) Git with 3.18 changes the maximum enabled TLS protocol version, this breaks some HTTPS functionality on older operating systems. They are Enterprise Linux 5 and OracleLinux 6.
 
 The includes parameter is only supported when SVN client version is >= 1.6.
 
-This module has been tested with Puppet 2.7 and higher.
+For an extensive list of supported operating systems, see [metadata.json](https://github.com/puppetlabs/puppetlabs-vcsrepo/blob/master/metadata.json)
 
-The module has been tested on:
-
-* CentOS 5/6/7
-* Debian 6/7/8
-* Oracle 5/6/7
-* Red Hat Enterprise Linux 5/6/7
-* Scientific Linux 5/6/7
-* SLES 10/11/12
-* Ubuntu 10.04/12.04/14.04/16.04
-
-Testing on other platforms has been light and cannot be guaranteed.
-
+<a id="development"></a> 
 ## Development
 
 Puppet Inc. modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can't access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.

@@ -1,6 +1,4 @@
-# Class: selinux
-#
-# This class manages SELinux on RHEL based systems.
+# Manage SELinux on RHEL based systems.
 #
 # @example Enable enforcing mode with targeted policy
 #   class { 'selinux':
@@ -9,16 +7,9 @@
 #   }
 #
 # @param mode sets the operating state for SELinux.
-#   Default value: undef
-#   Allowed values: (enforcing|permissive|disabled|undef)
 # @param type sets the selinux type
-#   Default value: undef
-#   Allowed values: (targeted|minimum|mls|undef)
 # @param refpolicy_makefile the path to the system's SELinux makefile for the refpolicy framework
-#   Default value: /usr/share/selinux/devel/Makefile
-#   Allowed value: absolute path
 # @param manage_package manage the package for selinux tools and refpolicy
-#   Default value: true
 # @param package_name sets the name for the selinux tools package
 #   Default value: OS dependent (see params.pp)
 # @param refpolicy_package_name sets the name for the refpolicy development package, required for the
@@ -26,54 +17,58 @@
 #   Default value: OS dependent (see params.pp)
 # @param module_build_root directory where modules are built. Defaults to `$vardir/puppet-selinux`
 # @param default_builder which builder to use by default with selinux::module
-#   Default value: simple
 # @param boolean Hash of selinux::boolean resource parameters
 # @param fcontext Hash of selinux::fcontext resource parameters
 # @param module Hash of selinux::module resource parameters
 # @param permissive Hash of selinux::module resource parameters
 # @param port Hash of selinux::port resource parameters
+# @param exec_restorecon Hash of selinux::exec_restorecon resource parameters
 #
 class selinux (
-  Optional[Enum['enforcing', 'permissive', 'disabled']] $mode = $::selinux::params::mode,
-  Optional[Enum['targeted', 'minimum', 'mls']] $type          = $::selinux::params::type,
-  Stdlib::Absolutepath $refpolicy_makefile                    = $::selinux::params::refpolicy_makefile,
-  Boolean $manage_package                                     = $::selinux::params::manage_package,
-  String $package_name                                        = $::selinux::params::package_name,
-  String $refpolicy_package_name                              = $::selinux::params::refpolicy_package_name,
-  Stdlib::Absolutepath $module_build_root                     = $::selinux::params::module_build_root,
+  Optional[Enum['enforcing', 'permissive', 'disabled']] $mode = undef,
+  Optional[Enum['targeted', 'minimum', 'mls']] $type          = undef,
+  Stdlib::Absolutepath $refpolicy_makefile                    = '/usr/share/selinux/devel/Makefile',
+  Boolean $manage_package                                     = true,
+  String $package_name                                        = $selinux::params::package_name,
+  String $refpolicy_package_name                              = 'selinux-policy-devel',
+  Stdlib::Absolutepath $module_build_root                     = $selinux::params::module_build_root,
   Enum['refpolicy', 'simple'] $default_builder                = 'simple',
 
   ### START Hiera Lookups ###
-  $boolean        = undef,
-  $fcontext       = undef,
-  $module         = undef,
-  $permissive     = undef,
-  $port           = undef,
+  Optional[Hash] $boolean         = undef,
+  Optional[Hash] $fcontext        = undef,
+  Optional[Hash] $module          = undef,
+  Optional[Hash] $permissive      = undef,
+  Optional[Hash] $port            = undef,
+  Optional[Hash] $exec_restorecon = undef,
   ### END Hiera Lookups ###
 
 ) inherits selinux::params {
 
-  class { '::selinux::package':
+  class { 'selinux::package':
     manage_package => $manage_package,
     package_name   => $package_name,
   }
 
-  class { '::selinux::config': }
+  class { 'selinux::config': }
 
   if $boolean {
-    create_resources ( 'selinux::boolean', hiera_hash('selinux::boolean', $boolean) )
+    create_resources ( 'selinux::boolean', $boolean )
   }
   if $fcontext {
-    create_resources ( 'selinux::fcontext', hiera_hash('selinux::fcontext', $fcontext) )
+    create_resources ( 'selinux::fcontext', $fcontext )
   }
   if $module {
-    create_resources ( 'selinux::module', hiera_hash('selinux::module', $module) )
+    create_resources ( 'selinux::module', $module )
   }
   if $permissive {
-    create_resources ( 'selinux::permissive', hiera_hash('selinux::permissive', $permissive) )
+    create_resources ( 'selinux::permissive', $permissive )
   }
   if $port {
-    create_resources ( 'selinux::port', hiera_hash('selinux::port', $port) )
+    create_resources ( 'selinux::port', $port )
+  }
+  if $exec_restorecon {
+    create_resources ( 'selinux::exec_restorecon', $exec_restorecon )
   }
 
   # Ordering

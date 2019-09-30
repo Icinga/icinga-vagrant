@@ -1,7 +1,7 @@
 sudo: false
 language: ruby
 cache: bundler
-bundler_args: --without system_tests development
+bundler_args: "--without system_tests development"
 before_install:
 - bundle -v
 - rm Gemfile.lock || true
@@ -14,14 +14,20 @@ script:
 matrix:
   fast_finish: true
   include:
-  - rvm: 2.1
-    env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=test
-  - rvm: 2.2
+  - rvm: 2.3.1
     env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=test
   - rvm: 2.3.1
     env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=rubocop
   - rvm: 2.3.1
     env: PUPPET_VERSION="~> 4.0" STRICT_VARIABLES="yes" CHECK=build FORGEDEPLOY=true
+  - rvm: 2.3.1
+    env: PUPPET_VERSION="~> 5.0" STRICT_VARIABLES="yes" CHECK=test
+  - rvm: 2.3.1
+    env: PUPPET_VERSION="~> 5.0" STRICT_VARIABLES="yes" CHECK=rubocop
+  - rvm: 2.5.3
+    env: PUPPET_VERSION="~> 6.1" STRICT_VARIABLES="yes" CHECK=test
+  - rvm: 2.5.3
+    env: PUPPET_VERSION="~> 6.1" STRICT_VARIABLES="yes" CHECK=rubocop
 notifications:
   email: false
 deploy:

@@ -1,3 +1,4 @@
+# init.pp
 
 class wget (
   Boolean $package_manage,

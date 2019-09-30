@@ -11,6 +11,6 @@
 # Sample Usage:
 #
 
-class { '::selinux':
+class { 'selinux':
   type => 'targeted',
 }

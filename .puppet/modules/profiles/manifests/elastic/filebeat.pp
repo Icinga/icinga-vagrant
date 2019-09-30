@@ -1,5 +1,5 @@
 class profiles::elastic::filebeat (
-  $filebeat_major_version = '6',
+  $filebeat_major_version = '7',
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200
 ){
@@ -25,13 +25,13 @@ class profiles::elastic::filebeat (
     require => Es_Instance_Conn_Validator['elastic-es']
   }
 
-  filebeat::prospector { 'syslogs':
+  filebeat::input { 'syslogs':
     paths => [
       '/var/log/messages'
     ],
     doc_type => 'syslog-beat'
   }
-  filebeat::prospector { 'icinga2logs':
+  filebeat::input { 'icinga2logs':
     paths => [
       '/var/log/icinga2/icinga2.log'
     ],

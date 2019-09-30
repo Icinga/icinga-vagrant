@@ -1,0 +1,13 @@
+HOSTS:
+  debian9-64:
+    docker_cmd:
+      - "/sbin/init"
+    image: debian:9
+    platform: debian-9-amd64
+    packaging_platform: debian-9-amd64
+    docker_image_commands:
+      - cp /bin/true /sbin/agetty
+      - rm -f /usr/sbin/policy-rc.d
+      - apt-get update && apt-get install -y cron locales-all net-tools wget systemd-sysv
+        gnupg
+    hypervisor: docker

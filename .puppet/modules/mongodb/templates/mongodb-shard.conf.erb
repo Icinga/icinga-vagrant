@@ -19,7 +19,6 @@ logpath = <%= @logpath %>
 <% if @unixsocketprefix -%>
 unixSocketPrefix = <%= @unixsocketprefix %>
 <% end -%>
-
 <% if @config_data -%>
 <% @config_data.each do |k,v| -%>
 <%= k %> = <%= v %>

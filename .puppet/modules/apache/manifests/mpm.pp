@@ -1,3 +1,6 @@
+# @summary Enables the use of Apache MPMs.
+#
+# @api private
 define apache::mpm (
   $lib_path       = $::apache::lib_path,
   $apache_version = $::apache::apache_version,
@@ -71,35 +74,45 @@ define apache::mpm (
             before  => Class['apache::service'],
           }
         }
-      }
-
-      if $mpm == 'itk' and $::operatingsystem == 'Ubuntu' and $::operatingsystemrelease == '14.04' {
-        # workaround https://bugs.launchpad.net/ubuntu/+source/mpm-itk/+bug/1286882
-        exec {
-          '/usr/sbin/a2dismod mpm_event':
-            onlyif  => '/usr/bin/test -e /etc/apache2/mods-enabled/mpm_event.load',
-            require => Package['httpd'],
-            before  => Package['apache2-mpm-itk'],
-        }
-      }
-
-      if $mpm == 'itk' and $::operatingsystem == 'Ubuntu' and $::operatingsystemrelease == '16.04' {
-        $packagename = 'libapache2-mpm-itk'
       } else {
-        $packagename = "apache2-mpm-${mpm}"
+        package { "apache2-mpm-${mpm}":
+          ensure => present,
+          before => [
+            Class['apache::service'],
+            File[$::apache::mod_enable_dir],
+          ],
+        }
       }
 
-      if versioncmp($apache_version, '2.4') < 0 or $mpm == 'itk' {
-        package { $packagename:
-          ensure => present,
+
+      if $mpm == 'itk' {
+        if ( ( $::operatingsystem == 'Ubuntu' ) or ( ($::operatingsystem == 'Debian') and ( versioncmp($::operatingsystemrelease, '8.0.0') >= 0 ) ) ) {
+          include apache::mpm::disable_mpm_event
         }
-        if $::apache::mod_enable_dir {
-          Package[$packagename] {
-            before => File[$::apache::mod_enable_dir],
-          }
+
+        package { 'libapache2-mpm-itk':
+          ensure => present,
+          before => [
+            Class['apache::service'],
+            File[$::apache::mod_enable_dir],
+          ],
         }
       }
+
+      if $mpm == 'prefork' {
+        if ( ( $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease,'18.04') >= 0 ) or ( $::operatingsystem == 'Debian' and versioncmp($::operatingsystemrelease, '9.0.0') >= 0 ) ) {
+          include apache::mpm::disable_mpm_event
+        }
+      }
+
+      if $mpm == 'worker' {
+        if ( ( $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease,'18.04') >= 0 ) or ( $::operatingsystem == 'Debian' and versioncmp($::operatingsystemrelease, '8.0.0') >= 0 ) ) {
+          include apache::mpm::disable_mpm_event
+        }
+      }
+
     }
+
     'freebsd': {
       class { '::apache::package':
         mpm_module => $mpm,

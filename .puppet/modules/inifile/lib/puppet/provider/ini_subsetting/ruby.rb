@@ -2,15 +2,19 @@ require File.expand_path('../../../util/ini_file', __FILE__)
 require File.expand_path('../../../util/setting_value', __FILE__)
 
 Puppet::Type.type(:ini_subsetting).provide(:ruby) do
-
+  desc '
+  Creates new ini_subsetting file, a specific config file with a provider that uses
+  this as its parent and implements the method
+  self.file_path, and that will provide the value for the path to the
+  ini file.'
   def exists?
     setting_value.get_subsetting_value(subsetting, resource[:use_exact_match])
   end
 
   def create
     setting_value.add_subsetting(
-        subsetting, resource[:value], resource[:use_exact_match],
-        resource[:insert_type], resource[:insert_value]
+      subsetting, resource[:value], resource[:use_exact_match],
+      resource[:insert_type], resource[:insert_value]
     )
     ini_file.set_value(section, setting, key_val_separator, setting_value.get_value)
     ini_file.save
@@ -32,8 +36,8 @@ Puppet::Type.type(:ini_subsetting).provide(:ruby) do
 
   def value=(value)
     setting_value.add_subsetting(
-        subsetting, value, resource[:use_exact_match],
-        resource[:insert_type], resource[:insert_value]
+      subsetting, value, resource[:use_exact_match],
+      resource[:insert_type], resource[:insert_value]
     )
     ini_file.set_value(section, setting, key_val_separator, setting_value.get_value)
     ini_file.save
@@ -72,15 +76,15 @@ Puppet::Type.type(:ini_subsetting).provide(:ruby) do
   end
 
   private
+
   def ini_file
     @ini_file ||= Puppet::Util::IniFile.new(file_path, key_val_separator)
   end
 
   def setting_value
     @setting_value ||= Puppet::Util::SettingValue.new(
-        ini_file.get_value(section, setting),
-        subsetting_separator, quote_char, subsetting_key_val_separator
+      ini_file.get_value(section, setting),
+      subsetting_separator, quote_char, subsetting_key_val_separator
     )
   end
-
 end

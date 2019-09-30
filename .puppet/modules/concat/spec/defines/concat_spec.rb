@@ -62,7 +62,7 @@ describe 'concat' do
     end
   end
 
-  context 'title without path param' do
+  context 'when title without path param' do
     # title/name is the default value for the path param. therefore, the
     # title must be an absolute path unless path is specified
     ['/foo', '/foo/bar', '/foo/bar/baz'].each do |title|
@@ -82,7 +82,7 @@ describe 'concat' do
     end
   end
 
-  context 'title with path param' do
+  context 'when title with path param' do
     ['/foo', 'foo', 'foo/bar'].each do |title|
       context title do
         it_behaves_like 'concat', title, path: '/etc/foo.bar'
@@ -90,7 +90,7 @@ describe 'concat' do
     end
   end
 
-  context 'title with special characters in title' do
+  context 'when title with special characters in title' do
     ['foo:bar', 'foo*bar', 'foo(bar)', 'foo@bar'].each do |title|
       context title do
         it_behaves_like 'concat', title, path: '/etc/foo.bar'
@@ -98,18 +98,18 @@ describe 'concat' do
     end
   end
 
-  context 'as non-root user' do
+  context 'when as non-root user' do
     it_behaves_like 'concat', '/etc/foo.bar', {}, 'bob'
   end
 
-  context 'ensure =>' do
-    %w[present absent].each do |ens|
+  context 'when ensure =>' do
+    ['present', 'absent'].each do |ens|
       context ens do
         it_behaves_like 'concat', '/etc/foo.bar', ensure: ens
       end
     end
 
-    context 'invalid' do
+    context 'when invalid' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { ensure: 'invalid' } }
 
@@ -117,14 +117,15 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{expects a match for Enum\['absent', 'present'\]})
       end
     end
-  end # ensure =>
+  end
+  # ensure =>
 
-  context 'path =>' do
-    context '/foo' do
+  context 'when path =>' do
+    context 'when /foo' do
       it_behaves_like 'concat', '/etc/foo.bar', path: '/foo'
     end
 
-    context 'false' do
+    context 'when false' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { path: false } }
 
@@ -143,16 +144,17 @@ describe 'concat' do
         end
       end
     end
-  end # path =>
+  end
+  # path =>
 
-  context 'owner =>' do
+  context 'when owner =>' do
     ['apenney', 1000, '1001'].each do |owner|
       context owner do
         it_behaves_like 'concat', '/etc/foo.bar', owner: owner
       end
     end
 
-    context 'false' do
+    context 'when false' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { owner: false } }
 
@@ -160,16 +162,17 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{Evaluation Error.*expects.*String.*Boolean.*})
       end
     end
-  end # owner =>
+  end
+  # owner =>
 
-  context 'group =>' do
+  context 'when group =>' do
     ['apenney', 1000, '1001'].each do |group|
       context group do
         it_behaves_like 'concat', '/etc/foo.bar', group: group
       end
     end
 
-    context 'false' do
+    context 'when false' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { group: false } }
 
@@ -177,14 +180,15 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{Evaluation Error.*expects.*String.*Boolean.*})
       end
     end
-  end # group =>
+  end
+  # group =>
 
-  context 'mode =>' do
-    context '1755' do
+  context 'when mode =>' do
+    context 'when 1755' do
       it_behaves_like 'concat', '/etc/foo.bar', mode: '1755'
     end
 
-    context 'false' do
+    context 'when false' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { mode: false } }
 
@@ -192,17 +196,18 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{parameter 'mode' expects .*String.*})
       end
     end
-  end # mode =>
+  end
+  # mode =>
 
-  context 'warn =>' do
+  context 'when warn =>' do
     [true, false, '# foo'].each do |warn|
       context warn do
         it_behaves_like 'concat', '/etc/foo.bar', warn: warn
       end
     end
 
-    context '(stringified boolean)' do
-      %w[true yes on false no off].each do |warn|
+    context 'when (stringified boolean)' do
+      ['true', 'yes', 'on', 'false', 'no', 'off'].each do |warn|
         define warn do
           it_behaves_like 'concat', '/etc/foo.bar', warn: warn
 
@@ -213,7 +218,7 @@ describe 'concat' do
       end
     end
 
-    context '123' do
+    context 'when 123' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { warn: 123 } }
 
@@ -221,16 +226,17 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{parameter 'warn' expects .*Boolean.*String.*})
       end
     end
-  end # warn =>
+  end
+  # warn =>
 
-  context 'show_diff =>' do
+  context 'when show_diff =>' do
     [true, false].each do |show_diff|
       context show_diff do
         it_behaves_like 'concat', '/etc/foo.bar', show_diff: show_diff
       end
     end
 
-    context '123' do
+    context 'when 123' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { show_diff: 123 } }
 
@@ -238,16 +244,17 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{parameter 'show_diff' expects .*Boolean.*})
       end
     end
-  end # show_diff =>
+  end
+  # show_diff =>
 
-  context 'backup =>' do
+  context 'when backup =>' do
     ['reverse', false, true].each do |backup|
       context backup.to_s do
         it_behaves_like 'concat', '/etc/foo.bar', backup: backup
       end
     end
 
-    context 'true' do
+    context 'when true' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { backup: [] } }
 
@@ -255,16 +262,17 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{parameter 'backup' expects .*Boolean.*String.*})
       end
     end
-  end # backup =>
+  end
+  # backup =>
 
-  context 'replace =>' do
+  context 'when replace =>' do
     [true, false].each do |replace|
       context replace do
         it_behaves_like 'concat', '/etc/foo.bar', replace: replace
       end
     end
 
-    context '123' do
+    context 'when 123' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { replace: 123 } }
 
@@ -272,16 +280,17 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{parameter 'replace' expects .*Boolean.*})
       end
     end
-  end # replace =>
+  end
+  # replace =>
 
-  context 'force =>' do
+  context 'when force =>' do
     [true, false].each do |force|
       context force do
         it_behaves_like 'concat', '/etc/foo.bar', force: force
       end
     end
 
-    context '123' do
+    context 'when 123' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { force: 123 } }
 
@@ -289,16 +298,17 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{parameter 'force' expects .*Boolean.*})
       end
     end
-  end # force =>
+  end
+  # force =>
 
-  context 'order =>' do
-    %w[alpha numeric].each do |order|
+  context 'when order =>' do
+    ['alpha', 'numeric'].each do |order|
       context order do
         it_behaves_like 'concat', '/etc/foo.bar', order: order
       end
     end
 
-    context 'invalid' do
+    context 'when invalid' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { order: 'invalid' } }
 
@@ -306,16 +316,17 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{expects a match for Enum\['alpha', 'numeric'\]})
       end
     end
-  end # order =>
+  end
+  # order =>
 
-  context 'ensure_newline =>' do
+  context 'when ensure_newline =>' do
     [true, false].each do |ensure_newline|
-      context 'true' do
+      context 'when true' do
         it_behaves_like 'concat', '/etc/foo.bar', ensure_newline: ensure_newline
       end
     end
 
-    context '123' do
+    context 'when 123' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { ensure_newline: 123 } }
 
@@ -323,10 +334,11 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{parameter 'ensure_newline' expects a Boolean value})
       end
     end
-  end # ensure_newline =>
+  end
+  # ensure_newline =>
 
-  context 'validate_cmd =>' do
-    context '/usr/bin/test -e %' do
+  context 'when validate_cmd =>' do
+    context 'when /usr/bin/test -e %' do
       it_behaves_like 'concat', '/etc/foo.bar', validate_cmd: '/usr/bin/test -e %'
     end
 
@@ -340,9 +352,10 @@ describe 'concat' do
         end
       end
     end
-  end # validate_cmd =>
+  end
+  # validate_cmd =>
 
-  context 'selinux_ignore_defaults =>' do
+  context 'when selinux_ignore_defaults =>' do
     let(:title) { '/etc/foo.bar' }
 
     [true, false].each do |v|
@@ -351,7 +364,7 @@ describe 'concat' do
       end
     end
 
-    context '123' do
+    context 'when 123' do
       let(:title) { '/etc/foo.bar' }
       let(:params) { { selinux_ignore_defaults: 123 } }
 
@@ -359,7 +372,8 @@ describe 'concat' do
         expect { catalogue }.to raise_error(Puppet::Error, %r{Evaluation Error.*expects.*Boolean.*})
       end
     end
-  end # selinux_ignore_defaults =>
+  end
+  # selinux_ignore_defaults =>
 
   [
     :selrange,
@@ -370,11 +384,11 @@ describe 'concat' do
     context " #{p} =>" do
       let(:title) { '/etc/foo.bar' }
 
-      context 'foo' do
+      context 'when foo' do
         it_behaves_like 'concat', '/etc/foo.bar', p => 'foo'
       end
 
-      context 'false' do
+      context 'when false' do
         let(:title) { '/etc/foo.bar' }
         let(:params) { { p => false } }
 
@@ -382,6 +396,7 @@ describe 'concat' do
           expect { catalogue }.to raise_error(Puppet::Error, %r{parameter '#{p}' expects.*String.*})
         end
       end
-    end # #{p} =>
+    end
+    # #{p} =>
   end
 end

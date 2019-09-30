@@ -1,0 +1,20 @@
+{
+  "description": "Allows you to perform yum functions",
+  "input_method": "stdin",
+  "parameters": {
+    "action": {
+      "description": "Action to perform ",
+      "type": "Enum[update, upgrade]"
+    },
+    "quiet": {
+      "description": "Run without output ",
+      "type": "Optional[Boolean]"
+    }
+  },
+    "implementations": [
+      {
+        "name": "init.rb",
+        "requirements": ["puppet-agent"]
+      }
+    ]
+}

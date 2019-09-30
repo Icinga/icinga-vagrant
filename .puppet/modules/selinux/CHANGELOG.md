@@ -4,6 +4,122 @@ All notable changes to this project will be documented in this file.
 Each new release typically also includes the latest modulesync defaults.
 These should not affect the functionality of the module.
 
+## [v3.0.0](https://github.com/voxpupuli/puppet-selinux/tree/v3.0.0) (2019-06-17)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-selinux/compare/v2.0.0...v3.0.0)
+
+**Breaking changes:**
+
+- Python 3 semanage is named python3-libsemanage; Drop Fedora 26/27 support [\#287](https://github.com/voxpupuli/puppet-selinux/pull/287) ([ehelms](https://github.com/ehelms))
+
+**Fixed bugs:**
+
+- Load system policy contexts [\#290](https://github.com/voxpupuli/puppet-selinux/pull/290) ([ekohl](https://github.com/ekohl))
+
+**Closed issues:**
+
+- Fcontext fails on re-run on newer platforms [\#288](https://github.com/voxpupuli/puppet-selinux/issues/288)
+
+## [v2.0.0](https://github.com/voxpupuli/puppet-selinux/tree/v2.0.0) (2019-05-15)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-selinux/compare/v1.6.1...v2.0.0)
+
+**Breaking changes:**
+
+- modulesync 2.5.1 and drop Puppet 4 [\#282](https://github.com/voxpupuli/puppet-selinux/pull/282) ([bastelfreak](https://github.com/bastelfreak))
+
+**Implemented enhancements:**
+
+- Allow `puppetlabs/stdlib` 6.x [\#284](https://github.com/voxpupuli/puppet-selinux/pull/284) ([alexjfisher](https://github.com/alexjfisher))
+- Builder improvements and acceptance tests [\#281](https://github.com/voxpupuli/puppet-selinux/pull/281) ([ekohl](https://github.com/ekohl))
+- Simplify parameter handling [\#280](https://github.com/voxpupuli/puppet-selinux/pull/280) ([ekohl](https://github.com/ekohl))
+
+**Fixed bugs:**
+
+- fix syntax of config\_mode fact example [\#275](https://github.com/voxpupuli/puppet-selinux/pull/275) ([evgeni](https://github.com/evgeni))
+
+**Merged pull requests:**
+
+- Update puppet strings and use assert\_private [\#279](https://github.com/voxpupuli/puppet-selinux/pull/279) ([ekohl](https://github.com/ekohl))
+
+## [v1.6.1](https://github.com/voxpupuli/puppet-selinux/tree/v1.6.1) (2018-10-05)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-selinux/compare/v1.6.0...v1.6.1)
+
+**Merged pull requests:**
+
+- modulesync 2.1.0 & add puppet 6 support [\#271](https://github.com/voxpupuli/puppet-selinux/pull/271) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v1.6.0](https://github.com/voxpupuli/puppet-selinux/tree/v1.6.0) (2018-09-11)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-selinux/compare/v1.5.3...v1.6.0)
+
+**Implemented enhancements:**
+
+- Add support for installing pre-compiled policy packages [\#253](https://github.com/voxpupuli/puppet-selinux/pull/253) ([oranenj](https://github.com/oranenj))
+
+**Closed issues:**
+
+- New release [\#265](https://github.com/voxpupuli/puppet-selinux/issues/265)
+
+**Merged pull requests:**
+
+- add initial REFERENCE.md [\#268](https://github.com/voxpupuli/puppet-selinux/pull/268) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v1.5.3](https://github.com/voxpupuli/puppet-selinux/tree/v1.5.3) (2018-08-31)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-selinux/compare/v1.5.2...v1.5.3)
+
+**Closed issues:**
+
+- Puppet change for each selinux module for every Puppet run [\#261](https://github.com/voxpupuli/puppet-selinux/issues/261)
+- Calls to $::selinux facts should use the $facts hash [\#258](https://github.com/voxpupuli/puppet-selinux/issues/258)
+
+**Merged pull requests:**
+
+- allow puppetlabs/stdlib 5.x [\#264](https://github.com/voxpupuli/puppet-selinux/pull/264) ([bastelfreak](https://github.com/bastelfreak))
+- Switch to "facts" hash for SELinux facts [\#259](https://github.com/voxpupuli/puppet-selinux/pull/259) ([trevor-vaughan](https://github.com/trevor-vaughan))
+- Remove docker nodesets [\#257](https://github.com/voxpupuli/puppet-selinux/pull/257) ([bastelfreak](https://github.com/bastelfreak))
+- drop EOL OSs; fix puppet version range [\#256](https://github.com/voxpupuli/puppet-selinux/pull/256) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v1.5.2](https://github.com/voxpupuli/puppet-selinux/tree/v1.5.2) (2018-01-20)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-selinux/compare/v1.5.1...v1.5.2)
+
+**Fixed bugs:**
+
+- Update and check runtime SELinux status correcty [\#249](https://github.com/voxpupuli/puppet-selinux/pull/249) ([weaselshit](https://github.com/weaselshit))
+
+**Closed issues:**
+
+- Skip exec "change-selinux-status-to-disabled" when current mode is enforcing or permissive [\#245](https://github.com/voxpupuli/puppet-selinux/issues/245)
+- Module uses deprecated hiera\_hash\(\) function  [\#238](https://github.com/voxpupuli/puppet-selinux/issues/238)
+
+**Merged pull requests:**
+
+- Extend enforcing to disabled tests [\#250](https://github.com/voxpupuli/puppet-selinux/pull/250) ([vinzent](https://github.com/vinzent))
+
+## [v1.5.1](https://github.com/voxpupuli/puppet-selinux/tree/v1.5.1) (2018-01-04)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-selinux/compare/v1.5.0...v1.5.1)
+
+**Fixed bugs:**
+
+- Fixing change-selinux-status-to-disabled exec [\#246](https://github.com/voxpupuli/puppet-selinux/pull/246) ([bjvrielink](https://github.com/bjvrielink))
+
+**Merged pull requests:**
+
+- Release 1.5.1 [\#248](https://github.com/voxpupuli/puppet-selinux/pull/248) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v1.5.0](https://github.com/voxpupuli/puppet-selinux/tree/v1.5.0) (2017-12-15)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-selinux/compare/v1.4.0...v1.5.0)
+
+**Merged pull requests:**
+
+- Release 1.5.0 [\#244](https://github.com/voxpupuli/puppet-selinux/pull/244) ([vinzent](https://github.com/vinzent))
+- Add exec\_restorecon to hiera calls [\#243](https://github.com/voxpupuli/puppet-selinux/pull/243) ([FStelzer](https://github.com/FStelzer))
+
 ## [v1.4.0](https://github.com/voxpupuli/puppet-selinux/tree/v1.4.0) (2017-11-19)
 
 [Full Changelog](https://github.com/voxpupuli/puppet-selinux/compare/v1.3.0...v1.4.0)
@@ -14,6 +130,7 @@ These should not affect the functionality of the module.
 
 **Merged pull requests:**
 
+- release 1.4.0 [\#242](https://github.com/voxpupuli/puppet-selinux/pull/242) ([bastelfreak](https://github.com/bastelfreak))
 - bump puppet version dependency to \>= 4.7.1 \< 6.0.0 [\#241](https://github.com/voxpupuli/puppet-selinux/pull/241) ([bastelfreak](https://github.com/bastelfreak))
 - Remove Fedora 24 support statement [\#239](https://github.com/voxpupuli/puppet-selinux/pull/239) ([vinzent](https://github.com/vinzent))
 
@@ -36,7 +153,6 @@ These should not affect the functionality of the module.
 - Test disabling of SELinux [\#233](https://github.com/voxpupuli/puppet-selinux/pull/233) ([vinzent](https://github.com/vinzent))
 - Add Amazon Linux support [\#231](https://github.com/voxpupuli/puppet-selinux/pull/231) ([clinty](https://github.com/clinty))
 - Re-enable restorecon spec test [\#228](https://github.com/voxpupuli/puppet-selinux/pull/228) ([vinzent](https://github.com/vinzent))
-- Release 1.2.0 [\#227](https://github.com/voxpupuli/puppet-selinux/pull/227) ([vinzent](https://github.com/vinzent))
 
 ## [v1.2.0](https://github.com/voxpupuli/puppet-selinux/tree/v1.2.0) (2017-07-02)
 
@@ -48,7 +164,7 @@ These should not affect the functionality of the module.
 
 **Merged pull requests:**
 
-- Release 1.1.0 [\#219](https://github.com/voxpupuli/puppet-selinux/pull/219) ([oranenj](https://github.com/oranenj))
+- Release 1.2.0 [\#227](https://github.com/voxpupuli/puppet-selinux/pull/227) ([vinzent](https://github.com/vinzent))
 
 ## [v1.1.0](https://github.com/voxpupuli/puppet-selinux/tree/v1.1.0) (2017-05-11)
 
@@ -65,9 +181,9 @@ These should not affect the functionality of the module.
 
 **Merged pull requests:**
 
+- Release 1.1.0 [\#219](https://github.com/voxpupuli/puppet-selinux/pull/219) ([oranenj](https://github.com/oranenj))
 - Fedora 26 uses the same package\_name as Fedora 25 [\#218](https://github.com/voxpupuli/puppet-selinux/pull/218) ([logic](https://github.com/logic))
 - Ensure the module build tmp/ directory is actually a directory [\#216](https://github.com/voxpupuli/puppet-selinux/pull/216) ([oranenj](https://github.com/oranenj))
-- Prepare 1.0.0 [\#211](https://github.com/voxpupuli/puppet-selinux/pull/211) ([oranenj](https://github.com/oranenj))
 
 ## [v1.0.0](https://github.com/voxpupuli/puppet-selinux/tree/v1.0.0) (2017-04-02)
 
@@ -120,6 +236,7 @@ These should not affect the functionality of the module.
 
 **Merged pull requests:**
 
+- Prepare 1.0.0 [\#211](https://github.com/voxpupuli/puppet-selinux/pull/211) ([oranenj](https://github.com/oranenj))
 - Fix resource reference issue when removing fcontexts [\#209](https://github.com/voxpupuli/puppet-selinux/pull/209) ([oranenj](https://github.com/oranenj))
 - Doc fixes [\#204](https://github.com/voxpupuli/puppet-selinux/pull/204) ([oranenj](https://github.com/oranenj))
 - Fix spelling for supported type in README [\#203](https://github.com/voxpupuli/puppet-selinux/pull/203) ([ardrigh](https://github.com/ardrigh))
@@ -131,7 +248,6 @@ These should not affect the functionality of the module.
 - Fix broken link to puppet strings documentation [\#173](https://github.com/voxpupuli/puppet-selinux/pull/173) ([vinzent](https://github.com/vinzent))
 - Update inline doc to puppet-strings [\#172](https://github.com/voxpupuli/puppet-selinux/pull/172) ([vinzent](https://github.com/vinzent))
 - Modulesync 0.18.0 [\#170](https://github.com/voxpupuli/puppet-selinux/pull/170) ([bastelfreak](https://github.com/bastelfreak))
-- release 0.8.0 [\#168](https://github.com/voxpupuli/puppet-selinux/pull/168) ([bastelfreak](https://github.com/bastelfreak))
 - \(GH-147\) Add ordering of resources [\#167](https://github.com/voxpupuli/puppet-selinux/pull/167) ([vinzent](https://github.com/vinzent))
 
 ## [v0.8.0](https://github.com/voxpupuli/puppet-selinux/tree/v0.8.0) (2017-01-12)
@@ -146,8 +262,8 @@ These should not affect the functionality of the module.
 
 **Merged pull requests:**
 
+- release 0.8.0 [\#168](https://github.com/voxpupuli/puppet-selinux/pull/168) ([bastelfreak](https://github.com/bastelfreak))
 - modulesync 0.16.7 [\#163](https://github.com/voxpupuli/puppet-selinux/pull/163) ([bastelfreak](https://github.com/bastelfreak))
-- Release 0.7.1 [\#160](https://github.com/voxpupuli/puppet-selinux/pull/160) ([vinzent](https://github.com/vinzent))
 
 ## [v0.7.1](https://github.com/voxpupuli/puppet-selinux/tree/v0.7.1) (2016-12-28)
 
@@ -159,10 +275,10 @@ These should not affect the functionality of the module.
 
 **Merged pull requests:**
 
+- Release 0.7.1 [\#160](https://github.com/voxpupuli/puppet-selinux/pull/160) ([vinzent](https://github.com/vinzent))
 - Fix usage of non-existent $::selinux\_enabled fact [\#159](https://github.com/voxpupuli/puppet-selinux/pull/159) ([vinzent](https://github.com/vinzent))
 - Default to undef for syncversion parameter in selinux::module  [\#158](https://github.com/voxpupuli/puppet-selinux/pull/158) ([vinzent](https://github.com/vinzent))
 - Remove mentions of Ruby requirements in README [\#156](https://github.com/voxpupuli/puppet-selinux/pull/156) ([juniorsysadmin](https://github.com/juniorsysadmin))
-- release 0.7.0 [\#155](https://github.com/voxpupuli/puppet-selinux/pull/155) ([bastelfreak](https://github.com/bastelfreak))
 
 ## [v0.7.0](https://github.com/voxpupuli/puppet-selinux/tree/v0.7.0) (2016-12-24)
 
@@ -170,8 +286,8 @@ These should not affect the functionality of the module.
 
 **Merged pull requests:**
 
+- release 0.7.0 [\#155](https://github.com/voxpupuli/puppet-selinux/pull/155) ([bastelfreak](https://github.com/bastelfreak))
 - Remove custom fact selinux\_custom\_policy [\#154](https://github.com/voxpupuli/puppet-selinux/pull/154) ([vinzent](https://github.com/vinzent))
-- Modulesync 0.16.6 & Release 0.6.0 [\#152](https://github.com/voxpupuli/puppet-selinux/pull/152) ([bastelfreak](https://github.com/bastelfreak))
 - Default module prefix now '' [\#140](https://github.com/voxpupuli/puppet-selinux/pull/140) ([traylenator](https://github.com/traylenator))
 - Fix type doc [\#134](https://github.com/voxpupuli/puppet-selinux/pull/134) ([kausar007](https://github.com/kausar007))
 
@@ -190,6 +306,7 @@ These should not affect the functionality of the module.
 
 **Merged pull requests:**
 
+- Modulesync 0.16.6 & Release 0.6.0 [\#152](https://github.com/voxpupuli/puppet-selinux/pull/152) ([bastelfreak](https://github.com/bastelfreak))
 - Create /.autorelabel when switching from disabled [\#151](https://github.com/voxpupuli/puppet-selinux/pull/151) ([vinzent](https://github.com/vinzent))
 - Update to puppet-strings doc in selinux class [\#150](https://github.com/voxpupuli/puppet-selinux/pull/150) ([vinzent](https://github.com/vinzent))
 - Add acceptance tests [\#145](https://github.com/voxpupuli/puppet-selinux/pull/145) ([vinzent](https://github.com/vinzent))
@@ -213,11 +330,6 @@ These should not affect the functionality of the module.
 
 [Full Changelog](https://github.com/voxpupuli/puppet-selinux/compare/v0.4.1...v0.5.0)
 
-**Closed issues:**
-
-- fcontext should check for the existence of $filepath before running restorecon [\#108](https://github.com/voxpupuli/puppet-selinux/issues/108)
-- fcontext detection fails if pattern contains square brackets [\#105](https://github.com/voxpupuli/puppet-selinux/issues/105)
-
 **Merged pull requests:**
 
 - Release 0.5.0 [\#120](https://github.com/voxpupuli/puppet-selinux/pull/120) ([bastelfreak](https://github.com/bastelfreak))
@@ -231,7 +343,9 @@ These should not affect the functionality of the module.
 **Closed issues:**
 
 - missing package dependency in ::module \(RHEL\) [\#112](https://github.com/voxpupuli/puppet-selinux/issues/112)
+- fcontext should check for the existence of $filepath before running restorecon [\#108](https://github.com/voxpupuli/puppet-selinux/issues/108)
 - Should not be running restorecon like this [\#107](https://github.com/voxpupuli/puppet-selinux/issues/107)
+- fcontext detection fails if pattern contains square brackets [\#105](https://github.com/voxpupuli/puppet-selinux/issues/105)
 - Duplicate test? [\#102](https://github.com/voxpupuli/puppet-selinux/issues/102)
 - Tag a new release [\#96](https://github.com/voxpupuli/puppet-selinux/issues/96)
 
@@ -396,4 +510,4 @@ These should not affect the functionality of the module.
 
 
 
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*

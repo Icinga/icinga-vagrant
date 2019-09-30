@@ -57,6 +57,7 @@ Puppet::Type.newtype(:vcsrepo) do
           'The provider supports checking out only specific paths'
 
   ensurable do
+    desc 'Ensure the version control repository.'
     attr_accessor :latest
 
     def insync?(is)
@@ -171,7 +172,7 @@ Puppet::Type.newtype(:vcsrepo) do
         elsif is[-1] == '/'
           return true if is[0..-2] == should
         end
-      rescue
+      rescue StandardError
         return
       end
       false
@@ -275,7 +276,7 @@ Puppet::Type.newtype(:vcsrepo) do
 
   newparam :submodules, required_features: [:submodules] do
     desc 'Initialize and update each submodule in the repository.'
-    newvalues(:true, :false)
+    newvalues(true, false)
     defaultto true
   end
 
@@ -285,11 +286,22 @@ Puppet::Type.newtype(:vcsrepo) do
 
   newparam :trust_server_cert do
     desc 'Trust server certificate'
-    newvalues(:true, :false)
+    newvalues(true, false)
     defaultto :false
   end
 
   autorequire(:package) do
     ['git', 'git-core', 'mercurial', 'subversion']
+  end
+
+  private
+
+  def set_sensitive_parameters(sensitive_parameters) # rubocop:disable Style/AccessorMethodName
+    if sensitive_parameters.include?(:basic_auth_password)
+      sensitive_parameters.delete(:basic_auth_password)
+      parameter(:basic_auth_password).sensitive = true
+    end
+
+    super(sensitive_parameters)
   end
 end

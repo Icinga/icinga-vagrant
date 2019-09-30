@@ -9,7 +9,7 @@ class archive::staging (
   String $group = $archive::params::group,
   String $mode  = $archive::params::mode,
 ) inherits archive::params {
-  include '::archive'
+  include 'archive'
 
   if !defined(File[$path]) {
     file { $path:

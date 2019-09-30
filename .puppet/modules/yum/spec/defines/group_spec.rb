@@ -23,4 +23,11 @@ describe 'yum::group' do
     it { is_expected.to compile.with_all_deps }
     it { is_expected.to contain_exec("yum-groupinstall-#{title}").with_timeout(30) }
   end
+  context 'with an install option specified' do
+    let(:title) { 'Core' }
+    let(:params) { { install_options: ['--enablerepo=epel'] } }
+
+    it { is_expected.to compile.with_all_deps }
+    it { is_expected.to contain_exec("yum-groupinstall-#{title}").with_command("yum -y groupinstall 'Core' --enablerepo=epel") }
+  end
 end

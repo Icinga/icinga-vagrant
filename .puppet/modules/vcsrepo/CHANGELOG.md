@@ -1,6 +1,62 @@
-# Change Log
+# Change log
 
-All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
+All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
+
+## [v3.0.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/v3.0.0) (2019-06-13)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/2.4.0...v3.0.0)
+
+### Changed
+
+- pdksync - \(MODULES-8444\) - Raise lower Puppet bound [\#413](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/413) ([david22swan](https://github.com/david22swan))
+
+### Added
+
+- \(FM-8035\) Add RedHat 8 support [\#419](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/419) ([eimlav](https://github.com/eimlav))
+- \(MODULES-8738\) Allow Sensitive value for basic\_auth\_password [\#416](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/416) ([eimlav](https://github.com/eimlav))
+- \(MODULES-8140\) - Add SLES 15 support [\#399](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/399) ([eimlav](https://github.com/eimlav))
+
+### Fixed
+
+- MODULES-8910 fix for failing git install using RepoForge instead of epel [\#414](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/414) ([Lavinia-Dan](https://github.com/Lavinia-Dan))
+- \(maint\) Add HTML anchor tag [\#404](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/404) ([clairecadman](https://github.com/clairecadman))
+- pdksync - \(FM-7655\) Fix rubygems-update for ruby \< 2.3 [\#401](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/401) ([tphoney](https://github.com/tphoney))
+
+## [2.4.0](https://github.com/puppetlabs/puppetlabs-vcsrepo/tree/2.4.0) (2018-09-28)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/2.3.0...2.4.0)
+
+### Added
+
+- pdksync - \(FM-7392\) - Puppet 6 Testing Changes [\#394](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/394) ([pmcmaw](https://github.com/pmcmaw))
+- pdksync - \(MODULES-6805\) metadata.json shows support for puppet 6 [\#393](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/393) ([tphoney](https://github.com/tphoney))
+- pdksync - \(MODULES-7658\) use beaker4 in puppet-module-gems [\#390](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/390) ([tphoney](https://github.com/tphoney))
+- \(MODULES-7467\) Update Vcsrepo to support Ubuntu 18.04 [\#382](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/382) ([david22swan](https://github.com/david22swan))
+
+### Fixed
+
+- \(MODULES-7009\) Do not run HTTPS tests on old OSes [\#384](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/384) ([tphoney](https://github.com/tphoney))
+- Improve Git performance when using SHA revisions [\#380](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/380) ([vpierson](https://github.com/vpierson))
+- \[FM-6957\] Removing unsupported OS from Vcsrepo [\#378](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/378) ([david22swan](https://github.com/david22swan))
+- Avoid popup on macOS when developer tools aren't installed [\#367](https://github.com/puppetlabs/puppetlabs-vcsrepo/pull/367) ([girardc79](https://github.com/girardc79))
+
+## 2.3.0
+
+This release uses the PDK convert functionality which in return makes the module PDK compliant. It also includes a few features and a roll up of maintenance changes.
+
+### Added
+- Added trust_server_cert support to Git provider ([MODULES-5889](https://tickets.puppet.com/browse/MODULES-5889)).
+- Do not ignore incorrect HTTP Basic auth property specifications.
+- Adds some basic unit tests ([MODULES-5889](https://tickets.puppet.com/browse/MODULES-5889)).
+
+### Fixed
+- Addressing Rubocop errors throughout the module.
+- Change expected exception type from Puppet::Error to RuntimeError.
+- A typo in the CHANGELOG.md.
+- A roll up of minor changes via modulesync_configs.
+
+### Removed
+- `gem update bundler` as the module runs into ([MODULES-6339](https://tickets.puppet.com/browse/MODULES-6339)).
 
 ## Supported Release [2.2.0]
 
@@ -48,7 +104,7 @@ This is a major release that **drops support for Puppet 3** and addresses an iss
 - Lower bound of Puppet requirement to 4.7.0 ([MODULES-4823](https://tickets.puppetlabs.com/browse/MODULES-4823))
 
 ### Fixed
-- Solaris `SSH_AUTH_SOCKET` issue 
+- Solaris `SSH_AUTH_SOCKET` issue
 - Issue with subversion provider ([MODULES-4280](https://tickets.puppetlabs.com/browse/MODULES-4280))
 - `force` parameter to return a boolean instead of a string ([MODULES-4864](https://tickets.puppetlabs.com/browse/MODULES-4864))
 
@@ -245,6 +301,8 @@ our many contributors for all of these fixes!
 - CVS:
  - Documented the "module" attribute.
 
+[2.3.0]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/2.2.0...2.3.0
+[2.2.0]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/2.1.0...2.2.0
 [2.1.0]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/1.5.0...2.0.0
 [1.5.0]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/1.4.0...1.5.0
@@ -257,3 +315,6 @@ our many contributors for all of these fixes!
 [1.0.2]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/puppetlabs/puppetlabs-vcsrepo/compare/0.2.0...1.0.0
+
+
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*

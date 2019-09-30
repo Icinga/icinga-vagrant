@@ -1,57 +1,71 @@
 Puppet::Type.newtype(:concat_fragment) do
-  @doc = "Create a concat fragment to be used by concat.
-    the `concat_fragment` type creates a file fragment to be collected by concat based on the tag.
-    The example is based on exported resources.
+  @doc = <<-DOC
+    @summary
+      Manages the fragment.
 
-    Example:
-    @@concat_fragment { \"uniqe_name_${::fqdn}\":
-      tag => 'unique_name',
-      order => 10, # Optional. Default to 10
-      content => 'some content' # OR
-      content => template('template.erb') # OR
-      source  => 'puppet:///path/to/file'
-    }
-  "
+    @example
+      # The example is based on exported resources.
+
+      concat_fragment { \"uniqe_name_${::fqdn}\":
+        tag => 'unique_name',
+        order => 10, # Optional. Default to 10
+        content => 'some content' # OR
+        # content => template('template.erb')
+        source  => 'puppet:///path/to/file'
+      }
+  DOC
 
   newparam(:name, namevar: true) do
-    desc 'Unique name'
+    desc 'Name of resource.'
   end
 
   newparam(:target) do
-    desc 'Target'
+    desc <<-DOC
+      Required. Specifies the destination file of the fragment. Valid options: a string containing the path or title of the parent
+      concat_file resource.
+    DOC
 
     validate do |value|
-      raise ArgumentError, 'Target must be a String' unless value.is_a?(String)
+      raise ArgumentError, _('Target must be a String') unless value.is_a?(String)
     end
   end
 
   newparam(:content) do
-    desc 'Content'
+    desc <<-DOC
+      Supplies the content of the fragment. Note: You must supply either a content parameter or a source parameter. Valid options: a string
+    DOC
 
     validate do |value|
-      raise ArgumentError, 'Content must be a String' unless value.is_a?(String)
+      raise ArgumentError, _('Content must be a String') unless value.is_a?(String)
     end
   end
 
   newparam(:source) do
-    desc 'Source'
+    desc <<-DOC
+      Specifies a file to read into the content of the fragment. Note: You must supply either a content parameter or a source parameter.
+      Valid options: a string or an array, containing one or more Puppet URLs.
+    DOC
 
     validate do |value|
-      raise ArgumentError, 'Content must be a String or Array' unless [String, Array].include?(value.class)
+      raise ArgumentError, _('Content must be a String or Array') unless [String, Array].include?(value.class)
     end
   end
 
   newparam(:order) do
-    desc 'Order'
+    desc <<-DOC
+      Reorders your fragments within the destination file. Fragments that share the same order number are ordered by name. The string
+      option is recommended.
+    DOC
+
     defaultto '10'
     validate do |val|
-      raise Puppet::ParseError, '$order is not a string or integer.' unless val.is_a?(String) || val.is_a?(Integer)
-      raise Puppet::ParseError, "Order cannot contain '/', ':', or '\n'." if val.to_s =~ %r{[:\n\/]}
+      raise Puppet::ParseError, _('$order is not a string or integer.') unless val.is_a?(String) || val.is_a?(Integer)
+      raise Puppet::ParseError, _('Order cannot contain \'/\', \':\', or \'\\n\'.') if val.to_s =~ %r{[:\n\/]}
     end
   end
 
   newparam(:tag) do
-    desc 'Tag name to be used by concat to collect all concat_fragments by tag name'
+    desc 'Specifies a unique tag to be used by concat_file to reference and collect content.'
   end
 
   autorequire(:file) do
@@ -70,12 +84,12 @@ Puppet::Type.newtype(:concat_fragment) do
 
   validate do
     # Check if target is set
-    raise Puppet::ParseError, "No 'target' or 'tag' set" unless self[:target] || self[:tag]
+    raise Puppet::ParseError, _("No 'target' or 'tag' set") unless self[:target] || self[:tag]
 
     # Check if either source or content is set. raise error if none is set
-    raise Puppet::ParseError, "Set either 'source' or 'content'" if self[:source].nil? && self[:content].nil?
+    raise Puppet::ParseError, _("Set either 'source' or 'content'") if self[:source].nil? && self[:content].nil?
 
     # Check if both are set, if so rais error
-    raise Puppet::ParseError, "Can't use 'source' and 'content' at the same time" if !self[:source].nil? && !self[:content].nil?
+    raise Puppet::ParseError, _("Can't use 'source' and 'content' at the same time") if !self[:source].nil? && !self[:content].nil?
   end
 end

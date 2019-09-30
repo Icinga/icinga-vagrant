@@ -158,11 +158,24 @@ describe 'elasticsearch', :type => 'class' do
                   :backup => false
                 ) }
               else
-                it { should contain_exec('download_package_elasticsearch')
-                  .with(
-                    :command => "wget --no-check-certificate -O /opt/elasticsearch/swdl/pkg.#{pkg_ext} #{schema}domain-or-path/pkg.#{pkg_ext} 2> /dev/null",
-                    :require => 'File[/opt/elasticsearch/swdl]'
-                  ) }
+                [true, false].each do |verify_certificates|
+                  context "with download_tool_verify_certificates '#{verify_certificates}'" do
+                    let(:params) do
+                      default_params.merge(
+                        :package_url => "#{schema}domain-or-path/pkg.#{pkg_ext}",
+                        :download_tool_verify_certificates => verify_certificates
+                      )
+                    end
+
+                    flag = (not verify_certificates) ? ' --no-check-certificate' : ''
+
+                    it { should contain_exec('download_package_elasticsearch')
+                      .with(
+                        :command => "wget#{flag} -O /opt/elasticsearch/swdl/pkg.#{pkg_ext} #{schema}domain-or-path/pkg.#{pkg_ext} 2> /dev/null",
+                        :require => 'File[/opt/elasticsearch/swdl]'
+                      ) }
+                  end
+                end
               end
 
               it { should contain_package('elasticsearch')
@@ -222,6 +235,16 @@ describe 'elasticsearch', :type => 'class' do
         end
 
         it { should contain_class('elastic_stack::repo') }
+      end
+
+      context 'When not managing the repository' do
+        let(:params) do
+          default_params.merge(
+            :manage_repo => false
+          )
+        end
+
+        it { should compile.with_all_deps }
       end
     end
   end

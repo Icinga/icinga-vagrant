@@ -10,7 +10,10 @@ Facter.add('filebeat_version') do
   elsif File.executable?('/usr/local/sbin/filebeat')
     filebeat_version = Facter::Util::Resolution.exec('/usr/local/sbin/filebeat --version')
   elsif File.exist?('c:\Program Files\Filebeat\filebeat.exe')
-    filebeat_version = Facter::Util::Resolution.exec('"c:\Program Files\Filebeat\filebeat.exe" --version')
+    filebeat_version = Facter::Util::Resolution.exec('"c:\Program Files\Filebeat\filebeat.exe" version')
+    if filebeat_version.empty?
+      filebeat_version = Facter::Util::Resolution.exec('"c:\Program Files\Filebeat\filebeat.exe" --version')
+    end
   end
   setcode do
     filebeat_version.nil? ? false : %r{^filebeat version ([^\s]+)?}.match(filebeat_version)[1]

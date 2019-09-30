@@ -23,7 +23,7 @@ define archive::nexus (
   String            $gav,
   String            $repository,
   Enum['present', 'absent'] $ensure  = present,
-  Enum['none', 'md5', 'sha1', 'sha2','sh256', 'sha384', 'sha512'] $checksum_type   = 'md5',
+  Enum['none', 'md5', 'sha1', 'sha2','sha256', 'sha384', 'sha512'] $checksum_type   = 'md5',
   Boolean           $checksum_verify = true,
   String            $packaging       = 'jar',
   Boolean           $use_nexus3_urls = false,
@@ -46,7 +46,7 @@ define archive::nexus (
   Optional[Boolean] $allow_insecure  = undef,
 ) {
 
-  include ::archive::params
+  include archive::params
 
   $artifact_info = split($gav, ':')
 

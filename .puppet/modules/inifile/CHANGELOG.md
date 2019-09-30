@@ -1,3 +1,118 @@
+# Change log
+
+All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
+
+## [v3.1.0](https://github.com/puppetlabs/puppetlabs-inifile/tree/v3.1.0) (2019-07-31)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-inifile/compare/v3.0.0...v3.1.0)
+
+### Added
+
+- FM-8222 - Port Module inifile to Litmus [\#344](https://github.com/puppetlabs/puppetlabs-inifile/pull/344) ([lionce](https://github.com/lionce))
+- \(FM-8154\) Add Windows Server 2019 support [\#340](https://github.com/puppetlabs/puppetlabs-inifile/pull/340) ([eimlav](https://github.com/eimlav))
+- \(FM-8041\) Add RedHat 8 support [\#339](https://github.com/puppetlabs/puppetlabs-inifile/pull/339) ([eimlav](https://github.com/eimlav))
+
+## [v3.0.0](https://github.com/puppetlabs/puppetlabs-inifile/tree/v3.0.0) (2019-04-22)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-inifile/compare/2.5.0...v3.0.0)
+
+### Changed
+
+- pdksync - \(MODULES-8444\) - Raise lower Puppet bound [\#335](https://github.com/puppetlabs/puppetlabs-inifile/pull/335) ([david22swan](https://github.com/david22swan))
+
+### Fixed
+
+- FM-7779 - Cleanup Inifile [\#328](https://github.com/puppetlabs/puppetlabs-inifile/pull/328) ([lionce](https://github.com/lionce))
+
+## [2.5.0](https://github.com/puppetlabs/puppetlabs-inifile/tree/2.5.0) (2018-12-28)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-inifile/compare/2.4.0...2.5.0)
+
+## [2.4.0](https://github.com/puppetlabs/puppetlabs-inifile/tree/2.4.0) (2018-09-27)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-inifile/compare/2.3.0...2.4.0)
+
+### Added
+
+- \(MODULES-8142\) - Addition of support for SLES 15 [\#315](https://github.com/puppetlabs/puppetlabs-inifile/pull/315) ([david22swan](https://github.com/david22swan))
+- \(MODULES-7560\) - removed spaces from the beginning or from the end of the value [\#311](https://github.com/puppetlabs/puppetlabs-inifile/pull/311) ([lionce](https://github.com/lionce))
+- pdksync - \(FM-7392\) - Puppet 6 Testing Changes [\#300](https://github.com/puppetlabs/puppetlabs-inifile/pull/300) ([pmcmaw](https://github.com/pmcmaw))
+- pdksync - \(MODULES-7658\) use beaker4 in puppet-module-gems [\#296](https://github.com/puppetlabs/puppetlabs-inifile/pull/296) ([tphoney](https://github.com/tphoney))
+- \(MODULES-7552\) - Addition of support for Ubuntu 18.04 to inifile [\#292](https://github.com/puppetlabs/puppetlabs-inifile/pull/292) ([david22swan](https://github.com/david22swan))
+
+### Fixed
+
+- pdksync - \(FM-7655\) Fix rubygems-update for ruby \< 2.3 [\#320](https://github.com/puppetlabs/puppetlabs-inifile/pull/320) ([tphoney](https://github.com/tphoney))
+- \(MODULES-6714\) - inifile: ensure absent not working with refreshonly = true [\#313](https://github.com/puppetlabs/puppetlabs-inifile/pull/313) ([Lavinia-Dan](https://github.com/Lavinia-Dan))
+- \(FM-7483\) - update module to the latest version [\#310](https://github.com/puppetlabs/puppetlabs-inifile/pull/310) ([lionce](https://github.com/lionce))
+- \(FM-7331\)-Fix japanese test [\#308](https://github.com/puppetlabs/puppetlabs-inifile/pull/308) ([lionce](https://github.com/lionce))
+- \(MODULES-7625\) - Update README Limitations section [\#293](https://github.com/puppetlabs/puppetlabs-inifile/pull/293) ([eimlav](https://github.com/eimlav))
+
+## 2.3.0
+### Summary
+This release uses the PDK convert functionality which in return makes the module PDK compliant. It also includes a feature for `force_new_section_creation` and a roll up of maintenance changes.
+
+### Added
+- Added `force_new_section_creation` parameter.
+- PDK convert and update to use pdk 1.5.0 (MODULES-6326).
+
+### Removed
+- Support for Scientific Linux 5
+- Support for Debian 7
+
+## Supported Release [2.2.2]
+### Summary
+This is a bug fix release that corrects type autoloading.
+
+### Fixed
+- Correct type autoload ([FM-6932](https://tickets.puppet.com/browse/FM-6932)).
+
+## Supported Release [2.2.1]
+### Summary
+This is a bug fix release for a problem with managing existing lines in Puppet > 5.4.0
+
+### Fixed
+- issue with ini_setting's :refreshonly parameter validation ([MODULES-6687](https://tickets.puppet.com/browse/MODULES-6687))
+
+## Supported Release [2.2.0]
+### Summary
+This release uses the PDK convert functionality which in return makes the module PDK compliant. It also includes a roll up of maintenance changes.
+
+### Added
+- PDK convert inifile ([MODULES-6453](https://tickets.puppet.com/browse/MODULES-6453)).
+- Modulesync updates.
+
+### Fixed
+- Changes to address additional Rubocop failures.
+- Addressing puppet-lint doc warnings.
+
+### Removed
+- `gem update bundler` command in .travis.yml due to ([MODULES-6339](https://tickets.puppet.com/browse/MODULES-6339)).
+
+## Supported Release 2.1.1
+### Summary
+This release is in order to implement Rubocop within the module and includes a wide array of formatting changes throughout the code and the enabling of rubocop checks to be run against all pull requests against the module.
+
+### Changed
+- Rubocop checks will now be run against any PRs made towards the module.
+- The module has undergone a substantial reformatting in order to comply with the designated standards.
+
+## Supported Release 2.1.0
+### Summary
+This is a clean release prior to the implementation of rubocop within the module.
+
+### Added
+- Several Modulesync updates have been made.
+- Indent Character can now be set.
+- Support for Debian 9 has been added.
+
+### Removed
+- Support for Ubuntu 1004 and 1204 has been removed.
+- Support for SLES 10 SP4 has been removed.
+- Support for Debian 6 has been removed.
+- Support for Solaris 12 has been removed.
+- Support for Windows Server 2003 R2 has been removed.
+
 ## Supported Release 2.0.0
 ### Summary
 This is a major release that includes a few bugfixes as well as some general module updates.
@@ -278,3 +393,11 @@ them.
 
 ##2012-08-17 - Chris Price <chris@pupppetlabs.com> - 0.0.2
  * Add support for "global" section at beginning of file (c57dab4)
+
+[2.3.0]:https://github.com/puppetlabs/puppetlabs-apt/compare/2.2.2...2.3.0
+[2.2.2]:https://github.com/puppetlabs/puppetlabs-apt/compare/2.2.1...2.2.2
+[2.2.1]:https://github.com/puppetlabs/puppetlabs-apt/compare/2.2.0...2.2.1
+[2.2.0]:https://github.com/puppetlabs/puppetlabs-apt/compare/2.1.1...2.2.0
+
+
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*

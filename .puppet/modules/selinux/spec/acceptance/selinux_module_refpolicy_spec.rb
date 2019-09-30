@@ -6,6 +6,22 @@ require 'spec_helper_acceptance'
 # module A.
 #
 describe 'selinux module refpolicy' do
+  before(:all) do
+    hosts.each do |host|
+      host.execute('getenforce') do |result|
+        mode = result.stdout.strip
+        if mode != 'Enforcing'
+          host.execute('sed -i "s/SELINUX=.*/SELINUX=enforcing/" /etc/selinux/config')
+          if mode == 'Disabled'
+            host.reboot
+          else
+            host.execute('setenforce Enforcing && test "$(getenforce)" = "Enforcing"')
+          end
+        end
+      end
+    end
+  end
+
   let(:pp) do
     <<-EOS
       class { 'selinux': }

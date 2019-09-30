@@ -199,6 +199,9 @@ Note that specifying `pipelines` will automatically remove the default
 `path.config` setting from `logstash.yml`, since this is incompatible with
 `pipelines.yml`.
 
+Enabling centralized pipeline management with `xpack.management.enabled` will
+also remove the default `path.config`.
+
 ### Pipeline Configuration
 Pipeline configuration files can be declared with the `logstash::configfile`
 type.
@@ -314,7 +317,7 @@ logstash::plugin { 'x-pack':
 ### Controling the environment for the `logstash-plugin` command
 ``` puppet
 logstash::plugin { 'logstash-input-websocket':
-  environment => 'LS_JVM_OPTS="-Xms1g -Xmx1g"',
+  environment => 'LS_JAVA_OPTS=-Xms1g -Xmx1g',
 }
 ```
 

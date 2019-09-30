@@ -7,13 +7,14 @@ require 'spec_helper'
 require 'tempfile'
 
 describe Puppet::Type.type(:mongodb_replset).provider(:mongo) do
-  valid_members = ['mongo1:27017', 'mongo2:27017', 'mongo3:27017']
+  valid_members = [{ 'host' => 'mongo1:27017' }, { 'host' => 'mongo2:27017' }, { 'host' => 'mongo3:27017' }]
 
   let(:resource) do
     Puppet::Type.type(:mongodb_replset).new(
       ensure: :present,
       name: 'rs_test',
       members: valid_members,
+      settings: {},
       provider: :mongo
     )
   end
@@ -36,28 +37,17 @@ describe Puppet::Type.type(:mongodb_replset).provider(:mongo) do
 EOT
     end
 
-    # rubocop:disable RSpec/MessageSpies
+    # rubocop:disable RSpec/MultipleExpectations
     it 'creates a replicaset' do
-      allow(provider.class).to receive(:replset_properties)
-      allow(provider).to receive(:alive_members).and_return(valid_members)
-      allow(provider).to receive(:master_host).and_return(false)
-      expect(provider).to receive(:rs_initiate).with('{ _id: "rs_test", members: [ { _id: 0, host: "mongo1:27017" },{ _id: 1, host: "mongo2:27017" },{ _id: 2, host: "mongo3:27017" } ] }', 'mongo1:27017').and_return('info' => 'Config now saved locally.  Should come online in about a minute.', 'ok' => 1)
-      allow(provider).to receive(:db_ismaster).and_return('{"ismaster" : true}')
+      expect(provider.class).to receive(:replset_properties)
+      expect(provider).to receive(:get_hosts_status).and_return([valid_members, []])
+      expect(provider).to receive(:master_host).and_return(false)
+      expect(provider).to receive(:rs_initiate).with('{"_id":"rs_test","members":[{"host":"mongo1:27017","_id":0},{"host":"mongo2:27017","_id":1},{"host":"mongo3:27017","_id":2}],"settings":{}}', 'mongo1:27017').and_return('info' => 'Config now saved locally.  Should come online in about a minute.', 'ok' => 1)
+      expect(provider).to receive(:db_ismaster).and_return('{"ismaster" : true}')
       provider.create
       provider.flush
     end
-
-    it 'creates a replicaset with arbiter' do
-      allow(provider.class).to receive(:replset_properties)
-      allow(provider).to receive(:alive_members).and_return(valid_members)
-      allow(provider).to receive(:master_host).and_return(false)
-      allow(provider).to receive(:rs_arbiter).and_return('mongo3:27017')
-      expect(provider).to receive('rs_initiate').with('{ _id: "rs_test", members: [ { _id: 0, host: "mongo1:27017" },{ _id: 1, host: "mongo2:27017" },{ _id: 2, host: "mongo3:27017", arbiterOnly: "true" } ] }', 'mongo1:27017').and_return('info' => 'Config now saved locally.  Should come online in about a minute.',
-                                                                                                                                                                                                                                             'ok' => 1)
-      allow(provider).to receive(:db_ismaster).and_return('{"ismaster" : true}')
-      provider.create
-      provider.flush
-    end
+    # rubocop:enable RSpec/MultipleExpectations
   end
 
   describe '#exists?' do
@@ -146,7 +136,7 @@ EOT
 	"me" : "mongo1:27017",
 	"maxBsonObjectSize" : 16777216,
 	"maxMessageSizeBytes" : 48000000,
-	"localTime" : ISODate("2014-01-10T19:31:51.281Z"),
+	"localTime" : "2014-01-10T19:31:51.281Z",
 	"ok" : 1
 }
 EOT
@@ -155,7 +145,7 @@ EOT
     it 'adds missing members to an existing replicaset' do
       allow(provider.class).to receive(:replset_properties)
       allow(provider).to receive(:rs_status).and_return('set' => 'rs_test')
-      expect(provider).to receive('rs_add').twice.and_return('ok' => 1)
+      expect(provider).to receive('rs_add').thrice.and_return('ok' => 1)
       provider.members = valid_members
       provider.flush
     end

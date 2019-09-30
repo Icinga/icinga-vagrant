@@ -1,4 +1,4 @@
-include '::archive'
+include 'archive'
 
 archive { '/tmp/hawtio-web-1.4.36.jar':
   ensure        => present,

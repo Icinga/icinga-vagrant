@@ -23,7 +23,7 @@ This class manages SELinux on RHEL based systems.
 
 ## Requirements
 
-* Puppet 4 or later
+* Puppet 5 or later
 
 ## Module Description
 
@@ -110,7 +110,6 @@ This will include the module and manage the SELinux mode (possible values are
 are `targeted`, `minimum`, and `mls`). Note that disabling SELinux requires a reboot
 to fully take effect. It will run in `permissive` mode until then.
 
-
 ### Deploy a custom module using the refpolicy framework
 
 ```puppet
@@ -122,6 +121,19 @@ selinux::module { 'resnet-puppet':
   builder   => 'refpolicy'
 }
 ```
+
+### Using pre-compiled policy packages
+
+```puppet
+selinux::module { 'resnet-puppet':
+  ensure    => 'present',
+  source_pp => 'puppet:///modules/site_puppet/site-puppet.pp',
+}
+```
+
+Note that pre-compiled policy packages may not work reliably
+across all RHEL / CentOS releases. It's up to you as the user
+to test that your packages load properly.
 
 ### Set a boolean value
 
@@ -165,7 +177,7 @@ The most important facts:
 | Fact                                      | Fact (old)                | Mode: disabled | Mode: permissive                        | Mode:  enforcing                        |
 |-------------------------------------------|---------------------------|----------------|-----------------------------------------|-----------------------------------------|
 | `$facts['os']['selinux']['enabled']`      | `$::selinux`              | false          | true                                    | true                                    |
-| `$facts['os']['selinux'['config_mode']`   | `$::selinux_config_mode`  | undef          | Value of SELINUX in /etc/selinux/config | Value of SELINUX in /etc/selinux/config |
+| `$facts['os']['selinux']['config_mode']`   | `$::selinux_config_mode`  | undef          | Value of SELINUX in /etc/selinux/config | Value of SELINUX in /etc/selinux/config |
 | `$facts['os']['selinux']['current_mode']` | `$::selinux_current_mode` | undef          | Value of `getenforce` downcased         | Value of `getenforce` downcased         |
 
 ## Authors

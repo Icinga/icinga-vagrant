@@ -13,7 +13,7 @@ AllCops:
     - spec/fixtures/**/*
     - Gemfile
     - Rakefile
-Lint/ConditionPosition:
+Layout/ConditionPosition:
   Enabled: true
 
 Lint/ElseLayout:
@@ -75,13 +75,13 @@ Lint/AmbiguousRegexpLiteral:
 Security/Eval:
   Enabled: true
 
-Lint/BlockAlignment:
+Layout/BlockAlignment:
   Enabled: true
 
-Lint/DefEndAlignment:
+Layout/DefEndAlignment:
   Enabled: true
 
-Lint/EndAlignment:
+Layout/EndAlignment:
   Enabled: true
 
 Lint/DeprecatedClassMethods:
@@ -191,9 +191,6 @@ Layout/TrailingBlankLines:
   Enabled: true
 
 Layout/SpaceInsideBlockBraces:
-  Enabled: true
-
-Layout/SpaceInsideBrackets:
   Enabled: true
 
 Layout/SpaceInsideHashLiteralBraces:
@@ -318,7 +315,10 @@ Style/StringLiterals:
 Style/TrailingCommaInArguments:
   Enabled: true
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
+  Enabled: true
+
+Style/TrailingCommaInHashLiteral:
   Enabled: true
 
 Style/GlobalVars:

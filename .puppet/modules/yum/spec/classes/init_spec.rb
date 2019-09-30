@@ -267,6 +267,18 @@ describe 'yum' do
 
         it { is_expected.to contain_exec('package-cleanup_oldkernels').without_subscribe }
       end
+
+      context 'when epel is enabled' do
+        let(:params) { { managed_repos: ['epel'] } }
+
+        it { is_expected.to contain_yumrepo('epel') }
+        case facts[:os]['release']['major']
+        when '7'
+          it { is_expected.to contain_yum__gpgkey('/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7') }
+        when '6'
+          it { is_expected.to contain_yum__gpgkey('/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6') }
+        end
+      end
     end
   end
 

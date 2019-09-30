@@ -1,8 +1,7 @@
 fixtures:
   repositories:
     "stdlib": "git://github.com/puppetlabs/puppetlabs-stdlib.git"
-    "apt":
-      repo: "git://github.com/puppetlabs/puppetlabs-apt.git"
-      branch: "2.1.x"
-  symlinks:
-    "mongodb": "#{source_dir}"
+    "apt": "git://github.com/puppetlabs/puppetlabs-apt.git"
+    yumrepo_core:
+      repo: https://github.com/puppetlabs/puppetlabs-yumrepo_core.git
+      puppet_version: ">= 6.0.0"

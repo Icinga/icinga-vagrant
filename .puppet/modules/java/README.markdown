@@ -43,123 +43,21 @@ class { 'java' :
 }
 ```
 
-The defined type `java::oracle` installs one or more versions of Oracle Java SE. `java::oracle` depends on [puppet/archive](https://github.com/voxpupuli/puppet-archive).  By using `java::oracle` you agree to Oracle's licensing terms for Java SE.
+The defined type `java::download` installs one or more versions of Java SE from a remote url. `java::download` depends on [puppet/archive](https://github.com/voxpupuli/puppet-archive).
 
+To install Java to a non-default basedir (defaults: /usr/lib/jvm for Debian; /usr/java for RedHat):
 ```puppet
-java::oracle { 'jdk6' :
+java::download { 'jdk8' :
   ensure  => 'present',
-  version => '6',
   java_se => 'jdk',
-}
-
-java::oracle { 'jdk8' :
-  ensure  => 'present',
-  version => '8',
-  java_se => 'jdk',
-}
-```
-
-To install a specific release of a Java version, e.g. 8u101-b13, provide both parameters `version_major` and `version_minor` as follows:
-
-```puppet
-java::oracle { 'jdk8' :
-  ensure  => 'present',
-  version_major => '8u101',
-  version_minor => 'b13',
-  java_se => 'jdk',
+  url     => 'http://myjava.repository/java.tgz",
+  basedir => '/custom/java',
 }
 ```
 
 ## Reference
 
-### Classes
-
-#### Public classes
-
-* `java`: Installs and manages the Java package.
-
-#### Private classes
-
-* `java::config`: Configures the Java alternatives.
-
-* `java::params`: Builds a hash of jdk/jre packages for all compatible operating systems.
-
-
-#### Parameters
-
-The following parameters are available in `java`:
-
-##### `distribution`
-
-Specifies the Java distribution to install.
-Valid options:  'jdk', 'jre', or, where the platform supports alternative packages, 'sun-jdk', 'sun-jre', 'oracle-jdk', 'oracle-jre'. Default: 'jdk'.
-
-##### `java_alternative`
-
-Specifies the name of the Java alternative to use. If you set this parameter, *you must also set the `java_alternative_path`.*
-Valid options: Run command `update-java-alternatives -l` for a list of available choices. Default: OS and distribution dependent defaults on *deb systems, undef on others.
-
-##### `java_alternative_path`
-
-*Required when `java_alternative` is specified.* Defines the path to the `java` command.
-Valid option: String. Default: OS and distribution dependent defaults on *deb systems, undef on others.
-
-##### `package`
-
-Specifies the name of the Java package. This is configurable in case you want to install a non-standard Java package. If not set, the module installs the appropriate package for the `distribution` parameter and target platform. If you set `package`, the `distribution` parameter does nothing.
-Valid option: String. Default: undef.
-
-##### `version`
-
-Sets the version of Java to install, if you want to ensure a particular version.
-Valid options: 'present', 'installed', 'latest', or a string matching `/^[.+_0-9a-zA-Z:-]+$/`. Default: 'present'.
-
-#### Public defined types
-
-* `java::oracle`: Installs specified version of Oracle Java SE.  You may install multiple versions of Oracle Jave SE on the same node using this defined type.
-
-#### Parameters
-
-The following parameters are available in `java::oracle`:
-
-##### `version`
-Version of Java Standard Edition (SE) to install. 6, 7 or 8.
-
-##### `version_major`
-
-Major version of the Java Standard Edition (SE) to install. Must be used together with `version_minor`. For example, '8u101'.
-
-##### `version_minor`
-
-Minor version (or build version) of the Java Standard Edition (SE) to install. Must be used together with `version_major`. For example, 'b13'.
-
-##### `java_se`
-
-Type of Java SE to install, jdk or jre.
-
-##### `ensure`
-
-Install or remove the package.
-
-##### `oracle_url`
-
-Official Oracle URL to download the binaries from.
-
-##### `proxy_server`
-
-Specify a proxy server, with port number if needed. ie: https://example.com:8080. (passed to archive)
-
-##### `proxy_type`
-
-Proxy server type (none|http|https|ftp). (passed to archive)
-
-##### `url`
-
-Pass an entire URL to download the installer from rather than building the complete URL from other parameters. This will allow the module to be used even if the URLs are changed by Oracle. If this parameter is used, matching `version_major` and `version_minor` parameters must also be passed to the class.
-
-##### `url_hash`
-
-Directory hash used by the download.oracle.com site. This value is a 32 character string which is part of the file URL returned by the JDK download site.
+For information on the classes and types, see the [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-java/blob/master/REFERENCE.md). For information on the facts, see below.
 
 ### Facts
 
@@ -175,7 +73,9 @@ The java module includes a few facts to describe the version of Java installed o
 
 ## Limitations
 
-This module cannot guarantee installation of Java versions that are not available on  platform repositories.
+For an extensive list of supported operating systems, see [metadata.json](https://github.com/puppetlabs/puppetlabs-java/blob/master/metadata.json)
+
+This module cannot guarantee installation of Java versions that are not available on platform repositories.
 
 This module only manages a singular installation of Java, meaning it is not possible to manage e.g. OpenJDK 7, Oracle Java 7 and Oracle Java 8 in parallel on the same system.
 
@@ -188,12 +88,11 @@ OpenJDK is supported on:
 * Red Hat Enterprise Linux (RHEL) 5, 6, 7
 * CentOS 5, 6, 7
 * Oracle Linux 6, 7
-* Scientific Linux 5, 6
-* Debian 6, 7
-* Ubuntu 10.04, 12.04, 14.04
+* Scientific Linux 6
+* Debian 8, 9
+* Ubuntu 14.04, 16.04, 18.04
 * Solaris 11
-* SLES 11 SP1, SP2, SP3, SP4; SLES 12, SP1, SP2
-* OpenBSD 5.6, 5.7
+* SLES 11, 12
 
 Sun Java is supported on:
 
@@ -215,18 +114,6 @@ OpenBSD packages install Java JRE/JDK in a unique directory structure, not linki
 the binaries to a standard directory. Because of that, the path to this location
 is hardcoded in the `java_version` fact. Whenever you upgrade Java to a newer
 version, you have to update the path in this fact.
-
-#### FreeBSD
-
-By default on FreeBSD, Puppet versions prior to 4.0 throw an error saying `pkgng` is not the default provider. To fix this, install the [zleslie/pkgng module](https://forge.puppetlabs.com/zleslie/pkgng) and set it as the default package provider:
-
-```puppet
-Package {
-  provider => 'pkgng',
-}
-```
-
-On Puppet 4.0 and later, `pkgng` is included within Puppet and is the default package provider.
 
 ## Development
 

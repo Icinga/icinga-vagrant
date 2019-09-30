@@ -5,4 +5,14 @@
 <%# -%>
 <%# REF: https://github.com/elastic/logstash/issues/8420 -%>
 <% @settings.delete('path.config') unless @pipelines.empty? -%>
+<%# -%>
+<%# Similiarly, when using centralized pipeline management, path.config -%>
+<%# is an invalid setting, and should be removed. -%>
+<%# REF: https://github.com/elastic/puppet-logstash/issues/357 -%>
+<% @settings.delete('path.config') if @settings['xpack.management.enabled'] -%>
+<% begin -%>
+<%     @settings.delete('path.config') if @settings['xpack']['management']['enabled'] -%>
+<% rescue NoMethodError -%>
+<% end -%>
+<%# -%>
 <%= @settings.to_yaml %>

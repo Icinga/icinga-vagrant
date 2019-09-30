@@ -7,6 +7,10 @@ lookup_options:
             strategy: 'deep'
             knockout_prefix: '--'
             merge_hash_arrays: true
+    yum::gpgkeys:
+        merge:
+            strategy: 'deep'
+            merge_hash_arrays: true
     yum::managed_repos:
         merge: 'unique'
     yum::os_default_repos:

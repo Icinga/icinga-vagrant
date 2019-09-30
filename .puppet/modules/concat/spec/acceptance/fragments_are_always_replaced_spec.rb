@@ -1,144 +1,101 @@
 require 'spec_helper_acceptance'
 
 describe 'concat::fragment replace' do
-  basedir = default.tmpdir('concat')
+  before(:all) do
+    @basedir = setup_test_directory
+  end
 
-  context 'should create fragment files' do
-    before(:all) do
-      pp = <<-EOS
-        file { '#{basedir}':
-          ensure => directory,
-        }
-      EOS
-      apply_manifest(pp)
-    end
-
-    pp1 = <<-EOS
-      concat { '#{basedir}/foo': }
-
+  describe 'when run should create fragment files' do
+    let(:pp1) do
+      <<-MANIFEST
+      concat { '#{@basedir}/foo': }
       concat::fragment { '1':
-        target  => '#{basedir}/foo',
+        target  => '#{@basedir}/foo',
         content => 'caller has replace unset run 1',
       }
-    EOS
-    pp2 = <<-EOS
-      concat { '#{basedir}/foo': }
-
+    MANIFEST
+    end
+    let(:pp2) do
+      <<-MANIFEST
+      concat { '#{@basedir}/foo': }
       concat::fragment { '1':
-        target  => '#{basedir}/foo',
+        target  => '#{@basedir}/foo',
         content => 'caller has replace unset run 2',
       }
-    EOS
+    MANIFEST
+    end
 
     it 'applies the manifest twice with no stderr' do
-      apply_manifest(pp1, catch_failures: true)
-      apply_manifest(pp1, catch_changes: true)
-      apply_manifest(pp2, catch_failures: true)
-      apply_manifest(pp2, catch_changes: true)
+      idempotent_apply(pp1)
+      idempotent_apply(pp2)
+      expect(file("#{@basedir}/foo")).to be_file
+      expect(file("#{@basedir}/foo").content).not_to match 'caller has replace unset run 1'
+      expect(file("#{@basedir}/foo").content).to match 'caller has replace unset run 2'
     end
+  end
+  # should create fragment files
 
-    describe file("#{basedir}/foo") do
-      it { is_expected.to be_file }
-      its(:content) do
-        is_expected.not_to match 'caller has replace unset run 1'
-      end
-      its(:content) do
-        is_expected.to match 'caller has replace unset run 2'
-      end
-    end
-  end # should create fragment files
-
-  context 'should replace its own fragment files when caller has File { replace=>true } set' do
-    before(:all) do
-      pp = <<-EOS
-        file { '#{basedir}':
-          ensure => directory,
-        }
-      EOS
-      apply_manifest(pp)
-    end
-
-    pp1 = <<-EOS
+  describe 'when run should replace its own fragment files when caller has File { replace=>true } set' do
+    let(:pp1) do
+      <<-MANIFEST
       File { replace=>true }
-      concat { '#{basedir}/foo': }
-
+      concat { '#{@basedir}/foo': }
       concat::fragment { '1':
-        target  => '#{basedir}/foo',
+        target  => '#{@basedir}/foo',
         content => 'caller has replace true set run 1',
       }
-    EOS
-    pp2 = <<-EOS
+    MANIFEST
+    end
+    let(:pp2) do
+      <<-MANIFEST
       File { replace=>true }
-      concat { '#{basedir}/foo': }
-
+      concat { '#{@basedir}/foo': }
       concat::fragment { '1':
-        target  => '#{basedir}/foo',
+        target  => '#{@basedir}/foo',
         content => 'caller has replace true set run 2',
       }
-    EOS
+    MANIFEST
+    end
 
     it 'applies the manifest twice with no stderr' do
-      apply_manifest(pp1, catch_failures: true)
-      apply_manifest(pp1, catch_changes: true)
-      apply_manifest(pp2, catch_failures: true)
-      apply_manifest(pp2, catch_changes: true)
+      idempotent_apply(pp1)
+      idempotent_apply(pp2)
+      expect(file("#{@basedir}/foo")).to be_file
+      expect(file("#{@basedir}/foo").content).not_to match 'caller has replace true set run 1'
+      expect(file("#{@basedir}/foo").content).to match 'caller has replace true set run 2'
     end
+  end
+  # should replace its own fragment files when caller has File(replace=>true) set
 
-    describe file("#{basedir}/foo") do
-      it { is_expected.to be_file }
-      its(:content) do
-        is_expected.not_to match 'caller has replace true set run 1'
-      end
-      its(:content) do
-        is_expected.to match 'caller has replace true set run 2'
-      end
-    end
-  end # should replace its own fragment files when caller has File(replace=>true) set
-
-  context 'should replace its own fragment files even when caller has File { replace=>false } set' do
-    before(:all) do
-      pp = <<-EOS
-        file { '#{basedir}':
-          ensure => directory,
-        }
-      EOS
-      apply_manifest(pp)
-    end
-
-    pp1 = <<-EOS
+  describe 'when run should replace its own fragment files even when caller has File { replace=>false } set' do
+    let(:pp1) do
+      <<-MANIFEST
       File { replace=>false }
-      concat { '#{basedir}/foo': }
-
+      concat { '#{@basedir}/foo': }
       concat::fragment { '1':
-        target  => '#{basedir}/foo',
+        target  => '#{@basedir}/foo',
         content => 'caller has replace false set run 1',
       }
-    EOS
-    pp2 = <<-EOS
+    MANIFEST
+    end
+    let(:pp2) do
+      <<-MANIFEST
       File { replace=>false }
-      concat { '#{basedir}/foo': }
-
+      concat { '#{@basedir}/foo': }
       concat::fragment { '1':
-        target  => '#{basedir}/foo',
+        target  => '#{@basedir}/foo',
         content => 'caller has replace false set run 2',
       }
-    EOS
+    MANIFEST
+    end
 
     it 'applies the manifest twice with no stderr' do
-      apply_manifest(pp1, catch_failures: true)
-      apply_manifest(pp1, catch_changes: true)
-      apply_manifest(pp2, catch_failures: true)
-      apply_manifest(pp2, catch_changes: true)
+      idempotent_apply(pp1)
+      idempotent_apply(pp2)
+      expect(file("#{@basedir}/foo")).to be_file
+      expect(file("#{@basedir}/foo").content).not_to match 'caller has replace false set run 1'
+      expect(file("#{@basedir}/foo").content).to match 'caller has replace false set run 2'
     end
-
-    describe file("#{basedir}/foo") do
-      it { is_expected.to be_file }
-      its(:content) do
-        is_expected.not_to match 'caller has replace false set run 1'
-      end
-      its(:content) do
-        is_expected.to match 'caller has replace false set run 2'
-      end
-    end
-  end # should replace its own fragment files even when caller has File(replace=>false) set
+  end
+  # should replace its own fragment files even when caller has File(replace=>false) set
 end

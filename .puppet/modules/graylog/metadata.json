@@ -1,6 +1,6 @@
 {
   "name": "graylog-graylog",
-  "version": "0.4.0",
+  "version": "0.9.0",
   "author": "Graylog, Inc.",
   "summary": "Install and configure a Graylog system",
   "license": "Apache-2.0",
@@ -19,11 +19,11 @@
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 4.11.0 < 5.0.0"
+      "version_requirement": ">= 4.16.0 < 6.0.0"
     },
     {
       "name": "puppetlabs/apt",
-      "version_requirement": ">= 2.2.2 < 3.0.0"
+      "version_requirement": ">= 2.2.2 < 7.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -38,14 +38,16 @@
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
         "14.04",
-        "16.04"
+        "16.04",
+        "18.04"
       ]
     },
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
         "7",
-        "8"
+        "8",
+        "9"
       ]
     }
   ],

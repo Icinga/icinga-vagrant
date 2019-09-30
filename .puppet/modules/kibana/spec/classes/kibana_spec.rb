@@ -133,7 +133,8 @@ describe 'kibana', :type => 'class' do
                 'server.host' => 'localhost',
                 'server.port' => 5601,
                 'elasticsearch.ssl.verify' => true,
-                'elasticsearch.requestHeadersWhitelist' => ['authorization']
+                'elasticsearch.requestHeadersWhitelist' => ['authorization'],
+                'tilemap' => { 'url' => 'https://test' }
               }.each do |key, val|
                 context "'#{val}'" do
                   let(:params) { { :config => { key => val } } }
@@ -144,7 +145,6 @@ describe 'kibana', :type => 'class' do
 
             context 'with bad parameters' do
               {
-                'server.host' => { 'foo' => 'bar' },
                 'server.basePath' => '',
                 5601 => :undef,
                 '' => :undef

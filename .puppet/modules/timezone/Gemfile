@@ -12,7 +12,7 @@ end
 
 group :test do
   gem 'puppetlabs_spec_helper',                                     require: false
-  gem 'rspec-puppet',                                               require: false, git: 'https://github.com/rodjek/rspec-puppet.git'
+  gem 'rspec-puppet',                                               require: false
   gem 'rspec-puppet-facts',                                         require: false
   gem 'rspec-puppet-utils',                                         require: false
   gem 'puppet-lint-absolute_classname-check',                       require: false

@@ -116,7 +116,7 @@ describe 'grafana class' do
       when 'Debian'
         pp = <<-EOS
         class { 'grafana':
-          version   => '6.0.0-beta1',
+          version   => '6.0.0-beta3',
           repo_name => 'beta',
         }
         EOS
@@ -124,7 +124,7 @@ describe 'grafana class' do
         pp = <<-EOS
         class { 'grafana':
           version       => '6.0.0',
-          rpm_iteration => 'beta1',
+          rpm_iteration => 'beta3',
           repo_name     => 'beta',
         }
         EOS

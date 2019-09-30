@@ -1,45 +1,24 @@
-# Class: selinux::config
-#
-# THIS IS A PRIVATE CLASS
-# =======================
-#
-# This class is designed to configure the system to use SELinux on the system.
+# Configure the system to use SELinux on the system.
 #
 # It is included in the main class ::selinux
-#
-#
-#
-# Config for module building
-# --------------------------
-#
-# The module building requires the following file structure:
-#
-# ```
-# $module_build_root/
-#   bin/ # for simple module build script
-#   modules/ # module source files and compiled policies
-#   modules/tmp # repolicy tempfiles (created by scripts)
-# ```
 #
 # @param mode See main class
 # @param type See main class
 # @param manage_package See main class
 # @param package_name See main class
-# @param module_build_root See main class
+#
+# @api private
 #
 class selinux::config (
-  $mode                                   = $::selinux::mode,
-  $type                                   = $::selinux::type,
-  $manage_package                         = $::selinux::manage_package,
-  $package_name                           = $::selinux::package_name,
-  Stdlib::Absolutepath $module_build_root = $::selinux::module_build_root
+  $mode           = $selinux::mode,
+  $type           = $selinux::type,
+  $manage_package = $selinux::manage_package,
+  $package_name   = $selinux::package_name,
 ) {
 
-  if $caller_module_name != $module_name {
-    fail("Use of private class ${name} by ${caller_module_name}")
-  }
+  assert_private()
 
-  if ($mode == 'enforcing' and !$::selinux) {
+  if ($mode == 'enforcing' and !$facts['selinux']) {
     notice('SELinux is disabled. Forcing configuration to permissive to avoid problems. To disable this warning, explicitly set selinux::mode to permissive or disabled.')
     $_real_mode = 'permissive'
   } else {
@@ -55,13 +34,13 @@ class selinux::config (
 
     case $_real_mode {
       'permissive', 'disabled': {
-        $sestatus = '0'
-        if $_real_mode == 'disabled' and defined('$::selinux_current_mode') and $::selinux_current_mode == 'permissive' {
+        $sestatus = 'permissive'
+        if $_real_mode == 'disabled' and $facts['selinux_current_mode'] == 'permissive' {
           notice('A reboot is required to fully disable SELinux. SELinux will operate in Permissive mode until a reboot')
         }
       }
       'enforcing': {
-        $sestatus = '1'
+        $sestatus = 'enforcing'
       }
       default : {
         fail('You must specify a mode (enforced, permissive, or disabled) for selinux operation')
@@ -71,7 +50,7 @@ class selinux::config (
     # a complete relabeling is required when switching from disabled to
     # permissive or enforcing. Ensure the autorelabel trigger file is created.
     if $_real_mode in ['enforcing','permissive'] and
-      !$::selinux {
+      !$facts['selinux'] {
       file { '/.autorelabel':
         ensure  => 'file',
         owner   => 'root',
@@ -82,7 +61,7 @@ class selinux::config (
 
     exec { "change-selinux-status-to-${_real_mode}":
       command => "setenforce ${sestatus}",
-      unless  => "getenforce | grep -Eqi '${_real_mode}|disabled'",
+      unless  => "getenforce | grep -Eqi '${sestatus}|disabled'",
       path    => '/bin:/sbin:/usr/bin:/usr/sbin',
     }
   }
@@ -93,45 +72,5 @@ class selinux::config (
       line  => "SELINUXTYPE=${type}",
       match => '^SELINUXTYPE=\w+',
     }
-  }
-
-  file {$module_build_root:
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-  }
-
-  file {"${module_build_root}/bin":
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-  }
-
-  # put helper in place:
-  file {"${module_build_root}/bin/selinux_build_module_simple.sh":
-    ensure => 'present',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-    source => "puppet:///modules/${module_name}/selinux_build_module_simple.sh",
-  }
-
-  $module_build_dir = "${module_build_root}/modules"
-
-  file {$module_build_dir:
-    ensure  => 'directory',
-    owner   => 'root',
-    group   => 'root',
-    recurse => true,
-    purge   => true,
-    force   => true,
-  }
-
-  # needed by refpolicy builder and our simple builder
-  file {"${module_build_dir}/tmp":
-    ensure                  => 'directory',
-    selinux_ignore_defaults => true,
   }
 }

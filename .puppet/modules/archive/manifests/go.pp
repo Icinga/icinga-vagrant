@@ -18,7 +18,7 @@ define archive::go (
   Optional[Stdlib::Compat::Absolute_path] $archive_path = undef,
 ) {
 
-  include ::archive::params
+  include archive::params
 
   if $archive_path {
     $file_path = "${archive_path}/${name}"

@@ -23,15 +23,15 @@ shared_examples 'Debian' do
                                                     :before => 'File[/etc/localtime]')
     end
     it do
-      is_expected.to contain_file('/etc/localtime').with(:ensure => 'file',
-                                                         :source => 'file:///usr/share/zoneinfo/Etc/UTC')
+      is_expected.to contain_file('/etc/localtime').with(:ensure => 'link',
+                                                         :target => '/usr/share/zoneinfo/Etc/UTC')
     end
 
     context 'when timezone => "Europe/Berlin"' do
       let(:params) { { :timezone => 'Europe/Berlin' } }
 
       it { is_expected.to contain_file('/etc/timezone').with_content(%r{^Europe/Berlin$}) }
-      it { is_expected.to contain_file('/etc/localtime').with_source('file:///usr/share/zoneinfo/Europe/Berlin') }
+      it { is_expected.to contain_file('/etc/localtime').with_target('/usr/share/zoneinfo/Europe/Berlin') }
     end
 
     context 'when autoupgrade => true' do

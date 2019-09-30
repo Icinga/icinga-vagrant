@@ -1,3 +1,4 @@
+# class Specinfra::Command::Windows::Base::File
 class Specinfra::Command::Windows::Base::File < Specinfra::Command::Windows::Base
   class << self
     def check_is_owned_by(file, owner)
@@ -8,7 +9,7 @@ class Specinfra::Command::Windows::Base::File < Specinfra::Command::Windows::Bas
     end
   end
 end
-
+# class Specinfra::Command::Base::File
 class Specinfra::Command::Base::File < Specinfra::Command::Base
   class << self
     def get_content(file)

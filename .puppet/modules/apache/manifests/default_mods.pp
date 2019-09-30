@@ -1,3 +1,7 @@
+# @summary
+#   Installs and congfigures default mods for Apache
+#
+# @api private
 class apache::default_mods (
   $all            = true,
   $mods           = undef,
@@ -17,6 +21,9 @@ class apache::default_mods (
           if ($use_systemd) {
             ::apache::mod { 'systemd': }
           }
+        }
+        if ($::operatingsystem == 'Amazon' and $::operatingsystemrelease == '2') {
+          ::apache::mod { 'systemd': }
         }
         ::apache::mod { 'unixd': }
       }

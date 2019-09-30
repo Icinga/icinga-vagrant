@@ -1,0 +1,3 @@
+---
+timezone::timezone_file: /etc/sysconfig/clock
+timezone::timezone_file_template: timezone/clock_sles11.erb

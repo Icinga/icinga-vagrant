@@ -8,10 +8,7 @@
 #
 # * path: fully qualified filepath for the download the file or use archive_path and only supply filename. (namevar).
 # * ensure: ensure the file is present/absent.
-# * url: artifactory download url filepath. NOTE: replaces server, port, url_path parameters.
-# * server: artifactory server name (deprecated).
-# * port: artifactory server port (deprecated).
-# * url_path: artifactory file path http://{server}:{port}/artifactory/{url_path} (deprecated).
+# * url: artifactory download URL.
 # * owner: file owner (see archive params for defaults).
 # * group: file group (see archive params for defaults).
 # * mode: file mode (see archive params for defaults).
@@ -43,23 +40,20 @@
 # }
 #
 define archive::artifactory (
-  String                                  $path         = $name,
-  Enum['present', 'absent']               $ensure       = present,
-  Optional[Pattern[/^https?:\/\//]]       $url          = undef,
-  Optional[String]                        $server       = undef,
-  Optional[Integer]                       $port         = undef,
-  Optional[String]                        $url_path     = undef,
-  Optional[String]                        $owner        = undef,
-  Optional[String]                        $group        = undef,
-  Optional[String]                        $mode         = undef,
-  Optional[Boolean]                       $extract      = undef,
-  Optional[String]                        $extract_path = undef,
-  Optional[String]                        $creates      = undef,
-  Optional[Boolean]                       $cleanup      = undef,
-  Optional[Stdlib::Compat::Absolute_path] $archive_path = undef,
+  Stdlib::HTTPUrl                $url,
+  String                         $path         = $name,
+  Enum['present', 'absent']      $ensure       = present,
+  Optional[String]               $owner        = undef,
+  Optional[String]               $group        = undef,
+  Optional[String]               $mode         = undef,
+  Optional[Boolean]              $extract      = undef,
+  Optional[String]               $extract_path = undef,
+  Optional[String]               $creates      = undef,
+  Optional[Boolean]              $cleanup      = undef,
+  Optional[Stdlib::Absolutepath] $archive_path = undef,
 ) {
 
-  include ::archive::params
+  include archive::params
 
   if $archive_path {
     $file_path = "${archive_path}/${name}"
@@ -67,20 +61,23 @@ define archive::artifactory (
     $file_path = $path
   }
 
-  if $file_path !~ Stdlib::Compat::Absolute_path {
-    fail("archive::artifactory[${name}]: \$name or \$archive_path must be an absolute path!") # lint:ignore:trailing_comma
+  assert_type(Stdlib::Absolutepath, $file_path) |$expected, $actual| {
+    fail("archive::artifactory[${name}]: \$name or \$archive_path must be '${expected}', not '${actual}'")
   }
 
-  if $url {
-    $file_url = $url
-    $sha1_url = regsubst($url, '/artifactory/', '/artifactory/api/storage/')
-  } elsif $server and $port and $url_path {
-    warning('archive::artifactory attribute: server, port, url_path are deprecated')
-    $art_url = "http://${server}:${port}/artifactory"
-    $file_url = "${art_url}/${url_path}"
-    $sha1_url = "${art_url}/api/storage/${url_path}"
+  $maven2_data = archive::parse_artifactory_url($url)
+  if $maven2_data and $maven2_data['folder_iteg_rev'] == 'SNAPSHOT'{
+    # URL represents a SNAPSHOT version. eg 'http://artifactory.example.com/artifactory/repo/com/example/artifact/0.0.1-SNAPSHOT/artifact-0.0.1-SNAPSHOT.zip'
+    # Only Artifactory Pro lets you download this directly but the corresponding fileinfo endpoint (where the sha1 checksum is published) doesn't exist.
+    # This means we can't use the artifactory_sha1 function
+
+    $latest_url_data = archive::artifactory_latest_url($url, $maven2_data)
+
+    $file_url = $latest_url_data['url']
+    $sha1     = $latest_url_data['sha1']
   } else {
-    fail('Please provide fully qualified url path for artifactory file.')
+    $file_url = $url
+    $sha1     = archive::artifactory_checksum($url,'sha1')
   }
 
   archive { $file_path:
@@ -89,7 +86,7 @@ define archive::artifactory (
     extract       => $extract,
     extract_path  => $extract_path,
     source        => $file_url,
-    checksum      => artifactory_sha1($sha1_url),
+    checksum      => $sha1,
     checksum_type => 'sha1',
     creates       => $creates,
     cleanup       => $cleanup,

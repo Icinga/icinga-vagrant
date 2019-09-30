@@ -1,3 +1,6 @@
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', '..'))
+require 'puppet/util/mongodb_output'
+
 require 'yaml'
 require 'json'
 class Puppet::Provider::Mongodb < Puppet::Provider
@@ -15,53 +18,27 @@ class Puppet::Provider::Mongodb < Puppet::Provider
   end
 
   def self.mongod_conf_file
-    file = if File.exist? '/etc/mongod.conf'
-             '/etc/mongod.conf'
-           else
-             '/etc/mongodb.conf'
-           end
-    file
+    if File.exist? '/etc/mongod.conf'
+      '/etc/mongod.conf'
+    else
+      '/etc/mongodb.conf'
+    end
   end
 
   def self.mongo_conf
-    file = mongod_conf_file
-    # The mongo conf is probably a key-value store, even though 2.6 is
-    # supposed to use YAML, because the config template is applied
-    # based on $mongodb::globals::version which is the user will not
-    # necessarily set. This attempts to get the port from both types of
-    # config files.
-    config = YAML.load_file(file)
-    config_hash = {}
-    if config.is_a?(Hash) # Using a valid YAML file for mongo 2.6
-      config_hash['bindip'] = config['net.bindIp']
-      config_hash['port'] = config['net.port']
-      config_hash['ipv6'] = config['net.ipv6']
-      config_hash['allowInvalidHostnames'] = config['net.ssl.allowInvalidHostnames']
-      config_hash['ssl'] = config['net.ssl.mode']
-      config_hash['sslcert'] = config['net.ssl.PEMKeyFile']
-      config_hash['sslca'] = config['net.ssl.CAFile']
-      config_hash['auth'] = config['security.authorization']
-      config_hash['shardsvr'] = config['sharding.clusterRole']
-      config_hash['confsvr'] = config['sharding.clusterRole']
-    else # It has to be a key-value config file
-      config = {}
-      File.readlines(file).map do |line|
-        k, v = line.split('=')
-        config[k.rstrip] = v.lstrip.chomp if k && v
-      end
-      config_hash['bindip'] = config['bind_ip']
-      config_hash['port'] = config['port']
-      config_hash['ipv6'] = config['ipv6']
-      config_hash['ssl'] = config['sslOnNormalPorts']
-      config_hash['allowInvalidHostnames'] = config['allowInvalidHostnames']
-      config_hash['sslcert'] = config['sslPEMKeyFile']
-      config_hash['sslca'] = config['sslCAFile']
-      config_hash['auth'] = config['auth']
-      config_hash['shardsvr'] = config['shardsvr']
-      config_hash['confsvr'] = config['confsvr']
-    end
-
-    config_hash
+    config = YAML.load_file(mongod_conf_file) || {}
+    {
+      'bindip' => config['net.bindIp'],
+      'port' => config['net.port'],
+      'ipv6' => config['net.ipv6'],
+      'allowInvalidHostnames' => config['net.ssl.allowInvalidHostnames'],
+      'ssl' => config['net.ssl.mode'],
+      'sslcert' => config['net.ssl.PEMKeyFile'],
+      'sslca' => config['net.ssl.CAFile'],
+      'auth' => config['security.authorization'],
+      'shardsvr' => config['sharding.clusterRole'],
+      'confsvr' => config['sharding.clusterRole']
+    }
   end
 
   def self.ipv6_is_enabled(config = nil)
@@ -72,7 +49,7 @@ class Puppet::Provider::Mongodb < Puppet::Provider
   def self.ssl_is_enabled(config = nil)
     config ||= mongo_conf
     ssl_mode = config.fetch('ssl')
-    ssl_mode.nil? ? false : ssl_mode != 'disabled'
+    !ssl_mode.nil? && ssl_mode != 'disabled'
   end
 
   def self.ssl_invalid_hostnames(config = nil)
@@ -135,7 +112,7 @@ class Puppet::Provider::Mongodb < Puppet::Provider
     cmd_ismaster = mongorc_file + cmd_ismaster if mongorc_file
     db = 'admin'
     res = mongo_cmd(db, conn_string, cmd_ismaster).to_s.chomp
-    res.eql?('true') ? true : false
+    res.eql?('true')
   end
 
   def db_ismaster
@@ -154,32 +131,26 @@ class Puppet::Provider::Mongodb < Puppet::Provider
     cmd = mongorc_file + cmd if mongorc_file
 
     out = nil
-    retry_count.times do |n|
-      begin
-        out = if host
-                mongo_cmd(db, host, cmd)
-              else
-                mongo_cmd(db, conn_string, cmd)
-              end
-      rescue => e
-        Puppet.debug "Request failed: '#{e.message}' Retry: '#{n}'"
+    begin
+      out = if host
+              mongo_cmd(db, host, cmd)
+            else
+              mongo_cmd(db, conn_string, cmd)
+            end
+    rescue => e
+      retry_count -= 1
+      if retry_count > 0
+        Puppet.debug "Request failed: '#{e.message}' Retry: '#{retries - retry_count}'"
         sleep retry_sleep
-        next
+        retry
       end
-      break
     end
 
     unless out
       raise Puppet::ExecutionFailure, "Could not evaluate MongoDB shell command: #{cmd}"
     end
 
-    %w[ObjectId NumberLong].each do |data_type|
-      out.gsub!(%r{#{data_type}\(([^)]*)\)}, '\1')
-    end
-    out.gsub!(%r{^Error\:.+}, '')
-    out.gsub!(%r{^.*warning\:.+}, '') # remove warnings if sslAllowInvalidHostnames is true
-    out.gsub!(%r{^.*The server certificate does not match the host name.+}, '') # remove warnings if sslAllowInvalidHostnames is true mongo 3.x
-    out
+    Puppet::Util::MongodbOutput.sanitize(out)
   end
 
   def mongo_eval(cmd, db = 'admin', retries = 10, host = nil)
@@ -195,12 +166,12 @@ class Puppet::Provider::Mongodb < Puppet::Provider
     self.class.mongo_version
   end
 
-  def self.mongo_24?
+  def self.mongo_26?
     v = mongo_version
-    !v[%r{^2\.4\.}].nil?
+    !v[%r{^2\.6\.}].nil?
   end
 
-  def mongo_24?
-    self.class.mongo_24?
+  def mongo_26?
+    self.class.mongo_26?
   end
 end

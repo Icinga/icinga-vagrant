@@ -11,7 +11,7 @@
 # Notes:
 #   None
 Facter.add(:java_default_home) do
-  confine kernel: %w[Linux OpenBSD]
+  confine kernel: ['Linux', 'OpenBSD']
   java_default_home = nil
   setcode do
     java_bin = Facter::Util::Resolution.which('java').to_s.strip

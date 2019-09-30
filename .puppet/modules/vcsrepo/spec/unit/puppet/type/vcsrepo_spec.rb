@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe Puppet::Type.type(:vcsrepo) do
   before :each do
-    Puppet::Type.type(:vcsrepo).stubs(:defaultprovider).returns(providerclass)
+    allow(Puppet::Type.type(:vcsrepo)).to receive(:defaultprovider).and_return(providerclass)
   end
 
   let(:providerclass) do

@@ -1,7 +1,7 @@
-# selinux::port
-#
 # This method will manage a local network port context setting, and will
 # persist it across reboots.
+#
+# @summary Manage a SELinux local network port context setting
 #
 # @example Add port-context syslogd_port_t to port 8514/tcp
 #   selinux::port { 'allow-syslog-relp':
@@ -25,7 +25,7 @@ define selinux::port (
   Enum['present', 'absent']          $ensure = 'present',
 ) {
 
-  include ::selinux
+  include selinux
 
   if $ensure == 'present' {
     Anchor['selinux::module post']

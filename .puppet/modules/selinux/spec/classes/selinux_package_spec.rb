@@ -9,7 +9,8 @@ describe 'selinux' do
             osfamily: 'RedHat',
             operatingsystem: 'RedHat',
             operatingsystemmajrelease: majrelease,
-            selinux_current_mode: 'enforcing'
+            selinux_current_mode: 'enforcing',
+            os: { release: { major: majrelease }, name: 'RedHat', family: 'RedHat' }
           }
         end
 
@@ -24,7 +25,8 @@ describe 'selinux' do
             osfamily: 'RedHat',
             operatingsystem: 'Fedora',
             operatingsystemmajrelease: majrelease,
-            selinux_current_mode: 'enforcing'
+            selinux_current_mode: 'enforcing',
+            os: { release: { major: majrelease }, name: 'Fedora', family: 'RedHat' }
           }
         end
 
@@ -37,7 +39,8 @@ describe 'selinux' do
         {
           osfamily: 'RedHat',
           operatingsystem: 'RedHat',
-          operatingsystemmajrelease: '7'
+          operatingsystemmajrelease: '7',
+          os: { release: { major: 7 }, name: 'RedHat', family: 'RedHat' }
         }
       end
       let(:params) do
@@ -54,7 +57,8 @@ describe 'selinux' do
         {
           osfamily: 'RedHat',
           operatingsystem: 'RedHat',
-          operatingsystemmajrelease: '7'
+          operatingsystemmajrelease: '7',
+          os: { release: { major: 7 }, name: 'RedHat', family: 'RedHat' }
         }
       end
       let(:params) do

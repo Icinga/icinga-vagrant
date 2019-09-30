@@ -1,12 +1,12 @@
-# Defined type: selinux::module
-#
 # This class will either install or uninstall a SELinux module from a running system.
 # This module allows an admin to keep .te files in text form in a repository, while
 # allowing the system to compile and manage SELinux modules.
 #
 # Concepts incorporated from:
 # http://stuckinadoloop.wordpress.com/2011/06/15/puppet-managed-deployment-of-selinux-modules/
-# 
+#
+# @summary Manage a SELinux module on a running system
+#
 # @example compile and load the apache module - does not require make or the policy
 #   devel package
 #   selinux::module{ 'apache':
@@ -42,6 +42,7 @@
 #   }
 #
 # @param ensure present or absent
+# @param source_pp the source file (either a puppet URI or local file) of a pre-compiled SELinux policy package. Mutually excludsive with using source files.
 # @param source_te the source file (either a puppet URI or local file) of the SELinux .te file
 # @param source_fc the source file (either a puppet URI or local file) of the SELinux .fc file
 # @param source_if the source file (either a puppet URI or local file) of the SELinux .if file
@@ -51,6 +52,7 @@
 # @param builder either 'simple' or 'refpolicy'. The simple builder attempts to use checkmodule
 #   to build the module, whereas 'refpolicy' uses the refpolicy framework, but requires 'make'
 define selinux::module(
+  Optional[String] $source_pp = undef,
   Optional[String] $source_te = undef,
   Optional[String] $source_fc = undef,
   Optional[String] $source_if = undef,
@@ -60,29 +62,40 @@ define selinux::module(
   Enum['absent', 'present'] $ensure = 'present',
   Optional[Enum['simple', 'refpolicy']] $builder = undef,
 ) {
-  include ::selinux
+  include selinux
+  require selinux::build
 
-  if $builder == 'refpolicy' {
-    require ::selinux::refpolicy_package
+  $_builder = pick($builder, $selinux::default_builder, 'none')
+
+  if $_builder == 'refpolicy' {
+    require selinux::refpolicy_package
   }
 
   if ($builder == 'simple' and ($source_if != undef or $content_if != undef)) {
     fail("The simple builder does not support the 'source_if' parameter")
   }
 
-  $module_dir = $::selinux::config::module_build_dir
+  $module_dir = $selinux::build::module_build_dir
   $module_file = "${module_dir}/${title}"
 
-  $build_command = pick($builder, $::selinux::default_builder, 'none') ? {
-      'simple'    => shellquote("${::selinux::module_build_root}/bin/selinux_build_module_simple.sh", $title, $module_dir),
-      'refpolicy' => shellquote('make', '-f', $::selinux::refpolicy_makefile, "${title}.pp"),
-      'none'      => fail('No builder or default builder specified')
+  $build_command = $_builder ? {
+      'simple'    => shellquote($selinux::build::module_build_simple, $title, $module_dir),
+      'refpolicy' => shellquote('make', '-f', $selinux::refpolicy_makefile, "${title}.pp"),
+      'none'      => undef
   }
 
   Anchor['selinux::module pre']
   -> Selinux::Module[$title]
   -> Anchor['selinux::module post']
+
   $has_source = (pick($source_te, $source_fc, $source_if, $content_te, $content_fc, $content_if, false) != false)
+  if $has_source and $build_command == undef {
+    fail('No builder or default builder specified')
+  }
+
+  if $has_source and $source_pp != undef {
+    fail('Specifying source files and a pre-compiled policy package are mutually exclusive options')
+  }
 
   if $has_source and $ensure == 'present' {
     file {"${module_file}.te":
@@ -125,6 +138,29 @@ define selinux::module(
       creates => "${module_file}.pp",
       notify  => Exec["install-module-${title}"],
     }
+    $install = true
+  } elsif $source_pp != undef and $ensure == 'present' {
+    file {"${module_file}.pp":
+      ensure => 'file',
+      source => $source_pp,
+      notify => Exec["clean-module-${title}"],
+    }
+
+    exec { "clean-module-${title}":
+      path        => '/bin:/usr/bin',
+      cwd         => $module_dir,
+      command     => "rm -f '${module_file}.loaded'",
+      refreshonly => true,
+      notify      => Exec["install-module-${title}"],
+    }
+
+    $install = true
+  } else {
+    # no source and no .pp, just do plain selmodule {$title:}
+    $install = false
+  }
+
+  if $install {
     # we need to install the module manually because selmodule is kind of dumb. It ends up
     # working fine, though.
     exec { "install-module-${title}":
@@ -138,7 +174,8 @@ define selinux::module(
     # ensure it doesn't get purged if it exists
     file { "${module_file}.loaded": }
   }
-  $module_path = $has_source ? {
+
+  $module_path = ($has_source or $source_pp != undef) ? {
     true  => "${module_file}.pp",
     false => undef
   }

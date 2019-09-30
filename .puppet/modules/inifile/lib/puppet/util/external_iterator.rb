@@ -1,5 +1,7 @@
-module Puppet
-module Util
+module Puppet::Util
+  #
+  # external_iterator.rb
+  #
   class ExternalIterator
     def initialize(coll)
       @coll = coll
@@ -7,7 +9,7 @@ module Util
     end
 
     def next
-      @cur_index = @cur_index + 1
+      @cur_index += 1
       item_at(@cur_index)
     end
 
@@ -16,6 +18,7 @@ module Util
     end
 
     private
+
     def item_at(index)
       if @coll.length > index
         [@coll[index], index]
@@ -24,5 +27,4 @@ module Util
       end
     end
   end
-end
 end

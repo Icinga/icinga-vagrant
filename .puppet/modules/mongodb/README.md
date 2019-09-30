@@ -21,13 +21,15 @@
 ## Overview
 
 Installs MongoDB on RHEL/Ubuntu/Debian from OS repo, or alternatively from
-10gen repository [installation documentation](http://www.mongodb.org/display/DOCS/Ubuntu+and+Debian+packages).
+MongoDB community/enterprise repositories.
 
 ## Module Description
 
 The MongoDB module manages mongod server installation and configuration of the
 mongod daemon. For the time being it supports only a single MongoDB server
 instance, without sharding functionality.
+
+The MongoDB module also manages Ops Manager setup and the mongdb-mms daemon.
 
 ## Setup
 
@@ -38,7 +40,9 @@ instance, without sharding functionality.
 * MongoDB service.
 * MongoDB client.
 * MongoDB sharding support (mongos)
-* 10gen/mongodb apt/yum repository.
+* MongoDB apt/yum repository.
+* Ops Manager package.
+* Ops Manager configuration files.
 
 ### Beginning with MongoDB
 
@@ -71,20 +75,19 @@ class {'mongodb::mongos' :
 }
 ```
 
-Although most distros come with a prepacked MongoDB server we recommend to
-use the 10gen/MongoDB software repository, because most of the current OS
-packages are outdated and not appropriate for a production environment.
-To install MongoDB from 10gen repository:
+Although most distros come with a prepacked MongoDB server, you may prefer to
+use a more recent version. To install MongoDB from the community repository:
 
 ```puppet
 class {'mongodb::globals':
   manage_package_repo => true,
+  version             => '3.6',
 }
 -> class {'mongodb::client': }
 -> class {'mongodb::server': }
 ```
 
-If you don't want to use the 10gen/MongoDB software repository or the OS packages,
+If you don't want to use the MongoDB software repository or the OS packages,
 you can point the module to a custom one.
 To install MongoDB from a custom repository:
 
@@ -136,6 +139,30 @@ mongodb::db { 'testdb':
 Parameter 'password_hash' is hex encoded md5 hash of "user1:mongo:pass1".
 Unsafe plain text password could be used with 'password' parameter instead of 'password_hash'.
 
+### Ops Manager
+
+To install Ops Manager and have it run with a local MongoDB application server do the following:
+
+```puppet
+class {'mongodb::opsmanager':
+  opsmanager_url        => 'http://opsmanager.yourdomain.com'
+  mongo_uri             => 'mongodb://yourmongocluster:27017,
+  from_email_addr       => 'opsmanager@yourdomain.com',
+  reply_to_email_addr   => 'replyto@yourdomain.com',
+  admin_email_addr      => 'admin@yourdomain.com',
+  $smtp_server_hostname => 'email-relay.yourdomain.com'
+}
+```
+
+The default settings will not set useful email addresses. You can also just run `include mongodb::opsmanager`
+and then set the emails later.
+
+## Ops Manager Usage
+
+Most of the interaction for the server is done via `mongodb::opsmanager`. For
+more options please have a look at [mongodb::opsmanager](#class-mongodbopsmanager).
+There are also some settings that can be configured in `mongodb::globals`.
+
 ## Reference
 
 ### Classes
@@ -145,11 +172,12 @@ Unsafe plain text password could be used with 'password' parameter instead of 'p
 * `mongodb::client`: Installs the MongoDB client shell (for Red Hat family systems)
 * `mongodb::globals`: Configure main settings in a global way
 * `mongodb::mongos`: Installs and configure Mongos server (for sharding support)
+* `mongodb::opsmanager`: Installs and configure Ops Manager
 
 #### Private classes
-* `mongodb::repo`: Manage 10gen/MongoDB software repository
-* `mongodb::repo::apt`: Manage Debian/Ubuntu apt 10gen/MongoDB repository
-* `mongodb::repo::yum`: Manage Redhat/CentOS apt 10gen/MongoDB repository
+* `mongodb::repo`: Manage MongoDB software repository
+* `mongodb::repo::apt`: Manage Debian/Ubuntu apt MongoDB repository
+* `mongodb::repo::yum`: Manage Redhat/CentOS yum MongoDB repository
 * `mongodb::server::config`: Configures MongoDB configuration files
 * `mongodb::server::install`: Install MongoDB software packages
 * `mongodb::server::service`: Manages service
@@ -157,6 +185,8 @@ Unsafe plain text password could be used with 'password' parameter instead of 'p
 * `mongodb::mongos::config`: Configures Mongos configuration files
 * `mongodb::mongos::install`: Install Mongos software packages
 * `mongodb::mongos::service`: Manages Mongos service
+* `mongodb::opsmanager::install` : Install Ops Manager software package
+* `mongodb::opsmanager::service` : Manages Ops Manager (mongodb-mms) service
 
 #### Class: mongodb::globals
 *Note:* most server specific defaults should be overridden in the `mongodb::server`
@@ -220,9 +250,9 @@ When `manage_package_repo` is set to true, this setting indicates if it will
 use the Community Edition (false, the default) or the Enterprise one (true).
 
 ##### `version`
-The version of MonogDB to install/manage. This is a simple way of providing
-a specific version such as '2.2' or '2.4' for example. If not specified,
-the module will use the default for your OS distro.
+The version of MonogDB to install/manage. This is needed when managing
+repositories. If not specified, the module will use the default for your OS
+distro.
 
 ##### `repo_location`
 This setting can be used to override the default MongoDB repository location.
@@ -341,7 +371,6 @@ Default: None
 ##### `objcheck`
 Forces the mongod to validate all requests from clients upon receipt to ensure
 that clients never insert invalid documents into the database.
-Default: on v2.4 default to true and on earlier version to false
 
 ##### `quota`
 Set to true to enable a maximum limit for the number of data files each database
@@ -427,7 +456,7 @@ Mutually exclusive with `replset_members` param.
 ```puppet
 class mongodb::server {
   replset        => 'rsmain',
-  replset_config => { 'rsmain' => { ensure  => present, members => ['host1:27017', 'host2:27017', 'host3:27017']  }  }
+  replset_config => { 'rsmain' => { ensure  => present, settings => { heartbeatTimeoutSecs => 15, getLastErrorModes => { ttmode => { dc => 1 } } }, members => [{'host'=>'host1:27017', 'tags':{ 'dc' : 'east'}}, { 'host' => 'host2:27017'}, 'host3:27017']  }  }
 
 }
 ```
@@ -507,6 +536,10 @@ Default: False
 ##### `ssl_invalid_hostnames`
 Set to true to disable fqdn SSL cert check
 Default: False
+
+##### `ssl_mode`
+Ssl authorization mode. Valid options are: requireSSL, preferSSL, allowSSL.
+Default: requireSSL
 
 ##### `service_manage`
 Whether or not the MongoDB service resource should be part of the catalog.
@@ -620,6 +653,22 @@ Plain-text user password (will be hashed)
 
 ##### `roles`
 Array with user roles. Default: ['dbAdmin']
+
+##### `opsmanager_url`
+The fully qualified url where opsmanager runs. Must include the port. Ex:
+'http://opsmanager.yourdomain.com:8080'
+
+##### `opsmanager_mongo_uri`
+Full URI where the Ops Manager application mongodb server(s) can be found. Default: 'mongodb://127.0.0.1:27017'
+
+##### `ca_file`
+Ca file for secure connection to backup agents.
+
+##### `pem_key_file`
+Pem key file containing the cert and private key used for secure connections to backup agents.
+
+##### `pem_key_password`
+The password to the pem key file.
 
 ### Providers
 

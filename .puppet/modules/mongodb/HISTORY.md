@@ -223,7 +223,7 @@ Added Replica Set Type and Provider
 ## Unsupported Release [0.6.0]
 ### Summary
 
-Added support for installing MongoDB client on 
+Added support for installing MongoDB client on
 RHEL family systems.
 
 ## Unsupported Release [0.5.0]
@@ -233,8 +233,8 @@ Added types for providers for Mongo users and databases.
 
 ## Unsupported Release [0.4.0]
 
-Major refactoring of the MongoDB module. Includes a new 'mongodb::globals' 
-that consolidates many shared parameters into one location. This is an 
+Major refactoring of the MongoDB module. Includes a new 'mongodb::globals'
+that consolidates many shared parameters into one location. This is an
 API-breaking release in anticipation of a 1.0 release.
 
 ## Unsupported Release [0.3.0]

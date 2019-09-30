@@ -1,3 +1,7 @@
+##2019-??-?? - Release ?.?.?
+###Summary
+- Add support for Puppet v4.x, v5.x, & v6.x.
+
 ##2016-10-24 - Release 4.0.0
 ###Summary
 - Official support for influxdb 1.0.0

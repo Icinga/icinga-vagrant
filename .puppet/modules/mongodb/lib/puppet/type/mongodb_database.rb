@@ -22,6 +22,6 @@ Puppet::Type.newtype(:mongodb_database) do
   end
 
   autorequire(:service) do
-    'mongodb'
+    %w[mongodb mongod]
   end
 end

@@ -1,13 +1,13 @@
 Puppet::Type.type(:inherit_ini_setting).provide(
   :ini_setting,
-  :parent => Puppet::Type.type(:ini_setting).provider(:ruby)
+  parent: Puppet::Type.type(:ini_setting).provider(:ruby),
 ) do
   def section
     '' # all global
   end
 
   # This type has no sections
-  def self.namevar(section_name, setting)
+  def self.namevar(_section_name, setting)
     setting
   end
 

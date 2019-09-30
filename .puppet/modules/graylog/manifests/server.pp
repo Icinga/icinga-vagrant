@@ -18,7 +18,7 @@ class graylog::server(
     fail('Missing "password_secret" config setting!')
   }
   if has_key($config, 'root_password_sha2') {
-    if size($config['root_password_sha2']) < 64 {
+    if length($config['root_password_sha2']) < 64 {
       fail('The root_password_sha2 parameter does not look like a SHA256 checksum!')
     }
   } else {
@@ -35,12 +35,11 @@ class graylog::server(
   }
 
   file { '/etc/graylog/server/server.conf':
-    ensure    => file,
-    owner     => $user,
-    group     => $group,
-    mode      => '0640',
-    content   => template("${module_name}/server/graylog.conf.erb"),
-    show_diff => true,
+    ensure  => file,
+    owner   => $user,
+    group   => $group,
+    mode    => '0640',
+    content => template("${module_name}/server/graylog.conf.erb"),
   }
 
   service { 'graylog-server':

@@ -19,15 +19,13 @@
 #
 # @author https://github.com/elastic/puppet-logstash/graphs/contributors
 #
-define logstash::patternfile ($source = undef, $filename = undef) {
+define logstash::patternfile (
+  Pattern[/^(puppet|file):\/\//] $source   = undef,
+  Optional[String[1]]            $filename = undef,
+) {
   require logstash::config
 
-  validate_re($source, '^(puppet|file)://',
-    'Source must begin with "puppet://" or "file://")'
-  )
-
-  if($filename) { $destination = $filename }
-  else          { $destination = basename($source) }
+  $destination = pick($filename, basename($source))
 
   file { "${logstash::config_dir}/patterns/${destination}":
     ensure => file,

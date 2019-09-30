@@ -1,6 +1,22 @@
 require 'spec_helper_acceptance'
 
 describe 'selinux::permissive define' do
+  before(:all) do
+    hosts.each do |host|
+      host.execute('getenforce') do |result|
+        mode = result.stdout.strip
+        if mode != 'Enforcing'
+          host.execute('sed -i "s/SELINUX=.*/SELINUX=enforcing/" /etc/selinux/config')
+          if mode == 'Disabled'
+            host.reboot
+          else
+            host.execute('setenforce Enforcing && test "$(getenforce)" = "Enforcing"')
+          end
+        end
+      end
+    end
+  end
+
   context 'ensure present for passwd_t' do
     let(:result) do
       manifest = "selinux::permissive {'passwd_t':}"

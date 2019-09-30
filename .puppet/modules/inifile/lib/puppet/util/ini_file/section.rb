@@ -1,4 +1,7 @@
 class Puppet::Util::IniFile
+  #
+  # section.rb
+  #
   class Section
     # Some implementation details:
     #
@@ -20,11 +23,11 @@ class Puppet::Util::IniFile
 
     attr_reader :name, :start_line, :end_line, :additional_settings, :indentation
 
-    def is_global?()
+    def global?
       @name == ''
     end
 
-    def is_new_section?()
+    def new_section?
       # a new section (global or named) will always have `end_line`
       # set to `nil`
       @end_line.nil?
@@ -38,12 +41,14 @@ class Puppet::Util::IniFile
       @existing_settings[setting_name] || @additional_settings[setting_name]
     end
 
-    def has_existing_setting?(setting_name)
-      @existing_settings.has_key?(setting_name)
+    def existing_setting?(setting_name)
+      @existing_settings.key?(setting_name)
     end
 
+    # the global section is empty whenever it's new;
+    # other sections are empty when they have no lines
     def empty?
-      start_line == end_line
+      global? ? new_section? : start_line == end_line
     end
 
     def update_existing_setting(setting_name, value)
@@ -51,11 +56,7 @@ class Puppet::Util::IniFile
     end
 
     def remove_existing_setting(setting_name)
-      if (@existing_settings.delete(setting_name))
-        if @end_line
-          @end_line = @end_line - 1
-        end
-      end
+      @end_line -= 1 if @existing_settings.delete(setting_name) && @end_line
     end
 
     # This is a hacky method; it's basically called when we need to insert
@@ -66,9 +67,7 @@ class Puppet::Util::IniFile
     # of the lines.
     def insert_inline_setting(setting_name, value)
       @existing_settings[setting_name] = value
-      if @end_line
-        @end_line = @end_line + 1
-      end
+      @end_line += 1 if @end_line
     end
 
     def set_additional_setting(setting_name, value)
@@ -78,26 +77,17 @@ class Puppet::Util::IniFile
     # Decrement the start and end line numbers for the section (if they are
     # defined); this is intended to be called when a setting is removed
     # from a section that comes before this section in the ini file.
-    def decrement_line_nums()
-      if @start_line
-        @start_line = @start_line - 1
-      end
-      if @end_line
-        @end_line = @end_line - 1
-      end
+    def decrement_line_nums
+      @start_line -= 1 if @start_line
+      @end_line -= 1 if @end_line
     end
 
     # Increment the start and end line numbers for the section (if they are
     # defined); this is intended to be called when an inline setting is added
     # to a section that comes before this section in the ini file.
-    def increment_line_nums()
-      if @start_line
-        @start_line = @start_line + 1
-      end
-      if @end_line
-        @end_line = @end_line + 1
-      end
+    def increment_line_nums
+      @start_line += 1 if @start_line
+      @end_line += 1 if @end_line
     end
-
   end
 end

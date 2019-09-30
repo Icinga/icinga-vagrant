@@ -1,7 +1,249 @@
 # Change log
 
-All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org).
+All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
+
+## [v5.0.0](https://github.com/puppetlabs/puppetlabs-apache/tree/v5.0.0) (2019-05-20)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-apache/compare/4.1.0...v5.0.0)
+
+### Changed
+
+- pdksync - \(MODULES-8444\) - Raise lower Puppet bound [\#1908](https://github.com/puppetlabs/puppetlabs-apache/pull/1908) ([david22swan](https://github.com/david22swan))
+
+### Added
+
+- \(FM-7923\) Implement Puppet Strings [\#1916](https://github.com/puppetlabs/puppetlabs-apache/pull/1916) ([eimlav](https://github.com/eimlav))
+- Define SCL package name for mod\_ldap [\#1893](https://github.com/puppetlabs/puppetlabs-apache/pull/1893) ([treydock](https://github.com/treydock))
+
+### Fixed
+
+- \(MODULES-9014\) Improve SSLSessionTickets handling [\#1923](https://github.com/puppetlabs/puppetlabs-apache/pull/1923) ([FredericLespez](https://github.com/FredericLespez))
+- \(MODULES-8931\) Fix stahnma/epel failures [\#1914](https://github.com/puppetlabs/puppetlabs-apache/pull/1914) ([eimlav](https://github.com/eimlav))
+- Fix wsgi\_daemon\_process to support hash data type [\#1884](https://github.com/puppetlabs/puppetlabs-apache/pull/1884) ([mdechiaro](https://github.com/mdechiaro))
+
+## [4.1.0](https://github.com/puppetlabs/puppetlabs-apache/tree/4.1.0) (2019-04-05)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-apache/compare/4.0.0...4.1.0)
+
+### Added
+
+- \(MODULES-7196\) Allow setting CASRootProxiedAs per virtualhost \(replaces \#1857\) [\#1900](https://github.com/puppetlabs/puppetlabs-apache/pull/1900) ([Lavinia-Dan](https://github.com/Lavinia-Dan))
+- \(feat\) - Amazon Linux 2 compatibility added [\#1898](https://github.com/puppetlabs/puppetlabs-apache/pull/1898) ([david22swan](https://github.com/david22swan))
+- \(MODULES-8731\) Allow CIDRs for proxy\_ips/internal\_proxy in remoteip [\#1891](https://github.com/puppetlabs/puppetlabs-apache/pull/1891) ([JAORMX](https://github.com/JAORMX))
+- Manage all mod\_remoteip parameters supported by Apache [\#1882](https://github.com/puppetlabs/puppetlabs-apache/pull/1882) ([johanfleury](https://github.com/johanfleury))
+- MODULES-8541 : Allow HostnameLookups to be modified [\#1881](https://github.com/puppetlabs/puppetlabs-apache/pull/1881) ([k2patel](https://github.com/k2patel))
+- Add support for mod\_http2 [\#1867](https://github.com/puppetlabs/puppetlabs-apache/pull/1867) ([smortex](https://github.com/smortex))
+- Added code to paramertize the libphp prefix [\#1852](https://github.com/puppetlabs/puppetlabs-apache/pull/1852) ([grahamuk2018](https://github.com/grahamuk2018))
+- Added WSGI Options WSGIApplicationGroup and WSGIPythonOptimize [\#1847](https://github.com/puppetlabs/puppetlabs-apache/pull/1847) ([emetriqLikedeeler](https://github.com/emetriqLikedeeler))
+
+### Fixed
+
+- \(bugfix\) set kernel for facter version test [\#1895](https://github.com/puppetlabs/puppetlabs-apache/pull/1895) ([tphoney](https://github.com/tphoney))
+- \(MODULES-5990\) - Managing conf\_enabled [\#1875](https://github.com/puppetlabs/puppetlabs-apache/pull/1875) ([david22swan](https://github.com/david22swan))
+
+## [4.0.0](https://github.com/puppetlabs/puppetlabs-apache/tree/4.0.0) (2019-01-10)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-apache/compare/3.5.0...4.0.0)
+
+### Changed
+
+- default server\_tokens to prod - more secure default [\#1746](https://github.com/puppetlabs/puppetlabs-apache/pull/1746) ([juju4](https://github.com/juju4))
+
+### Added
+
+- \(Modules 8141/Modules 8379\) - Addition of support for SLES 15 [\#1862](https://github.com/puppetlabs/puppetlabs-apache/pull/1862) ([david22swan](https://github.com/david22swan))
+- SCL support for httpd and php7.1 [\#1822](https://github.com/puppetlabs/puppetlabs-apache/pull/1822) ([mmoll](https://github.com/mmoll))
+
+### Fixed
+
+- \(MODULES-5990\) - conf-enabled defaulted to undef [\#1869](https://github.com/puppetlabs/puppetlabs-apache/pull/1869) ([david22swan](https://github.com/david22swan))
+- pdksync - \(FM-7655\) Fix rubygems-update for ruby \< 2.3 [\#1866](https://github.com/puppetlabs/puppetlabs-apache/pull/1866) ([tphoney](https://github.com/tphoney))
+
+## [3.5.0](https://github.com/puppetlabs/puppetlabs-apache/tree/3.5.0) (2018-12-17)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-apache/compare/3.4.0...3.5.0)
+
+### Added
+
+- \(MODULES-5990\) Addition of 'IncludeOptional conf-enabled/\*.conf' to apache2.conf' on Debian Family OS [\#1851](https://github.com/puppetlabs/puppetlabs-apache/pull/1851) ([david22swan](https://github.com/david22swan))
+- \(MODULES-8107\) - Support added for Ubuntu 18.04. [\#1850](https://github.com/puppetlabs/puppetlabs-apache/pull/1850) ([david22swan](https://github.com/david22swan))
+- \(MODULES-8108\) - Support added for Debian 9 [\#1849](https://github.com/puppetlabs/puppetlabs-apache/pull/1849) ([david22swan](https://github.com/david22swan))
+- Add option to add comments to the header of a vhost file [\#1841](https://github.com/puppetlabs/puppetlabs-apache/pull/1841) ([jovandeginste](https://github.com/jovandeginste))
+
+### Fixed
+
+- \(FM-7605\) - Disabling conf\_enabled on Ubuntu 18.04  by default as it conflicts with Shibboleth causing errors with apache2. [\#1856](https://github.com/puppetlabs/puppetlabs-apache/pull/1856) ([david22swan](https://github.com/david22swan))
+- \(MODULES-8429\) Update GPG key for phusion passenger [\#1848](https://github.com/puppetlabs/puppetlabs-apache/pull/1848) ([abottchen](https://github.com/abottchen))
+- Fix default vhost priority in readme [\#1843](https://github.com/puppetlabs/puppetlabs-apache/pull/1843) ([HT43-bqxFqB](https://github.com/HT43-bqxFqB))
+- fix apache::mod::jk example typo and add link for more info [\#1812](https://github.com/puppetlabs/puppetlabs-apache/pull/1812) ([xorpaul](https://github.com/xorpaul))
+- MODULES-7379: Fixing syntax by adding newline [\#1803](https://github.com/puppetlabs/puppetlabs-apache/pull/1803) ([wimvr](https://github.com/wimvr))
+- ensure mpm\_event is disabled under debian 9 if mpm itk is used [\#1766](https://github.com/puppetlabs/puppetlabs-apache/pull/1766) ([zivis](https://github.com/zivis))
+
+## [3.4.0](https://github.com/puppetlabs/puppetlabs-apache/tree/3.4.0) (2018-09-27)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-apache/compare/3.3.0...3.4.0)
+
+### Added
+
+- pdksync - \(FM-7392\) - Puppet 6 Testing Changes [\#1838](https://github.com/puppetlabs/puppetlabs-apache/pull/1838) ([pmcmaw](https://github.com/pmcmaw))
+- pdksync - \(MODULES-6805\) metadata.json shows support for puppet 6 [\#1836](https://github.com/puppetlabs/puppetlabs-apache/pull/1836) ([tphoney](https://github.com/tphoney))
+
+### Fixed
+
+- Fix "audit\_log\_relevant\_status" typo in README.md [\#1830](https://github.com/puppetlabs/puppetlabs-apache/pull/1830) ([smokris](https://github.com/smokris))
+
+## [3.3.0](https://github.com/puppetlabs/puppetlabs-apache/tree/3.3.0) (2018-09-11)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-apache/compare/3.2.0...3.3.0)
+
+### Added
+
+- pdksync - \(MODULES-7705\) - Bumping stdlib dependency from \< 5.0.0 to \< 6.0.0 [\#1821](https://github.com/puppetlabs/puppetlabs-apache/pull/1821) ([pmcmaw](https://github.com/pmcmaw))
+- Add support for ProxyTimeout [\#1805](https://github.com/puppetlabs/puppetlabs-apache/pull/1805) ([agoodno](https://github.com/agoodno))
+- \(MODULES-7343\) - Allow overrides by adding mod\_libs in apache class [\#1800](https://github.com/puppetlabs/puppetlabs-apache/pull/1800) ([karelyatin](https://github.com/karelyatin))
+- Rework passenger VHost and Directories [\#1778](https://github.com/puppetlabs/puppetlabs-apache/pull/1778) ([smortex](https://github.com/smortex))
+
+### Fixed
+
+- MODULES-7575 reverse sort the aliases [\#1808](https://github.com/puppetlabs/puppetlabs-apache/pull/1808) ([k2patel](https://github.com/k2patel))
+- fixes for OpenSUSE ans SLES [\#1783](https://github.com/puppetlabs/puppetlabs-apache/pull/1783) ([tuxmea](https://github.com/tuxmea))
+
+## 3.2.0
+### Summary
+This is a clean release to prepare for several planned backwards incompatible changes.
+
+#### Changed
+- Parameter `passenger_pre_start` has been moved outside of `<VirtualHost>`.
+- Apache version fact has been enabled on FreeBSD.
+- Parameter `ssl_proxyengine` has had it's default changed to false.
+
+#### Added
+- Parameter `passenger_group` can now be set in `apache::vhost`.
+- Multiple `passenger_pre_start` URIs can now be set at once.
+- Manifest `mod::auth_gssapi` has been added to allow the deployment of authorisation with kerberos, through GSSAPI.
+
+#### Removed
+- Scientific 5 and Debian 7 are no longer supported on Apache.
+
+## Supported Release [3.1.0]
+### Summary
+This release includes the module being converted using version 1.4.1 of the PDK. It also includes a couple of additional parameters added.
+
+#### Added
+- Module has been pdk converted with version 1.4.1 ([MODULES-6331](https://tickets.puppet.com/browse/MODULES-6331))
+- Parameter `ssl_cert` to provide a SSLCertificateFile option for use with SSL, optional of type String.
+- Parameter `ssl_key` to provide a SSLCertificateKey option for use with SSL, optional of type String.
+
+#### Fixed
+- Documentation updates.
+- Updates to the Japanese translation based on documentation update.
+
+## Supported Release [3.0.0]
+### Summary
+This major release changes the default value of `keepalive` to `On`. It also includes many other features and bugfixes.
+
+#### Changed
+- Default `apache::keepalive` from `Off` to `On`.
+
+#### Added
+- Class `apache::mod::data`
+- Function `apache::apache_pw_hash` function (puppet 4 port of `apache_pw_hash()`)
+- Function `apache::bool2httpd` function (puppet 4 port of `bool2httpd()`)
+- Function `apache::validate_apache_log_level` function (puppet 4 port of `validate_apache_log_level()`)
+- Parameter `apache::balancer::options` for additional directives.
+- Parameter `apache::limitreqfields` setting the LimitRequestFields directive to 100.
+- Parameter `apache::use_canonical_name` to control how httpd uses self-referential URLs.
+- Parameter `apache::mod::disk_cache::cache_ignore_headers` to ignore cache headers.
+- Parameter `apache::mod::itk::enablecapabilities` to manage ITK capabilities.
+- Parameter `apache::mod::ldap::ldap_trusted_mode` to manage trusted mode.
+- Parameters for `apache::mod::passenger`:
+  - `passenger_allow_encoded_slashes`
+  - `passenger_app_group_name`
+  - `passenger_app_root`
+  - `passenger_app_type`
+  - `passenger_base_uri`
+  - `passenger_buffer_response`
+  - `passenger_buffer_upload`
+  - `passenger_concurrency_model`
+  - `passenger_debug_log_file`
+  - `passenger_debugger`
+  - `passenger_default_group`
+  - `passenger_default_user`
+  - `passenger_disable_security_update_check`
+  - `passenger_enabled`
+  - `passenger_error_override`
+  - `passenger_file_descriptor_log_file`
+  - `passenger_fly_with`
+  - `passenger_force_max_concurrent_requests_per_process`
+  - `passenger_friendly_error_pages`
+  - `passenger_group`
+  - `passenger_installed_version`
+  - `passenger_instance_registry_dir`
+  - `passenger_load_shell_envvars`
+  - `passenger_lve_min_uid`
+  - `passenger_max_instances`
+  - `passenger_max_preloader_idle_time`
+  - `passenger_max_request_time`
+  - `passenger_memory_limit`
+  - `passenger_meteor_app_settings`
+  - `passenger_nodejs`
+  - `passenger_pre_start`
+  - `passenger_python`
+  - `passenger_resist_deployment_errors`
+  - `passenger_resolve_symlinks_in_document_root`
+  - `passenger_response_buffer_high_watermark`
+  - `passenger_restart_dir`
+  - `passenger_rolling_restarts`
+  - `passenger_security_update_check_proxy`
+  - `passenger_show_version_in_header`
+  - `passenger_socket_backlog`
+  - `passenger_start_timeout`
+  - `passenger_startup_file`
+  - `passenger_sticky_sessions`
+  - `passenger_sticky_sessions_cookie_name`
+  - `passenger_thread_count`
+  - `passenger_user`
+  - `passenger_user_switching`
+  - `rack_auto_detect`
+  - `rack_base_uri`
+  - `rack_env`
+  - `rails_allow_mod_rewrite`
+  - `rails_app_spawner_idle_time`
+  - `rails_auto_detect`
+  - `rails_base_uri`
+  - `rails_default_user`
+  - `rails_env`
+  - `rails_framework_spawner_idle_time`
+  - `rails_ruby`
+  - `rails_spawn_method`
+  - `rails_user_switching`
+  - `wsgi_auto_detect`
+- Parameter `apache::mod::prefork::listenbacklog` to set the listen backlog to 511.
+- Parameter `apache::mod::python::loadfile_name` to workaround python.load filename conflicts.
+- Parameter `apache::mod::ssl::ssl_cert` to manage the client auth cert.
+- Parameter `apache::mod::ssl::ssl_key` to manage the client auth key.
+- Parameter `apache::mod::status::requires` as an alternative to `apache::mod::status::allow_from`
+- Parameter `apache::vhost::ssl_proxy_cipher_suite` to manage that directive.
+- Parameter `apache::vhost::shib_compat_valid_user` to manage that directive.
+- Parameter `apache::vhost::use_canonical_name` to manage that directive.
+- Parameter value `mellon_session_length` for `apache::vhost::directories`
+
+### Fixed
+- `apache_version` is confined to just Linux to avoid erroring on AIX.
+- Parameter `apache::mod::jk::workers_file_content` docs typo of "mantain" instead of maintain.
+- Deduplicate `apache::mod::ldap` managing `File['ldap.conf']` to avoid resource conflicts.
+- ITK package name on Debian 9
+- Dav_svn package for SLES
+- Log client IP instead of loadbalancer IP when behind a loadbalancer.
+- `apache::mod::remoteip` now notifies the `Class['apache::service']` class instead of `Service['httpd']` to avoid restarting the service when `apache::service_manage` is false.
+- `apache::vhost::cas_scrub_request_headers` actually manages the directive.
+
+## Supported Release [2.3.1]
+### Summary
+This release fixes CVE-2018-6508 which is a potential arbitrary code execution via tasks.
+
+### Fixed
+- Fix init task for arbitrary remote code
 
 ## Supported Release [2.3.0]
 ### Summary
@@ -920,6 +1162,10 @@ worker/prefork
 * f672e46 a2mod fix
 * 8a56ee9 add pthon support to apache
 
+[3.2.0]:https://github.com/puppetlabs/puppetlabs-apache/compare/3.1.0...3.2.0
+[3.1.0]:https://github.com/puppetlabs/puppetlabs-apache/compare/3.0.0...3.1.0
+[3.0.0]:https://github.com/puppetlabs/puppetlabs-apache/compare/2.3.1...3.0.0
+[2.3.1]:https://github.com/puppetlabs/puppetlabs-apache/compare/2.3.0...2.3.1
 [2.3.0]:https://github.com/puppetlabs/puppetlabs-apache/compare/2.2.0...2.3.0
 [2.2.0]:https://github.com/puppetlabs/puppetlabs-apache/compare/2.1.0...2.2.0
 [2.1.0]:https://github.com/puppetlabs/puppetlabs-apache/compare/2.0.0...2.1.0
@@ -952,3 +1198,6 @@ worker/prefork
 [0.5.0-rc1]:https://github.com/puppetlabs/puppetlabs-apache/compare/0.4.0...0.5.0-rc1
 [0.4.0]:https://github.com/puppetlabs/puppetlabs-apache/compare/0.3.0...0.4.0
 [0.0.4]:https://github.com/puppetlabs/puppetlabs-apache/commits/0.0.4
+
+
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*

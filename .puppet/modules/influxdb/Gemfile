@@ -10,13 +10,6 @@ def location_for(place, fake_version = nil)
   end
 end
 
-ruby_ver = RUBY_VERSION.gsub(/\./, "").to_i
-if ruby_ver < 225
-  ENV['BEAKER_VERSION'].nil? ? ENV['BEAKER_VERSION'] = '2.51.0' : nil
-else
-  ENV['BEAKER_VERSION'].nil? ? ENV['BEAKER_VERSION'] = '3.10.0' : nil
-end
-
 group :development, :test do
   gem 'rake',                       require: false
   gem 'rspec',                      require: false
@@ -34,7 +27,7 @@ group :development, :test do
 end
 
 group :system_tests do
-  gem 'beaker',                        *location_for(ENV['BEAKER_VERSION'] || '~> 2.0')
+  gem 'beaker',                        *location_for(ENV['BEAKER_VERSION'] || '~> 3.34')
   gem 'beaker-rspec',                  require: false
   gem 'beaker_spec_helper',            require: false
   gem 'beaker-hiera',                  require: false

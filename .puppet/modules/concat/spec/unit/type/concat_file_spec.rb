@@ -128,9 +128,19 @@ describe Puppet::Type.type(:concat_file) do
       expect(resource[:format]).to eq(:json)
     end
 
+    it 'accepts "json-array" as a value' do
+      resource[:format] = 'json-array'
+      expect(resource[:format]).to eq(:'json-array')
+    end
+
     it 'accepts "json-pretty" as a value' do
       resource[:format] = 'json-pretty'
       expect(resource[:format]).to eq(:'json-pretty')
+    end
+
+    it 'accepts "json-array-pretty" as a value' do
+      resource[:format] = 'json-array-pretty'
+      expect(resource[:format]).to eq(:'json-array-pretty')
     end
 
     it 'does not accept "bar" as a value' do

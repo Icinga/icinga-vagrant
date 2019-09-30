@@ -15,7 +15,7 @@ RSpec.describe curl_provider do
         'http://home.lan/example.zip',
         '-o',
         String,
-        '-fsSL',
+        '-fsSLg',
         '--max-redirs',
         5
       ]
@@ -135,7 +135,7 @@ RSpec.describe curl_provider do
         let(:curl_params) do
           [
             'http://example.com/checksum',
-            '-fsSL',
+            '-fsSLg',
             '--max-redirs',
             5
           ]

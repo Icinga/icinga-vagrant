@@ -37,48 +37,13 @@ class graphite::config_gunicorn inherits graphite::params {
 
       # RedHat package is missing initscript
       # RedHat 7+ uses systemd
-      if $::graphite::gr_service_provider == 'systemd' {
-
-        file { '/etc/systemd/system/gunicorn.service':
-          ensure  => file,
-          content => template('graphite/etc/systemd/gunicorn.service.erb'),
-          mode    => '0644',
-        }
-
-        file { '/etc/systemd/system/gunicorn.socket':
-          ensure  => file,
-          content => template('graphite/etc/systemd/gunicorn.socket.erb'),
-          mode    => '0755',
-        }
-
-        file { '/etc/tmpfiles.d/gunicorn.conf':
-          ensure  => file,
-          content => template('graphite/etc/tmpfiles.d/gunicorn.conf.erb'),
-          mode    => '0644',
-        }
-
-        # TODO: we should use the exec graphite-reload-systemd from config class
-        exec { 'gunicorn-reload-systemd':
-          command     => 'systemctl daemon-reload',
-          path        => ['/usr/bin', '/usr/sbin', '/bin', '/sbin'],
-          refreshonly => true,
-          subscribe   => [
-            File['/etc/systemd/system/gunicorn.service'],
-            File['/etc/systemd/system/gunicorn.socket'],
-            File['/etc/tmpfiles.d/gunicorn.conf'],
-          ],
-          before      => Service['gunicorn']
-        }
-
-      } else {
-
+      if $::graphite::gr_service_provider == 'redhat' {
         file { '/etc/init.d/gunicorn':
           ensure  => file,
           content => template('graphite/etc/init.d/RedHat/gunicorn.erb'),
           mode    => '0755',
           before  => Service['gunicorn'],
         }
-
       }
 
     }
@@ -87,6 +52,39 @@ class graphite::config_gunicorn inherits graphite::params {
       fail("wsgi/gunicorn-based graphite is not supported on ${::operatingsystem} (only supported on Debian & RedHat)")
     }
 
+  }
+
+  if $::graphite::gr_service_provider == 'systemd' {
+    file { '/etc/systemd/system/gunicorn.service':
+      ensure  => file,
+      content => template('graphite/etc/systemd/gunicorn.service.erb'),
+      mode    => '0644',
+    }
+
+    file { '/etc/systemd/system/gunicorn.socket':
+      ensure  => file,
+      content => template('graphite/etc/systemd/gunicorn.socket.erb'),
+      mode    => '0755',
+    }
+
+    file { '/etc/tmpfiles.d/gunicorn.conf':
+      ensure  => file,
+      content => template('graphite/etc/tmpfiles.d/gunicorn.conf.erb'),
+      mode    => '0644',
+    }
+
+    # TODO: we should use the exec graphite-reload-systemd from config class
+    exec { 'gunicorn-reload-systemd':
+      command     => 'systemctl daemon-reload',
+      path        => ['/usr/bin', '/usr/sbin', '/bin', '/sbin'],
+      refreshonly => true,
+      subscribe   => [
+        File['/etc/systemd/system/gunicorn.service'],
+        File['/etc/systemd/system/gunicorn.socket'],
+        File['/etc/tmpfiles.d/gunicorn.conf'],
+      ],
+      before      => Service['gunicorn'],
+    }
   }
 
   # fix graphite's race condition on start

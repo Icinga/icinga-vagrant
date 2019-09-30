@@ -39,6 +39,12 @@ class influxdb::params {
     'max-series-per-database'            => 1000000,
     'max-values-per-tag'                 => 100000,
   }
+  
+  $logging_config = {
+    'format'        => 'auto',
+    'level'         => 'warn',
+    'suppress-logo' => false,
+  }
 
   $coordinator_config = {
     'write-timeout'          => '10s',
@@ -88,7 +94,7 @@ class influxdb::params {
     'https-certificate'    => '/etc/ssl/influxdb.pem',
     'https-private-key'    => '',
     'shared-sercret'       => '',
-    'max-row-limit'        => 10000,
+    'max-row-limit'        => 0,
     'max-connection-limit' => 0,
     'unix-socket-enabled'  => false,
     'bind-socket'          => '/var/run/influxdb.sock',

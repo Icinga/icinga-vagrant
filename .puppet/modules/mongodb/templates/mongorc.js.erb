@@ -1,11 +1,25 @@
+function rsReconfigMember(member){
+  var cfg = rs.config()
+  cfg.members.forEach(function(part,index,memberArray){
+    if (member.host == part.host) {
+      for(k in member){
+        memberArray[index][k] = member[k]
+      }
+    }
+  })
+  return rs.reconfig(cfg)
+}
+
+function rsReconfigSettings(settings){
+  var cfg = rs.config()
+  cfg.settings = settings
+  return rs.reconfig(cfg)
+}
+
 function authRequired() {
   try {
-    if (db.serverCmdLineOpts().code == 13) {
-      return true;
-    }
-    return false;
-  }
-  catch (err) {
+    return db.serverCmdLineOpts().code == 13;
+  } catch (err) {
     return false;
   }
 }

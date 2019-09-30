@@ -1,4 +1,4 @@
-# On Debian systems, if alternatives are set, manually assign them.
+# @api private
 class java::config ( ) {
   case $::osfamily {
     'Debian': {
@@ -44,12 +44,26 @@ class java::config ( ) {
         }
       }
     }
-    'FreeBSD', 'Suse': {
+    'Suse': {
       if $java::use_java_home != undef {
         file_line { 'java-home-environment':
           path  => '/etc/environment',
           line  => "JAVA_HOME=${$java::use_java_home}",
           match => 'JAVA_HOME=',
+        }
+      }
+    }
+    'FreeBSD': {
+      if $java::use_java_home != undef {
+        file_line { 'java-home-environment-profile':
+          path  => '/etc/profile',
+          line  => "JAVA_HOME=${$java::use_java_home}; export JAVA_HOME",
+          match => 'JAVA_HOME=',
+        }
+        file_line { 'java-home-environment-cshrc':
+          path  => '/etc/csh.login',
+          line  => "setenv JAVA_HOME ${$java::use_java_home}",
+          match => 'setenv JAVA_HOME',
         }
       }
     }

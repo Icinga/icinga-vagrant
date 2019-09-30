@@ -1,4 +1,4 @@
-class { '::archive':
+class { 'archive':
   aws_cli_install => true,
 }
 

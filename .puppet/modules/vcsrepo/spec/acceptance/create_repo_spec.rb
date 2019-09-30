@@ -3,17 +3,16 @@ require 'spec_helper_acceptance'
 tmpdir = default.tmpdir('vcsrepo')
 
 describe 'create a repo' do
-  context 'without a source' do
-    pp = <<-EOS
+  context 'with without a source' do
+    pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/testrepo_blank_repo":
         ensure => present,
         provider => git,
       }
-    EOS
+    MANIFEST
     it 'creates a blank repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_blank_repo/") do
@@ -29,32 +28,30 @@ describe 'create a repo' do
     end
   end
 
-  context 'no source but revision provided' do
-    pp = <<-EOS
+  context 'with no source but revision provided' do
+    pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/testrepo_blank_with_revision_repo":
         ensure   => present,
         provider => git,
         revision => 'master'
       }
-    EOS
+    MANIFEST
     it 'does not fail (MODULES-2125)' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
   end
 
-  context 'bare repo' do
-    pp = <<-EOS
+  context 'with bare repo' do
+    pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/testrepo_bare_repo":
         ensure => bare,
         provider => git,
       }
-    EOS
+    MANIFEST
     it 'creates a bare repo' do
       # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
+      idempotent_apply(default, pp)
     end
 
     describe file("#{tmpdir}/testrepo_bare_repo/config") do
@@ -66,14 +63,14 @@ describe 'create a repo' do
     end
   end
 
-  context 'bare repo with a revision' do
-    pp = <<-EOS
+  context 'with bare repo with a revision' do
+    pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/testrepo_bare_repo_rev":
         ensure => bare,
         provider => git,
         revision => 'master',
       }
-    EOS
+    MANIFEST
     it 'does not create a bare repo when a revision is defined' do
       apply_manifest(pp, expect_failures: true)
     end
@@ -83,13 +80,13 @@ describe 'create a repo' do
     end
   end
 
-  context 'mirror repo' do
-    pp = <<-EOS
+  context 'with mirror repo' do
+    pp = <<-MANIFEST
       vcsrepo { "#{tmpdir}/testrepo_mirror_repo":
         ensure => mirror,
         provider => git,
       }
-    EOS
+    MANIFEST
     it 'does not create a mirror repo' do
       apply_manifest(pp, expect_failures: true)
     end

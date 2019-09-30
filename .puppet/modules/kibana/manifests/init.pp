@@ -27,7 +27,7 @@
 #
 class kibana (
   Variant[Enum['present', 'absent', 'latest'], Pattern[/^\d([.]\d+)*(-[\d\w]+)?$/]] $ensure,
-  Hash[String[1], Variant[String[1], Integer, Boolean, Array]] $config,
+  Hash[String[1], Variant[String[1], Integer, Boolean, Array, Hash]] $config,
   Boolean $manage_repo,
   Boolean $oss,
   Optional[String] $package_source,

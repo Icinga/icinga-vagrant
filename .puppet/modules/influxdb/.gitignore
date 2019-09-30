@@ -6,4 +6,8 @@ pkg/
 log/
 vendor/bundle
 .bundle
-
+*.iml
+*.ipr
+*.iws
+.idea/
+local/

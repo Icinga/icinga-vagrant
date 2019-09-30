@@ -4,6 +4,125 @@ All notable changes to this project will be documented in this file.
 Each new release typically also includes the latest modulesync defaults.
 These should not affect the functionality of the module.
 
+## [v4.0.0](https://github.com/voxpupuli/puppet-yum/tree/v4.0.0) (2019-05-07)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-yum/compare/v3.1.1...v4.0.0)
+
+**Breaking changes:**
+
+- modulesync 2.7.0 and drop puppet 4 [\#133](https://github.com/voxpupuli/puppet-yum/pull/133) ([bastelfreak](https://github.com/bastelfreak))
+
+**Implemented enhancements:**
+
+- Add optional parameters to groupinstall [\#86](https://github.com/voxpupuli/puppet-yum/pull/86) ([jfroche](https://github.com/jfroche))
+
+**Fixed bugs:**
+
+- Correctly calculate rpmname for all gpg versions [\#126](https://github.com/voxpupuli/puppet-yum/pull/126) ([towo](https://github.com/towo))
+- Puppet 6 issue and knockout\_prefix problem [\#121](https://github.com/voxpupuli/puppet-yum/pull/121) ([avidspartan1](https://github.com/avidspartan1))
+
+**Closed issues:**
+
+- gpgkey applied on every run due to output change [\#125](https://github.com/voxpupuli/puppet-yum/issues/125)
+- In Puppet 6, remove\_undef\_values doesn't work as expected [\#120](https://github.com/voxpupuli/puppet-yum/issues/120)
+- --knock-out-prefix "--" knocks out valid content of yum::gpgkeys  [\#111](https://github.com/voxpupuli/puppet-yum/issues/111)
+- removal of mirrorlist is set by 'absent' not by using a knockout. [\#63](https://github.com/voxpupuli/puppet-yum/issues/63)
+
+**Merged pull requests:**
+
+- replace deprecated has\_key\(\) with `in` [\#129](https://github.com/voxpupuli/puppet-yum/pull/129) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v3.1.1](https://github.com/voxpupuli/puppet-yum/tree/v3.1.1) (2018-10-14)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-yum/compare/v3.1.0...v3.1.1)
+
+**Closed issues:**
+
+- Import GPG keys of unmanaged repos [\#114](https://github.com/voxpupuli/puppet-yum/issues/114)
+
+**Merged pull requests:**
+
+- modulesync 2.2.0 and allow puppet 6.x [\#124](https://github.com/voxpupuli/puppet-yum/pull/124) ([bastelfreak](https://github.com/bastelfreak))
+- Allow puppetlabs/stdlib 5.x and puppetlabs/concat 5.x [\#113](https://github.com/voxpupuli/puppet-yum/pull/113) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v3.1.0](https://github.com/voxpupuli/puppet-yum/tree/v3.1.0) (2018-07-24)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-yum/compare/v3.0.0...v3.1.0)
+
+**Implemented enhancements:**
+
+- \(\#107\) YUM update puppet task support [\#108](https://github.com/voxpupuli/puppet-yum/pull/108) ([catay](https://github.com/catay))
+
+**Closed issues:**
+
+- feature yum update puppet task support [\#107](https://github.com/voxpupuli/puppet-yum/issues/107)
+
+## [v3.0.0](https://github.com/voxpupuli/puppet-yum/tree/v3.0.0) (2018-07-09)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-yum/compare/v2.2.1...v3.0.0)
+
+**Breaking changes:**
+
+- Remove fastestmirror\_enabled and report\_instanceid parameters [\#103](https://github.com/voxpupuli/puppet-yum/pull/103) ([Zordrak](https://github.com/Zordrak))
+
+**Implemented enhancements:**
+
+- EPEL GPG Key [\#95](https://github.com/voxpupuli/puppet-yum/issues/95)
+- Clean yum metadata after versionlock file update [\#102](https://github.com/voxpupuli/puppet-yum/pull/102) ([traylenator](https://github.com/traylenator))
+- Fixes \#95 Add EPEL GPG Key and logic to handle yum::gpgkeys [\#96](https://github.com/voxpupuli/puppet-yum/pull/96) ([TJM](https://github.com/TJM))
+
+**Fixed bugs:**
+
+- Don't litter /root/ with GPG-related files. [\#56](https://github.com/voxpupuli/puppet-yum/pull/56) ([djl](https://github.com/djl))
+
+**Closed issues:**
+
+- Amazon Linux manage\_os\_default\_repos does not compile due to unsupported parameters [\#100](https://github.com/voxpupuli/puppet-yum/issues/100)
+- how does the module get the name of the package? [\#50](https://github.com/voxpupuli/puppet-yum/issues/50)
+
+**Merged pull requests:**
+
+- drop EOL OSs; fix puppet version range [\#101](https://github.com/voxpupuli/puppet-yum/pull/101) ([bastelfreak](https://github.com/bastelfreak))
+- Rely on beaker-hostgenerator for docker nodesets [\#98](https://github.com/voxpupuli/puppet-yum/pull/98) ([ekohl](https://github.com/ekohl))
+
+## [v2.2.1](https://github.com/voxpupuli/puppet-yum/tree/v2.2.1) (2018-03-28)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-yum/compare/v2.2.0...v2.2.1)
+
+**Fixed bugs:**
+
+- Hiera 5 warning on puppet 5.3.2 [\#77](https://github.com/voxpupuli/puppet-yum/issues/77)
+
+**Closed issues:**
+
+- Unable to exclude multiple packages in yum.conf [\#80](https://github.com/voxpupuli/puppet-yum/issues/80)
+
+**Merged pull requests:**
+
+- update required Puppet version in the documentation [\#88](https://github.com/voxpupuli/puppet-yum/pull/88) ([joekohlsdorf](https://github.com/joekohlsdorf))
+- migrate Hiera 4 to Hiera 5 [\#87](https://github.com/voxpupuli/puppet-yum/pull/87) ([joekohlsdorf](https://github.com/joekohlsdorf))
+
+## [v2.2.0](https://github.com/voxpupuli/puppet-yum/tree/v2.2.0) (2018-01-04)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-yum/compare/v2.1.0...v2.2.0)
+
+**Fixed bugs:**
+
+- Fix EPEL repo IDs [\#81](https://github.com/voxpupuli/puppet-yum/pull/81) ([lamawithonel](https://github.com/lamawithonel))
+
+**Closed issues:**
+
+- Add RHEL repos and tests. [\#76](https://github.com/voxpupuli/puppet-yum/issues/76)
+- Add support for AmazonLinux 2017 [\#72](https://github.com/voxpupuli/puppet-yum/issues/72)
+- EPEL managed\_repo broken [\#53](https://github.com/voxpupuli/puppet-yum/issues/53)
+
+**Merged pull requests:**
+
+- bump lowest puppet version 4.6.1-\>4.10.9 [\#85](https://github.com/voxpupuli/puppet-yum/pull/85) ([bastelfreak](https://github.com/bastelfreak))
+- Fix documentation instructions for mirrorlist [\#83](https://github.com/voxpupuli/puppet-yum/pull/83) ([jorhett](https://github.com/jorhett))
+- Run beaker tests on all supported & available docker sets [\#79](https://github.com/voxpupuli/puppet-yum/pull/79) ([ekohl](https://github.com/ekohl))
+- Add RHEL repos and update README. [\#75](https://github.com/voxpupuli/puppet-yum/pull/75) ([pillarsdotnet](https://github.com/pillarsdotnet))
+
 ## [v2.1.0](https://github.com/voxpupuli/puppet-yum/tree/v2.1.0) (2017-11-02)
 
 [Full Changelog](https://github.com/voxpupuli/puppet-yum/compare/v2.0.2...v2.1.0)
@@ -26,7 +145,6 @@ These should not affect the functionality of the module.
 - Release 2.0.2 [\#70](https://github.com/voxpupuli/puppet-yum/pull/70) ([bastelfreak](https://github.com/bastelfreak))
 - Update README.md [\#69](https://github.com/voxpupuli/puppet-yum/pull/69) ([arjenz](https://github.com/arjenz))
 - Emtpy hiera files throw puppet 4 warnings [\#67](https://github.com/voxpupuli/puppet-yum/pull/67) ([benohara](https://github.com/benohara))
-- Prepare 2.0.1 [\#64](https://github.com/voxpupuli/puppet-yum/pull/64) ([jeefberkey](https://github.com/jeefberkey))
 
 ## [v2.0.1](https://github.com/voxpupuli/puppet-yum/tree/v2.0.1) (2017-09-01)
 
@@ -50,7 +168,6 @@ These should not affect the functionality of the module.
 
 - Contain the versionlock subclass to help with ordering around package resources [\#65](https://github.com/voxpupuli/puppet-yum/pull/65) ([bovy89](https://github.com/bovy89))
 - Support `ensure =\> absent` with yum::versionlock [\#62](https://github.com/voxpupuli/puppet-yum/pull/62) ([bovy89](https://github.com/bovy89))
-- Prepare release 2.0.0 [\#52](https://github.com/voxpupuli/puppet-yum/pull/52) ([traylenator](https://github.com/traylenator))
 
 ## [v2.0.0](https://github.com/voxpupuli/puppet-yum/tree/v2.0.0) (2017-06-14)
 
@@ -72,7 +189,6 @@ These should not affect the functionality of the module.
 - Versionlock release string may contain dots [\#49](https://github.com/voxpupuli/puppet-yum/pull/49) ([traylenator](https://github.com/traylenator))
 - Fix typo. [\#45](https://github.com/voxpupuli/puppet-yum/pull/45) ([johntconklin](https://github.com/johntconklin))
 - Remove `section` parameter from `yum::config` [\#33](https://github.com/voxpupuli/puppet-yum/pull/33) ([lamawithonel](https://github.com/lamawithonel))
-- Comma seperated values puppet3 [\#31](https://github.com/voxpupuli/puppet-yum/pull/31) ([matonb](https://github.com/matonb))
 
 **Closed issues:**
 
@@ -81,10 +197,6 @@ These should not affect the functionality of the module.
 - Remove individual configs from init.pp, use create\_resources pattern instead [\#36](https://github.com/voxpupuli/puppet-yum/issues/36)
 - Fix versionlock regex [\#35](https://github.com/voxpupuli/puppet-yum/issues/35)
 -  yum::config fails with comma separated values [\#21](https://github.com/voxpupuli/puppet-yum/issues/21)
-
-**Merged pull requests:**
-
-- Release 1.0.0 [\#30](https://github.com/voxpupuli/puppet-yum/pull/30) ([bastelfreak](https://github.com/bastelfreak))
 
 ## [v1.0.0](https://github.com/voxpupuli/puppet-yum/tree/v1.0.0) (2017-01-14)
 
@@ -108,16 +220,13 @@ These should not affect the functionality of the module.
 - Add parameter clean\_old\_kernels [\#20](https://github.com/voxpupuli/puppet-yum/pull/20) ([treydock](https://github.com/treydock))
 - Correct format of fixtures file. [\#14](https://github.com/voxpupuli/puppet-yum/pull/14) ([traylenator](https://github.com/traylenator))
 
-**Merged pull requests:**
-
-- Update changelog and version [\#12](https://github.com/voxpupuli/puppet-yum/pull/12) ([Yuav](https://github.com/Yuav))
-
 ## [v0.9.15](https://github.com/voxpupuli/puppet-yum/tree/v0.9.15) (2016-09-26)
 
 [Full Changelog](https://github.com/voxpupuli/puppet-yum/compare/v0.9.14...v0.9.15)
 
 **Merged pull requests:**
 
+- Update changelog and version [\#12](https://github.com/voxpupuli/puppet-yum/pull/12) ([Yuav](https://github.com/Yuav))
 - Added basic spec tests [\#11](https://github.com/voxpupuli/puppet-yum/pull/11) ([Yuav](https://github.com/Yuav))
 - Bug: Puppet creates empty key files when using Hiera and create\_resources\(\) [\#7](https://github.com/voxpupuli/puppet-yum/pull/7) ([lklimek](https://github.com/lklimek))
 - Manage yum::versionlock with concat [\#6](https://github.com/voxpupuli/puppet-yum/pull/6) ([jpoittevin](https://github.com/jpoittevin))
@@ -192,4 +301,4 @@ These should not affect the functionality of the module.
 
 
 
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*

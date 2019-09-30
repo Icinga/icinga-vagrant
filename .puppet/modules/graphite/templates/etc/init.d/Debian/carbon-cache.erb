@@ -22,7 +22,7 @@ if [ $# -gt 1 ]; then
     shift
     INSTANCES=$*
 else
-    INSTANCES=$(grep "^\[${CARBON_DAEMON}" ${GRAPHITE_DIR}/conf/carbon.conf | cut -d \[ -f 2 | cut -d \] -f 1 | cut -d : -f 2)
+    INSTANCES=$(grep "^\[${CARBON_DAEMON}" <%= scope.lookupvar('graphite::carbon_conf_dir_REAL') %>/carbon.conf | cut -d \[ -f 2 | cut -d \] -f 1 | cut -d : -f 2)
 fi
 
 case "${OPERATION}" in

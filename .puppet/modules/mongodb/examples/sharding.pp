@@ -5,7 +5,7 @@ node 'mongos' {
   }
   -> class {'mongodb::server':
     configsvr => true,
-    bind_ip   => $::ipaddress,
+    bind_ip   => [$::ipaddress],
   }
   -> class {'mongodb::client': }
   -> class {'mongodb::mongos':
@@ -30,7 +30,7 @@ node 'mongod1' {
   -> class {'mongodb::server':
     shardsvr => true,
     replset  => 'rs1',
-    bind_ip  => $::ipaddress,
+    bind_ip  => [$::ipaddress],
   }
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
@@ -46,7 +46,7 @@ node 'mongod2' {
   -> class {'mongodb::server':
     shardsvr => true,
     replset  => 'rs1',
-    bind_ip  => $::ipaddress,
+    bind_ip  => [$::ipaddress],
   }
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':

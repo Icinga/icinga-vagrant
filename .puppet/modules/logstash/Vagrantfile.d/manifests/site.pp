@@ -11,13 +11,14 @@ $pipelines = [
 
 class { 'elastic_stack::repo':
   version    => 6,
-  prerelease => true,
+  prerelease => false,
 }
 
 class { 'logstash':
-  manage_repo => true,
-  version     => '6.0.0-rc2',
-  pipelines   => $pipelines,
+  manage_repo     => true,
+  version         => '6.5.1',
+  pipelines       => $pipelines,
+  startup_options => { 'LS_USER' => 'root' },
 }
 
 logstash::configfile { 'pipeline_zero':
@@ -28,4 +29,8 @@ logstash::configfile { 'pipeline_zero':
 logstash::configfile { 'pipeline_one':
   content => 'input { tcp { port => 2002 } } output { null {} }',
   path    => '/tmp/pipeline_one.conf',
+}
+
+logstash::plugin { 'logstash-input-mysql':
+  environment => ['LS_JAVA_OPTS=-Xms1g -Xmx1g']
 }

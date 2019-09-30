@@ -2,7 +2,10 @@ fixtures:
   forge_modules:
     stdlib: puppetlabs/stdlib
     apt: puppetlabs/apt
-    zypprepo: darin/zypprepo
+    zypprepo: puppet/zypprepo
     yum: puppet/yum
+    yumrepo_core:
+      repo: puppetlabs/yumrepo_core
+      puppet_version: ">= 6.0.0"
   symlinks:
     elastic_stack: "#{source_dir}"

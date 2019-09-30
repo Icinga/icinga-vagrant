@@ -16,6 +16,8 @@ matrix:
   include:
   - rvm: 2.2
     env: PUPPET_VERSION="~> 4.7" STRICT_VARIABLES="yes" CHECK=test
+  - rvm: 2.4.4
+    env: PUPPET_VERSION="~> 5.0" STRICT_VARIABLES="yes" CHECK=test
   - rvm: 2.3.1
     env: PUPPET_VERSION="~> 4.7" STRICT_VARIABLES="yes" CHECK=rubocop
   - rvm: 2.3.1

@@ -26,7 +26,7 @@
 define yum::versionlock (
   Enum['present', 'absent', 'exclude'] $ensure = 'present',
 ) {
-  contain ::yum::plugin::versionlock
+  contain yum::plugin::versionlock
 
   unless $name.is_a(Yum::VersionlockString) {
     fail('Package name must be formated as %{EPOCH}:%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}. See Yum::Versionlock documentation for details.')

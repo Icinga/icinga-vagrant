@@ -65,6 +65,10 @@
 #   Directory containing the elasticsearch configuration.
 #   Use this setting if your packages deviate from the norm (`/etc/elasticsearch`)
 #
+# @param configdir_recurselimit
+#   Dictates how deeply the file copy recursion logic should descend when
+#   copying files from the `configdir` to instance `configdir`s.
+#
 # @param daily_rolling_date_pattern
 #   File pattern for the file appender log when file_rolling_type is 'dailyRollingFile'.
 #
@@ -83,6 +87,14 @@
 #
 # @param download_tool
 #   Command-line invocation with which to retrieve an optional package_url.
+#
+# @param download_tool_insecure
+#   Command-line invocation with which to retrieve an optional package_url when
+#   certificate verification should be ignored.
+#
+# @param download_tool_verify_certificates
+#   Whether or not to verify SSL/TLS certificates when retrieving package files
+#   using a download tool instead of a package management provider.
 #
 # @param elasticsearch_group
 #   The group Elasticsearch should run as. This also sets file group
@@ -301,12 +313,15 @@ class elasticsearch (
   Boolean                                         $autoupgrade,
   Hash                                            $config,
   Stdlib::Absolutepath                            $configdir,
+  Integer                                         $configdir_recurselimit,
   String                                          $daily_rolling_date_pattern,
   Elasticsearch::Multipath                        $datadir,
   Boolean                                         $datadir_instance_directories,
   String                                          $default_logging_level,
   Optional[Stdlib::Absolutepath]                  $defaults_location,
   Optional[String]                                $download_tool,
+  Optional[String]                                $download_tool_insecure,
+  Boolean                                         $download_tool_verify_certificates,
   String                                          $elasticsearch_group,
   String                                          $elasticsearch_user,
   Enum['dailyRollingFile', 'rollingFile', 'file'] $file_rolling_type,
@@ -568,4 +583,8 @@ class elasticsearch (
   -> Elasticsearch::Instance <| ensure == 'absent' |>
   Elasticsearch::Snapshot_repository <| |>
   -> Elasticsearch::Instance <| ensure == 'absent' |>
+
+  # Ensure scripts are installed before copying them to configuration directory
+  Elasticsearch::Script <| |>
+  -> File["${configdir}/scripts"]
 }

@@ -102,7 +102,7 @@ class { 'influxdb':
               'https-certificate'    => esc_regex('"/etc/ssl/influxdb.pem"'),
               'https-private-key'    => '',
               'shared-sercret'       => '',
-              'max-row-limit'        => 10_000,
+              'max-row-limit'        => 0,
               'max-connection-limit' => 0,
               'unix-socket-enabled'  => false,
               'bind-socket'          => esc_regex('"/var/run/influxdb.sock"')

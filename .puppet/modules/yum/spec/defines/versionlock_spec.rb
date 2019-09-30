@@ -12,8 +12,16 @@ describe 'yum::versionlock' do
       it 'contains a well-formed Concat::Fragment' do
         is_expected.to contain_concat__fragment("yum-versionlock-#{title}").with_content("#{title}\n")
       end
+      it { is_expected.to contain_concat('/etc/yum/pluginconf.d/versionlock.list').without_notify }
     end
+    context 'clean set to true on module' do
+      let :pre_condition do
+        'class { "yum::plugin::versionlock": clean => true, }'
+      end
 
+      it { is_expected.to contain_concat('/etc/yum/pluginconf.d/versionlock.list').with_notify('Exec[yum_clean_all]') }
+      it { is_expected.to contain_exec('yum_clean_all').with_command('/usr/bin/yum clean all') }
+    end
     context 'and ensure set to present' do
       let(:params) { { ensure: 'present' } }
 

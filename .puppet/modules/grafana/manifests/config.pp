@@ -3,14 +3,15 @@
 # This class is called from grafana
 #
 class grafana::config {
-  case $::grafana::install_method {
+  case $grafana::install_method {
     'docker': {
-      if $::grafana::container_cfg {
-        $cfg = $::grafana::cfg
+      if $grafana::container_cfg {
+        $cfg = $grafana::cfg
         $myprovision = false
 
-        file {  $::grafana::cfg_location:
+        file {  'grafana.ini':
           ensure  => file,
+          path    => $grafana::cfg_location,
           content => template('grafana/config.ini.erb'),
           owner   => 'grafana',
           group   => 'grafana',
@@ -18,18 +19,19 @@ class grafana::config {
       }
     }
     'package','repo': {
-      $cfg = $::grafana::cfg
+      $cfg = $grafana::cfg
       $myprovision = true
 
-      file {  $::grafana::cfg_location:
+      file {  'grafana.ini':
         ensure  => file,
+        path    => $grafana::cfg_location,
         content => template('grafana/config.ini.erb'),
         owner   => 'grafana',
         group   => 'grafana',
       }
 
-      $sysconfig = $::grafana::sysconfig
-      $sysconfig_location = $::grafana::sysconfig_location
+      $sysconfig = $grafana::sysconfig
+      $sysconfig_location = $grafana::sysconfig_location
 
       if $sysconfig_location and $sysconfig {
         $changes = $sysconfig.map |$key, $value| { "set ${key} ${value}" }
@@ -40,7 +42,7 @@ class grafana::config {
         }
       }
 
-      file { "${::grafana::data_dir}/plugins":
+      file { "${grafana::data_dir}/plugins":
         ensure => directory,
         owner  => 'grafana',
         group  => 'grafana',
@@ -48,17 +50,17 @@ class grafana::config {
       }
     }
     'archive': {
-      $cfg = $::grafana::cfg
+      $cfg = $grafana::cfg
       $myprovision = true
 
-      file { "${::grafana::install_dir}/conf/custom.ini":
+      file { "${grafana::install_dir}/conf/custom.ini":
         ensure  => file,
         content => template('grafana/config.ini.erb'),
         owner   => 'grafana',
         group   => 'grafana',
       }
 
-      file { [$::grafana::data_dir, "${::grafana::data_dir}/plugins"]:
+      file { [$grafana::data_dir, "${grafana::data_dir}/plugins"]:
         ensure => directory,
         owner  => 'grafana',
         group  => 'grafana',
@@ -66,12 +68,12 @@ class grafana::config {
       }
     }
     default: {
-      fail("Installation method ${::grafana::install_method} not supported")
+      fail("Installation method ${grafana::install_method} not supported")
     }
   }
 
-  if $::grafana::ldap_cfg {
-    $ldap_cfg = $::grafana::ldap_cfg
+  if $grafana::ldap_cfg {
+    $ldap_cfg = $grafana::ldap_cfg
     file { '/etc/grafana/ldap.toml':
       ensure  => file,
       content => inline_template("<%= require 'toml'; TOML::Generator.new(@ldap_cfg).body %>\n"),
@@ -97,7 +99,7 @@ class grafana::config {
         group   => 'grafana',
         mode    => '0640',
         content => epp('grafana/pdashboards.yaml.epp'),
-        notify  => Service[$grafana::service_name],
+        notify  => Service['grafana'],
       }
       # Loop over all providers, extract the paths and create
       # directories for each path of dashboards.
@@ -136,7 +138,7 @@ class grafana::config {
         group   => 'grafana',
         mode    => '0640',
         content => epp('grafana/pdatasources.yaml.epp'),
-        notify  => Service[$grafana::service_name],
+        notify  => Service['grafana'],
       }
     }
 

@@ -11,7 +11,7 @@
 # Sample Usage:
 #
 
-class { '::selinux':
+class { 'selinux':
   mode => 'enforcing',
   type => 'mls',
 }

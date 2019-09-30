@@ -303,13 +303,6 @@ class graphite::config inherits graphite::params {
   # startup carbon engine
 
   if $::graphite::gr_enable_carbon_cache {
-    # avoid problem with systemd service error
-    # https://github.com/echocat/puppet-graphite/issues/211
-    exec { 'systemd-daemon-reload':
-      path => '/bin:/usr/bin:/sbin:/usr/sbin',
-      command => '/bin/systemctl daemon-reload',
-      require => File['/etc/init.d/carbon-cache'],
-    }->
     service { 'carbon-cache':
       ensure     => running,
       enable     => true,

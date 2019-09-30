@@ -31,6 +31,7 @@
 #   PID_DIR        = /var/run/
 #
 LOCAL_DATA_DIR = <%= scope.lookupvar('graphite::local_data_dir_REAL') %>/
+LOG_DIR = <%= scope.lookupvar('graphite::carbon_log_dir_REAL') %>/
 
 <% unless [:undef, nil].include? scope.lookupvar('graphite::gr_storage_dir') -%>
 PID_DIR = <%= scope.lookupvar('graphite::gr_storage_dir') %>

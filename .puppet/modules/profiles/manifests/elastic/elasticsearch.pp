@@ -20,9 +20,19 @@ class profiles::elastic::elasticsearch (
   class { 'elasticsearch':
     oss         => true,
     version     => $elasticsearch_revision,
+    # Commented out options is a workaround for https://github.com/elastic/puppet-elasticsearch/issues/1032
     jvm_options => [
       '-Xms256m',
-      '-Xmx256m'
+      '-Xmx256m',
+      '#PrintGCDetails',
+      '#PrintGCDateStamps',
+      '#PrintTenuringDistribution',
+      '#PrintGCApplicationStoppedTime',
+      "#Xloggc",
+      '#UseGCLogFileRotation',
+      "#NumberOfGCLogFiles",
+      "#GCLogFileSize",
+      "#XX:UseConcMarkSweepGC",
     ],
   }
   ->

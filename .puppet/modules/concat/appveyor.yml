@@ -1,50 +1,75 @@
+---
 version: 1.1.x.{build}
+branches:
+  only:
+    - master
+    - release
 skip_commits:
   message: /^\(?doc\)?.*/
 clone_depth: 10
 init:
-- SET
-- 'mkdir C:\ProgramData\PuppetLabs\code && exit 0'
-- 'mkdir C:\ProgramData\PuppetLabs\facter && exit 0'
-- 'mkdir C:\ProgramData\PuppetLabs\hiera && exit 0'
-- 'mkdir C:\ProgramData\PuppetLabs\puppet\var && exit 0'
+  - SET
+  - 'mkdir C:\ProgramData\PuppetLabs\code && exit 0'
+  - 'mkdir C:\ProgramData\PuppetLabs\facter && exit 0'
+  - 'mkdir C:\ProgramData\PuppetLabs\hiera && exit 0'
+  - 'mkdir C:\ProgramData\PuppetLabs\puppet\var && exit 0'
 environment:
   matrix:
-  - PUPPET_GEM_VERSION: ~> 4.0
-    RUBY_VER: 21
-  - PUPPET_GEM_VERSION: ~> 4.0
-    RUBY_VER: 21-x64
-  - PUPPET_GEM_VERSION: ~> 4.0
-    RUBY_VER: 23
-  - PUPPET_GEM_VERSION: ~> 4.0
-    RUBY_VER: 23-x64
-matrix:
-  fast_finish: true
+    -
+      RUBY_VERSION: 24-x64
+      CHECK: syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop
+    -
+      PUPPET_GEM_VERSION: ~> 5.0
+      RUBY_VERSION: 24
+      CHECK: parallel_spec
+    -
+      PUPPET_GEM_VERSION: ~> 5.0
+      RUBY_VERSION: 24-x64
+      CHECK: parallel_spec
+    -
+      PUPPET_GEM_VERSION: ~> 6.0
+      RUBY_VERSION: 25
+      CHECK: parallel_spec
+    -
+      PUPPET_GEM_VERSION: ~> 6.0
+      RUBY_VERSION: 25-x64
+      CHECK: parallel_spec
+    -
+      RUBY_VERSION: 25-x64
+      ACCEPTANCE: yes
+      TARGET_HOST: localhost
+    -
+      RUBY_VERSION: 25-x64
+      ACCEPTANCE: yes
+      TARGET_HOST: localhost
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+for:
+-
+  matrix:
+    only:
+      - ACCEPTANCE: yes
+  install:
+    - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
+    - bundle install --jobs 4 --retry 2
+    - type Gemfile.lock
+  test_script:
+     - bundle exec rake spec_prep
+     - bundle exec rake litmus:acceptance:localhost
 install:
-- SET PATH=C:\Ruby%RUBY_VER%\bin;%PATH%
-- ps: |
-    # AppVeyor appears to have OpenSSL headers available already
-    # which msys2 would normally install with:
-    # pacman -S mingw-w64-x86_64-openssl --noconfirm
-    #
-    if ( $(ruby --version) -match "^ruby\s+2\.4" ) {
-      Write-Output "Building OpenSSL gem ~> 2.0.4 to fix Ruby 2.4 / AppVeyor issue"
-      gem install openssl --version '~> 2.0.4' --no-ri --no-rdoc
-    }
-
-    gem list openssl
-    ruby -ropenssl -e 'puts \"OpenSSL Version - #{OpenSSL::OPENSSL_VERSION}\"; puts \"OpenSSL Library Version - #{OpenSSL::OPENSSL_LIBRARY_VERSION}\"'
-- bundle install --jobs 4 --retry 2 --without system_tests
-- type Gemfile.lock
+  - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
+  - bundle install --jobs 4 --retry 2 --without system_tests
+  - type Gemfile.lock
 build: off
 test_script:
-- bundle exec puppet -V
-- ruby -v
-- bundle exec rake spec SPEC_OPTS='--format documentation'
+  - bundle exec puppet -V
+  - ruby -v
+  - gem -v
+  - bundle -v
+  - bundle exec rake %CHECK%
 notifications:
-- provider: Email
-  to:
-  - nobody@nowhere.com
-  on_build_success: false
-  on_build_failure: false
-  on_build_status_changed: false
+  - provider: Email
+    to:
+      - nobody@nowhere.com
+    on_build_success: false
+    on_build_failure: false
+    on_build_status_changed: false

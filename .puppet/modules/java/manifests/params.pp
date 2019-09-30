@@ -1,15 +1,9 @@
-# Class: java::params
+# @summary
+#   This class builds a hash of JDK/JRE packages and (for Debian)
+#   alternatives.  For wheezy/precise, we provide Oracle JDK/JRE
+#   options, even though those are not in the package repositories.
 #
-# This class builds a hash of JDK/JRE packages and (for Debian)
-# alternatives.  For wheezy/precise, we provide Oracle JDK/JRE
-# options, even though those are not in the package repositories.
-#
-# For more info on how to package Oracle JDK/JRE, see the Debian wiki:
-# http://wiki.debian.org/JavaPackage
-#
-# Because the alternatives system makes it very difficult to tell
-# which Java alternative is enabled, we hard code the path to bin/java
-# for the config class to test if it is enabled.
+# @api private
 class java::params {
 
   case $::osfamily {
@@ -74,48 +68,25 @@ class java::params {
         'amd64' => 'x64',
         default => $::architecture
       }
-      case $::lsbdistcodename {
-        'lenny', 'squeeze', 'lucid', 'natty': {
-          $java  = {
-            'jdk' => {
-              'package'          => 'openjdk-6-jdk',
-              'alternative'      => "java-6-openjdk-${::architecture}",
-              'alternative_path' => '/usr/lib/jvm/java-6-openjdk/jre/bin/java',
-              'java_home'        => '/usr/lib/jvm/java-6-openjdk/jre/',
-            },
-            'jre' => {
-              'package'          => 'openjdk-6-jre-headless',
-              'alternative'      => "java-6-openjdk-${::architecture}",
-              'alternative_path' => '/usr/lib/jvm/java-6-openjdk/jre/bin/java',
-              'java_home'        => '/usr/lib/jvm/java-6-openjdk/jre/',
-            },
-            'sun-jre' => {
-              'package'          => 'sun-java6-jre',
-              'alternative'      => 'java-6-sun',
-              'alternative_path' => '/usr/lib/jvm/java-6-sun/jre/bin/java',
-              'java_home'        => '/usr/lib/jvm/java-6-sun/jre/',
-            },
-            'sun-jdk' => {
-              'package'          => 'sun-java6-jdk',
-              'alternative'      => 'java-6-sun',
-              'alternative_path' => '/usr/lib/jvm/java-6-sun/jre/bin/java',
-              'java_home'        => '/usr/lib/jvm/java-6-sun/jre/',
-            },
-          }
-        }
-        'wheezy', 'jessie', 'precise', 'quantal', 'raring', 'saucy', 'trusty', 'utopic': {
+      $openjdk_architecture = $::architecture ? {
+        'aarch64' => 'arm64',
+        'armv7l'  => 'armhf',
+        default   => $::architecture
+      }
+      case $::operatingsystemmajrelease {
+        '7', '8', '14.04': {
           $java =  {
             'jdk' => {
               'package'          => 'openjdk-7-jdk',
-              'alternative'      => "java-1.7.0-openjdk-${::architecture}",
-              'alternative_path' => "/usr/lib/jvm/java-1.7.0-openjdk-${::architecture}/bin/java",
-              'java_home'        => "/usr/lib/jvm/java-1.7.0-openjdk-${::architecture}/",
+              'alternative'      => "java-1.7.0-openjdk-${openjdk_architecture}",
+              'alternative_path' => "/usr/lib/jvm/java-1.7.0-openjdk-${openjdk_architecture}/bin/java",
+              'java_home'        => "/usr/lib/jvm/java-1.7.0-openjdk-${openjdk_architecture}/",
             },
             'jre' => {
               'package'          => 'openjdk-7-jre-headless',
               'alternative'      => "java-1.7.0-openjdk-${::architecture}",
-              'alternative_path' => "/usr/lib/jvm/java-1.7.0-openjdk-${::architecture}/bin/java",
-              'java_home'        => "/usr/lib/jvm/java-1.7.0-openjdk-${::architecture}/",
+              'alternative_path' => "/usr/lib/jvm/java-1.7.0-openjdk-${openjdk_architecture}/bin/java",
+              'java_home'        => "/usr/lib/jvm/java-1.7.0-openjdk-${openjdk_architecture}/",
             },
             'oracle-jre' => {
               'package'          => 'oracle-j2re1.7',
@@ -155,23 +126,39 @@ class java::params {
             },
           }
         }
-        'stretch', 'vivid', 'wily', 'xenial', 'yakkety', 'zesty', 'artful', 'bionic': {
+        '9', '15.04', '15.10', '16.04', '16.10', '17.04', '17.10': {
           $java =  {
             'jdk' => {
               'package'          => 'openjdk-8-jdk',
-              'alternative'      => "java-1.8.0-openjdk-${::architecture}",
-              'alternative_path' => "/usr/lib/jvm/java-1.8.0-openjdk-${::architecture}/bin/java",
-              'java_home'        => "/usr/lib/jvm/java-1.8.0-openjdk-${::architecture}/",
+              'alternative'      => "java-1.8.0-openjdk-${openjdk_architecture}",
+              'alternative_path' => "/usr/lib/jvm/java-1.8.0-openjdk-${openjdk_architecture}/bin/java",
+              'java_home'        => "/usr/lib/jvm/java-1.8.0-openjdk-${openjdk_architecture}/",
             },
             'jre' => {
               'package'          => 'openjdk-8-jre-headless',
-              'alternative'      => "java-1.8.0-openjdk-${::architecture}",
-              'alternative_path' => "/usr/lib/jvm/java-1.8.0-openjdk-${::architecture}/bin/java",
-              'java_home'        => "/usr/lib/jvm/java-1.8.0-openjdk-${::architecture}/",
+              'alternative'      => "java-1.8.0-openjdk-${openjdk_architecture}",
+              'alternative_path' => "/usr/lib/jvm/java-1.8.0-openjdk-${openjdk_architecture}/bin/java",
+              'java_home'        => "/usr/lib/jvm/java-1.8.0-openjdk-${openjdk_architecture}/",
             }
           }
         }
-        default: { fail("unsupported release ${::lsbdistcodename}") }
+        '10', '18.04', '18.10', '19.04', '19.10': {
+          $java =  {
+            'jdk' => {
+              'package'          => 'openjdk-11-jdk',
+              'alternative'      => "java-1.11.0-openjdk-${openjdk_architecture}",
+              'alternative_path' => "/usr/lib/jvm/java-1.11.0-openjdk-${openjdk_architecture}/bin/java",
+              'java_home'        => "/usr/lib/jvm/java-1.11.0-openjdk-${openjdk_architecture}/",
+            },
+            'jre' => {
+              'package'          => 'openjdk-11-jre-headless',
+              'alternative'      => "java-1.11.0-openjdk-${openjdk_architecture}",
+              'alternative_path' => "/usr/lib/jvm/java-1.11.0-openjdk-${openjdk_architecture}/bin/java",
+              'java_home'        => "/usr/lib/jvm/java-1.11.0-openjdk-${openjdk_architecture}/",
+            }
+          }
+        }
+        default: { fail("unsupported release ${::operatingsystemmajrelease}") }
       }
     }
     'OpenBSD': {
@@ -224,7 +211,7 @@ class java::params {
           } elsif (versioncmp($::operatingsystemrelease, '11.4') >= 0) {
             $jdk_package = 'java-1_7_1-ibm-devel'
             $jre_package = 'java-1_7_1-ibm'
-            $java_home   = '/usr/lib64/jvm/java-1.7.0-ibm-1.7.0/'
+            $java_home   = '/usr/lib64/jvm/java-1.7.1-ibm-1.7.1/'
           } else {
             $jdk_package = 'java-1_6_0-ibm-devel'
             $jre_package = 'java-1_6_0-ibm'

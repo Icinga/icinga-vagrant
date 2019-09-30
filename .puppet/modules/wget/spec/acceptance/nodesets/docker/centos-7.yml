@@ -1,12 +1,13 @@
 HOSTS:
-  centos-7-x64:
-    platform: el-7-x86_64
-    hypervisor: docker
+  centos7-64:
+    docker_cmd:
+      - "/sbin/init"
     image: centos:7
-    docker_preserve_image: true
-    docker_cmd: '["/usr/sbin/init"]'
-    # install various tools required to get the image up to usable levels
+    platform: el-7-x86_64
+    packaging_platform: el-7-x86_64
     docker_image_commands:
-      - 'yum install -y crontabs tar wget openssl sysvinit-tools iproute which initscripts'
-CONFIG:
-  trace_limit: 200
+      - cp /bin/true /sbin/agetty
+      - yum install -y crontabs initscripts iproute openssl sysvinit-tools tar wget
+        which ss
+    hypervisor: docker
+    roles: []

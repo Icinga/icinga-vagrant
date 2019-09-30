@@ -46,7 +46,7 @@ Style/HashSyntax:
 Style/RedundantReturn:
   Enabled: True
 
-Style/EndOfLine:
+Layout/EndOfLine:
   Enabled: False
 
 Lint/AmbiguousOperator:
@@ -543,3 +543,6 @@ Style/FormatStringToken:
 # are located.
 RSpec/FilePath:
   Enabled: false
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive

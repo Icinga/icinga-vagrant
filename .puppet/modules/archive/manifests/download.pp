@@ -35,7 +35,7 @@ define archive::download (
   Boolean                       $checksum         = true,
   Optional[String]              $digest_url       = undef,
   Optional[String]              $digest_string    = undef,
-  Optional[Enum['none', 'md5', 'sha1', 'sha2','sh256', 'sha384', 'sha512']] $digest_type      = 'md5',   # bad default!
+  Optional[Enum['none', 'md5', 'sha1', 'sha2','sha256', 'sha384', 'sha512']] $digest_type      = 'md5',   # bad default!
   Integer                       $timeout          = 120,     # ignored
   Stdlib::Compat::Absolute_path $src_target       = '/usr/src',
   Boolean                       $allow_insecure   = false,

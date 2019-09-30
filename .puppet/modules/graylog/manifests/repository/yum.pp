@@ -1,5 +1,6 @@
 class graylog::repository::yum(
   $url,
+  $proxy,
 ) {
   $gpg_file = '/etc/pki/rpm-gpg/RPM-GPG-KEY-graylog'
 
@@ -17,5 +18,6 @@ class graylog::repository::yum(
     gpgcheck => true,
     enabled  => true,
     require  => File[$gpg_file],
+    proxy    => $proxy,
   }
 }

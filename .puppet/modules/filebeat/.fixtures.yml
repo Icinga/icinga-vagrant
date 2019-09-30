@@ -4,9 +4,7 @@ fixtures:
       repo: "https://github.com/puppetlabs/puppetlabs-yumrepo_core.git"
       puppet_version: ">= 6.0.0"
     stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
-    apt:
-      repo: "https://github.com/puppetlabs/puppetlabs-apt.git"
-      ref: '6.0.0'
+    apt: "https://github.com/puppetlabs/puppetlabs-apt.git"
     powershell: "https://github.com/puppetlabs/puppetlabs-powershell.git"
     archive: "https://github.com/voxpupuli/puppet-archive.git"
   symlinks:

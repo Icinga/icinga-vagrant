@@ -17,8 +17,6 @@ RSpec.configure do |c|
     puppet_module_install(source: proj_root, module_name: 'selinux')
     hosts.each do |host|
       on host, puppet('module', 'install', 'puppetlabs-stdlib'), acceptable_exit_codes: [0, 1]
-      on(host, 'sed -i "s/SELINUX=.*/SELINUX=permissive/" /etc/selinux/config')
-      host.reboot
     end
   end
 end

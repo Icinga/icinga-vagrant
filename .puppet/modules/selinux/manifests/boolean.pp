@@ -1,6 +1,4 @@
-# selinux::boolean
-#
-# This class will set the state of an SELinux boolean.
+# Manage the state of an SELinux boolean.
 #
 # @example Enable `named_write_master_zones`  boolean
 #   selinux::boolean{ 'named_write_master_zones':
@@ -20,7 +18,7 @@ define selinux::boolean (
   Boolean $persistent = true,
 ) {
 
-  include ::selinux
+  include selinux
 
   Anchor['selinux::module post']
   -> Selinux::Boolean[$title]

@@ -2,13 +2,18 @@ HOSTS:
   debian-7:
     roles: [agent, database, dashboard, master]
     platform: debian-7-amd64
-    image: electrical/debian:7.3
+    image: debian:7
     hypervisor: docker
     docker_cmd: '["/sbin/init"]'
     docker_image_commands:
+      # The base image contains a stub shell script in place of '/sbin/initctl' which
+      # confuses the heck out of Pleaserun when installing Logstash.
+      # REF: https://github.com/jordansissel/pleaserun/blob/master/lib/pleaserun/detector.rb
+      - rm /sbin/initctl
+
       - apt-get update
       - apt-get -y upgrade
-      - apt-get install -yq apt-transport-https lsb-release wget net-tools ruby rubygems ruby1.8-dev libaugeas-dev libaugeas-ruby ntpdate locales-all logrotate
+      - apt-get install -yq apt-transport-https lsb-release wget net-tools ruby rubygems ruby1.8-dev libaugeas-dev libaugeas-ruby ntpdate locales-all logrotate procps
 
       # Install Oracle Java 8
       - echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | tee /etc/apt/sources.list.d/webupd8team-java.list

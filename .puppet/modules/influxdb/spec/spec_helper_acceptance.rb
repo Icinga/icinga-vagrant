@@ -38,8 +38,6 @@ RSpec.configure do |c|
       on host, puppet('resource package git ensure=installed')
       on host, puppet('resource package net-tools ensure=installed')
       on host, puppet('resource package iproute ensure=installed')
-      # on host, puppet('module install puppetlabs-stdlib --version 4.12.0'), { :acceptable_exit_codes => [0,1] }
-      # on host, puppet('module install puppetlabs-apt    --version 2.3.0'), { :acceptable_exit_codes => [0,1] }
 
       scp_to(host, "#{proj_root}/spec/fixtures/test_facter.sh", '/usr/bin/test_facter.sh')
       scp_to(host, "#{proj_root}/spec/fixtures/test_facter.rb", '/usr/bin/test_facter.rb')

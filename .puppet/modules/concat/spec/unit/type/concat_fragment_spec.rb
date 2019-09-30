@@ -28,8 +28,8 @@ describe Puppet::Type.type(:concat_fragment) do
     end
 
     it 'accepts an array value' do
-      resource[:source] = %w[foo bar]
-      expect(resource[:source]).to eq(%w[foo bar])
+      resource[:source] = ['foo', 'bar']
+      expect(resource[:source]).to eq(['foo', 'bar'])
     end
 
     it 'does not accept a hash value' do
@@ -61,7 +61,7 @@ describe Puppet::Type.type(:concat_fragment) do
     end
 
     it 'does not accept an array value' do
-      expect { resource[:order] = %w[foo bar] }.to raise_error(%r{is not a string or integer})
+      expect { resource[:order] = ['foo', 'bar'] }.to raise_error(%r{is not a string or integer})
     end
 
     it 'does not accept a hash value' do

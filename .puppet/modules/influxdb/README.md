@@ -333,6 +333,15 @@ A hash of data configuration options for `influxdb.conf`
 
 [params.pp](manifests/params.pp#32)
 
+##### `logging_config`
+
+A hash of logging configuration options for `influxdb.conf`
+
+*NOTE*: The default for this hash is what is in 1.5.x of the influx docs
+
+[Influx Logging Options](https://docs.influxdata.com/influxdb/v1.5/administration/config/#logging-settings-logging)
+
+[params.pp](manifests/params.pp#43)
 
 ##### `coordinator_config`
 

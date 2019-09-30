@@ -1,11 +1,7 @@
 fixtures:
-  repositories:
-    apt:
-      repo: 'https://github.com/puppetlabs/puppetlabs-apt'
-      ref:  '2.3.0'
-    stdlib:
-      repo: 'https://github.com/puppetlabs/puppetlabs-stdlib'
-      ref:  '4.12.0'
+  forge_modules:
+    stdlib: "puppetlabs/stdlib"
+    apt: "puppetlabs/apt"
+    yumrepo: "puppetlabs/yumrepo_core"
   symlinks:
     influxdb: "#{source_dir}"
-

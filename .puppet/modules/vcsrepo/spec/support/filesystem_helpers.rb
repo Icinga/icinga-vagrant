@@ -1,17 +1,18 @@
+# filesystem_helpers.rb
 module FilesystemHelpers
-  def expects_chdir(path = resource.value(:path))
-    Dir.expects(:chdir).with(path).at_least_once.yields
+  def expect_chdir(path = resource.value(:path))
+    expect(Dir).to receive(:chdir).with(path).at_least(:once).and_yield
   end
 
-  def expects_mkdir(path = resource.value(:path))
-    Dir.expects(:mkdir).with(path).at_least_once
+  def expect_mkdir(path = resource.value(:path))
+    expect(Dir).to receive(:mkdir).with(path).once
   end
 
-  def expects_rm_rf(path = resource.value(:path))
-    FileUtils.expects(:rm_rf).with(path)
+  def expect_rm_rf(path = resource.value(:path))
+    expect(FileUtils).to receive(:rm_rf).with(path)
   end
 
-  def expects_directory?(returns = true, path = resource.value(:path))
-    File.expects(:directory?).with(path).returns(returns)
+  def expect_directory?(returns = true, path = resource.value(:path))
+    expect(File).to receive(:directory?).with(path).and_return(returns)
   end
 end

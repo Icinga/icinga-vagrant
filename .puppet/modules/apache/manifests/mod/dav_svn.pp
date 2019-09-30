@@ -1,3 +1,11 @@
+# @summary
+#   Installs and configures `mod_dav_svn`.
+# 
+# @param authz_svn_enabled
+#   Specifies whether to install Apache mod_authz_svn
+# 
+# @see https://httpd.apache.org/docs/current/mod/mod_dav_svn.html for additional documentation.
+#
 class apache::mod::dav_svn (
   $authz_svn_enabled = false,
 ) {
@@ -13,7 +21,7 @@ class apache::mod::dav_svn (
 
   ::apache::mod { 'dav_svn': }
 
-  if $::osfamily == 'Debian' and ($::operatingsystemmajrelease != '6' and $::operatingsystemmajrelease != '10.04' and $::operatingsystemrelease != '10.04' and $::operatingsystemmajrelease != '16.04') {
+  if $::osfamily == 'Debian' and ! ($::operatingsystemmajrelease in ['6', '9', '16.04', '18.04']) {
     $loadfile_name = undef
   } else {
     $loadfile_name = 'dav_svn_authz_svn.load'

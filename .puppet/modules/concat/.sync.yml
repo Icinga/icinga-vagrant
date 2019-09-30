@@ -1,17 +1,40 @@
 ---
 appveyor.yml:
-  matrix:
-    - PUPPET_GEM_VERSION: '~> 4.0'
-      RUBY_VER: 21
-    - PUPPET_GEM_VERSION: '~> 4.0'
-      RUBY_VER: 21-x64
-    - PUPPET_GEM_VERSION: '~> 4.0'
-      RUBY_VER: 23
-    - PUPPET_GEM_VERSION: '~> 4.0'
-      RUBY_VER: 23-x64
-spec/spec_helper.rb:
-  allow_deprecations: true
+  unmanaged: true
+
+.gitignore:
+  required:
+    - ---.project
+
+.gitlab-ci.yml:
+  unmanaged: true
+
+.rubocop.yml:
+  default_configs:
+    inherit_from: .rubocop_todo.yml
+    require:
+      - rubocop-i18n
+      - rubocop-rspec
+
 .travis.yml:
-  extras:
-  - rvm: 2.1.9
-    script: bundle exec rake rubocop
+  unmanaged: true
+
+Gemfile:
+  required:
+    ':development':
+    - gem: puppet-lint-i18n
+
+  optional:
+    ':development':
+      - gem: 'github_changelog_generator'
+        git: 'https://github.com/skywinder/github-changelog-generator'
+        ref: '20ee04ba1234e9e83eb2ffb5056e23d641c7a018'
+        condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')"
+
+Rakefile:
+  requires:
+    - puppet_pot_generator/rake_tasks
+
+spec/spec_helper.rb:
+  mock_with: ':rspec'
+  coverage_report: true

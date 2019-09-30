@@ -66,22 +66,29 @@ Puppet::Type.type(:selinux_fcontext).provide(:semanage) do
     ret
   end
 
+  def self.parse_fcontext_file(path)
+    return [] unless File.exist?(path)
+    parse_fcontext_lines(File.readlines(path))
+  end
+
   def self.instances
-    # With fcontext, we only need to care about local customisations as they
-    # should never conflict with system policy
-    # Old semanage fails with --locallist, use -C
-    local_fcs = Selinux.selinux_file_context_local_path
-    if File.exist? local_fcs
-      parse_fcontext_lines(File.readlines(local_fcs))
-    else
-      # no file, no local contexts
-      []
-    end
+    parse_fcontext_file(Selinux.selinux_file_context_local_path)
+  end
+
+  def self.system_policy_instances
+    parse_fcontext_file(Selinux.selinux_file_context_path)
   end
 
   def self.prefetch(resources)
-    # is there a better way to do this? map port/protocol pairs to the provider regardless of the title
-    # and make sure all system resources have ensure => :present so that we don't try to remove them
+    # This loads resources from built in instances. These are part of the
+    # system policy. That means we can't modify them, but we should still be
+    # aware of them.
+    system_policy_instances.each do |provider|
+      resource = resources[provider.name]
+      resource.provider = provider if resource
+    end
+
+    # These are the local overrides. We prefer them over the system policy.
     instances.each do |provider|
       resource = resources[provider.name]
       resource.provider = provider if resource

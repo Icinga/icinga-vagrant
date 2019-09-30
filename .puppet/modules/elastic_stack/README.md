@@ -34,3 +34,10 @@ class { 'elastic_stack::repo':
   oss => true,
 }
 ```
+
+To use a custom package repository, set `base_repo_url`, like this:
+``` puppet
+class { 'elastic_stack::repo':
+  base_repo_url => 'https://mymirror.example.org/elastic-artifacts/packages',
+}
+```

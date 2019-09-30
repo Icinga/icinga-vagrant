@@ -112,7 +112,7 @@ result in...
           http_port     => 8080,
         },
         database => {
-          type          => 'sqlite3',
+          type          => 'mysql',
           host          => '127.0.0.1:3306',
           name          => 'grafana',
           user          => 'root',
@@ -404,6 +404,7 @@ If you are using a sub-path for the Grafana API, you will need to set the `grafa
 - `grafana_datasource`
 - `grafana_organization`
 - `grafana_user`
+- `grafana_folder`
 
 For instance, if your sub-path is `/grafana`, the `grafana_api_path` must
 be set to `/grafana/api`. Do not add a trailing `/` (slash) at the end of the value.
@@ -442,6 +443,7 @@ grafana_dashboard { 'example_dashboard':
   grafana_user      => 'admin',
   grafana_password  => '5ecretPassw0rd',
   grafana_api_path  => '/grafana/api',
+  folder            => 'folder-name',
   organization      => 'NewOrg',
   content           => template('path/to/exported/file.json'),
 }
@@ -450,6 +452,7 @@ grafana_dashboard { 'example_dashboard':
 `content` must be valid JSON, and is parsed before imported.
 `grafana_user` and `grafana_password` are optional, and required when
 authentication is enabled in Grafana. `grafana_api_path` is optional, and only used when using sub-paths for the API. `organization` is optional, and used when creating a dashboard for a specific organization.
+`folder` is an optional parameter, but the folder resource must exist.
 
 Example:
 Make sure the `grafana-server` service is up and running before creating the `grafana_dashboard` definition. One option is to use the `http_conn_validator` from the [healthcheck](https://forge.puppet.com/puppet/healthcheck) module
@@ -639,6 +642,21 @@ grafana_plugin { 'grafana-simple-json-datasource':
   repo => 'https://nexus.company.com/grafana/plugins',
 }
 ```
+
+##### `grafana_folder`
+
+Creates and manages Grafana folders via the API.
+
+The following example creates a folder named 'folder1':
+```puppet
+grafana_folder { 'folder1':
+  grafana_url       => 'http://localhost:3000',
+  grafana_api_path  => '/grafana/api',
+  grafana_user      => 'admin',
+  grafana_password  => '5ecretPassw0rd',
+}
+```
+`grafana_api_path` is only required if using sub-paths for the API
 
 ##### `grafana::user`
 

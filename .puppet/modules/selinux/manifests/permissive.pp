@@ -1,6 +1,4 @@
-# selinux::permissive
-#
-# This define will set an SELinux type to permissive
+# Set SELinux type to permissive
 #
 # @param ensure Set to present to add or absent to remove a permissive mode of a type
 # @param seltype A particular selinux type to make permissive, like "oddjob_mkhomedir_t"
@@ -15,7 +13,7 @@ define selinux::permissive (
   Enum['present', 'absent'] $ensure = 'present',
 ) {
 
-  include ::selinux
+  include selinux
   if $ensure == 'present' {
     Anchor['selinux::module post']
     -> Selinux::Permissive[$title]

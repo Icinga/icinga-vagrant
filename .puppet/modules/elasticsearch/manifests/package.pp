@@ -105,8 +105,14 @@ class elasticsearch::package {
 
           case $elasticsearch::download_tool {
             String: {
+              $_download_command = if $elasticsearch::download_tool_verify_certificates {
+                $elasticsearch::download_tool
+              } else {
+                $elasticsearch::download_tool_insecure
+              }
+
               exec { 'download_package_elasticsearch':
-                command     => "${elasticsearch::download_tool} ${pkg_source} ${elasticsearch::package_url} 2> /dev/null",
+                command     => "${_download_command} ${pkg_source} ${elasticsearch::package_url} 2> /dev/null",
                 creates     => $pkg_source,
                 environment => $exec_environment,
                 timeout     => $elasticsearch::package_dl_timeout,
@@ -148,7 +154,7 @@ class elasticsearch::package {
       }
 
     } else {
-      if ($facts['os']['family'] == 'Debian') {
+      if ($elasticsearch::manage_repo and $facts['os']['family'] == 'Debian') {
         Class['apt::update'] -> Package['elasticsearch']
       }
     }

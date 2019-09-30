@@ -1,3 +1,32 @@
+if ENV['COVERAGE'] == 'yes'
+  require 'simplecov'
+  require 'simplecov-console'
+  require 'codecov'
+
+  SimpleCov.formatters = [
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::Console,
+    SimpleCov::Formatter::Codecov,
+  ]
+  SimpleCov.start do
+    track_files 'lib/**/*.rb'
+
+    add_filter '/spec'
+
+    # do not track vendored files
+    add_filter '/vendor'
+    add_filter '/.vendor'
+
+    # do not track gitignored files
+    # this adds about 4 seconds to the coverage check
+    # this could definitely be optimized
+    add_filter do |f|
+      # system returns true if exit status is 0, which with git-check-ignore means file is ignored
+      system("git check-ignore --quiet #{f.filename}")
+    end
+  end
+end
+
 shared_examples 'Puppet::Parameter::Boolean' do |parameter|
   [true, :true, 'true', :yes, 'yes'].each do |value|
     it "accepts #{value} (#{value.class}) as a value" do
@@ -25,7 +54,7 @@ shared_examples 'a parameter that accepts only string values' do |parameter|
   end
 
   it 'does not accept an array value' do
-    expect { resource[parameter] = %w[foo bar] }.to raise_error(%r{must be a String})
+    expect { resource[parameter] = ['foo', 'bar'] }.to raise_error(%r{must be a String})
   end
 
   it 'does not accept a hash value' do
