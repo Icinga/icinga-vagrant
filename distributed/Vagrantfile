@@ -33,5 +33,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       provision_post(node_config, name, options)
     end
+
+    config_hostmanager(config)
   end
 end

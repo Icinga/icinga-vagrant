@@ -171,3 +171,13 @@ def provision_post(node_config, name, options)
     echo "Navigate to http://#{options[:hostonly]}"
   SHELL
 end
+
+def config_hostmanager(config)
+      return unless Vagrant.has_plugin?('vagrant-hostmanager')
+
+      config.hostmanager.enabled = true
+      config.hostmanager.manage_host = true
+      config.hostmanager.manage_guest = false
+      config.hostmanager.ignore_private_ip = false
+      config.hostmanager.include_offline = true
+end
