@@ -46,10 +46,10 @@ icinga::reporting::version:             "v0.9.1"
 icinga::idoreports::version:            "v0.9.1"
 icinga::x509::version:                  "v1.0.0"
 
-elastic::repo::version:                 6
-elastic::elasticsearch::version:        "6.6.2"
-elastic::kibana::version:               "6.6.2-1" # revision is important
-elastic::icingabeat::version:           "6.5.4"
+elastic::repo::version:                 7
+elastic::elasticsearch::version:        "7.4.2"
+elastic::kibana::version:               "7.4.2-1" # revision is important
+elastic::icingabeat::version:           "7.4.2"
 # keep this in sync with the icingabeat dashboard ids!
 elastic::kibana::default_app_id:        "dashboard/a13f1a80-e4cf-11e7-b4d1-8383451ae5a4"
 
