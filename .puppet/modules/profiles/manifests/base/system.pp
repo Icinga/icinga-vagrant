@@ -35,6 +35,11 @@ class profiles::base::system (
     ensure => 'installed',
   }
   ->
+  # Python
+  package { [ 'python36', 'python36-requests' ]:
+    ensure => 'installed',
+  }
+  ->
   # curl/nss for latest TLS
   package { [ 'curl', 'nss' ]:
     ensure => 'latest',

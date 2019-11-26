@@ -1,6 +1,6 @@
 class profiles::graylog::elasticsearch (
-  $repo_version = 5,
-  $elasticsearch_revision = '5.6.10',
+  $repo_version = 6,
+  $elasticsearch_revision = '´6.8.5',
   $elasticsearch_host = '127.0.0.1',
   $elasticsearch_port = 9200
 ) {

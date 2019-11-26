@@ -34,10 +34,13 @@ node default {
     elasticsearch_revision => lookup('graylog::elasticsearch::version')
   }
   ->
-  class { '::profiles::graylog::mongodb': }
+  class { '::profiles::graylog::mongodb':
+    version => lookup('graylog::mongodb::version')
+  }
   ->
   class { '::profiles::graylog::server':
     repo_version => lookup('graylog::repo::version'),
+    graylog_version => lookup('graylog::server::version'),
     listen_ip => lookup('graylog::web::listen_ip'),
     listen_port => lookup('graylog::web::listen_port')
   }
