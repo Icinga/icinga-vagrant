@@ -134,54 +134,26 @@ object NotificationCommand "mail-service-notification" {
   }
 }
 
-/*
- * If you prefer to use the notification scripts with environment
- * variables instead of command line parameters, you can use
- * the following commands. They have been updated from < 2.7
- * to support the new notification scripts and should help
- * with an upgrade.
- * Remove the comment blocks and comment the notification commands above.
- */
 
-/*
+/* Box specific commands */
 
-object NotificationCommand "mail-host-notification" {
-  command = [ SysconfDir + "/icinga2/scripts/mail-host-notification.sh" ]
+// Graylog
+object CheckCommand "graylog-stream" {
+  command = [ PluginDir + "/check-graylog2-stream" ]
 
-  env = {
-    NOTIFICATIONTYPE = "$notification.type$"
-    HOSTDISPLAYNAME = "$host.display_name$"
-    HOSTNAME = "$host.name$"
-    HOSTADDRESS = "$address$"
-    HOSTSTATE = "$host.state$"
-    LONGDATETIME = "$icinga.long_date_time$"
-    HOSTOUTPUT = "$host.output$"
-    NOTIFICATIONAUTHORNAME = "$notification.author$"
-    NOTIFICATIONCOMMENT = "$notification.comment$"
-    HOSTDISPLAYNAME = "$host.display_name$"
-    USEREMAIL = "$user.email$"
+  arguments = {
+    "-stream" = "$graylog_stream_id$" // populated on the service
+    "-user" = "$graylog_api_username$"
+    "-password" = "$graylog_api_password$"
+    "-url" = "$graylog_api_url$" // populated on the host
   }
+
+  // default values
+  vars.graylog_api_username = "admin"
+  vars.graylog_api_password = "admin"
 }
 
-object NotificationCommand "mail-service-notification" {
-  command = [ SysconfDir + "/icinga2/scripts/mail-service-notification.sh" ]
 
-  env = {
-    NOTIFICATIONTYPE = "$notification.type$"
-    SERVICENAME = "$service.name$"
-    HOSTNAME = "$host.name$"
-    HOSTDISPLAYNAME = "$host.display_name$"
-    HOSTADDRESS = "$address$"
-    SERVICESTATE = "$service.state$"
-    LONGDATETIME = "$icinga.long_date_time$"
-    SERVICEOUTPUT = "$service.output$"
-    NOTIFICATIONAUTHORNAME = "$notification.author$"
-    NOTIFICATIONCOMMENT = "$notification.comment$"
-    HOSTDISPLAYNAME = "$host.display_name$"
-    SERVICEDISPLAYNAME = "$service.display_name$"
-    USEREMAIL = "$user.email$"
-  }
+object NotificationCommand "extended-graylog-notification" {
+  command = "/bin/echo \"Here comes our fancy Graylog notification with stream url '$service.notes_url$'\""
 }
-
-*/
-

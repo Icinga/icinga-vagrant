@@ -94,5 +94,14 @@ object Host "<%= @node_name-%>" {
     /* The UserGroup `icingaadmins` is defined in `users.conf`. */
     groups = [ "icingaadmins" ]
   }
+
+  /* Box specific configuration */
+
+  if (name.contains("graylog")) {
+    vars.graylog_streams["icinga2"] = {
+      graylog_stream_id = "000000000000000000000001"
+    }
+    vars.graylog_api_url = "http://<%= scope.lookupvar('graylog_listen_ip')-%>:<%= scope.lookupvar('graylog_listen_port')-%>/api"
+  }
 }
 
