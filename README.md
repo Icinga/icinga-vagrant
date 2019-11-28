@@ -55,13 +55,9 @@ development, so screenshots and features may change.
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_elastic_kibana_icingabeat.png" alt="Elastic Stack and Icingabeat" height="300">
 
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_graylog_icinga.png" alt="Graylog" height="300">
+
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_elasticsearch.png" alt="Icinga Web 2 Elasticsearch" height="300">
-
-<!--
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_graylog_icinga2.png" alt="Graylog" height="300">
-
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_graylog.png" alt="Icinga Web 2 Graylog" height="300">
--->
 
 ## Certificates <a id="about-certs"></a>
 
