@@ -33,7 +33,7 @@ icinga::repo::type:                     "snapshot" # you can use 'release' too
 #icinga::repo::type:                     "release"
 
 # Versions
-grafana::version:                       "6.4.4"
+grafana::version:                       "6.5.0"
 graphite::version:                      "1.1.5"
 
 icinga::ipl::version:                   "v0.4.0"
