@@ -58,4 +58,6 @@ graylog::server::version:               "3.1.3"
 graylog::elasticsearch::repo_version:   6
 graylog::elasticsearch::version:        "6.8.5"
 graylog::mongodb::version:              "4.0.0"
+graylog::web::content_pack_id:          "9031558d-2431-4d30-af33-44ab0bc5f109"
+graylog::web::content_pack_rev:         "1"
 

@@ -3,8 +3,8 @@ class profiles::graylog::server (
   $graylog_version = '3.1.3',
   $listen_ip = '192.169.33.6',
   $listen_port = 9000,
-  $web_content_pack_id = '9031558d-2431-4d30-af33-44ab0bc5f109',
-  $web_content_pack_rev = '1'
+  $web_content_pack_id = lookup('graylog::web::content_pack_id'),
+  $web_content_pack_rev = lookup('graylog::web::content_pack_rev')
 ) {
   class { 'graylog::repository':
     version => $repo_version
