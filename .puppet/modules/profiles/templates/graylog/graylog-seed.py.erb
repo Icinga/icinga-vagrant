@@ -127,3 +127,22 @@ else:
 	print ("Stream alert '{}' already exists".format(data_cond['title']))
 
 
+# CONTENT PACK - DASHBOARD
+
+# Upload
+content_pack_id = "<%= @web_content_pack_id-%>"
+content_pack_rev = "<%= @web_content_pack_rev-%>"
+contents = open("/etc/icinga2/icinga-vagrant-dashboard-content-pack-" + content_pack_id + "-" + content_pack_rev + ".json", 'rb').read()
+
+res = requests.post(base_url + "/api/system/content_packs", data=contents, headers=headers)
+print ("Uploaded content pack ", res.text)
+
+# Install
+
+data_content_pack = {
+        'parameters': {},
+        'comment': 'Installed by Vagrant Provisionier'
+}
+
+res = requests.post(base_url + "/api/system/content_packs/" + content_pack_id + "/" + content_pack_rev + "/installations", data=json.dumps(data_content_pack), headers=headers)
+print ("Installed content pack ", res.text)

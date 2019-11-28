@@ -3,7 +3,8 @@ class profiles::graylog::server (
   $graylog_version = '3.1.3',
   $listen_ip = '192.169.33.6',
   $listen_port = 9000,
-  $web_dashboard_content_pack_id = '9031558d-2431-4d30-af33-44ab0bc5f109-1'
+  $web_content_pack_id = '9031558d-2431-4d30-af33-44ab0bc5f109',
+  $web_content_pack_rev = '1'
 ) {
   class { 'graylog::repository':
     version => $repo_version
@@ -21,12 +22,14 @@ class profiles::graylog::server (
     }
   }
 
-  file { "icinga-vagrant-dashboard-content-pack-$web_dashboard_content_pack_id.json":
-    name => "/etc/icinga2/icinga-vagrant-dashboard-content-pack-$web_dashboard_content_pack_id.json",
+  $web_content_pack_name = "$web_content_pack_id-$web_content_pack_rev"
+
+  file { "icinga-vagrant-dashboard-content-pack-$web_content_pack_name.json":
+    name => "/etc/icinga2/icinga-vagrant-dashboard-content-pack-$web_content_pack_name.json",
     owner => root,
     group => root,
     mode => "0755",
-    content => template("profiles/graylog/icinga-vagrant-dashboard-content-pack-$web_dashboard_content_pack_id.json.erb")
+    content => template("profiles/graylog/icinga-vagrant-dashboard-content-pack-$web_content_pack_name.json.erb")
   }
   ->
   file { "graylog-seed-setup":

@@ -1,0 +1,625 @@
+{
+  "v": 1,
+  "id": "9031558d-2431-4d30-af33-44ab0bc5f109",
+  "rev": 1,
+  "name": "icinga-vagrant-dashboard",
+  "summary": "Icinga Vagrant Dashboard",
+  "description": "",
+  "vendor": "Icinga GmbH",
+  "url": "",
+  "parameters": [],
+  "entities": [
+    {
+      "v": "1",
+      "type": {
+        "name": "dashboard",
+        "version": "1"
+      },
+      "id": "1a861932-e76b-4517-9512-5a87471c1d77",
+      "data": {
+        "title": {
+          "@type": "string",
+          "@value": "Icinga"
+        },
+        "description": {
+          "@type": "string",
+          "@value": "Icinga Dashboard"
+        },
+        "widgets": [
+          {
+            "id": {
+              "@type": "string",
+              "@value": "aa5913a8-0ad5-4e56-b6f8-120b2f996369"
+            },
+            "description": {
+              "@type": "string",
+              "@value": "Latency"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "FIELD_CHART"
+            },
+            "cache_time": {
+              "@type": "integer",
+              "@value": 10
+            },
+            "time_range": {
+              "type": {
+                "@type": "string",
+                "@value": "relative"
+              },
+              "range": {
+                "@type": "integer",
+                "@value": 300
+              }
+            },
+            "configuration": {
+              "renderer": {
+                "@type": "string",
+                "@value": "bar"
+              },
+              "interpolation": {
+                "@type": "string",
+                "@value": "linear"
+              },
+              "interval": {
+                "@type": "string",
+                "@value": "minute"
+              },
+              "query": {
+                "@type": "string",
+                "@value": ""
+              },
+              "valuetype": {
+                "@type": "string",
+                "@value": "max"
+              },
+              "relative": {
+                "@type": "integer",
+                "@value": 300
+              },
+              "timerange": {
+                "type": {
+                  "@type": "string",
+                  "@value": "relative"
+                },
+                "range": {
+                  "@type": "integer",
+                  "@value": 300
+                }
+              },
+              "rangeType": {
+                "@type": "string",
+                "@value": "relative"
+              },
+              "field": {
+                "@type": "string",
+                "@value": "latency"
+              }
+            },
+            "position": {
+              "width": {
+                "@type": "integer",
+                "@value": 4
+              },
+              "height": {
+                "@type": "integer",
+                "@value": 2
+              },
+              "row": {
+                "@type": "integer",
+                "@value": 3
+              },
+              "col": {
+                "@type": "integer",
+                "@value": 1
+              }
+            }
+          },
+          {
+            "id": {
+              "@type": "string",
+              "@value": "d94a15b5-f64a-4d8d-889e-a517a5121bcd"
+            },
+            "description": {
+              "@type": "string",
+              "@value": "Execution time"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "FIELD_CHART"
+            },
+            "cache_time": {
+              "@type": "integer",
+              "@value": 10
+            },
+            "time_range": {
+              "type": {
+                "@type": "string",
+                "@value": "relative"
+              },
+              "range": {
+                "@type": "integer",
+                "@value": 300
+              }
+            },
+            "configuration": {
+              "renderer": {
+                "@type": "string",
+                "@value": "bar"
+              },
+              "interpolation": {
+                "@type": "string",
+                "@value": "linear"
+              },
+              "interval": {
+                "@type": "string",
+                "@value": "minute"
+              },
+              "query": {
+                "@type": "string",
+                "@value": ""
+              },
+              "valuetype": {
+                "@type": "string",
+                "@value": "max"
+              },
+              "relative": {
+                "@type": "integer",
+                "@value": 300
+              },
+              "timerange": {
+                "type": {
+                  "@type": "string",
+                  "@value": "relative"
+                },
+                "range": {
+                  "@type": "integer",
+                  "@value": 300
+                }
+              },
+              "rangeType": {
+                "@type": "string",
+                "@value": "relative"
+              },
+              "field": {
+                "@type": "string",
+                "@value": "execution_time"
+              }
+            },
+            "position": {
+              "width": {
+                "@type": "integer",
+                "@value": 4
+              },
+              "height": {
+                "@type": "integer",
+                "@value": 2
+              },
+              "row": {
+                "@type": "integer",
+                "@value": 5
+              },
+              "col": {
+                "@type": "integer",
+                "@value": 1
+              }
+            }
+          },
+          {
+            "id": {
+              "@type": "string",
+              "@value": "fccb93f9-0b65-4787-a38e-17b221ee4427"
+            },
+            "description": {
+              "@type": "string",
+              "@value": "States / 5 min"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "QUICKVALUES"
+            },
+            "cache_time": {
+              "@type": "integer",
+              "@value": 10
+            },
+            "time_range": {
+              "type": {
+                "@type": "string",
+                "@value": "relative"
+              },
+              "range": {
+                "@type": "integer",
+                "@value": 300
+              }
+            },
+            "configuration": {
+              "query": {
+                "@type": "string",
+                "@value": ""
+              },
+              "show_pie_chart": {
+                "@type": "boolean",
+                "@value": true
+              },
+              "sort_order": {
+                "@type": "string",
+                "@value": "desc"
+              },
+              "timerange": {
+                "type": {
+                  "@type": "string",
+                  "@value": "relative"
+                },
+                "range": {
+                  "@type": "integer",
+                  "@value": 300
+                }
+              },
+              "stacked_fields": {
+                "@type": "string",
+                "@value": ""
+              },
+              "data_table_limit": {
+                "@type": "integer",
+                "@value": 50
+              },
+              "field": {
+                "@type": "string",
+                "@value": "state"
+              },
+              "show_data_table": {
+                "@type": "boolean",
+                "@value": true
+              },
+              "limit": {
+                "@type": "integer",
+                "@value": 10
+              }
+            },
+            "position": {
+              "width": {
+                "@type": "integer",
+                "@value": 2
+              },
+              "height": {
+                "@type": "integer",
+                "@value": 6
+              },
+              "row": {
+                "@type": "integer",
+                "@value": 1
+              },
+              "col": {
+                "@type": "integer",
+                "@value": 7
+              }
+            }
+          },
+          {
+            "id": {
+              "@type": "string",
+              "@value": "6e652eb8-9d5f-467d-8e5f-1ee795556f06"
+            },
+            "description": {
+              "@type": "string",
+              "@value": "Icinga Problems"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "SEARCH_RESULT_CHART"
+            },
+            "cache_time": {
+              "@type": "integer",
+              "@value": 10
+            },
+            "time_range": {
+              "type": {
+                "@type": "string",
+                "@value": "relative"
+              },
+              "range": {
+                "@type": "integer",
+                "@value": 300
+              }
+            },
+            "configuration": {
+              "interval": {
+                "@type": "string",
+                "@value": "minute"
+              },
+              "timerange": {
+                "type": {
+                  "@type": "string",
+                  "@value": "relative"
+                },
+                "range": {
+                  "@type": "integer",
+                  "@value": 300
+                }
+              },
+              "query": {
+                "@type": "string",
+                "@value": "not state:ok and not state:up"
+              }
+            },
+            "position": {
+              "width": {
+                "@type": "integer",
+                "@value": 4
+              },
+              "height": {
+                "@type": "integer",
+                "@value": 2
+              },
+              "row": {
+                "@type": "integer",
+                "@value": 1
+              },
+              "col": {
+                "@type": "integer",
+                "@value": 1
+              }
+            }
+          },
+          {
+            "id": {
+              "@type": "string",
+              "@value": "af67b57d-75b2-4635-913d-660d847510ac"
+            },
+            "description": {
+              "@type": "string",
+              "@value": "Problem rate / 5 min"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "SEARCH_RESULT_COUNT"
+            },
+            "cache_time": {
+              "@type": "integer",
+              "@value": 10
+            },
+            "time_range": {
+              "type": {
+                "@type": "string",
+                "@value": "relative"
+              },
+              "range": {
+                "@type": "integer",
+                "@value": 300
+              }
+            },
+            "configuration": {
+              "timerange": {
+                "type": {
+                  "@type": "string",
+                  "@value": "relative"
+                },
+                "range": {
+                  "@type": "integer",
+                  "@value": 300
+                }
+              },
+              "lower_is_better": {
+                "@type": "boolean",
+                "@value": true
+              },
+              "trend": {
+                "@type": "boolean",
+                "@value": true
+              },
+              "query": {
+                "@type": "string",
+                "@value": "not state:ok and not state:up"
+              }
+            },
+            "position": {
+              "width": {
+                "@type": "integer",
+                "@value": 2
+              },
+              "height": {
+                "@type": "integer",
+                "@value": 2
+              },
+              "row": {
+                "@type": "integer",
+                "@value": 5
+              },
+              "col": {
+                "@type": "integer",
+                "@value": 5
+              }
+            }
+          },
+          {
+            "id": {
+              "@type": "string",
+              "@value": "f38f19cd-b08b-4578-b733-d5bc882df160"
+            },
+            "description": {
+              "@type": "string",
+              "@value": "Check source"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "QUICKVALUES"
+            },
+            "cache_time": {
+              "@type": "integer",
+              "@value": 10
+            },
+            "time_range": {
+              "type": {
+                "@type": "string",
+                "@value": "relative"
+              },
+              "range": {
+                "@type": "integer",
+                "@value": 300
+              }
+            },
+            "configuration": {
+              "query": {
+                "@type": "string",
+                "@value": ""
+              },
+              "show_pie_chart": {
+                "@type": "boolean",
+                "@value": true
+              },
+              "sort_order": {
+                "@type": "string",
+                "@value": "desc"
+              },
+              "timerange": {
+                "type": {
+                  "@type": "string",
+                  "@value": "relative"
+                },
+                "range": {
+                  "@type": "integer",
+                  "@value": 300
+                }
+              },
+              "stacked_fields": {
+                "@type": "string",
+                "@value": ""
+              },
+              "data_table_limit": {
+                "@type": "integer",
+                "@value": 50
+              },
+              "field": {
+                "@type": "string",
+                "@value": "check_source"
+              },
+              "show_data_table": {
+                "@type": "boolean",
+                "@value": true
+              },
+              "limit": {
+                "@type": "integer",
+                "@value": 5
+              }
+            },
+            "position": {
+              "width": {
+                "@type": "integer",
+                "@value": 2
+              },
+              "height": {
+                "@type": "integer",
+                "@value": 4
+              },
+              "row": {
+                "@type": "integer",
+                "@value": 1
+              },
+              "col": {
+                "@type": "integer",
+                "@value": 5
+              }
+            }
+          },
+          {
+            "id": {
+              "@type": "string",
+              "@value": "f0373e62-b232-41c3-9c99-9e2fa2874340"
+            },
+            "description": {
+              "@type": "string",
+              "@value": "Message types / 5 min"
+            },
+            "type": {
+              "@type": "string",
+              "@value": "QUICKVALUES"
+            },
+            "cache_time": {
+              "@type": "integer",
+              "@value": 10
+            },
+            "time_range": {
+              "type": {
+                "@type": "string",
+                "@value": "relative"
+              },
+              "range": {
+                "@type": "integer",
+                "@value": 300
+              }
+            },
+            "configuration": {
+              "query": {
+                "@type": "string",
+                "@value": ""
+              },
+              "show_pie_chart": {
+                "@type": "boolean",
+                "@value": true
+              },
+              "sort_order": {
+                "@type": "string",
+                "@value": "desc"
+              },
+              "timerange": {
+                "type": {
+                  "@type": "string",
+                  "@value": "relative"
+                },
+                "range": {
+                  "@type": "integer",
+                  "@value": 300
+                }
+              },
+              "stacked_fields": {
+                "@type": "string",
+                "@value": ""
+              },
+              "data_table_limit": {
+                "@type": "integer",
+                "@value": 50
+              },
+              "field": {
+                "@type": "string",
+                "@value": "type"
+              },
+              "show_data_table": {
+                "@type": "boolean",
+                "@value": true
+              },
+              "limit": {
+                "@type": "integer",
+                "@value": 5
+              }
+            },
+            "position": {
+              "width": {
+                "@type": "integer",
+                "@value": 2
+              },
+              "height": {
+                "@type": "integer",
+                "@value": 6
+              },
+              "row": {
+                "@type": "integer",
+                "@value": 2
+              },
+              "col": {
+                "@type": "integer",
+                "@value": 9
+              }
+            }
+          }
+        ]
+      },
+      "constraints": [
+        {
+          "type": "server-version",
+          "version": ">=3.1.3+cda805f"
+        }
+      ]
+    }
+  ]
+}
