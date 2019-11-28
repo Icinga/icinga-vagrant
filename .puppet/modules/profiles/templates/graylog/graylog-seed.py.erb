@@ -1,0 +1,148 @@
+#!/usr/bin/python3
+
+import requests
+import json
+import sys
+import time
+
+base_url = "http://admin:admin@<%= @listen_ip-%>:<%= @listen_port-%>"
+headers = {'content-type': 'application/json', 'X-Requested-By': 'vagrant'}
+stream_id = "000000000000000000000001"
+
+# HEALTH
+def graylog_available():
+	failed = True
+	res = requests.Response()
+	count = 0
+	limit = 30 * 60
+
+	while res.status_code != 200 or failed:
+		try:
+			res = requests.get(base_url + "/api/streams") # Use a sub entry, otherwise there's a redirect to web
+			failed = False
+			break;
+		except:
+			failed = True
+
+		print ("Status code: ", res.status_code)
+
+		time.sleep(1)
+		count += 1
+		if count > limit:
+			print ("Timeout reached, Graylog REST API not available.")
+			sys.exit(1)
+		else:
+			print ("Graylog REST API not available, retrying ... ({}s/{}s)".format(count, limit))
+
+# INVENTORY
+def graylog_inventory_inputs():
+	res = requests.get(base_url + "/api/system/inputs")
+
+	if res.status_code != 200:
+		res.raise_for_status()
+
+	inputs_res = json.loads(res.text)
+	inputs = []
+
+	for i in inputs_res['inputs']:
+		inputs.append(i['title'])
+
+	#print(" ".join(inputs))
+	return inputs
+
+def graylog_inventory_alerts():
+	res = requests.get(base_url + "/api/streams/" + stream_id + "/alerts/conditions")
+
+	if res.status_code != 200:
+		res.raise_for_status()
+
+	conditions_res = json.loads(res.text)
+	conditions = []
+
+	for c in conditions_res['conditions']:
+		conditions.append(c['title'])
+
+	#print(" ").join(conditions))
+	return conditions
+
+### MAIN
+
+graylog_available()
+
+
+# INPUTS
+data_tcp = {
+    'title': 'Gelf-TCP',
+    'configuration': {
+      'port': 12201,
+      'bind_address': '0.0.0.0'
+    },
+    'type': 'org.graylog2.inputs.gelf.tcp.GELFTCPInput',
+    'global': 'true'
+  }
+
+data_udp = {
+    'title': 'Gelf-UDP',
+    'configuration': {
+      'port': 12201,
+      'bind_address': '0.0.0.0'
+    },
+    'type': 'org.graylog2.inputs.gelf.udp.GELFUDPInput',
+    'global': 'true'
+  }
+
+inputs = graylog_inventory_inputs()
+
+if data_tcp['title'] not in inputs:
+	res = requests.post(base_url + "/api/system/inputs", data=json.dumps(data_tcp), headers=headers)
+	print ("Added TCP Input: ", data_tcp['title'], res.text)
+else:
+	print ("TCP Input '{}' already exists".format(data_tcp['title']))
+
+if data_udp['title'] not in inputs:
+	res = requests.post(base_url + "/api/system/inputs", data=json.dumps(data_udp), headers=headers)
+	print ("Added UDP Input: ", data_udp['title'], res.text)
+else:
+	print ("UDP Input '{}' already exists".format(data_udp['title']))
+
+# STREAM ALERTS
+data_cond = {
+    'type': 'message_count',
+    'title': 'Message count alert',
+    'parameters': {
+      'grace': 10,
+      'time': 5,
+      'backlog': 0,
+      'threshold_type': 'more',
+      'threshold': 3
+    }
+}
+
+conditions = graylog_inventory_alerts()
+
+if data_cond['title'] not in conditions:
+	res = requests.post(base_url + "/api/streams/" + stream_id + "/alerts/conditions", data=json.dumps(data_cond), headers=headers)
+	print ("Added Stream alert ", data_cond['title'], res.text)
+else:
+	print ("Stream alert '{}' already exists".format(data_cond['title']))
+
+
+# CONTENT PACK - DASHBOARD
+
+# Upload
+content_pack_id = "<%= @web_content_pack_id-%>"
+content_pack_rev = "<%= @web_content_pack_rev-%>"
+contents = open("/etc/icinga2/icinga-vagrant-dashboard-content-pack-" + content_pack_id + "-" + content_pack_rev + ".json", 'rb').read()
+
+res = requests.post(base_url + "/api/system/content_packs", data=contents, headers=headers)
+print ("Uploaded content pack ", res.text)
+
+# Install
+
+data_content_pack = {
+        'parameters': {},
+        'comment': 'Installed by Vagrant Provisionier'
+}
+
+res = requests.post(base_url + "/api/system/content_packs/" + content_pack_id + "/" + content_pack_rev + "/installations", data=json.dumps(data_content_pack), headers=headers)
+print ("Installed content pack ", res.text)

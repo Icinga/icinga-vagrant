@@ -13,24 +13,5 @@ class profiles::graylog::plugin {
     owner   => 'root',
     group   => 'root',
     mode    => '0555',
-  } ->
-  file { '/usr/lib/nagios':
-    ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0555',
-  } ->
-  file { '/usr/lib/nagios/plugins':
-    ensure  => directory,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0555',
-  } ->
-  file { '/usr/lib/nagios/plugins/check-graylog2-stream-wrapper':
-    ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0555',
-    content => template("profiles/graylog/check-graylog2-stream-wrapper.erb")
   }
 }

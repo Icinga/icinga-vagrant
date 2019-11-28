@@ -55,13 +55,9 @@ development, so screenshots and features may change.
 
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_elastic_kibana_icingabeat.png" alt="Elastic Stack and Icingabeat" height="300">
 
+<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_graylog_icinga.png" alt="Graylog" height="300">
+
 <img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_elasticsearch.png" alt="Icinga Web 2 Elasticsearch" height="300">
-
-<!--
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_graylog_icinga2.png" alt="Graylog" height="300">
-
-<img src="https://github.com/Icinga/icinga-vagrant/blob/master/doc/screenshot/vagrant_icingaweb2_graylog.png" alt="Icinga Web 2 Graylog" height="300">
--->
 
 ## Certificates <a id="about-certs"></a>
 
@@ -671,7 +667,7 @@ Specific projects:
   puppet-logstash          | >= 4.6.1         | .puppet/modules/logstash          | https://github.com/elastic/puppet-logstash.git
   puppet-kibana            | >= 4.5.0         | .puppet/modules/kibana            | https://github.com/elastic/puppet-kibana.git
   puppet-filebeat          | >= 4.0.0         | .puppet/modules/filebeat          | https://github.com/pcfens/puppet-filebeat.git
-  puppetlabs-mongodb       | >= 4.7.1         | .puppet/modules/mongodb           | https://github.com/puppetlabs/puppetlabs-mongodb.git
+  puppet-mongodb           | >= 5.5.8 < 7.0.0 | .puppet/modules/mongodb           | https://github.com/voxpupuli/puppet-mongodb.git
   golja-influxdb           | >= 3.0.0 < 5.0.0 | .puppet/modules/influxdb          | https://github.com/n1tr0g/golja-influxdb.git
   puppet-graphite          | >= 3.0.0 < 5.0.0 | .puppet/modules/graphite          | https://github.com/echocat/puppet-graphite.git
   puppet-grafana           | >= 4.7.1         | .puppet/modules/grafana           | https://github.com/voxpupuli/puppet-grafana.git

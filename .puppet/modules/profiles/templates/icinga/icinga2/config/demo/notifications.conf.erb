@@ -21,3 +21,27 @@ apply Notification "mail-icingaadmin" to Service {
 
   assign where host.vars.notification.mail
 }
+
+
+/* Box specific settings, controlled via host conditions. */
+object User "graylog-user" {
+  email = "icinga@localhost"
+}
+
+object UserGroup "graylog" {
+  display_name = "Graylog Notification Group"
+  assign where match("graylog*", user.name)
+}
+
+apply Notification "notify-service-graylog" to Service {
+  command = "extended-graylog-notification"
+
+  //notify more often - only for demo purposes
+  interval = 1m
+
+  //don't define any states or types - we want them all for our demo
+
+  user_groups = [ "graylog" ]
+
+  assign where host.vars.graylog_streams
+}

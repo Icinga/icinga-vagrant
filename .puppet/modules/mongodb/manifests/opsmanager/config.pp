@@ -7,7 +7,7 @@ class mongodb::opsmanager::config {
     ensure  => file,
     owner   => $user,
     group   => $group,
-    mode    => '0644',
+    mode    => '0640',
     content => epp('mongodb/opsmanager/conf-mms.properties.epp'),
   }
 }

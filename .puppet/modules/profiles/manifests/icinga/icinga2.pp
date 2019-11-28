@@ -22,7 +22,9 @@ class profiles::icinga::icinga2 (
      password => 'icingaweb2apitransport',
      permissions => [ "status/query", "actions/*", "objects/modify/*", "objects/query/*" ]
     }
-  }
+  },
+  $graylog_listen_ip = lookup('graylog::web::listen_ip'),
+  $graylog_listen_port = lookup('graylog::web::listen_port') # use a local variable here for the config, erb templates don't like hiera much
 ){
   # Always initialize the main features required
   $basic_features = [ 'checker', 'notification', 'mainlog' ]

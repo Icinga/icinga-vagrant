@@ -77,3 +77,22 @@ apply Service "users" {
 
   assign where host.name == NodeName
 }
+
+/* Box specific service matches. Controlled via host if conditions. */
+
+
+/* Graylog */
+apply Service "graylog-alert-" for (stream => config in host.vars.graylog_streams) {
+  check_command = "graylog-stream"
+
+  vars += config
+
+  check_interval = 10s
+  retry_interval = 30s
+
+  notes = "Our Graylog stream '" + stream + "' alert checker."
+  notes_url = vars.graylog_api_url + "/api/streams/" + stream + "/alerts"
+
+  assign where host.vars.graylog_streams
+}
+

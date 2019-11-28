@@ -20,25 +20,26 @@ define mongodb::db (
   Integer[0]       $tries         = 10,
 ) {
 
-  mongodb_database { $db_name:
-    ensure => present,
-    tries  => $tries,
-  }
+  unless $facts['mongodb_is_master'] == 'false' { # lint:ignore:quoted_booleans
+    mongodb_database { $db_name:
+      ensure => present,
+      tries  => $tries,
+    }
 
-  if $password_hash {
-    $hash = $password_hash
-  } elsif $password {
-    $hash = mongodb_password($user, $password)
-  } else {
-    fail("Parameter 'password_hash' or 'password' should be provided to mongodb::db.")
-  }
+    if $password_hash {
+      $hash = $password_hash
+    } elsif $password {
+      $hash = mongodb_password($user, $password)
+    } else {
+      fail("Parameter 'password_hash' or 'password' should be provided to mongodb::db.")
+    }
 
-  mongodb_user { "User ${user} on db ${db_name}":
-    ensure        => present,
-    password_hash => $hash,
-    username      => $user,
-    database      => $db_name,
-    roles         => $roles,
+    mongodb_user { "User ${user} on db ${db_name}":
+      ensure        => present,
+      password_hash => $hash,
+      username      => $user,
+      database      => $db_name,
+      roles         => $roles,
+    }
   }
-
 }

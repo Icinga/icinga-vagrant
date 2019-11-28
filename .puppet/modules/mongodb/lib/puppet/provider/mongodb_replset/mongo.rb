@@ -183,6 +183,7 @@ Puppet::Type.type(:mongodb_replset).provide(:mongo, parent: Puppet::Provider::Mo
         Puppet.warning "Can't connect to replicaset member #{host}."
       end
     end
+    alive.uniq!
     dead = members - alive
     [alive, dead]
   end
@@ -212,7 +213,7 @@ Puppet::Type.type(:mongodb_replset).provide(:mongo, parent: Puppet::Provider::Mo
       add_members.push(nm)
     end
 
-    [add_members, remove_members, update_members]
+    [add_members.uniq, remove_members.uniq, update_members.uniq]
   end
 
   def get_replset_settings_changes(current_settings, new_settings)
