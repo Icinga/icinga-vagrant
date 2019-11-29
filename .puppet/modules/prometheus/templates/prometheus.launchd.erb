@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>             <string>io.prometheus.daemon</string>
+    <key>UserName</key>          <string><%= scope.lookupvar('prometheus::server::user') %></string>
+    <key>GroupName</key>         <string><%= scope.lookupvar('prometheus::server::group') %></string>
+<% if scope.lookupvar('prometheus::server::service_enable') %>
+    <key>Disabled</key>          <false/>
+<% else %>
+    <key>Disabled></key>         <true/>
+<% end %>
+    <key>RunAtLoad</key>         <true/>
+    <key>KeepAlive</key>         <true/>
+    <key>ProgramArguments</key>
+        <array>
+            <string><%= scope.lookupvar('prometheus::server::bin_dir') %>/prometheus</string>
+            <string>agent</string>
+            <%- daemon_flags.each do |flag| -%>
+            <string><%= flag %></string>
+            <%- end -%>
+<% require 'shellwords' %>
+<% for extra_option in Shellwords.split(scope.lookupvar('prometheus::server::extra_options')) %>
+            <string><%= extra_option %></string>
+<% end %>
+        </array>
+</dict>
+</plist>

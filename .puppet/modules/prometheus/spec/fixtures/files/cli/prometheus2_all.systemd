@@ -1,0 +1,50 @@
+# THIS FILE IS MANAGED BY PUPPET
+[Unit]
+Description=Prometheus Monitoring framework
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+User=prometheus
+Group=prometheus
+ExecStart=/usr/local/bin/prometheus \
+  --config.file=/etc/prometheus/prometheus_123.yaml \
+  --web.listen-address=127.0.0.1:9099 \
+  --web.read-timeout=2m \
+  --web.max-connections=256 \
+  --web.external-url=https://prometheus.reverse-proxy.company.systems \
+  --web.route-prefix=internal \
+  --web.user-assets=static \
+  --web.enable-lifecycle \
+  --web.enable-admin-api \
+  --web.console.templates=/opt/prometheus/consoles \
+  --web.console.libraries=/opt/prometheus/console_libraries \
+  --web.page-title="My Company Prometheus" \
+  --web.cors.origin="https?://(domain1|domain2)\.com" \
+  --storage.tsdb.path=/opt/prometheus/data/ \
+  --storage.tsdb.retention.time=14d \
+  --storage.tsdb.retention.size=50GB \
+  --storage.tsdb.no-lockfile \
+  --storage.tsdb.allow-overlapping-blocks \
+  --storage.tsdb.wal-compression \
+  --storage.remote.flush-deadline=5m \
+  --storage.remote.read-sample-limit=5e8 \
+  --storage.remote.read-concurrent-limit=8 \
+  --storage.remote.read-max-bytes-in-frame=1000000 \
+  --rules.alert.for-outage-tolerance=25m \
+  --rules.alert.for-grace-period=3m \
+  --rules.alert.resend-delay=2m \
+  --alertmanager.notification-queue-capacity=10000 \
+  --alertmanager.timeout=10s \
+  --query.lookback-delta=5m \
+  --query.timeout=2m \
+  --query.max-concurrency=30 \
+  --query.max-samples=10000000 \
+  --log.level=info \
+  --log.format=json
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

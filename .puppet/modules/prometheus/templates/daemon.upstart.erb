@@ -1,0 +1,36 @@
+# Prometheus <%= @name %> (Upstart unit)
+description "Prometheus <%= @name %>"
+start on runlevel [2345]
+stop on runlevel [06]
+
+env DAEMON=<%= @bin_dir %>/<%= @bin_name %>
+env USER=<%= @user %>
+env GROUP=<%= @group %>
+env DEFAULTS=/etc/default/<%= @name %>
+env RUNDIR=/var/run/<%= @name %>
+env PID_FILE=/var/run/<%= @name %>/<%= @name %>.pid
+pre-start script
+  [ -e $DEFAULTS ] && . $DEFAULTS
+
+  mkdir -p $RUNDIR           || true
+  chmod 0750 $RUNDIR         || true
+  chown $USER:$GROUP $RUNDIR || true
+end script
+
+script
+    # read settings like GOMAXPROCS from "/etc/default/<%= @name %>", if available.
+    set -o allexport
+    [ -e $DEFAULTS ] && . $DEFAULTS
+    set +o allexport
+
+    export GOMAXPROCS=${GOMAXPROCS:-2}
+    <%- require 'shellwords' -%>
+    exec start-stop-daemon -c $USER -g $GROUP -p $PID_FILE -x $DAEMON -S -- <% for option in Shellwords.split(@options) %> \
+    <%= option -%>
+    <% end %>
+
+end script
+
+respawn
+respawn limit 10 10
+kill timeout 10

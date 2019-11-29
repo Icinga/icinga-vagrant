@@ -1,0 +1,22 @@
+---
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: master
+rule_files:
+- "/etc/prometheus/rules.d/*.rules"
+scrape_configs:
+- job_name: prometheus
+  scrape_interval: 10s
+  scrape_timeout: 10s
+  static_configs:
+  - targets:
+    - localhost:9090
+    labels:
+      alias: Prometheus
+alerting:
+  alert_relabel_configs: []
+  alertmanagers: []
+remote_read: []
+remote_write: []

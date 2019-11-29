@@ -1,0 +1,12 @@
+---
+.travis.yml:
+  secure: "M9rOa2lFaOagSRKNWb6BtS90yj8+8jk0tjeNGxxk73RoSfldKbxczZYY/U+nxGbLAvsDDHqQhMXXhRXxHKngl+Lg+dD6O0qT51ArGBtjSiMnVY00dC/+0nF932oS2skPbgzMGszK+u4o2Efjd6h18q9dT0WTGka2aOv9eJ18pwyESB7vyWbEDgxQ6Bk4J02EeFGhp/is1MlcK5rXpEYUGSPwJJCgEkbWuJek4ZDyT+qG5TTEUJMovNu4Oxy6HVGCDrM65hjK79oT9BVKM5xkgJoxN1trdqpmIEu8KOZck/+Iokcz+mHJfx62dJ2fg6bcOhQFSbW2UdPAYW4f1YaViHuwWWXgT58hPtB1PdEKPI/6HnAKBSLA2Fr3fA26BKbT/0CcRbSLMTjmbd9csEb5VE0eoCoTtVItVEsRkqm0BNvQ8oLRmQgFht2hGwwoczwBAj9aF80MjuDUzG2WjM/WjNIWfIFmeNoWTy/u+/58Q9wj6vIX2EyTJDEOorlP+4RXK+xub3QXntfmqkIlyB5qE6QxMDTAZN8aqBjo/771Ky7pIKAthWLVdDHPKhPHD2bMzilSqoFzNFtCkIbYp8w/eJUCfXhPpFEpt/9QzPLtP4/3KrJ/KUMt3hWfEGWOhUXlbalF5cFCP5aWkDDnoKxWILGS94xkXV2qyEGEMY2tn5o="
+  docker_sets:
+    - set: ubuntu1604-64
+    - set: ubuntu1804-64
+    - set: debian8-64
+    - set: debian9-64
+    - set: centos7-64
+    - set: centos8-64
+spec/spec_helper.rb:
+  spec_overrides: "require 'spec_helper_methods'"

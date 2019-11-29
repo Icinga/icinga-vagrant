@@ -1,0 +1,130 @@
+#!/bin/bash
+#
+#       /etc/rc.d/init.d/prometheus
+#
+#       Daemonize the prometheus monitoring system.
+#
+# chkconfig:   2345 95 20
+# description:  Prometheus is an open-source systems monitoring and alerting toolkit originally built at SoundCloud
+# processname: prometheus
+# pidfile: /var/run/prometheus/pidfile
+
+# Source function library.
+. /etc/init.d/functions
+
+DAEMON=/usr/local/bin/prometheus
+PID_FILE=/var/run/prometheus/prometheus.pid
+LOG_FILE=/var/log/prometheus
+
+[ -e /etc/sysconfig/prometheus ] && . /etc/sysconfig/prometheus
+
+export GOMAXPROCS=${GOMAXPROCS:-2}
+
+#
+# Create the /var/run/prometheus directory, which can live on a tmpfs
+# filesystem and be destroyed between reboots.
+#
+mkrundir() {
+        [ ! -d /var/run/prometheus ] && mkdir -p /var/run/prometheus
+        chown prometheus /var/run/prometheus
+}
+
+#
+# Create a PID file if it doesn't already exist, for clean upgrades
+# from previous init-script controlled daemons.
+#
+KILLPROC_OPT="-p ${PID_FILE}"
+mkpidfile() {
+        # Create PID file if it didn't exist
+        mkrundir
+        [ ! -f $PID_FILE ] && pidofproc $DAEMON > $PID_FILE
+        chown prometheus /var/run/prometheus
+        if [ $? -ne 0 ] ; then
+            rm $PID_FILE
+            KILLPROC_OPT=""
+        fi
+}
+
+start() {
+        echo -n "Starting prometheus: "
+        mkrundir
+        [ -f $PID_FILE ] && rm $PID_FILE
+        daemon --user=prometheus \
+            --pidfile="$PID_FILE" \
+            "$DAEMON" -log.format logger:stdout -config.file=/etc/prometheus/prometheus.yaml \
+            -web.console.templates=/usr/local/share/prometheus/consoles \
+            -web.console.libraries=/usr/local/share/prometheus/console_libraries \
+            -storage.local.path=/var/lib/prometheus \
+            -storage.local.retention=360h \
+             >> "$LOG_FILE" &
+        retcode=$?
+        mkpidfile
+        touch /var/lock/subsys/prometheus
+        return $retcode
+}
+
+stop() {
+        DELAY=5 # seconds maximum to wait for a leave
+
+        echo -n "Shutting down prometheus: "
+        mkpidfile
+
+        prometheus_pid=$(cat $PID_FILE)
+        killproc $KILLPROC_OPT $DAEMON -INT
+        retcode=$?
+
+        # We'll wait if necessary to make sure the leave works, and return
+        # early if we can.  If not, escalate to harsher signals.
+        try=0
+        while [ $try -lt $DELAY ]; do
+        if ! checkpid $prometheus_pid ; then
+          rm -f /var/lock/subsys/prometheus
+          return $retcode
+        fi
+        sleep 1
+          let try+=1
+        done
+
+        # If acting as a server, use a SIGTERM to avoid a leave.
+        # This behavior is also configurable.  Avoid doing a "leave" because
+        # having servers missing is a bad thing that we want to notice.
+        #
+        # A SIGTERM will mark the node as "failed" until it rejoins.
+        # killproc with no arguments uses TERM, then escalates to KILL.
+        killproc $KILLPROC_OPT $DAEMON
+        retcode=$?
+
+        rm -f /var/lock/subsys/prometheus $PID_FILE
+        return $retcode
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status -p ${PID_FILE} $DAEMON
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    reload)
+        mkpidfile
+        killproc $KILLPROC_OPT $DAEMON -HUP
+        ;;
+    condrestart)
+        [ -f /var/lock/subsys/prometheus ] && restart || :
+        ;;
+    *)
+        echo "Usage: prometheus {start|stop|status|reload|restart}"
+        exit 1
+        ;;
+esac
+retcode=$?
+# Don't let the [OK] get stomped on.
+echo
+exit $retcode

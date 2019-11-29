@@ -1,0 +1,35 @@
+# Prometheus Monitoring Framework (Upstart unit)
+description "Prometheus Monitoring Framework"
+start on runlevel [2345]
+stop on runlevel [06]
+
+env PROMETHEUS=/usr/local/bin/prometheus
+env USER=prometheus
+env GROUP=prometheus
+env DEFAULTS=/etc/default/prometheus
+env RUNDIR=/var/run/prometheus
+env PID_FILE=/var/run/prometheus/prometheus.pid
+pre-start script
+  [ -e $DEFAULTS ] && . $DEFAULTS
+
+  mkdir -p $RUNDIR           || true
+  chmod 0750 $RUNDIR         || true
+  chown $USER:$GROUP $RUNDIR || true
+end script
+
+script
+    # read settings like GOMAXPROCS from "/etc/default/prometheus", if available.
+    [ -e $DEFAULTS ] && . $DEFAULTS
+
+    export GOMAXPROCS=${GOMAXPROCS:-2}
+    exec start-stop-daemon --chuid $USER $GROUP --pidfile $PID_FILE --exec $PROMETHEUS --start -- -config.file=/etc/prometheus/prometheus.yaml \
+      -web.console.templates=/usr/local/share/prometheus/consoles \
+      -web.console.libraries=/usr/local/share/prometheus/console_libraries \
+      -storage.local.path=/var/lib/prometheus \
+      -storage.local.retention=360h \
+      
+end script
+
+respawn
+respawn limit 10 10
+kill timeout 10

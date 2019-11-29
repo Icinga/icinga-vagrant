@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>             <string>io.<%= @name %>.daemon</string>
+    <key>UserName</key>          <string><%= @user %></string>
+    <key>GroupName</key>         <string><%= @group %></string>
+<% if @service_enable %>
+    <key>Disabled</key>          <false/>
+<% else %>
+    <key>Disabled></key>         <true/>
+<% end %>
+    <key>RunAtLoad</key>         <true/>
+    <key>KeepAlive</key>         <true/>
+    <key>EnvironmentVariables</key>
+        <dict>
+<% @env_vars.each do |key, value| -%>
+            <key><%= key %></key>
+            <string><%= value %></string>
+<% end -%>
+        </dict>
+    <key>ProgramArguments</key>
+        <array>
+            <string><%= @bin_dir %>/<%= @bin_name %></string>
+<% require 'shellwords' %>
+<% for extra_option in Shellwords.split(@options) %>
+            <string><%= extra_option %></string>
+<% end %>
+        </array>
+</dict>
+</plist>

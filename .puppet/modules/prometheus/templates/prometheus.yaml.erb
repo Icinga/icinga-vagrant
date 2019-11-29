@@ -1,0 +1,29 @@
+<% require 'yaml' -%>
+<% global_config = scope.lookupvar('::prometheus::server::global_config') -%>
+<% rule_files = scope.lookupvar('::prometheus::server::_rule_files') -%>
+<% scrape_configs = scope.lookupvar('::prometheus::server::scrape_configs') -%>
+<% remote_read_configs = scope.lookupvar('::prometheus::server::remote_read_configs') -%>
+<% remote_write_configs = scope.lookupvar('::prometheus::server::remote_write_configs') -%>
+<% full_config = {
+  'global'=>global_config,
+  'rule_files'=>rule_files,
+  'scrape_configs'=>scrape_configs + @collected_scrape_jobs,
+  'alerting'=>{
+    'alert_relabel_configs'=>scope.lookupvar('::prometheus::server::alert_relabel_config'),
+    'alertmanagers'=>scope.lookupvar('::prometheus::server::alertmanagers_config'),
+  },
+}
+if @prometheus_v2
+    # this variable has to be absent on 1.X, so we filter using the helper variable
+    full_config['remote_read'] = remote_read_configs
+end
+if @prometheus_v2
+    full_config['remote_write'] = remote_write_configs
+end
+ -%>
+<%= if @prometheus_v2
+full_config.to_yaml().gsub(/source_labels: ".+?"/) { |x| x.gsub('"', '') }
+else
+full_config.to_yaml(options = {:line_width => -1}).gsub(/source_labels: ".+?"/) { |x| x.gsub('"', '') }
+end
+ -%>

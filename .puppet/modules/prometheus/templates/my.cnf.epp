@@ -1,0 +1,23 @@
+<%- |
+  String $cnf_user,
+  Variant[Sensitive[String],String] $cnf_password,
+  Stdlib::Port $cnf_port,
+  Stdlib::Host $cnf_host,
+  Optional[Stdlib::Absolutepath] $cnf_socket = undef,
+| -%>
+# THIS FILE IS MANAGED BY PUPPET
+[client]
+user = <%= $cnf_user %>
+<%-
+  $_cnf_password = $cnf_password ? {
+    Sensitive => $cnf_password.unwrap,
+    default   => $cnf_password,
+  }
+-%>
+password = <%= $_cnf_password %>
+<% if $cnf_socket { -%>
+socket = <%= $cnf_socket %>
+<%- } else { -%>
+host = <%= $cnf_host %>
+port = <%= $cnf_port %>
+<% } -%>
