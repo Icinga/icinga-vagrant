@@ -1,0 +1,37 @@
+# THIS FILE IS MANAGED BY PUPPET
+[Unit]
+Description=Prometheus Monitoring framework
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+User=prometheus
+Group=prometheus
+ExecStart=/usr/local/bin/prometheus \
+  -config.file=/etc/prometheus/prometheus_123.yaml \
+  -web.listen-address=127.0.0.1:9099 \
+  -web.read-timeout=2m \
+  -web.max-connections=256 \
+  -web.external-url=https://prometheus.reverse-proxy.company.systems \
+  -web.route-prefix=internal \
+  -web.user-assets=static \
+  -web.console.templates=/opt/prometheus/consoles \
+  -web.console.libraries=/opt/prometheus/console_libraries \
+  -web.telemetry-path=/telemetry \
+  -web.enable-remote-shutdown \
+  -storage.local.path=/opt/prometheus/data/ \
+  -storage.local.retention=14d \
+  -alertmanager.notification-queue-capacity=10000 \
+  -alertmanager.timeout=10s \
+  -alertmanager.url=https://alertmanager.company.systems \
+  -query.timeout=2m \
+  -query.max-concurrency=30 \
+  -query.staleness-delta=5m \
+  -log.level=fatal \
+  -log.format=logger:stdout
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

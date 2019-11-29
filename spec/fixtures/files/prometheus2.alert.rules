@@ -1,0 +1,11 @@
+---
+groups:
+- name: alert.rules
+  rules:
+  - alert: alert_name
+    expr: up == 0
+    for: 5min
+    labels:
+      severity: woops
+    annotations:
+      summary: did a woops {{ $labels.instance }}

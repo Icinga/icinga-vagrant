@@ -1,0 +1,16 @@
+<%- | Array   $alerts | -%>
+<% $alerts.each |$alert| { -%>
+ALERT <%= $alert['name'] %>
+    IF <%= $alert['condition'] %>
+    FOR <%= $alert['timeduration'] %>
+    LABELS {
+    <% $alert['labels'].each |$label| { -%>
+        <%= $label['name'] %> = "<%= $label['content'] %>",
+    <% } -%>
+    }
+    ANNOTATIONS {
+    <% $alert['annotations'].each |$annotation| { -%>
+        <%= $annotation['name'] %> = "<%= $annotation['content'] %>",
+    <% } -%>
+    }
+<% } -%>
