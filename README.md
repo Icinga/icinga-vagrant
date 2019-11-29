@@ -671,6 +671,7 @@ Specific projects:
   golja-influxdb           | >= 3.0.0 < 5.0.0 | .puppet/modules/influxdb          | https://github.com/n1tr0g/golja-influxdb.git
   puppet-graphite          | >= 3.0.0 < 5.0.0 | .puppet/modules/graphite          | https://github.com/echocat/puppet-graphite.git
   puppet-grafana           | >= 4.7.1         | .puppet/modules/grafana           | https://github.com/voxpupuli/puppet-grafana.git
+  puppet-prometheus        | >= 5.5.8 < 7.0.0 | .puppet/modules/prometheus        | https://github.com/voxpupuli/puppet-prometheus.git
 
 
 ### Puppet Module Git Subtree <a id="contributing-puppet-module-git-subtree"></a>

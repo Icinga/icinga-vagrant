@@ -61,3 +61,5 @@ graylog::mongodb::version:              "4.0.0"
 graylog::web::content_pack_id:          "9031558d-2431-4d30-af33-44ab0bc5f109"
 graylog::web::content_pack_rev:         "1"
 
+prometheus::server::version:            "2.14.0"
+prometheus::node_exporter::version:     "0.18.1"
