@@ -1,0 +1,19 @@
+
+{
+  "description": "Update a node",
+  "input_method": "stdin",
+  "parameters": {
+    "availability": {
+      "description": "Availability of the node",
+      "type": "Optional[Enum['active', 'pause', 'drain']]"
+    },
+    "role": {
+      "description": "Role of the node",
+      "type": "Optional[Enum['manager', 'worker']]"
+    },
+    "node": {
+      "description": "Hostname or ID of the node in the swarm",
+      "type": "String[1]"
+    }
+  }
+}

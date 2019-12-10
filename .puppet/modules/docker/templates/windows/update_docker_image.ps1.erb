@@ -1,0 +1,27 @@
+# Pulls a docker image.
+# Returns 0 if there a change.
+# Returns 2 if there is no change.
+# Returns 3 if something when wrong.
+#
+
+param
+(
+    [string]$DockerImage
+)
+
+Write-Information "Before - Looking for image"
+$before=$(& <%= @docker_command %> inspect --type image --format='{{.Id}}' ${DockerImage} 2>$null)
+Write-Information "Pulling image"
+& <%= @docker_command %> pull ${DockerImage}
+Write-Information "Inspecting image"
+$after=$(& <%= @docker_command %> inspect --type image --format='{{.Id}}' ${DockerImage} 2>$null)
+If (!$after) {
+    Write-Information "Docker image ${DockerImage} failed to pull!"
+    Exit 3
+} ElseIf ($after -eq $before) {
+    Write-Information "No updates to ${DockerImage} available. Currently on ${after}."
+    Exit 2
+} Else {
+    Write-Information "${DockerImage} updated. Changed from ${before} to ${after}."
+    Exit 0
+}

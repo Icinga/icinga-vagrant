@@ -1,0 +1,15 @@
+
+{
+  "description": "List nodes in the swarm",
+  "input_method": "stdin",
+  "parameters": {
+    "filter": {
+      "description": "Filter output based on conditions provided",
+      "type": "Optional[String[1]]"
+    },
+    "quiet": {
+      "description": "Only display IDs",
+      "type": "Optional[Boolean]"
+    }
+  }
+}

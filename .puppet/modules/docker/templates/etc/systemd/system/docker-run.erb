@@ -1,0 +1,38 @@
+<%-
+	depend_services = @depend_services_array.map{|s| s =~ /\.[a-z]+$/ ? s : "#{s}.service"}
+	@after = [@service_name.nil? ? "" : "#@service_name.service"] +
+		@sanitised_after_array.map{ |s| "#{@service_prefix}#{s}.service"} +
+		@sanitised_depends_array.map{ |s| "#{@service_prefix}#{s}.service"} +
+		depend_services
+	@wants = @sanitised_after_array.map{ |a| "#{@service_prefix}#{a}.service"}
+	@requires = [@service_name.nil? ? "" : "#@service_name.service"] +
+		@sanitised_depends_array.map{ |d| "#{@service_prefix}#{d}.service"} +
+		depend_services
+-%>
+# This file is managed by Puppet and local changes
+# may be overwritten
+
+[Unit]
+Description=Daemon for <%= @title %>
+After=<%= @after.uniq.join(" ") %>
+Wants=<%= @wants.uniq.join(" ") %>
+Requires=<%= @requires.uniq.join(" ") %>
+StartLimitIntervalSec=20
+StartLimitBurst=5
+
+[Service]
+Restart=<%= @systemd_restart %>
+TimeoutStartSec=0
+RestartSec=5
+Environment="HOME=/root"
+<%- if @_syslog_identifier -%>
+SyslogIdentifier=<%= @_syslog_identifier %>
+<%- end -%>
+ExecStart=/usr/local/bin/docker-run-<%= @sanitised_title %>-start.sh
+ExecStop=-/usr/local/bin/docker-run-<%= @sanitised_title %>-stop.sh
+<%- if @remain_after_exit %>
+RemainAfterExit=<%= @remain_after_exit %>
+<%- end -%>
+
+[Install]
+WantedBy=multi-user.target

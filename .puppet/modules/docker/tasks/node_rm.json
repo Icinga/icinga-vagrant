@@ -1,0 +1,15 @@
+
+{
+  "description": "Update a node",
+  "input_method": "stdin",
+  "parameters": {
+    "force": {
+      "description": "Force remove a node from the swarm",
+      "type": "Optional[Boolean]"
+    },
+    "node": {
+      "description": "Hostname or ID of the node in the swarm",
+      "type": "String[1]"
+    }
+  }
+}
