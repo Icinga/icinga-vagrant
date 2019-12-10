@@ -676,6 +676,7 @@ General:
   puppet-timezone          | >= 4.0.0         | .puppet/modules/timezone          | https://github.com/saz/puppet-timezone.git
   puppet-snmp              | >= 5.5.8 < 7.0.0 | .puppet/modules/snmp              | https://github.com/voxpupuli/puppet-snmp.git
   puppet-systemd           | >= 4.10 < 7.0.0  | .puppet/modules/systemd           | https://github.com/camptocamp/puppet-systemd.git
+  puppet-docker            | >= 5.5.10 < 7.0.0 | .puppet/modules/docker           | https://github.com/puppetlabs/puppetlabs-docker.git
 
 Specific projects:
 
