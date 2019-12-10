@@ -1,0 +1,7 @@
+<% if @before_stop -%>
+    <%= @before_stop %>
+<% end -%>
+/usr/bin/<%= @docker_command %> stop --time=<%= @stop_wait_time %> <%= @sanitised_title %>
+<% if @remove_container_on_stop -%>
+    /usr/bin/<%= @docker_command %> rm <% if @remove_volume_on_stop %>-v<% end %> <%= @sanitised_title %>
+<% end -%>
