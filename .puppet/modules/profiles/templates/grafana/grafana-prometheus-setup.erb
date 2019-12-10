@@ -1,0 +1,43 @@
+#!/bin/bash
+
+GRAFANA_URL="http://admin:admin@localhost:8004"
+GRAFANA_DATASOURCES_URL="$GRAFANA_URL/api/datasources"
+GRAFANA_DASHBOARDS_URL="$GRAFANA_URL/api/dashboards/db"
+TIMEOUT=30
+
+START=$(date +%s)
+
+# wait until grafana-server is started
+echo -e "Checking whether Grafana server is listening at $GRAFANA_DATASOURCES_URL"
+until $(curl --output /dev/null --silent $GRAFANA_DATASOURCES_URL); do
+  NOW=$(date +%s)
+  REAL_TIMEOUT=$(( START + TIMEOUT ))
+  if [[ "$NOW" -gt "$REAL_TIMEOUT" ]]; then
+    echo "Cannot reach Grafana server at $GRAFANA_URL. Timeout reached."
+    exit 1
+  fi
+  printf '.'
+  sleep 1
+done
+
+# add datasource
+echo -e "Adding Graphite datasource"
+curl "$GRAFANA_DATASOURCES_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' --data-binary <<DATASOURCE \
+  "{
+    \"name\": \"icinga2-prometheus\",
+    \"type\": \"prometheus\",
+    \"url\": \"http://<%= @listen_ip-%>:<%= @backend_port-%>\",
+    \"access\": \"proxy\",
+    \"isDefault\": true
+   }"
+DATASOURCE
+
+# add default dashboards
+# exported dashboards require the 'dashboard' key including the payload in the http json body request
+# https://github.com/grafana/grafana/issues/2816
+# furthermore the 'id' field must be null in order to create a new dashboard
+# file is already patched
+
+#echo -e "Adding Icinga 2 dashboard"
+#curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/graphite-dashboard-vagrant-grafana-demo.json
+

@@ -29,6 +29,18 @@ class profiles::grafana::server (
   }
 
 
+  if ('prometheus' in $backend) {
+
+  file { "grafana-${backend}-setup":
+    name => "/usr/local/bin/grafana-${backend}-setup",
+    owner => root,
+    group => root,
+    mode => "0755",
+    content => template("profiles/grafana/grafana-${backend}-setup.erb")
+  }
+
+  } else {
+
   # there are no static config files for data sources in Grafana
   # https://github.com/grafana/grafana/issues/1789
   file { "grafana-${backend}-setup":
@@ -69,4 +81,5 @@ class profiles::grafana::server (
     require => Class["grafana::service"]
   }
 
+  } # if prometheus
 }

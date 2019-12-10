@@ -12,6 +12,9 @@ graphite::web::listen_port:             "8003"
 influxdb::server::listen_ip:            "%{lookup('node::ipaddress')}"
 influxdb::server::listen_port:          "8086"
 
+prometheus::server::listen_ip:          "%{lookup('node::ipaddress')}"
+prometheus::server::listen_port:        "9090"
+
 grafana::server::listen_ip:             "%{lookup('node::ipaddress')}"
 grafana::server::listen_port:           "8004"
 

@@ -600,6 +600,16 @@ class profiles::icinga::icingaweb2 (
      path => '/bin:/usr/bin:/sbin:/usr/sbin',
      command => "icingacli x509 scan --job local"
     }
+    ->
+    exec { 'x509-jobs-gitlab-com':
+     path => '/bin:/usr/bin:/sbin:/usr/sbin',
+     command => "icingacli x509 scan --job gitlab.com"
+    }
+    ->
+    exec { 'x509-jobs-everyonecancontribute-com':
+     path => '/bin:/usr/bin:/sbin:/usr/sbin',
+     command => "icingacli x509 scan --job everyonecancontribute.com"
+    }
     #->
     #concat::fragment { "module_x509s_dashboards":
     #  target  => $default_dash_conf_path,

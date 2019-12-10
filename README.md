@@ -31,6 +31,7 @@ including [puppet-icinga2](https://github.com/icinga/puppet-icinga2) and [puppet
 * [InfluxDB](README.md#boxes-influxdb)
 * [Elastic](README.md#boxes-elastic)
 * [Graylog](README.md#boxes-graylog)
+* [Prometheus](README.md#boxes-prometheus)
 
 Below are some sample screenshots. Keep in mind that software is under steady
 development, so screenshots and features may change.
@@ -383,6 +384,28 @@ $ cd graylog && vagrant up
   Icinga Web 2      | http://192.168.33.6/icingaweb2  | icingaadmin/icinga
   Icinga 2 API      | https://192.168.33.6:5665/v1    | root/icinga
   Graylog           | http://192.168.33.6:9000        | admin/admin
+
+### Prometheus <a id="boxes-prometheus"></a>
+
+* Monitoring
+  * [Prometheus](https://prometheus.io/)
+* Metrics
+  * [Grafana](https://grafana.com/)
+
+Run Vagrant:
+
+```
+$ cd prometheus && vagrant up
+```
+
+#### Application Interfaces
+
+  Application       | Url                               | Credentials
+  ------------------|-----------------------------------|----------------
+  Icinga Web 2      | http://192.168.33.5/icingaweb2    | icingaadmin/icinga
+  Icinga 2 API      | https://192.168.33.5:5665/v1      | root/icinga
+  Grafana           | http://192.168.33.5:8004          | admin/admin
+  Prometheus        | http://192.168.33.9:9090          | -
 
 
 # Configuration <a id="configuration"></a>

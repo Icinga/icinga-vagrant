@@ -24,6 +24,7 @@ class profiles::prometheus::server (
         },
       ],
     },
+    # TODO: Move this into the box environment
     scrape_configs => [
       {
         'job_name'        => 'prometheus',
@@ -34,6 +35,45 @@ class profiles::prometheus::server (
             'targets' => [ 'localhost:9090' ],
             'labels'  => {
               'alias' => 'Prometheus',
+            }
+          }
+        ],
+      },
+      {
+        'job_name'        => 'prometheus-node-exporter',
+        'scrape_interval' => '10s',
+        'scrape_timeout'  => '10s',
+        'static_configs'  => [
+          {
+            'targets' => [ 'localhost:9100' ],
+            'labels'  => {
+              'alias' => 'Prometheus Node Exporter',
+            }
+          }
+        ],
+      },
+      {
+        'job_name'        => 'everyonecancontribute-node-exporter',
+        'scrape_interval' => '10s',
+        'scrape_timeout'  => '10s',
+        'static_configs'  => [
+          {
+            'targets' => [ '78.47.112.51:9100' ],
+            'labels'  => {
+              'alias' => 'Everyonecancontribute Node Exporter',
+            }
+          }
+        ],
+      },
+      {
+        'job_name'        => 'everyonecancontribute-docker',
+        'scrape_interval' => '10s',
+        'scrape_timeout'  => '10s',
+        'static_configs'  => [
+          {
+            'targets' => [ '78.47.112.51:9323' ],
+            'labels'  => {
+              'alias' => 'Everyonecancontribute Docker',
             }
           }
         ],

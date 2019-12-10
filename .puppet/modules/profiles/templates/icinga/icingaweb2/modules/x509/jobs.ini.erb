@@ -11,3 +11,13 @@ schedule = ""
 [local]
 cidrs = "<%= scope().call_function('hiera', ['node::ipaddress']) -%>/32"
 ports = 5665
+
+[gitlab.com]
+cidrs = "35.231.145.151/32"
+ports = "443"
+schedule = ""
+
+[everyonecancontribute.com]
+cidrs = "78.47.112.51/32"
+ports = "443"
+schedule = ""
