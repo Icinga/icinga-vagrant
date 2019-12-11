@@ -52,6 +52,11 @@ class profiles::base::system (
     package_name   => 'wget'
   }
   ->
+  # Docker CE
+  class { 'docker':
+    version => 'latest',
+  }
+  ->
   # Chromium headless for Icinga reporting PDF export
   #package { 'chromium-headless': # currently doesn't work for me
   #  require => Class['epel']
