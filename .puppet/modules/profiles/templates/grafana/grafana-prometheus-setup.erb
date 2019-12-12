@@ -38,6 +38,6 @@ DATASOURCE
 # furthermore the 'id' field must be null in order to create a new dashboard
 # file is already patched
 
-#echo -e "Adding Icinga 2 dashboard"
-#curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/graphite-dashboard-vagrant-grafana-demo.json
+echo -e "Adding Prometheus dashboard"
+curl "$GRAFANA_DASHBOARDS_URL" -X POST -H 'Content-Type: application/json;charset=UTF8' -d @/etc/grafana/prometheus-everyonecancontribute-dashboard.json
 

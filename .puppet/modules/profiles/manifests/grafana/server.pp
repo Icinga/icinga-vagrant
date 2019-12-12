@@ -38,6 +38,20 @@ class profiles::grafana::server (
     mode => "0755",
     content => template("profiles/grafana/grafana-${backend}-setup.erb")
   }
+  ->
+  file { "${backend}-everyonecancontribute-dashboard":
+    name => "/etc/grafana/${backend}-everyonecancontribute-dashboard.json",
+    owner => root,
+    group => root,
+    mode => "0644",
+    content => template("profiles/grafana/templates/${backend}-everyonecancontribute-dashboard.json.erb")
+  }
+  ->
+  exec { "finish-grafana-${backend}-setup":
+    path => "/bin:/usr/bin:/sbin:/usr/sbin",
+    command => "/usr/local/bin/grafana-${backend}-setup",
+    require => Class["grafana::service"]
+  }
 
   } else {
 
