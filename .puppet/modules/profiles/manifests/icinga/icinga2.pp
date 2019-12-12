@@ -55,6 +55,11 @@ class profiles::icinga::icinga2 (
   class { '::profiles::icinga::plugins':
 
   }
+  ->
+  User <| title == 'icinga' |> {
+    groups +> "icingaweb2",
+    require => Package['::icingaweb2']
+  }
 
   mysql::db { 'icinga':
     user      => 'icinga',
@@ -287,6 +292,12 @@ class profiles::icinga::icinga2 (
   file { "$config_path/maps.conf":
     ensure  => present,
     content => template("profiles/icinga/icinga2/config/demo/maps.conf.erb"),
+    tag     => icinga2::config::file
+  }
+  ->
+  file { "$config_path/x509.conf":
+    ensure  => present,
+    content => template("profiles/icinga/icinga2/config/demo/x509.conf.erb"),
     tag     => icinga2::config::file
   }
 }

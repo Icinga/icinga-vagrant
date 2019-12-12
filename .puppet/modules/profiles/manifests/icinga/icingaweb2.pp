@@ -148,11 +148,6 @@ class profiles::icinga::icingaweb2 (
   package { 'icingaweb2-selinux':
     ensure => latest,
   }
-  ->
-  User <| title == 'icinga' |> {
-    groups +> "icingaweb2",
-    require => Class['::icinga2']
-  }
 
   $default_user    = "icingaadmin"
   $conf_dir        = $::icingaweb2::params::conf_dir
