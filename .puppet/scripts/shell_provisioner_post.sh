@@ -7,5 +7,7 @@ if rpm -q "rh-php71-php-fpm" &>/dev/null; then
 fi
 
 # workaround for icingacli and users
-usermod -a -G icingaweb2 icinga && systemctl restart icinga2
+if getent group icingaweb2; then
+  usermod -a -G icingaweb2 icinga && systemctl restart icinga2
+fi
 
