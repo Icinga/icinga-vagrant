@@ -78,6 +78,63 @@ class profiles::prometheus::server (
           }
         ],
       },
+      {
+        'job_name'        => 'everyonecancontribute-tls',
+        'metrics_path'    => '/probe',
+        'scrape_interval' => '10s',
+        'scrape_timeout'  => '10s',
+        'static_configs'  => [
+          {
+            'targets' => [ 'https://everyonecancontribute.com', 'https://gitlab.com' ],
+            'labels'  => {
+              'alias' => 'Everyonecancontribute TLS',
+            }
+          }
+        ],
+        'relabel_configs' => [
+          {
+            'source_labels' => '[__address__]',
+            'target_label'  => '__param_target',
+          },
+          {
+            'source_labels' => '[__param_target]',
+            'target_label'  => 'instance',
+          },
+          {
+            'target_label' => '__address__',
+            'replacement'  => '78.47.112.51:9219',
+          },
+        ],
+      },
+      {
+        'job_name'        => 'blackbox',
+        'metrics_path'    => '/probe',
+        'scrape_interval' => '10s',
+        'scrape_timeout'  => '10s',
+        'static_configs'  => [
+          {
+            'targets' => [ 'https://everyonecancontribute.com', 'https://gitlab.com' ],
+            'labels'  => {
+              'alias' => 'TLS Certificate Monitoring',
+            }
+          }
+        ],
+        'relabel_configs' => [
+          {
+            'source_labels' => '[__address__]',
+            'target_label'  => '__param_target',
+          },
+          {
+            'source_labels' => '[__param_target]',
+            'target_label'  => 'instance',
+          },
+          {
+            'target_label' => '__address__',
+            'replacement'  => '127.0.0.1:9115',
+          },
+        ],
+      },
+
     ],
 
   }

@@ -1,0 +1,38 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANT_HOME = File.dirname(__FILE__) unless defined? VAGRANT_HOME
+require VAGRANT_HOME + "/../tools/vagrant_helper"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  $nodes.each_pair do |name, options|
+    config.vm.define name do |node_config|
+      # main config
+      config_main(node_config, name, options)
+
+      # provider: parallels
+      provider_parallels(node_config, name, options)
+
+      # provider: virtualbox
+      provider_virtualbox(node_config, name, options)
+
+      # provider: vmware_workstation
+      provider_vmware(node_config, name, options)
+
+      # provider: libvirt
+      provider_libvirt(node_config, name, options)
+
+      # provider: openstack
+      provider_openstack(node_config, name, options)
+
+      # provision: Puppet and friends
+      provision_pre(node_config, name, options)
+
+      provision_puppet(node_config, name, options)
+
+      provision_post(node_config, name, options)
+    end
+
+    config_hostmanager(config)
+  end
+end
