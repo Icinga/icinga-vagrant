@@ -2,11 +2,19 @@ object Host "everyonecancontribute.com" {
   check_command = "hostalive"
   address = "78.47.112.51"
 
+  notes = {{{
+    [Certificate Chain](/icingaweb2/x509/usage?subject=%2Aeveryonecancontribute%2A)
+  }}}
+
   vars.web_hosts = [ name ]
 }
 object Host "gitlab.com" {
   check_command = "hostalive"
   address = "35.231.145.151"
+
+  notes = {{{
+    [Certificate Chain](/icingaweb2/x509/usage?subject=%2Agitlab%2A)
+  }}}
 
   vars.web_hosts = [ name ]
 }
@@ -18,4 +26,10 @@ apply Service "TLS certificate " for (w in host.vars.web_hosts) {
 
   vars.icingacli_x509_warning = "200d"
   vars.icingacli_x509_critical = "100d"
+}
+
+apply Service "HTTPS " for (w in host.vars.web_hosts) {
+  check_command = "http"
+
+  vars.http_ssl = true
 }
