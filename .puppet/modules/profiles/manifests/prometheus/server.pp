@@ -85,7 +85,7 @@ class profiles::prometheus::server (
         'scrape_timeout'  => '10s',
         'static_configs'  => [
           {
-            'targets' => [ 'https://everyonecancontribute.com', 'https://gitlab.com' ],
+            'targets' => [ 'https://everyonecancontribute.com' ],
             'labels'  => {
               'alias' => 'Everyonecancontribute TLS',
             }
@@ -113,7 +113,7 @@ class profiles::prometheus::server (
         'scrape_timeout'  => '10s',
         'static_configs'  => [
           {
-            'targets' => [ 'https://everyonecancontribute.com', 'https://gitlab.com' ],
+            'targets' => [ 'https://everyonecancontribute.com' ],
             'labels'  => {
               'alias' => 'TLS Certificate Monitoring',
             }

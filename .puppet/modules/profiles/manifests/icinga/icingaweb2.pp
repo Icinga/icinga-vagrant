@@ -596,11 +596,6 @@ class profiles::icinga::icingaweb2 (
      command => "icingacli x509 scan --job local"
     }
     ->
-    exec { 'x509-jobs-gitlab-com':
-     path => '/bin:/usr/bin:/sbin:/usr/sbin',
-     command => "icingacli x509 scan --job gitlab.com"
-    }
-    ->
     exec { 'x509-jobs-everyonecancontribute-com':
      path => '/bin:/usr/bin:/sbin:/usr/sbin',
      command => "icingacli x509 scan --job everyonecancontribute.com"

@@ -8,16 +8,6 @@ object Host "everyonecancontribute.com" {
 
   vars.web_hosts = [ name ]
 }
-object Host "gitlab.com" {
-  check_command = "hostalive"
-  address = "35.231.145.151"
-
-  notes = {{{
-    [Certificate Chain](/icingaweb2/x509/usage?subject=%2Agitlab%2A)
-  }}}
-
-  vars.web_hosts = [ name ]
-}
 
 apply Service "TLS certificate " for (w in host.vars.web_hosts) {
   check_command = "icingacli-x509"
