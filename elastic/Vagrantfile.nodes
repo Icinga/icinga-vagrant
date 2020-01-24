@@ -12,6 +12,7 @@ nodes = {
     :box_virtualbox => 'bento/centos-7',
     :box_parallels  => 'bento/centos-7',
     :box_vmware     => 'bento/centos-7',
+    :box_hyperv     => 'centos/7',
     :box_libvirt    => 'centos/7',
     :net            => 'vagrant.demo.icinga.com',
     :hostonly       => '192.168.33.7', # keep in sync with hieradata
