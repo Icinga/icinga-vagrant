@@ -107,6 +107,14 @@ def provider_libvirt(node_config, name, options)
   end
 end
 
+def provider_hyperv(node_config, name, options)
+  node_config.vm.provider :hyperv do |hv, override|
+    override.vm.box = options[:box_hyperv]
+    hv.memory = options[:memory] if options[:memory]
+    hv.cpus = options[:cpus] if options[:cpus]
+  end
+end
+
 def provider_openstack(node_config, name, options)
   node_config.vm.provider :openstack do |os, override|
     override.ssh.username  = "#{ENV['OS_SSH_USER']}"

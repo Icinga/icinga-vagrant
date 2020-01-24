@@ -405,6 +405,7 @@ nodes = {
   'icinga2' => {
     :box_virtualbox => 'bento/centos-7.4',
     :box_parallels  => 'bento/centos-7.4',
+    :box_hyperv     => 'bento/centos-7.4',
     :box_libvirt    => 'centos/7',
     :net            => 'demo.local',
     :hostonly       => '192.168.33.5',
