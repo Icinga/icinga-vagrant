@@ -47,21 +47,21 @@ class profiles::icinga::icingaweb2 (
 
   file { '/usr/local/bin/php':
     ensure => link,
-    target => '/opt/rh/rh-php71/root/usr/bin/php',
+    target => '/opt/rh/rh-php73/root/usr/bin/php',
   } -> Class['php::composer::auto_update']
 
   package { [ 'scl-utils', 'centos-release-scl' ]:
     ensure => present,
   }->
   # Workaround for PHP module not allowing to configure log path
-  file { [ '/var/opt', '/var/opt/rh', '/var/opt/rh/rh-php71' ]:
+  file { [ '/var/opt', '/var/opt/rh', '/var/opt/rh/rh-php73' ]:
     ensure => directory,
     owner  => 'root',
     group  => 'root',
     mode   => '0750'
   }
   ->
-  file { [ '/var/opt/rh/rh-php71/log', '/var/opt/rh/rh-php71/log/php-fpm' ]:
+  file { [ '/var/opt/rh/rh-php73/log', '/var/opt/rh/rh-php73/log/php-fpm' ]:
     ensure => directory,
     owner  => 'apache',
     group  => 'apache',
@@ -70,27 +70,27 @@ class profiles::icinga::icingaweb2 (
   ->
   file { '/var/log/php-fpm':
     ensure => link,
-    source => '/var/opt/rh/rh-php71/log/php-fpm'
+    source => '/var/opt/rh/rh-php73/log/php-fpm'
   }
   ->
   class { '::php::globals':
-    config_root   => '/etc/opt/rh/rh-php71',
-    fpm_pid_file  => '/var/opt/rh/rh-php71/run/php-fpm/php-fpm.pid',
+    config_root   => '/etc/opt/rh/rh-php73',
+    fpm_pid_file  => '/var/opt/rh/rh-php73/run/php-fpm/php-fpm.pid',
   }->
   class { '::php':
-    package_prefix => 'rh-php71-php-', # most important
-    config_root_ini => '/etc/opt/rh/rh-php71',
-    config_root_inifile => '/etc/opt/rh/rh-php71/php.ini',
+    package_prefix => 'rh-php73-php-', # most important
+    config_root_ini => '/etc/opt/rh/rh-php73',
+    config_root_inifile => '/etc/opt/rh/rh-php73/php.ini',
 
     manage_repos => false,
     fpm => true,
-    fpm_package        => 'rh-php71-php-fpm',
-    fpm_service_name   => 'rh-php71-php-fpm',
+    fpm_package        => 'rh-php73-php-fpm',
+    fpm_service_name   => 'rh-php73-php-fpm',
     fpm_service_enable => true,
     fpm_service_ensure => 'running',
-    fpm_inifile        => '/etc/opt/rh/rh-php71/php-fpm.ini',
-    #fpm_error_log      => '/var/opt/rh/rh-php71/log/php-fpm',
-    fpm_user           => 'apache', # rh-php71 prefers apache
+    fpm_inifile        => '/etc/opt/rh/rh-php73/php-fpm.ini',
+    #fpm_error_log      => '/var/opt/rh/rh-php73/log/php-fpm',
+    fpm_user           => 'apache', # rh-php73 prefers apache
     fpm_group          => 'apache',
     dev => true,
     composer => true,
