@@ -6,6 +6,7 @@ raise "VAGRANT_HOME needs to be defined prior vagrant_helper!" unless defined? V
 VAGRANTFILE_API_VERSION = "2" unless defined? VAGRANTFILE_API_VERSION
 VAGRANT_REQUIRED_VERSION = "1.8.0" unless defined? VAGRANT_REQUIRED_VERSION
 VAGRANT_REQUIRED_LINKED_CLONE_VERSION = "1.8.4" unless defined? VAGRANT_REQUIRED_LINKED_CLONE_VERSION
+VAGRANT_REQUIRED_QEMU_USE_SESSION_VERSION = "2.2.0" unless defined? VAGRANT_REQUIRED_QEMU_USE_SESSION_VERSION
 
 # Require 1.6.5 at least
 if ! defined? Vagrant.require_version
@@ -104,6 +105,7 @@ def provider_libvirt(node_config, name, options)
     override.vm.box = options[:box_libvirt]
     lv.memory = options[:memory] if options[:memory]
     lv.cpus = options[:cpus] if options[:cpus]
+    lv.qemu_use_session = false if Gem::Version.new(Vagrant::VERSION) >= Gem::Version.new(VAGRANT_REQUIRED_QEMU_USE_SESSION_VERSION)
   end
 end
 
