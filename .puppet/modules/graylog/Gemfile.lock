@@ -38,7 +38,7 @@ GEM
       puppet-syntax
       rake
       rspec-puppet
-    rake (11.1.2)
+    rake (13.0.1)
     rest-client (1.8.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
