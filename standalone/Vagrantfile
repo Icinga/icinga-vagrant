@@ -24,6 +24,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # provider: openstack
       provider_openstack(node_config, name, options)
+      
+      # provider: hyperv
+      provider_hyperv(node_config, name, options)
 
       # provision: Puppet and friends
       provision_pre(node_config, name, options)
